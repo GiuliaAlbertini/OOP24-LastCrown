@@ -2,14 +2,15 @@ package it.unibo.oop.lastcrown.model.impl.card.characters.hero;
 
 import java.util.Optional;
 
-import it.unibo.oop.lastcrown.model.api.card.Requirement;
 import it.unibo.oop.lastcrown.model.api.card.characters.Hero;
 import it.unibo.oop.lastcrown.model.api.card.characters.PassiveEffect;
+import it.unibo.oop.lastcrown.model.api.card.characters.Requirement;
 
 /**
  * Creates a Hero with the specified params.
  */
-public class HeroFactory {
+public final class HeroFactory {
+    private HeroFactory() { }
     /**
      * @param name the name of this hero
      * @param requirement the requirement to own this hero(ex Coins, 200)
@@ -24,7 +25,7 @@ public class HeroFactory {
      * @param wallHealth the health value of the defensive wall associated with this hero
      * @return new Hero
      */
-    public Hero createHero(final String name, final Requirement requirement, final int attack, final int health, 
+    public static Hero createHero(final String name, final Requirement requirement, final int attack, final int health, 
     final double atckRecoveryTime, final Optional<PassiveEffect> passiveEffect, 
     final int meleeCards, final int rangedCards, final int spellCards, final int wallAttack, final int wallHealth) {
 
