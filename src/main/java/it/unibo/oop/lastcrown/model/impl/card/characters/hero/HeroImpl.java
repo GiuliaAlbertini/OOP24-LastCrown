@@ -2,9 +2,9 @@ package it.unibo.oop.lastcrown.model.impl.card.characters.hero;
 
 import java.util.Optional;
 
-import it.unibo.oop.lastcrown.model.api.card.Requirement;
 import it.unibo.oop.lastcrown.model.api.card.characters.Hero;
 import it.unibo.oop.lastcrown.model.api.card.characters.PassiveEffect;
+import it.unibo.oop.lastcrown.model.api.card.characters.Requirement;
 import it.unibo.oop.lastcrown.model.impl.card.characters.GenericCharacterImpl;
 
 /**
@@ -12,6 +12,7 @@ import it.unibo.oop.lastcrown.model.impl.card.characters.GenericCharacterImpl;
  */
 public class HeroImpl extends GenericCharacterImpl implements Hero {
     private static final double HERO_SPEED_MUL = 2.5;
+    private final Requirement requirement;
     private final Optional<PassiveEffect> passiveEffect;
     private final int meleeCards;
     private final int rangedCards;
@@ -35,13 +36,19 @@ public class HeroImpl extends GenericCharacterImpl implements Hero {
     public HeroImpl(final String name, final Requirement requirement, final int attack, final int health, 
     final double atckRecoveryTime, final Optional<PassiveEffect> passiveEffect, 
     final int meleeCards, final int rangedCards, final int spellCards, final int wallAttack, final int wallHealth) {
-        super(name, requirement, attack, health, atckRecoveryTime, HERO_SPEED_MUL);
+        super(name, attack, health, atckRecoveryTime, HERO_SPEED_MUL);
+        this.requirement = requirement;
         this.passiveEffect = passiveEffect;
         this.meleeCards = meleeCards;
         this.rangedCards = rangedCards;
         this.spellCards = spellCards;
         this.wallAttack = wallAttack;
         this.wallHealth = wallHealth;
+    }
+
+    @Override
+    public final Requirement getRequirement() {
+        return this.requirement;
     }
 
     @Override
