@@ -1,11 +1,15 @@
 package it.unibo.oop.lastcrown.model.api.card.characters;
 
-import it.unibo.oop.lastcrown.model.api.card.Card;
-
 /**
  * A generic character represented in one Card.
  */
-public interface GenericCharacter extends Card {
+public interface GenericCharacter {
+
+    /**
+     * @return the name of this character
+     */
+    String getName();
+    
     /**
      * @return this character's attack value 
      */
