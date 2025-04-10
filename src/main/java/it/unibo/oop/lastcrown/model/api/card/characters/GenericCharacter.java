@@ -9,7 +9,7 @@ public interface GenericCharacter {
      * @return the name of this character
      */
     String getName();
-    
+
     /**
      * @return this character's attack value 
      */

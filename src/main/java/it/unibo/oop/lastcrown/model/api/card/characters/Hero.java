@@ -15,7 +15,7 @@ public interface Hero extends GenericCharacter {
      * @return the requirement to own this hero
      */
     Requirement getRequirement();
-    
+
     /**
      * @return total number of melee cards that player deck can have
      */
