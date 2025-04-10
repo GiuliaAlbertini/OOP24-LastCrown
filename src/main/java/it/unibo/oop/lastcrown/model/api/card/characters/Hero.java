@@ -12,6 +12,11 @@ public interface Hero extends GenericCharacter {
     Optional<PassiveEffect> getPassiveEffect();
 
     /**
+     * @return the requirement to own this hero
+     */
+    Requirement getRequirement();
+    
+    /**
      * @return total number of melee cards that player deck can have
      */
     int getMeleeCards();
