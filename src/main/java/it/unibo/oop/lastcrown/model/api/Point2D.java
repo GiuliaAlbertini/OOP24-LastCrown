@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.model.api;
 
+
 public interface Point2D {
 
     /*
@@ -27,6 +28,4 @@ public interface Point2D {
      * @return the distance between two points
      */
     double getDistance(Point2D p);
-
-   
 }
