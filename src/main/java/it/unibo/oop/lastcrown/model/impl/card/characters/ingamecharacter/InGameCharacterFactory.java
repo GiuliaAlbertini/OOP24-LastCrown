@@ -20,7 +20,6 @@ public final class InGameCharacterFactory {
     public static InGameCharacter createInGameCharacter(final String type,
      final String name, final int health, final int attack,
      final double speedMultiplier, final boolean inCombat) {
-        return new InGameCharacterImpl(type, name, health, attack,
-         speedMultiplier, inCombat);
+        return new InGameCharacterImpl(type, name, health, attack, speedMultiplier);
      }
 }
