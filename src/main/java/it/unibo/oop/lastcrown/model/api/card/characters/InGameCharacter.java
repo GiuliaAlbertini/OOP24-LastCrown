@@ -45,12 +45,6 @@ public interface InGameCharacter {
     int getAttack();
 
     /**
-     * Get time lap between attacks of this character.
-     * @return the attack recovery time of this character
-     */
-    double getAtckRecoveryTime();
-
-    /**
      * Change the attack value of this character.
      * @param variation the variation of attack value
      */

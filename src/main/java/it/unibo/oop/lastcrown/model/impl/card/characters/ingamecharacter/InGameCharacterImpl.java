@@ -8,7 +8,6 @@ import it.unibo.oop.lastcrown.model.api.card.characters.InGameCharacter;
 public class InGameCharacterImpl implements InGameCharacter {
     private final String name;
     private final String type;
-    private final double atckRecoveryTime;
     private int currentHealth;
     private int maximumHealth;
     private int attack;
@@ -21,19 +20,17 @@ public class InGameCharacterImpl implements InGameCharacter {
      * @param name the name of this character
      * @param health the health value of this character
      * @param attack the attack value of this character
-     * @param atckRecoveryTime the attack recovery time of this character
      * @param speedMultiplier the speed multiplier of this character
      * @param inCombat True to be considered in combat, False otherwise
      */
     public InGameCharacterImpl(final String type, final String name,
-     final int health, final int attack, final double atckRecoveryTime,
+     final int health, final int attack,
      final double speedMultiplier, final boolean inCombat) {
         this.type = type;
         this.name = name;
         this.currentHealth = health;
         this.maximumHealth = health;
         this.attack = attack;
-        this.atckRecoveryTime = atckRecoveryTime;
         this.speedMultiplier = speedMultiplier;
         this.inCombat = inCombat;
         this.dead = false;
@@ -86,11 +83,6 @@ public class InGameCharacterImpl implements InGameCharacter {
     @Override
     public final int getAttack() {
        return this.attack;
-    }
-
-    @Override
-    public final double getAtckRecoveryTime() {
-        return this.atckRecoveryTime;
     }
 
     @Override

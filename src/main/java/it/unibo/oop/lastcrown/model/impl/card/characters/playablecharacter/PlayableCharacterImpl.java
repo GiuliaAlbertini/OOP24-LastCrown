@@ -19,16 +19,15 @@ public class PlayableCharacterImpl extends GenericCharacterImpl implements Playa
      * @param cost total amount of coins to spend to own this playable character
      * @param attack the attack value of this character
      * @param health the health value of this character
-     * @param atckRecoveryTime the attack recovery time of this character(time lap between attacks)
      * @param copiesPerRound number of times this character can be played during a match
      * @param energyToPlay amount of player energy needed to play this character
      * @param speedMultiplier the speed multiplier of this character(ex 1.5 -> standard_speed * 1.5)
      * @param actionRange this character action range (distance form witch this character can spot enemies)
      */
     public PlayableCharacterImpl(final String name, final String type, final int cost,
-    final int attack, final int health, final double atckRecoveryTime, final int copiesPerRound,
+    final int attack, final int health, final int copiesPerRound,
     final int energyToPlay, final double speedMultiplier, final int actionRange) {
-        super(name, attack, health, atckRecoveryTime, speedMultiplier);
+        super(name, attack, health, speedMultiplier);
         this.type = type;
         this.cost = cost;
         this.copiesPerRound = copiesPerRound;

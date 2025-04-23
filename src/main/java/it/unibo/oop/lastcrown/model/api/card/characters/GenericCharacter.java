@@ -21,11 +21,6 @@ public interface GenericCharacter {
     int getHealthValue();
 
     /**
-     * @return this character's attack recovery time (time lap between attacks)
-     */
-    double getAtckRecoveryTime();
-
-    /**
      * @return this character speed multiplier (higher value -> higher movement speed)
      */
     double getSpeedMultiplier();

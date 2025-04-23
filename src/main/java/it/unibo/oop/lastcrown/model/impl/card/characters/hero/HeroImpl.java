@@ -25,7 +25,6 @@ public class HeroImpl extends GenericCharacterImpl implements Hero {
      * @param requirement the requirement to own this hero(ex Coins, 200)
      * @param attack the attack value of this hero
      * @param health the health value of this hero
-     * @param atckRecoveryTime the attack recovery time of this hero(time lap between attacks)
      * @param passiveEffect passive effect of this hero
      * @param meleeCards number of melee cards deck can have with this hero
      * @param rangedCards number of ranged cards deck can have with this hero
@@ -33,10 +32,10 @@ public class HeroImpl extends GenericCharacterImpl implements Hero {
      * @param wallAttack the attack value of the defensive wall associated with this hero
      * @param wallHealth the health value of the defensive wall associated with this hero
      */
-    public HeroImpl(final String name, final Requirement requirement, final int attack, final int health, 
-    final double atckRecoveryTime, final Optional<PassiveEffect> passiveEffect, 
-    final int meleeCards, final int rangedCards, final int spellCards, final int wallAttack, final int wallHealth) {
-        super(name, attack, health, atckRecoveryTime, HERO_SPEED_MUL);
+    public HeroImpl(final String name, final Requirement requirement, final int attack,
+    final int health, final Optional<PassiveEffect> passiveEffect, final int meleeCards,
+    final int rangedCards, final int spellCards, final int wallAttack, final int wallHealth) {
+        super(name, attack, health, HERO_SPEED_MUL);
         this.requirement = requirement;
         this.passiveEffect = passiveEffect;
         this.meleeCards = meleeCards;
