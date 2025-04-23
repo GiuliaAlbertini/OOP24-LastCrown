@@ -12,7 +12,7 @@ public class InGameCharacterImpl implements InGameCharacter {
     private int maximumHealth;
     private int attack;
     private double speedMultiplier;
-    private boolean inCombat;
+    private boolean inCombat = false;
     private boolean dead;
 
     /**
@@ -25,14 +25,13 @@ public class InGameCharacterImpl implements InGameCharacter {
      */
     public InGameCharacterImpl(final String type, final String name,
      final int health, final int attack,
-     final double speedMultiplier, final boolean inCombat) {
+     final double speedMultiplier) {
         this.type = type;
         this.name = name;
         this.currentHealth = health;
         this.maximumHealth = health;
         this.attack = attack;
         this.speedMultiplier = speedMultiplier;
-        this.inCombat = inCombat;
         this.dead = false;
     }
 

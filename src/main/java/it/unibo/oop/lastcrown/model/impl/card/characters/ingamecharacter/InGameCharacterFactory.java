@@ -14,13 +14,10 @@ public final class InGameCharacterFactory {
      * @param health the health value of this character
      * @param attack the attack value of this character
      * @param speedMultiplier the speed multiplier of this character
-     * @param inCombat True to consider this character in combat, False otherwise
      * @return a new InGameCharacter
      */
     public static InGameCharacter createInGameCharacter(final String type,
-     final String name, final int health, final int attack,
-     final double speedMultiplier, final boolean inCombat) {
-        return new InGameCharacterImpl(type, name, health, attack,
-         speedMultiplier, inCombat);
+     final String name, final int health, final int attack, final double speedMultiplier) {
+        return new InGameCharacterImpl(type, name, health, attack, speedMultiplier);
      }
 }
