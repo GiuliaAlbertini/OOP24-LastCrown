@@ -5,7 +5,7 @@ import it.unibo.oop.lastcrown.model.api.card.PlayableCard;
 /**
  * A character that can be played during a match.
  */
-public interface PlayableCharacter extends PlayableCard {
+public interface PlayableCharacter extends PlayableCard, GenericCharacter {
     /**
      * @return this playable character type (melee or ranged)
      */
