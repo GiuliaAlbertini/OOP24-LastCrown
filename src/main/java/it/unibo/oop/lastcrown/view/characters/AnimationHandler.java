@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.logging.Logger;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.view.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAnimationPanel;
 
@@ -16,24 +15,14 @@ public class AnimationHandler {
     private static final int JUMPING_SIZE = 3;
     private static final int MOVEMENT_PIXELS = 5;
     private static final int TIME = 100;
-    private final CharacterAnimationPanel panel;
     private volatile Double speedMultiplier;
     private volatile boolean stop;
 
     /**
-     * @param panel the character animation panel linked to this handler
      * @param speedMultiplier the speedMultiplier applied to the animations
      */
-    @SuppressFBWarnings(
-    value = "EI2",
-    justification = "The animation handler has to modify the given animation panel"
-        + ", for instance it has to modify the horizontal position of the panel"
-        + "during a run animation"
-)
-    public AnimationHandler(final CharacterAnimationPanel panel,
-     final Double speedMultiplier) {
+    public AnimationHandler(final Double speedMultiplier) {
         this.speedMultiplier = speedMultiplier;
-        this.panel = panel;
     }
 
     /**
@@ -48,8 +37,10 @@ public class AnimationHandler {
      * Start a single animation sequence (to do a loop call this method multiple times).
      * @param frames the frames of the specific animation
      * @param keyword the keyword of the specific animation
+     * @param panel the character animation panel
      */
-    public void startAnimationSequence(final List<BufferedImage> frames, final Keyword keyword) {
+    public void startAnimationSequence(final List<BufferedImage> frames, final Keyword keyword,
+     final CharacterAnimationPanel panel) {
         switch (keyword) {
             case Keyword.STOP, Keyword.ATTACK, Keyword.DEATH:
                 for (int i = 0; i < frames.size() && !this.stop; i++) {
@@ -63,28 +54,28 @@ public class AnimationHandler {
                 break;
 
             case Keyword.RUN_RIGHT, Keyword.RETREAT:
-                this.startRunAnimation(frames, (int) (MOVEMENT_PIXELS * this.speedMultiplier));
+                this.startRunAnimation(frames, (int) (MOVEMENT_PIXELS * this.speedMultiplier), panel);
                 break;
 
             case RUN_LEFT:
-                this.startRunAnimation(frames, -(int) (MOVEMENT_PIXELS * this.speedMultiplier));
+                this.startRunAnimation(frames, -(int) (MOVEMENT_PIXELS * this.speedMultiplier), panel);
                 break;
 
             case Keyword.JUMPUP:
-                this.startJumpAnimation(frames, 0, -(int) (this.speedMultiplier * JUMPING_SIZE));
+                this.startJumpAnimation(frames, 0, -(int) (this.speedMultiplier * JUMPING_SIZE), panel);
                 break;
 
             case Keyword.JUMPDOWN:
-                this.startJumpAnimation(frames, 0, (int) (this.speedMultiplier * JUMPING_SIZE));
+                this.startJumpAnimation(frames, 0, (int) (this.speedMultiplier * JUMPING_SIZE), panel);
                 break;
 
             case Keyword.JUMPFORWARD:
                 final List<BufferedImage> jumpUpFrames = frames.subList(0, frames.size() / 2);
                 final List<BufferedImage> jumpDownFrames = frames.subList(frames.size() / 2, frames.size());
                 this.startJumpAnimation(jumpUpFrames, (int) (this.speedMultiplier * JUMPING_SIZE),
-                -(int) (this.speedMultiplier * JUMPING_SIZE));
+                -(int) (this.speedMultiplier * JUMPING_SIZE), panel);
                 this.startJumpAnimation(jumpDownFrames, (int) (this.speedMultiplier * JUMPING_SIZE),
-                 +(int) (this.speedMultiplier * JUMPING_SIZE));
+                 +(int) (this.speedMultiplier * JUMPING_SIZE), panel);
                 break;
         }
     }
@@ -94,8 +85,9 @@ public class AnimationHandler {
      * The horizontal movement between one frames and the other is decided by variation given.
      * @param frames the specific run animation frames
      * @param variation the horizontal movement between one frame and the other
+     * @param panel the character animation panel
      */
-    private void startRunAnimation(final List<BufferedImage> frames, final int variation) {
+    private void startRunAnimation(final List<BufferedImage> frames, final int variation, final CharacterAnimationPanel panel) {
         for (int i = 0; i < frames.size() && !this.stop; i++) {
             panel.setCharacterImage(frames.get(i));
             panel.setLocation(panel.getX() + variation, panel.getY());
@@ -114,9 +106,10 @@ public class AnimationHandler {
      * @param frames the specific jump animation frames
      * @param xVariation the horizontal movement between one frame and the other
      * @param yVariation the vertical movement between one frame and the other
+     * @param panel the character animation panel
      */
     private void startJumpAnimation(final List<BufferedImage> frames,
-     final int xVariation, final int yVariation) {
+     final int xVariation, final int yVariation, final CharacterAnimationPanel panel) {
         for (int i = 0; i < frames.size() && !this.stop; i++) {
             panel.setCharacterImage(frames.get(i));
             panel.setLocation(panel.getX() + xVariation, panel.getY() + yVariation);
