@@ -1,11 +1,12 @@
 package it.unibo.oop.lastcrown.controller.characters.api;
 
 import it.unibo.oop.lastcrown.model.api.card.CardIdentifier;
+import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
 
 /**
  * A controller that handles the behaviour of a single Generic Character in game.
  */
-public interface GenericCharacterController {
+public interface GenericCharacterController extends CharacterAttackObserver {
     /**
      * @return this controller id
      */
