@@ -13,7 +13,7 @@ import javax.imageio.ImageIO;
 /**
  * Load the frames corresponding to the given paths and size.
  */
-final class ImageLoader {
+public final class ImageLoader {
     private static final Logger LOG = Logger.getLogger(ImageLoader.class.getName());
     private ImageLoader() { }
     /**
