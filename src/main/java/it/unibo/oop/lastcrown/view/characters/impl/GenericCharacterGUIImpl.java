@@ -8,9 +8,9 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.view.ImageLoader;
-import it.unibo.oop.lastcrown.view.Keyword;
 import it.unibo.oop.lastcrown.view.characters.AnimationHandler;
 import it.unibo.oop.lastcrown.view.characters.CustomLock;
+import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
 import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;

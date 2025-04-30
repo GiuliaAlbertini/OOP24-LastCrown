@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.logging.Logger;
 
-import it.unibo.oop.lastcrown.view.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAnimationPanel;
 
 /**

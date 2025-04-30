@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.view;
+package it.unibo.oop.lastcrown.view.characters;
 
 /**
  * Enumeration useful to mantain all the animation keywords.
