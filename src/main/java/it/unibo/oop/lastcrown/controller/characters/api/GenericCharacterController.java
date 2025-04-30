@@ -1,5 +1,7 @@
 package it.unibo.oop.lastcrown.controller.characters.api;
 
+import javax.swing.JPanel;
+
 import it.unibo.oop.lastcrown.model.api.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
 
@@ -17,16 +19,18 @@ public interface GenericCharacterController extends CharacterAttackObserver {
      * @param width the width of the character animation panel
      * @param height the height of the character animation panel
      */
-    void attachCharacterView(int width, int height);
+    void attachCharacterAnimationPanel(int width, int height);
 
     /**
      * Must be called after creating a new character animation panel.
-     * Set this character animation panel position (centered on the given coordinates).
+     * Set the new main panel of this character animation panel
+     * and its position in it (centered on the given coordinates).
+     * @param mainPanel the panel where the character animation panel must spawn
      * @param initialX horizontal coordinate
      * @param initialY vertical coordinate
      * @throws NullPointerException if this character animation panel is null
      */
-    void setCharacterPanelPosition(int initialX, int initialY);
+    void setCharacterPanelPosition(JPanel mainPanel, int initialX, int initialY);
 
     /**
      * Make the linked character start running.

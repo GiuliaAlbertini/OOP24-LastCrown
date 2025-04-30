@@ -28,7 +28,6 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
     private final  List<BufferedImage> stopImages;
     private final  List<List<BufferedImage>> attacksImages;
     private final List<BufferedImage> deathImages;
-    private final JPanel mainPanel;
     private CharacterAnimationPanelImpl animationPanel;
     private final AnimationHandler anHandler;
     private final CustomLock lock = new CustomLock();
@@ -41,17 +40,14 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
      * @param speedMultiplier the speed multiplier of the character
      * @param width the horizontal size of the character animation panel
      * @param height the vertical size of the character animation panel
-     * @param mainPanel the greater panel where the character must appear
      */
     public GenericCharacterGUIImpl(final CharacterAttackObserver obs, final String charType,
-    final String charName, final Double speedMultiplier,
-    final int width, final int height, final JPanel mainPanel) {
+    final String charName, final Double speedMultiplier, final int width, final int height) {
         this.observer = obs;
         this.charType = charType;
         this.charName = charName;
         this.charWidth = width;
         this.charHeight = height;
-        this.mainPanel = mainPanel;
         this.animationPanel = this.createAnimationPanel();
         this.anHandler = new AnimationHandler(speedMultiplier);
         this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get());
@@ -96,11 +92,11 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
     }
 
     @Override
-    public final void setAnimationPanelPosition(final int x, final int y) {
+    public final void setAnimationPanelPosition(final JPanel mainPanel, final int x, final int y) {
         this.animationPanel.setBounds(x - charWidth / 2, y - charHeight / 2, charWidth, charHeight);
         this.animationPanel.setHealthBarPosition();
-        this.mainPanel.add(animationPanel);
-        this.mainPanel.repaint();
+        mainPanel.add(animationPanel);
+        mainPanel.repaint();
         this.startStopLoop();
     }
 
