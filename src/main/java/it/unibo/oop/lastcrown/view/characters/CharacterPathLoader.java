@@ -5,8 +5,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.unibo.oop.lastcrown.view.Keyword;
-
 /**
  * Provides the frames paths of the characters animations.
  */
