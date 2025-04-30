@@ -11,7 +11,7 @@ import javax.swing.border.Border;
  * A custom JProgressBar that provides graphic improvements and a flashing system
  * when the percentage level is lower that the limit.
  */
-final class CharacterHealthBar extends JProgressBar {
+public class CharacterHealthBar extends JProgressBar {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(CharacterHealthBar.class.getName());
     private static final int HEIGHT_DIVISOR = 20;
@@ -20,9 +20,6 @@ final class CharacterHealthBar extends JProgressBar {
     private static final int BORDER_THICKNESS = 1;
     private volatile int percentage;
     private Color originalColor;
-
-    private CharacterHealthBar() {
-    }
 
     /**
      * Creates a new instance of CharacterHealthBar.
