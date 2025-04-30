@@ -1,5 +1,7 @@
 package it.unibo.oop.lastcrown.view.characters.api;
 
+import javax.swing.JPanel;
+
 /**
  * An interface that handles the graphic side of a generic character.
  */
@@ -13,10 +15,11 @@ public interface GenericCharacterGUI {
 
     /**
      * Set the position of the animation panel linked to this character GUI (centered on the coordinates given).
+     * @param mainPanel the panel where the character animation panel must spawn
      * @param x coordinate x
      * @param y coordinate y
      */
-    void setAnimationPanelPosition(int x, int y);
+    void setAnimationPanelPosition(JPanel mainPanel, int x, int y);
 
     /**
      * Set the animation speed multiplier.
