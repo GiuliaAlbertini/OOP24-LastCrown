@@ -10,11 +10,9 @@ import it.unibo.oop.lastcrown.view.Keyword;
 /**
  * Provides the frames paths of the characters animations.
  */
-final class CharacterPathLoader {
+public final class CharacterPathLoader {
     private static final String SEP = System.getProperty("file.separator");
-
     private CharacterPathLoader() { }
-
     /**
      * @param charType the character type
      * @param charName the character name
