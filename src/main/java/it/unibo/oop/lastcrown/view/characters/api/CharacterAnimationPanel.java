@@ -14,7 +14,12 @@ public interface CharacterAnimationPanel {
     void setCharacterImage(Image image);
 
     /**
-     * Realign this character health bar position after moving the animation panel.
+     * Set the initial alignment of the characterHealthBar.
+     */
+    void setHealthBarAlignment();
+
+    /**
+     * Move this character health bar position after moving the animation panel.
      */
     void setHealthBarPosition();
 

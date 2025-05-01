@@ -81,7 +81,7 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
         } else {
             color = Color.GREEN;
         }
-        return CharacterAnimationPanelImpl.create(charWidth, charHeight, color);
+        return CharacterAnimationPanelImpl.create(charWidth, charHeight, this.charType, color);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
     @Override
     public final void setAnimationPanelPosition(final JPanel mainPanel, final int x, final int y) {
         this.animationPanel.setBounds(x - charWidth / 2, y - charHeight / 2, charWidth, charHeight);
-        this.animationPanel.setHealthBarPosition();
+        this.animationPanel.setHealthBarAlignment();
         mainPanel.add(animationPanel);
         mainPanel.repaint();
         this.startStopLoop();

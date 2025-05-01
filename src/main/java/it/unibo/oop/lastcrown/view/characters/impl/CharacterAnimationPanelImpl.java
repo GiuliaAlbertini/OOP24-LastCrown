@@ -14,6 +14,8 @@ import it.unibo.oop.lastcrown.view.characters.api.CharacterAnimationPanel;
 final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnimationPanel {
     private static final long serialVersionUID = 1L;
     private static final int BAR_HEIGHT_DIVISOR = 9;
+    private static final double BAR_WIDTH_RESIZE = 0.75;
+    private String charType;
     private CharacterHealthBar healthBar;
     private transient Image currentImage;
 
@@ -23,16 +25,20 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
      * Creates a new instance of CharacterAnimationPanel.
      * @param width the horizontal size of this animation panel
      * @param height the vertical size of this animation panel
+     * @param charType the type of the linked character
      * @param color the color of the health bar associated with this panel
      * @return new CharacterAnimationPanel
      */
-    public static CharacterAnimationPanelImpl create(final int width, final int height, final Color color) {
+    public static CharacterAnimationPanelImpl create(final int width, final int height,
+     final String charType, final Color color) {
         final CharacterAnimationPanelImpl instance = new CharacterAnimationPanelImpl();
-        instance.init(width, height, color);
+        instance.init(width, height, charType, color);
         return instance;
     }
 
-    private void init(final int width, final int height, final Color color) {
+    private void init(final int width, final int height, final String charType, final Color color) {
+        this.setLayout(null);
+        this.charType = charType;
         this.healthBar = CharacterHealthBar.create(width, height, color);
         this.setOpaque(false);
         this.setSize(width, height);
@@ -46,10 +52,22 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
     }
 
     @Override
-    public void setHealthBarPosition() {
-        this.healthBar.setBounds(0, this.getHeight() / BAR_HEIGHT_DIVISOR,
-         this.healthBar.getWidth(), this.healthBar.getHeight());
+    public void setHealthBarAlignment() {
+        if ("enemy".equals(this.charType) || "boss".equals(this.charType)) {
+            this.healthBar.setBounds((int) (this.getWidth() * (1 - BAR_WIDTH_RESIZE)),
+             this.getHeight() / BAR_HEIGHT_DIVISOR,
+            (int) (this.getWidth() * BAR_WIDTH_RESIZE), this.healthBar.getHeight());
+        } else {
+            this.healthBar.setBounds(0, this.getHeight() / BAR_HEIGHT_DIVISOR,
+            (int) (this.getWidth() * BAR_WIDTH_RESIZE), this.healthBar.getHeight());
+        }
         this.healthBar.setVisible(true);
+        this.healthBar.repaint();
+    }
+
+    @Override
+    public void setHealthBarPosition() {
+        this.healthBar.setLocation(this.healthBar.getX(), this.healthBar.getY());
     }
 
     @Override

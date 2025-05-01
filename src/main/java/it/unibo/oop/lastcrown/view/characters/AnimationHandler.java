@@ -90,7 +90,7 @@ public class AnimationHandler {
         for (int i = 0; i < frames.size() && !this.stop; i++) {
             panel.setCharacterImage(frames.get(i));
             panel.setLocation(panel.getX() + variation, panel.getY());
-            panel.setHealthBarPosition();
+            panel.setHealthBarAlignment();
             try {
                 Thread.sleep(TIME);
             } catch (final InterruptedException e) {
@@ -112,7 +112,7 @@ public class AnimationHandler {
         for (int i = 0; i < frames.size() && !this.stop; i++) {
             panel.setCharacterImage(frames.get(i));
             panel.setLocation(panel.getX() + xVariation, panel.getY() + yVariation);
-            panel.setHealthBarPosition();
+            panel.setHealthBarAlignment();
             try {
                 Thread.sleep(TIME);
             } catch (final InterruptedException e) {
