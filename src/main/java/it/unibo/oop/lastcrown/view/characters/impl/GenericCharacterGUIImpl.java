@@ -156,7 +156,7 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
             this.lock.acquireLock();
             this.start();
             switch (keyword) {
-                case Keyword.STOP, Keyword.RUN_RIGHT, Keyword.RUN_LEFT, Keyword.RETREAT:
+                case Keyword.STOP, Keyword.STOP_LEFT, Keyword.RUN_RIGHT, Keyword.RUN_LEFT, Keyword.RETREAT:
                     while (!done) {
                         this.anHandler.startAnimationSequence(frames, keyword, this.animationPanel);
                     }
