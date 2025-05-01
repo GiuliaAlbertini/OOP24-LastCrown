@@ -41,7 +41,7 @@ public class AnimationHandler {
     public void startAnimationSequence(final List<BufferedImage> frames, final Keyword keyword,
      final CharacterAnimationPanel panel) {
         switch (keyword) {
-            case Keyword.STOP, Keyword.ATTACK, Keyword.DEATH:
+            case Keyword.STOP, Keyword.STOP_LEFT, Keyword.ATTACK, Keyword.DEATH:
                 for (int i = 0; i < frames.size() && !this.stop; i++) {
                     panel.setCharacterImage(frames.get(i));
                     try {

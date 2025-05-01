@@ -21,9 +21,14 @@ public enum Keyword {
     RETREAT("retreat"),
 
     /**
-     * idle animation (the character will stand in a position).
+     * idle animation to the right (the character will stand in a position).
      */
     STOP("stop"),
+
+    /**
+     * idle animation to the left (designed for the hero).
+     */
+    STOP_LEFT("stop_left"),
 
     /**
      * death animation.
