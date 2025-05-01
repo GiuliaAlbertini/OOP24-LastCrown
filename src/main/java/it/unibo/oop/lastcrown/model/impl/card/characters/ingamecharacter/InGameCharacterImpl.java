@@ -12,7 +12,7 @@ public class InGameCharacterImpl implements InGameCharacter {
     private int maximumHealth;
     private int attack;
     private double speedMultiplier;
-    private boolean inCombat = false;
+    private boolean inCombat;
     private boolean dead;
 
     /**
@@ -21,7 +21,6 @@ public class InGameCharacterImpl implements InGameCharacter {
      * @param health the health value of this character
      * @param attack the attack value of this character
      * @param speedMultiplier the speed multiplier of this character
-     * @param inCombat True to be considered in combat, False otherwise
      */
     public InGameCharacterImpl(final String type, final String name,
      final int health, final int attack,
