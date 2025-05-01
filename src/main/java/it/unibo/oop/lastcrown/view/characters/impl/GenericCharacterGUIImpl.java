@@ -119,8 +119,11 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
         this.startAnimationSequence(runImages, Keyword.RUN_RIGHT);
     }
 
+    /**
+     * This method is designed to be overridable by the HeroGUI implementation.
+     */
     @Override
-    public final void startStopLoop() {
+    public void startStopLoop() {
         this.startAnimationSequence(stopImages, Keyword.STOP);
     }
 
