@@ -110,13 +110,17 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
         this.animationPanel.setHealthBarImage(percentage);
     }
 
+     /**
+     * This method is designed to be overridable because some 
+     * characters run to the right and the enemies run to the left.
+     */
     @Override
-    public final void startRunLoop() {
+    public void startRunLoop() {
         this.startAnimationSequence(runImages, Keyword.RUN_RIGHT);
     }
 
     @Override
-    public final  void startStopLoop() {
+    public final void startStopLoop() {
         this.startAnimationSequence(stopImages, Keyword.STOP);
     }
 
