@@ -55,4 +55,22 @@ public final class ImageLoader {
         }
         return image;
     }
+
+    /**
+     * Resizes the images of the given list.
+     * @param frames the list of the images to be resized
+     * @param newWidth new horizontal dimension of the images
+     * @param newHeight new vertical dimension of the images
+     * @return a new list of buffered image with the specified size
+     */
+    public static List<BufferedImage> resizeFrames(final List<BufferedImage> frames, final int newWidth, final int newHeight) {
+        for (int i = 0; i < frames.size(); i++) {
+            final BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, frames.get(i).getType());
+            final Graphics2D g2d = resizedImage.createGraphics();
+            g2d.drawImage(frames.get(i), 0, 0, newWidth, newHeight, null);
+            g2d.dispose();
+            frames.set(i, resizedImage);
+        }
+        return frames;
+    }
 }
