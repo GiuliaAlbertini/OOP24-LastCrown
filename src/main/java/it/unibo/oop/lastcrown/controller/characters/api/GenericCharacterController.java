@@ -8,7 +8,7 @@ import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
 /**
  * A controller that handles the behaviour of a single Generic Character in game.
  */
-public interface GenericCharacterController extends CharacterAttackObserver {
+public interface GenericCharacterController extends CharacterAttackObserver, CharacterHitObserver {
     /**
      * @return this controller id
      */
@@ -44,10 +44,10 @@ public interface GenericCharacterController extends CharacterAttackObserver {
 
     /**
      * Set this character controller current opponent.
-     * @param opponent this character controller new opponent
-     * @throws NullPointerException if the given opponent is null
+     * @param opponentObserver the opponent observer
+     * @throws NullPointerException if the given opponent observer is null
      */
-    void setOpponent(GenericCharacterController opponent);
+    void setOpponent(CharacterHitObserver opponentObserver);
 
     /**
      * Must be called after setting one opponent.
@@ -55,15 +55,6 @@ public interface GenericCharacterController extends CharacterAttackObserver {
      * @throws NullPointerException if the actual opponent is null
      */
     void startAttacking();
-
-    /**
-     * The linked in game character will take a hit.
-     * The amount of damage is specified by the param.
-     * If the health percentage will become 0, this controller
-     * will start the death sequence.
-     * @param damage the amount of damage this linked character will take.
-     */
-    void takeHit(int damage);
 
     /**
      * The linked character health will be restore.
