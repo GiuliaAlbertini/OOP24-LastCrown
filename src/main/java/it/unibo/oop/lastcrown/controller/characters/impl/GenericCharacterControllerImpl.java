@@ -12,13 +12,11 @@ import it.unibo.oop.lastcrown.model.api.card.characters.GenericCharacter;
 import it.unibo.oop.lastcrown.model.api.card.characters.InGameCharacter;
 import it.unibo.oop.lastcrown.model.impl.card.characters.ingamecharacter.InGameCharacterFactory;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
-import it.unibo.oop.lastcrown.view.characters.impl.EnemyGUIImpl;
-import it.unibo.oop.lastcrown.view.characters.impl.PlayableCharacterGUIImpl;
 
 /**
  * A standard implementation of CharacterController interface.
  */
-public class GenericCharacterControllerImpl implements GenericCharacterController {
+public abstract class GenericCharacterControllerImpl implements GenericCharacterController {
     private GenericCharacterGUI view;
     private final InGameCharacter character;
     private CharacterHitObserver opponent;
@@ -60,15 +58,7 @@ public class GenericCharacterControllerImpl implements GenericCharacterControlle
      * @param height the width of the new animation panel 
      * @return new linked character GUI.
      */
-     public GenericCharacterGUI createView(final int width, final int height) {
-        if ("enemy".equals(character.getType())) {
-            return  new EnemyGUIImpl(this, character.getType(), character.getName(),
-            character.getSpeedMultiplier(), width, height);
-        } else {
-            return new PlayableCharacterGUIImpl(this, character.getType(), character.getName(),
-            character.getSpeedMultiplier(), width, height);
-        }
-    }
+    public abstract GenericCharacterGUI createView(int width, int height);
 
     @Override
     public final void setCharacterPanelPosition(final JPanel matchPanel, final int initialX, final int initialY) {
