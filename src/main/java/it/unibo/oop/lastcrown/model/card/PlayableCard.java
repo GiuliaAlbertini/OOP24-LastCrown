@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.model.api.card;
+package it.unibo.oop.lastcrown.model.card;
 
 /**
  * A card that can be played during the match (Playable Character os Spell).

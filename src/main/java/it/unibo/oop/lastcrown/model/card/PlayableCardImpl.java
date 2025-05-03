@@ -1,6 +1,4 @@
-package it.unibo.oop.lastcrown.model.impl.card;
-
-import it.unibo.oop.lastcrown.model.api.card.PlayableCard;
+package it.unibo.oop.lastcrown.model.card;
 
 /**
  * the implementation of Card interface.
