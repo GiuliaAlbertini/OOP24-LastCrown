@@ -23,8 +23,7 @@ public class InGameCharacterImpl implements InGameCharacter {
      * @param speedMultiplier the speed multiplier of this character
      */
     public InGameCharacterImpl(final String type, final String name,
-     final int health, final int attack,
-     final double speedMultiplier) {
+     final int health, final int attack, final double speedMultiplier) {
         this.type = type;
         this.name = name;
         this.currentHealth = health;
