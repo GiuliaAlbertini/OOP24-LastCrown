@@ -82,6 +82,10 @@ final class TestInGameCharacter {
         assertEquals(expectation1, this.character.getAttack());
         this.character.changeAttack(-lesserVariation);
         assertEquals(expectation2, this.character.getAttack());
+        this.character.changeAttack(-(lesserVariation + majorVariation));
+        assertEquals(0, this.character.getAttack());
+        this.character.changeAttack(-majorVariation);
+        assertEquals(0, this.character.getAttack());
     }
 
     /**
