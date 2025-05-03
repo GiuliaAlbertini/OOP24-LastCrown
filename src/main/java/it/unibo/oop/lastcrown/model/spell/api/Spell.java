@@ -1,8 +1,8 @@
-package it.unibo.oop.lastcrown.model.api.card.spell;
+package it.unibo.oop.lastcrown.model.spell.api;
 
 import java.util.Optional;
 
-import it.unibo.oop.lastcrown.model.api.card.PlayableCard;
+import it.unibo.oop.lastcrown.model.card.PlayableCard;
 
 /**
  * A spell that can be played during the match. It affects the different characters involved 

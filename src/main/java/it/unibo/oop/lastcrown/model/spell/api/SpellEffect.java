@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.model.api.card.spell;
+package it.unibo.oop.lastcrown.model.spell.api;
 
 import java.util.Optional;
 

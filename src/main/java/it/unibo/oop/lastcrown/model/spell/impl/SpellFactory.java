@@ -1,9 +1,9 @@
-package it.unibo.oop.lastcrown.model.impl.card.spell;
+package it.unibo.oop.lastcrown.model.spell.impl;
 
 import java.util.Optional;
 
-import it.unibo.oop.lastcrown.model.api.card.spell.Spell;
-import it.unibo.oop.lastcrown.model.api.card.spell.SpellEffect;
+import it.unibo.oop.lastcrown.model.spell.api.Spell;
+import it.unibo.oop.lastcrown.model.spell.api.SpellEffect;
 
 /**
  * It creates a new spell with the specified params.
