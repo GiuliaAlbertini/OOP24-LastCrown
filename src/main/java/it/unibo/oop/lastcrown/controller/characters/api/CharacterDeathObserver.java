@@ -12,4 +12,3 @@ public interface CharacterDeathObserver {
      */
     void notifyDeath(CardIdentifier id);
 }
-
