@@ -1,6 +1,6 @@
-package it.unibo.oop.lastcrown.model.impl.card.characters.ingamecharacter;
+package it.unibo.oop.lastcrown.model.characters.impl.ingamecharacter;
 
-import it.unibo.oop.lastcrown.model.api.card.characters.InGameCharacter;
+import it.unibo.oop.lastcrown.model.characters.api.InGameCharacter;
 
 /**
  * Create a InGameCharacter with the specified parameters.

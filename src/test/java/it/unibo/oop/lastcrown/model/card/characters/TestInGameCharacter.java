@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import it.unibo.oop.lastcrown.model.api.card.characters.InGameCharacter;
-import it.unibo.oop.lastcrown.model.impl.card.characters.ingamecharacter.InGameCharacterFactory;
+import it.unibo.oop.lastcrown.model.characters.api.InGameCharacter;
+import it.unibo.oop.lastcrown.model.characters.impl.ingamecharacter.InGameCharacterFactory;
 
 /**
  * A simple test of InGameCharacter implementation.

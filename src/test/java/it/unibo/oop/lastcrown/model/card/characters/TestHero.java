@@ -6,10 +6,10 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import it.unibo.oop.lastcrown.model.api.card.characters.Hero;
-import it.unibo.oop.lastcrown.model.api.card.characters.PassiveEffect;
-import it.unibo.oop.lastcrown.model.api.card.characters.Requirement;
-import it.unibo.oop.lastcrown.model.impl.card.characters.hero.HeroFactory;
+import it.unibo.oop.lastcrown.model.characters.api.Hero;
+import it.unibo.oop.lastcrown.model.characters.api.PassiveEffect;
+import it.unibo.oop.lastcrown.model.characters.api.Requirement;
+import it.unibo.oop.lastcrown.model.characters.impl.hero.HeroFactory;
 
 /**
  * A simple test of Hero interface.

@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import it.unibo.oop.lastcrown.model.api.card.characters.GenericCharacter;
-import it.unibo.oop.lastcrown.model.impl.card.characters.GenericCharacterImpl;
+import it.unibo.oop.lastcrown.model.characters.api.GenericCharacter;
+import it.unibo.oop.lastcrown.model.characters.impl.GenericCharacterImpl;
 
 /**
  * A simple test of GenericCharacterImpl class.

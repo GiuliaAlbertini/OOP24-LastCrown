@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import it.unibo.oop.lastcrown.model.api.card.characters.PlayableCharacter;
-import it.unibo.oop.lastcrown.model.impl.card.characters.playablecharacter.PlayableCharacterFactory;
+import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
+import it.unibo.oop.lastcrown.model.characters.impl.playablecharacter.PlayableCharacterFactory;
 
 /**
  * Tests PlayableCharacter implementation and factory.

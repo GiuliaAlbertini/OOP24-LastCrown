@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.model.api.card;
+package it.unibo.oop.lastcrown.model.card;
 
 /**
  * Identifies all the cards of this app (characters or spells).

@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.model.api.card.characters;
+package it.unibo.oop.lastcrown.model.characters.api;
 
 /**
  * The passive effect of the Hero. It affects the other friendly characters involved in the match.
