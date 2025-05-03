@@ -49,4 +49,14 @@ public final class CharacterPathLoader {
         }
         return paths;
     }
+
+    /**
+     * @param charType the character type
+     * @param charName the character name
+     * @return the icon corresponding to the given character type and name
+     */
+    public static synchronized String loadIconPath(final String charType, final String charName) {
+        return "src" + SEP + "main" + SEP + "resources" + SEP + "pngs"
+         + SEP + charType + SEP + charName + SEP + "icon" + ".png";
+    }
 }
