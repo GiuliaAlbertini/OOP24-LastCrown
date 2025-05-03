@@ -11,7 +11,7 @@ public interface BossController extends GenericCharacterController {
      * Add a set of opponents to this boss.
      * @param opponents the set of opponents to be add
      */
-    void setOpponents(Set<GenericCharacterController> opponents);
+    void setOpponents(Set<CharacterHitObserver> opponents);
 
     /**
      * Remove one opponent specified by the given id from this boss.

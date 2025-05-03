@@ -8,24 +8,20 @@ import javax.swing.JPanel;
 public interface HeroController extends GenericCharacterController {
 
     /**
-     * Set the panel where hero must appear and his new position (centered).
-     * @param x horizontal position of the hero animation panel
-     * @param y vertical position of the hero animation panel
-     * @param width width of the hero animation panel
-     * @param height height of the hero animation panel
-     * @param panel the new panel where hero must appear
+     * Dispose the graphic components of this hero to be in the Match View.
+     * @param matchPanel the panel where the match takes place
+     * @param initialX the initial horizontal coordinate of the animation panel(centered on the given value)
+     * @param initialY the initial vertical coordinate of the animation panel(centered on the given value)
      */
-    void setCurrentPanel(int x, int y, int width, int height, JPanel panel);
+    void setHeroInGame(JPanel matchPanel, int initialX, int initialY);
 
     /**
-     * Dispose the graphic components of this hero to be in the Match Panel.
+     * Dispose the graphic components of this hero to be in the Shop View.
+     * @param shopPanel the panel corresponding to the shop
+     * @param initialX the initial horizontal coordinate of the animation panel(centered on the given value)
+     * @param initialY the initial vertical coordinate of the animation panel(centered on the given value)
      */
-    void setHeroInGame();
-
-    /**
-     * Dispose the graphic components of this hero to be in the Match panel.
-     */
-    void setHeroInShop();
+    void setHeroInShop(JPanel shopPanel, int initialX, int initialY);
 
     /**
      * Make this hero run to left.
