@@ -44,7 +44,7 @@ public interface GenericCharacterController extends CharacterAttackObserver, Cha
 
     /**
      * Set this character controller current opponent.
-     * @param opponentObserver this character controller new opponent
+     * @param opponentObserver the opponent observer
      * @throws NullPointerException if the given opponent observer is null
      */
     void setOpponent(CharacterHitObserver opponentObserver);
