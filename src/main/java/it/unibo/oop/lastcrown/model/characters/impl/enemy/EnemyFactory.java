@@ -1,6 +1,6 @@
-package it.unibo.oop.lastcrown.model.impl.card.characters.enemy;
+package it.unibo.oop.lastcrown.model.characters.impl.enemy;
 
-import it.unibo.oop.lastcrown.model.api.card.characters.Enemy;
+import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 
 /**
  * Creates a Enemy with the specified parameters.

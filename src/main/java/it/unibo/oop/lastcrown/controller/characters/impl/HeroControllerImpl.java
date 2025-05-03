@@ -4,7 +4,7 @@ import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
-import it.unibo.oop.lastcrown.model.api.card.characters.Hero;
+import it.unibo.oop.lastcrown.model.characters.api.Hero;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
 import it.unibo.oop.lastcrown.view.characters.api.HeroGUI;
 import it.unibo.oop.lastcrown.view.characters.impl.HeroGUIImpl;

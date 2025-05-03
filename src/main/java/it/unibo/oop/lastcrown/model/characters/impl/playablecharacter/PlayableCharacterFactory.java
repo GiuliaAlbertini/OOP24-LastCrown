@@ -1,6 +1,6 @@
-package it.unibo.oop.lastcrown.model.impl.card.characters.playablecharacter;
+package it.unibo.oop.lastcrown.model.characters.impl.playablecharacter;
 
-import it.unibo.oop.lastcrown.model.api.card.characters.PlayableCharacter;
+import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 
 /**
  * Creates a Playable Character with the specified params.

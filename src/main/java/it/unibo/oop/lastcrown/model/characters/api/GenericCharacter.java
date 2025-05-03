@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.model.api.card.characters;
+package it.unibo.oop.lastcrown.model.characters.api;
 
 /**
  * A generic character represented in one Card.

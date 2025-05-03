@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.model.api.card.characters;
+package it.unibo.oop.lastcrown.model.characters.api;
 
 /**
  * the Requirement to own a specific Hero.

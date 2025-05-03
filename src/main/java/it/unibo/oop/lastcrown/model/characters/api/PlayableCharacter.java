@@ -1,6 +1,6 @@
-package it.unibo.oop.lastcrown.model.api.card.characters;
+package it.unibo.oop.lastcrown.model.characters.api;
 
-import it.unibo.oop.lastcrown.model.api.card.PlayableCard;
+import it.unibo.oop.lastcrown.model.card.PlayableCard;
 
 /**
  * A character that can be played during a match.

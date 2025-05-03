@@ -1,10 +1,10 @@
-package it.unibo.oop.lastcrown.model.impl.card.characters.hero;
+package it.unibo.oop.lastcrown.model.characters.impl.hero;
 
 import java.util.Optional;
 
-import it.unibo.oop.lastcrown.model.api.card.characters.Hero;
-import it.unibo.oop.lastcrown.model.api.card.characters.PassiveEffect;
-import it.unibo.oop.lastcrown.model.api.card.characters.Requirement;
+import it.unibo.oop.lastcrown.model.characters.api.Hero;
+import it.unibo.oop.lastcrown.model.characters.api.PassiveEffect;
+import it.unibo.oop.lastcrown.model.characters.api.Requirement;
 
 /**
  * Creates a Hero with the specified params.

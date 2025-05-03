@@ -1,7 +1,7 @@
-package it.unibo.oop.lastcrown.model.impl.card.characters.enemy;
+package it.unibo.oop.lastcrown.model.characters.impl.enemy;
 
-import it.unibo.oop.lastcrown.model.api.card.characters.Enemy;
-import it.unibo.oop.lastcrown.model.impl.card.characters.GenericCharacterImpl;
+import it.unibo.oop.lastcrown.model.characters.api.Enemy;
+import it.unibo.oop.lastcrown.model.characters.impl.GenericCharacterImpl;
 
 /**
  * A standard implementation of Enemy interface.

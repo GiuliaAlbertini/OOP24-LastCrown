@@ -1,6 +1,6 @@
 package it.unibo.oop.lastcrown.controller.characters.api;
 
-import it.unibo.oop.lastcrown.model.api.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 
 /**
  * A simple observer that notifies the main controller about the death of a character.

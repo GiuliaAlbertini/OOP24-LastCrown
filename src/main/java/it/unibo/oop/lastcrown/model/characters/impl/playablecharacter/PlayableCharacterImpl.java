@@ -1,7 +1,7 @@
-package it.unibo.oop.lastcrown.model.impl.card.characters.playablecharacter;
+package it.unibo.oop.lastcrown.model.characters.impl.playablecharacter;
 
-import it.unibo.oop.lastcrown.model.api.card.characters.PlayableCharacter;
-import it.unibo.oop.lastcrown.model.impl.card.characters.GenericCharacterImpl;
+import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
+import it.unibo.oop.lastcrown.model.characters.impl.GenericCharacterImpl;
 
 /**
  * A standard implementation of Playable Character interface.

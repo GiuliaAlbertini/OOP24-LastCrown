@@ -2,7 +2,7 @@ package it.unibo.oop.lastcrown.controller.characters.api;
 
 import javax.swing.JPanel;
 
-import it.unibo.oop.lastcrown.model.api.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
 
 /**

@@ -1,6 +1,6 @@
-package it.unibo.oop.lastcrown.model.impl.card.characters;
+package it.unibo.oop.lastcrown.model.characters.impl;
 
-import it.unibo.oop.lastcrown.model.api.card.characters.GenericCharacter;
+import it.unibo.oop.lastcrown.model.characters.api.GenericCharacter;
 
 /**
  * A standard implementation of GenericCharacter interface.

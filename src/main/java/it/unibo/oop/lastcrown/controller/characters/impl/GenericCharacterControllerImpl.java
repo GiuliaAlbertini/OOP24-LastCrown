@@ -7,10 +7,10 @@ import javax.swing.JPanel;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
-import it.unibo.oop.lastcrown.model.api.card.CardIdentifier;
-import it.unibo.oop.lastcrown.model.api.card.characters.GenericCharacter;
-import it.unibo.oop.lastcrown.model.api.card.characters.InGameCharacter;
-import it.unibo.oop.lastcrown.model.impl.card.characters.ingamecharacter.InGameCharacterFactory;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.characters.api.GenericCharacter;
+import it.unibo.oop.lastcrown.model.characters.api.InGameCharacter;
+import it.unibo.oop.lastcrown.model.characters.impl.ingamecharacter.InGameCharacterFactory;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
 
 /**
