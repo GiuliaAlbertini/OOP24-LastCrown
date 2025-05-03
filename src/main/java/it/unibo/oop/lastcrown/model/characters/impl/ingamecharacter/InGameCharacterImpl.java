@@ -85,6 +85,9 @@ public class InGameCharacterImpl implements InGameCharacter {
     @Override
     public final void changeAttack(final int variation) {
         this.attack = this.attack + variation;
+        if (this.attack < 0) {
+            this.attack = 0;
+        }
     }
 
     @Override
