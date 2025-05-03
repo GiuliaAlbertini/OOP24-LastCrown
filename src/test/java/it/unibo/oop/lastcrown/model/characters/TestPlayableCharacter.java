@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.model.card.characters;
+package it.unibo.oop.lastcrown.model.characters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
