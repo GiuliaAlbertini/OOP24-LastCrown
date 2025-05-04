@@ -57,6 +57,27 @@ public interface GenericCharacterController extends CharacterAttackObserver, Cha
     void startAttacking();
 
     /**
+     * Applies a variation to the actual character attack value.
+     * @param variation the amount of attack variation. Can be positive
+     * to increase the attack or negative to decrease it
+     */
+    void setAttackValue(int variation);
+
+    /**
+     * Applies a variation to the actual character maximum health value.
+     * @param variation the amount of health variation. Can be positive
+     * to increase the maximum health or negative to decrease it
+     */
+    void setMaximumHealthValue(int variation);
+
+    /**
+     * Applies a variation to the actual character speed multiplier value.
+     * @param variation the amount of speedMultiplier variation. Can be positive
+     * to increase the speed multiplier or negative to decrease it
+     */
+    void setSpeedMultiplierValue(double variation);
+
+    /**
      * The linked character health will be restore.
      * The amount of healing is specified by the param.
      * @param cure the amount of healing this linked character will take.

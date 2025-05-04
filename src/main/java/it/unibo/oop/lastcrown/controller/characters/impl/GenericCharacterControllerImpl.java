@@ -105,6 +105,21 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
         this.view.setHealthPercentage(this.character.getHealthPercentage());
     }
 
+    @Override
+    public final synchronized void setAttackValue(final int variation) {
+        this.character.changeAttack(variation);
+    }
+
+    @Override
+    public final synchronized void setMaximumHealthValue(final int variation) {
+        this.character.changeMaximumHealth(variation);
+    }
+
+    @Override
+    public final synchronized void setSpeedMultiplierValue(final double variation) {
+        this.character.changeSpeedMultiplier(variation);
+    }
+
     /**
      * Start this character death sequence and notify the main controller of this character death.
      */
