@@ -23,7 +23,7 @@ public class HeroesParser implements Parser<Map<CardIdentifier, Hero>> {
     private static final String TYPE_HERO = "hero";
 
     /**
-     * Parses each string of {@code lines} into an {@link Entry} <{@link CardIdentifier}, {@Hero}>.
+     * Parses each string of {@code lines} into an {@link Entry} <{@link CardIdentifier}, {@link Hero}>.
      * It returns a {@link Map} of those entries.
      * Assumes that every line is in the correct format.
      * 
