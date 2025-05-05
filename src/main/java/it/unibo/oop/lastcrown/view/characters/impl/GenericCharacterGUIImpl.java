@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.characters.AnimationHandler;
 import it.unibo.oop.lastcrown.view.characters.CustomLock;
@@ -76,7 +77,7 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
      */
     private CharacterAnimationPanelImpl createAnimationPanel() {
         final Color color;
-        if ("enemy".equals(this.charType)) {
+        if (CardType.ENEMY.get().equals(this.charType) || CardType.BOSS.get().equals(this.charType)) {
             color = Color.RED;
         } else {
             color = Color.GREEN;

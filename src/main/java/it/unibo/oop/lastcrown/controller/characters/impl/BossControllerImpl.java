@@ -7,6 +7,7 @@ import java.util.Set;
 import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
 import it.unibo.oop.lastcrown.view.characters.impl.EnemyGUIImpl;
@@ -26,7 +27,7 @@ public class BossControllerImpl extends GenericCharacterControllerImpl implement
      * @param boss the Generic character linked to this controller
      */
     public BossControllerImpl(final CharacterDeathObserver obs, final int id, final Enemy boss) {
-        super(obs, id, boss, "boss");
+        super(obs, id, boss, CardType.BOSS.get());
         this.charName = boss.getName();
         this.speedMultiplier = boss.getSpeedMultiplier();
     }

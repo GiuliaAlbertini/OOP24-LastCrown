@@ -5,6 +5,7 @@ import java.awt.Image;
 
 import javax.swing.JPanel;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.characters.CharacterHealthBar;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAnimationPanel;
 
@@ -53,7 +54,7 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
 
     @Override
     public void setHealthBarAlignment() {
-        if ("enemy".equals(this.charType) || "boss".equals(this.charType)) {
+        if (CardType.ENEMY.get().equals(this.charType) || CardType.BOSS.get().equals(this.charType)) {
             this.healthBar.setBounds((int) (this.getWidth() * (1 - BAR_WIDTH_RESIZE)),
              this.getHeight() / BAR_HEIGHT_DIVISOR,
             (int) (this.getWidth() * BAR_WIDTH_RESIZE), this.healthBar.getHeight());

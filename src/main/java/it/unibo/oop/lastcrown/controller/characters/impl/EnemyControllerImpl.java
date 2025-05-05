@@ -2,6 +2,7 @@ package it.unibo.oop.lastcrown.controller.characters.impl;
 
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.view.characters.api.EnemyGUI;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
@@ -22,7 +23,7 @@ public class EnemyControllerImpl extends GenericCharacterControllerImpl implemen
      * @param enemy the enemy linked to this controller
      */
     public EnemyControllerImpl(final CharacterDeathObserver obs, final int id, final Enemy enemy) {
-        super(obs, id, enemy, "enemy");
+        super(obs, id, enemy, CardType.ENEMY.get());
         this.charName = enemy.getName();
         this.speedMultiplier = enemy.getSpeedMultiplier();
         this.view = null;
@@ -30,7 +31,7 @@ public class EnemyControllerImpl extends GenericCharacterControllerImpl implemen
 
     @Override
     public final GenericCharacterGUI createView(final int width, final int height) {
-        final EnemyGUI newView = new EnemyGUIImpl(this, "enemy", this.charName,
+        final EnemyGUI newView = new EnemyGUIImpl(this, CardType.ENEMY.get(), this.charName,
         this.speedMultiplier, width, height);
         this.view = newView;
         return newView;

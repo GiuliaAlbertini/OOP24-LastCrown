@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Hero;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
 import it.unibo.oop.lastcrown.view.characters.api.HeroGUI;
@@ -23,7 +24,7 @@ public class HeroControllerImpl extends GenericCharacterControllerImpl implement
      * @param hero the ehero linked to this controller
      */
     public HeroControllerImpl(final CharacterDeathObserver obs, final int id, final Hero hero) {
-        super(obs, id, hero, "hero");
+        super(obs, id, hero, CardType.HERO.get());
         this.view = null;
         this.charName = hero.getName();
         this.speedMultiplier = hero.getSpeedMultiplier();

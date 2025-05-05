@@ -3,6 +3,7 @@ package it.unibo.oop.lastcrown.view.characters.impl;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
@@ -31,7 +32,7 @@ public class HeroGUIImpl extends GenericCharacterGUIImpl implements HeroGUI {
      */
     public HeroGUIImpl(final CharacterAttackObserver obs, final String charName,
      final Double speedMultiplier, final int width, final int height) {
-        super(obs, "hero", charName, speedMultiplier, width, height);
+        super(obs, CardType.HERO.get(), charName, speedMultiplier, width, height);
         this.width = width;
         this.height = height;
         this.widthVariation = (int) (this.width * RESIZE_SCALE);
