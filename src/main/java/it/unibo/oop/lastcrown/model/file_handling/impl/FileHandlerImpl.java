@@ -1,10 +1,13 @@
 package it.unibo.oop.lastcrown.model.file_handling.impl;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,10 +79,26 @@ public class FileHandlerImpl<T> implements FileHandler<T> {
         }
     }
 
+    /**
+     * Writes an object of type T to the file named "name.txt" in the base directory.
+     *
+     * @param name the key used to build the file name.
+     * @param object the object to write.
+     */
     @Override
-    public void writeToFile(final String fileName, final Object object) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'writeToFile'");
+    public void writeToFile(final String name, final T object) {
+        final String fileName = name + ".txt";
+        final File file = new File(baseDirectory, fileName);
+        final List<String> content = serializer.serialize(object);
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            for (final String line : content) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (final IOException ex) {
+            LOGGER.log(Level.SEVERE, "Error writing to file: " + file.getAbsolutePath(), ex);
+        }
     }
-
 }
