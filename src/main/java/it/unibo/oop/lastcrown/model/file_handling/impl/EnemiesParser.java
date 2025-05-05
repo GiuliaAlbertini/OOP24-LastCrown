@@ -21,6 +21,7 @@ public class EnemiesParser implements Parser<List<List<Enemy>>> {
     private static final String TYPE_BOSS = "boss";
 
     /**
+     * Parses {@link Enemy} from each line of {@code lines}.
      * Returns a list of 4 lists, where each sublist contains enemies of a specific rank (1-4).
      * Assumes that every line is in the correct format.
      * 

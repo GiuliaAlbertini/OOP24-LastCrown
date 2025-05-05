@@ -14,7 +14,7 @@ import it.unibo.oop.lastcrown.model.characters.impl.hero.HeroFactory;
 import it.unibo.oop.lastcrown.model.file_handling.api.Parser;
 
 /**
- * Implementation of a {@link Parser} for the {@link Hero}.
+ * Implementation of a {@link Parser} for the {@link Hero} file.
  */
 public class HeroesParser implements Parser<Map<CardIdentifier, Hero>> {
 
@@ -25,6 +25,7 @@ public class HeroesParser implements Parser<Map<CardIdentifier, Hero>> {
     /**
      * Parses each string of {@code lines} into an {@link Entry} <{@link CardIdentifier}, {@Hero}>.
      * It returns a {@link Map} of those entries.
+     * Assumes that every line is in the correct format.
      * 
      * @param lines the lines to parse
      * @return a map of the entries produced
