@@ -1,0 +1,45 @@
+package it.unibo.oop.lastcrown.model.user.impl;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.user.api.CompleteCollection;
+import it.unibo.oop.lastcrown.model.user.api.UserCollection;
+
+/**
+ * Implementation of a {@link UserCollection}.
+ */
+public class UserCollectionImpl implements UserCollection {
+
+    private static final CompleteCollection COMPLETE_COLLECTION = new CompleteCollectionImpl();
+    private static final Set<CardIdentifier> INITIAL_SET = computeInitialset();
+
+    private final Set<CardIdentifier> userCollection;
+
+    /**
+     * Constructor for a new {@code UserCollectionImpl}.
+     * It initializes the set {@code userCollection} and add the initial set of {@link CardIdentifier} to it.
+     */
+    public UserCollectionImpl() {
+        this.userCollection = new HashSet<>();
+        this.userCollection.addAll(INITIAL_SET);
+    }
+
+    @Override
+    public final Set<CardIdentifier> getCollection() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getCollection'");
+    }
+
+    @Override
+    public final void addCard(final CardIdentifier newCard) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addCard'");
+    }
+
+    private static Set<CardIdentifier> computeInitialset() {
+        return COMPLETE_COLLECTION.getZeroCostCards();
+    }
+
+}
