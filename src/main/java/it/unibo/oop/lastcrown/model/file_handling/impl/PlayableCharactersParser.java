@@ -17,16 +17,8 @@ public class PlayableCharactersParser implements Parser<Map<CardIdentifier, Play
 
     private static final String REGEX = "\\s*,\\s*";
 
-    /**
-     * Parses each string of {@code lines} into an {@link Entry} <{@link CardIdentifier}, {@link PlayableCharacter}>.
-     * It returns a {@link Map} of those entries.
-     * Assumes that every line is in the correct format.
-     * 
-     * @param lines the lines to parse
-     * @return a map of the entries produced
-     */
     @Override
-    public Map<CardIdentifier, PlayableCharacter> parse(final List<String> lines) {
+    public final Map<CardIdentifier, PlayableCharacter> parse(final List<String> lines) {
         return lines.stream()
                     .map(String::trim)
                     .filter(line -> !line.isEmpty())
