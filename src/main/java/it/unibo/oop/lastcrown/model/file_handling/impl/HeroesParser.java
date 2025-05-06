@@ -22,16 +22,8 @@ public class HeroesParser implements Parser<Map<CardIdentifier, Hero>> {
     private static final String NONE  = "none";
     private static final String TYPE_HERO = "hero";
 
-    /**
-     * Parses each string of {@code lines} into an {@link Entry} <{@link CardIdentifier}, {@link Hero}>.
-     * It returns a {@link Map} of those entries.
-     * Assumes that every line is in the correct format.
-     * 
-     * @param lines the lines to parse
-     * @return a map of the entries produced
-     */
     @Override
-    public Map<CardIdentifier, Hero> parse(final List<String> lines) {
+    public final Map<CardIdentifier, Hero> parse(final List<String> lines) {
         return lines.stream()
             .map(String::trim)
             .filter(line -> !line.isEmpty())
