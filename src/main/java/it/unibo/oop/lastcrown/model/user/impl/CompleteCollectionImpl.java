@@ -1,9 +1,11 @@
 package it.unibo.oop.lastcrown.model.user.impl;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,7 +14,6 @@ import java.util.stream.Stream;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.characters.api.Hero;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
-import it.unibo.oop.lastcrown.model.characters.impl.playablecharacter.PlayableCharacterImpl;
 import it.unibo.oop.lastcrown.model.file_handling.api.ReadOnlyFileHandler;
 import it.unibo.oop.lastcrown.model.file_handling.impl.HeroesParser;
 import it.unibo.oop.lastcrown.model.file_handling.impl.PlayableCharactersParser;
@@ -21,61 +22,78 @@ import it.unibo.oop.lastcrown.model.file_handling.impl.SpellsParser;
 import it.unibo.oop.lastcrown.model.spell.api.Spell;
 import it.unibo.oop.lastcrown.model.user.api.CompleteCollection;
 
+/**
+ * Implementation of a {@link CompleteCollection}.
+ */
 public class CompleteCollectionImpl implements CompleteCollection {
 
     private static final String HEROES = "heroes";
     private static final String PLAYABLE_CHARACTER = "playableCharacters";
     private static final String SPELLS = "spells";
-    private static final String HEROES_PATH = getPath(HEROES);
-    private static final String PC_PATH = getPath(PLAYABLE_CHARACTER);
-    private static final String SPELLS_PATH = getPath(SPELLS);
+    private static final String PATH = getPath();
 
     private final Optional<Map<CardIdentifier, Hero>> heroes;
     private final Optional<Map<CardIdentifier, PlayableCharacter>> playableCharacters;
-    private final Optional<Map<CardIdentifier, Spell>> spells;    
+    private final Optional<Map<CardIdentifier, Spell>> spells;  
     private final List<CardIdentifier> completeCollection;
 
+    /**
+     * Constructor for an object of {@code CompleteCollectionImpl}.
+     * It initializes the maps relative to heroes, plyable characters and spells, 
+     * then creates a List with all the {@link CardIdentifier} in the maps ordered
+     * by their ID number.
+     */
     public CompleteCollectionImpl() {
-        final ReadOnlyFileHandler<Map<CardIdentifier,Hero>> heroesReader =
-            new ReadOnlyFileHandlerImpl<>(new HeroesParser(), HEROES_PATH);
+        final ReadOnlyFileHandler<Map<CardIdentifier, Hero>> heroesReader =
+            new ReadOnlyFileHandlerImpl<>(new HeroesParser(),PATH);
         final ReadOnlyFileHandler<Map<CardIdentifier, PlayableCharacter>> pcReader =
-            new ReadOnlyFileHandlerImpl<>(new PlayableCharactersParser(), PC_PATH);
+            new ReadOnlyFileHandlerImpl<>(new PlayableCharactersParser(), PATH);
         final ReadOnlyFileHandler<Map<CardIdentifier, Spell>> spellsReader =
-            new ReadOnlyFileHandlerImpl<>(new SpellsParser(), SPELLS_PATH);
+            new ReadOnlyFileHandlerImpl<>(new SpellsParser(), PATH);
         this.heroes = heroesReader.readFromFile(HEROES);
         this.playableCharacters = pcReader.readFromFile(PLAYABLE_CHARACTER);
         this.spells = spellsReader.readFromFile(SPELLS);
-        this.completeCollection = createCompleteCollection();        
+        this.completeCollection = createCompleteCollection();      
     }
 
     @Override
-    public List<CardIdentifier> getCompleteCollection() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCompleteCollection'");
+    public final List<CardIdentifier> getCompleteCollection() {
+        return Collections.unmodifiableList(this.completeCollection);
     }
 
     @Override
-    public Set<CardIdentifier> getZeroCostCards() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getZeroCostCards'");
+    public final Set<CardIdentifier> getZeroCostCards() {
+        return Stream.of(this.heroes, this.playableCharacters, this.spells)
+            .filter(Optional::isPresent)
+            .flatMap(optMap -> optMap.get().entrySet().stream())
+            .filter(entry -> {
+                final Object card = entry.getValue();
+                if (card instanceof Hero) {
+                    return ((Hero) card).getRequirement().amount() == 0;
+                } else if (card instanceof PlayableCharacter) {
+                    return ((PlayableCharacter) card).getCost() == 0;
+                } else if (card instanceof Spell) {
+                    return ((Spell) card).getCost() == 0;
+                }
+                return false;
+            })
+            .map(Entry::getKey)
+            .collect(Collectors.toSet());
     }
 
     @Override
-    public Optional<Hero> getHero(final CardIdentifier cardIdentifier) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getHero'");
+    public final Optional<Hero> getHero(final CardIdentifier cardIdentifier) {
+        return this.heroes.flatMap(map -> Optional.ofNullable(map.get(cardIdentifier)));
     }
 
     @Override
-    public Optional<PlayableCharacterImpl> getPlayableCharacter(final CardIdentifier cardIdentifier) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPlayableCharacter'");
+    public final Optional<PlayableCharacter> getPlayableCharacter(final CardIdentifier cardIdentifier) {
+        return this.playableCharacters.flatMap(map -> Optional.ofNullable(map.get(cardIdentifier)));
     }
 
     @Override
-    public Optional<Spell> getSpell(final CardIdentifier cardIdentifier) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSpell'");
+    public final Optional<Spell> getSpell(final CardIdentifier cardIdentifier) {
+        return this.spells.flatMap(map -> Optional.ofNullable(map.get(cardIdentifier)));
     }
 
     private List<CardIdentifier> sortedByNumber(final Set<CardIdentifier> keys) {
@@ -95,7 +113,7 @@ public class CompleteCollectionImpl implements CompleteCollection {
                .toList();
     }
 
-    private static String getPath(final String fileName) {
+    private static String getPath() {
         return "OOP24-LastCrown"
         + File.separator
         + "src"
@@ -106,5 +124,4 @@ public class CompleteCollectionImpl implements CompleteCollection {
         + File.separator
         + "entities";
     }
-
 }
