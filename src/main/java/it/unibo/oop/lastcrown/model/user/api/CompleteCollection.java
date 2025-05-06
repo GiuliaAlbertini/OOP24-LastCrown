@@ -6,7 +6,7 @@ import java.util.Set;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.characters.api.Hero;
-import it.unibo.oop.lastcrown.model.characters.impl.playablecharacter.PlayableCharacterImpl;
+import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.model.spell.api.Spell;
 
 /**
@@ -41,7 +41,7 @@ public interface CompleteCollection {
      * @param cardIdentifier the {@link CardIdentifier} to use
      * @return an {@link Optional} of the requested {@link PlayableCharacter} if it is found, an empty Optional otherwise
      */
-    Optional<PlayableCharacterImpl> getPlayableCharacter(CardIdentifier cardIdentifier);
+    Optional<PlayableCharacter> getPlayableCharacter(CardIdentifier cardIdentifier);
 
     /**
      * Provides a {@link Spell} relative to a given {@link CardIdentifier}.
