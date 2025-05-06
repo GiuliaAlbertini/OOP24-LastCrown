@@ -38,14 +38,8 @@ public class ReadOnlyFileHandlerImpl<T> implements ReadOnlyFileHandler<T> {
         this.baseDirectory = baseDirectory;
     }
 
-    /**
-     * Reads an object of type T from the file named "name.txt" in the base directory.
-     *
-     * @param name the name used to build the file name.
-     * @return an Optional of the object read from the file, or an empty Optional if the file doesn't exist or an error occurs.
-     */
     @Override
-    public Optional<T> readFromFile(final String name) {
+    public final Optional<T> readFromFile(final String name) {
         final String fileName = name + ".txt";
         final File file = new File(baseDirectory, fileName);
         if (!file.exists()) {
