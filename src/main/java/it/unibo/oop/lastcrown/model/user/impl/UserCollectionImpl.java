@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.model.user.impl;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,14 +29,12 @@ public class UserCollectionImpl implements UserCollection {
 
     @Override
     public final Set<CardIdentifier> getCollection() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCollection'");
+        return Collections.unmodifiableSet(this.userCollection);
     }
 
     @Override
     public final void addCard(final CardIdentifier newCard) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addCard'");
+        this.userCollection.add(newCard);
     }
 
     private static Set<CardIdentifier> computeInitialset() {
