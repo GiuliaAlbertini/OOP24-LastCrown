@@ -10,6 +10,8 @@ import java.util.List;
  */
 public final class CharacterPathLoader {
     private static final String SEP = System.getProperty("file.separator");
+    private static final String ICON = "icon";
+    private static final String ICON_GREY = "icon_grey"; 
     private CharacterPathLoader() { }
     /**
      * @param charType the character type
@@ -54,7 +56,7 @@ public final class CharacterPathLoader {
      * @return the icon corresponding to the given character type and name
      */
     public static synchronized String loadIconPath(final String charType, final String charName) {
-        return getGenericCharacterPath(charType, charName, "icon");
+        return getGenericCharacterPath(charType, charName, ICON);
     }
 
      /**
@@ -63,7 +65,16 @@ public final class CharacterPathLoader {
      * @return the grey icon corresponding to the given character type and name
      */
     public static synchronized String loadGreyIconPath(final String charType, final String charName) {
-        return getGenericCharacterPath(charType, charName, "icon_grey");
+        return getGenericCharacterPath(charType, charName, ICON_GREY);
+    }
+
+    /**
+     * @param charType the character type
+     * @return the border corresponding to the given character type
+     */
+    public static synchronized String loadBorderPath(final String charType) {
+        return "src" + SEP + "main" + SEP + "resources" + SEP + "pngs"
+         + SEP + charType + SEP + charType + "_border";
     }
 
     private static String getGenericCharacterPath(final String charType, final String charName, final String keyword) {
