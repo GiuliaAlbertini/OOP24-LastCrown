@@ -34,7 +34,7 @@ public class CompleteCollectionImpl implements CompleteCollection {
 
     private final Optional<Map<CardIdentifier, Hero>> heroes;
     private final Optional<Map<CardIdentifier, PlayableCharacter>> playableCharacters;
-    private final Optional<Map<CardIdentifier, Spell>> spells;  
+    private final Optional<Map<CardIdentifier, Spell>> spells;
     private final List<CardIdentifier> completeCollection;
 
     /**
@@ -45,7 +45,7 @@ public class CompleteCollectionImpl implements CompleteCollection {
      */
     public CompleteCollectionImpl() {
         final ReadOnlyFileHandler<Map<CardIdentifier, Hero>> heroesReader =
-            new ReadOnlyFileHandlerImpl<>(new HeroesParser(),PATH);
+            new ReadOnlyFileHandlerImpl<>(new HeroesParser(), PATH);
         final ReadOnlyFileHandler<Map<CardIdentifier, PlayableCharacter>> pcReader =
             new ReadOnlyFileHandlerImpl<>(new PlayableCharactersParser(), PATH);
         final ReadOnlyFileHandler<Map<CardIdentifier, Spell>> spellsReader =
@@ -53,7 +53,7 @@ public class CompleteCollectionImpl implements CompleteCollection {
         this.heroes = heroesReader.readFromFile(HEROES);
         this.playableCharacters = pcReader.readFromFile(PLAYABLE_CHARACTER);
         this.spells = spellsReader.readFromFile(SPELLS);
-        this.completeCollection = createCompleteCollection();      
+        this.completeCollection = createCompleteCollection();
     }
 
     @Override
@@ -96,9 +96,9 @@ public class CompleteCollectionImpl implements CompleteCollection {
         return this.spells.flatMap(map -> Optional.ofNullable(map.get(cardIdentifier)));
     }
 
-    private List<CardIdentifier> sortedByNumber(final Set<CardIdentifier> keys) {
-        return keys.stream()
-                   .sorted(Comparator.comparingInt(CardIdentifier::number))  
+    private List<CardIdentifier> sortedByNumber(final Set<CardIdentifier> identifiers) {
+        return identifiers.stream()
+                   .sorted(Comparator.comparingInt(CardIdentifier::number))
                    .collect(Collectors.toList());
     }
 
