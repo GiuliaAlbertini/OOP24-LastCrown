@@ -21,16 +21,8 @@ public class SpellsParser implements Parser<Map<CardIdentifier, Spell>> {
     private static final String NONE  = "none";
     private static final String TYPE_SPELL = "spell";
 
-    /**
-     * Parses each string of {@code lines} into an {@link Entry} <{@link CardIdentifier}, {@link Spell}>.
-     * It returns a {@link Map} of those entries.
-     * Assumes that every line is in the correct format.
-     * 
-     * @param lines the lines to parse
-     * @return a map of the entries produced
-     */
     @Override
-    public Map<CardIdentifier, Spell> parse(final List<String> lines) {
+    public final Map<CardIdentifier, Spell> parse(final List<String> lines) {
         return lines.stream()
             .map(String::trim)
             .filter(line -> !line.isEmpty())
