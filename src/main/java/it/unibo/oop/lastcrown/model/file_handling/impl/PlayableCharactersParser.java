@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
-import it.unibo.oop.lastcrown.model.characters.impl.playablecharacter.PlayableCharacterImpl;
+import it.unibo.oop.lastcrown.model.characters.impl.playablecharacter.PlayableCharacterFactory;
 import it.unibo.oop.lastcrown.model.file_handling.api.Parser;
 
 /**
@@ -34,7 +34,7 @@ public class PlayableCharactersParser implements Parser<Map<CardIdentifier, Play
                     .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private Entry<CardIdentifier, PlayableCharacterImpl> createPlayableCharacterEntry(final String line) {
+    private Entry<CardIdentifier, PlayableCharacter> createPlayableCharacterEntry(final String line) {
         final String[] tokens = line.split(REGEX);
         int index = 0;
         final int id = Integer.parseInt(tokens[index]);
@@ -57,7 +57,7 @@ public class PlayableCharactersParser implements Parser<Map<CardIdentifier, Play
         index++;
         final double speedMultiplier = Double.parseDouble(tokens[index]);
 
-        final PlayableCharacterImpl pc = new PlayableCharacterImpl(
+        final PlayableCharacter pc = PlayableCharacterFactory.createPlayableCharacter(
             name,
             type,
             coinCost,
