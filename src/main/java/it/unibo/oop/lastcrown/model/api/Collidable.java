@@ -1,32 +1,22 @@
 package it.unibo.oop.lastcrown.model.api;
 
+import it.unibo.oop.lastcrown.model.characters.api.InGameCharacter;
+
 /**
  * Represents an entity that can be involved in collisions.
- * Each collidable object must have a hitbox, a unique identifier, and a type.
+ * Each collidable object must expose its underlying character data,
+ * which includes its position, hitbox, and other relevant properties.
  */
 public interface Collidable {
 
     /**
-     * Returns the hitbox associated with this object.
-     * The hitbox defines the area used to detect collisions with other objects.
+     * Returns the underlying data of the in-game character associated
+     * with this collidable object. This data includes the character's
+     * hitbox, position, and potentially other attributes useful for
+     * collision resolution and game logic.
      *
-     * @return the Hitbox of the object.
+     * @return InGameCharacter associated with this collidable entity
      */
-    Hitbox getHitbox();
-
-    /**
-     * Returns the unique identifier of the object.
-     * This can be used to distinguish between multiple collidable instances.
-     *
-     * @return an integer representing the object's ID.
-     */
-    int getId();
-
-    /**
-     * Returns the type of the object, e.g., "player", "enemy", "wall".
-     * This is used to determine how collisions should be resolved.
-     *
-     * @return a string representing the object's type.
-     */
-    String getType();
+    InGameCharacter getData();
 }
+
