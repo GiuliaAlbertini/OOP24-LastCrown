@@ -3,8 +3,10 @@ package it.unibo.oop.lastcrown.model.impl;
 import it.unibo.oop.lastcrown.model.api.Point2D;
 import it.unibo.oop.lastcrown.model.api.Vect2D;
 
-public class Point2DImpl implements Point2D {
-        private final double x;
+
+
+public class Point2DImpl implements Point2D{
+    private final double x;
     private final double y;
 
     public Point2DImpl(double x, double y){
@@ -35,4 +37,5 @@ public class Point2DImpl implements Point2D {
     public String toString(){
         return "P2d("+x+", "+y+")";
     }
+
 }
