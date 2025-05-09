@@ -15,6 +15,7 @@ public class PlayableCharacterControllerImpl extends GenericCharacterControllerI
     private final String charName;
     private final String playableCharType;
     private final Double speedMultiplier;
+    private final int actionRange;
 
     /**
      * @param obs the character death observer that communicates with the main controller
@@ -29,6 +30,7 @@ public class PlayableCharacterControllerImpl extends GenericCharacterControllerI
         this.charName = playableChar.getName();
         this.playableCharType = playableChar.getType();
         this.speedMultiplier = playableChar.getSpeedMultiplier();
+        this.actionRange = playableChar.getActionRange();
     }
 
     @Override
@@ -52,5 +54,10 @@ public class PlayableCharacterControllerImpl extends GenericCharacterControllerI
     @Override
     public final void jumpForward() {
         this.view.startJumpForwardSequence();
+    }
+
+    @Override
+    public final int getActionRange() {
+        return this.actionRange;
     }
 }
