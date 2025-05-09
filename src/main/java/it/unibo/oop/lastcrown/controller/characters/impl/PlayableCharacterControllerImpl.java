@@ -35,7 +35,7 @@ public class PlayableCharacterControllerImpl extends GenericCharacterControllerI
 
     @Override
     public final GenericCharacterGUI createView(final int width, final int height) {
-        final PlayableCharacterGUI newView = new PlayableCharacterGUIImpl(this,
+        final PlayableCharacterGUI newView = new PlayableCharacterGUIImpl(this, this,
          this.playableCharType, this.charName, this.speedMultiplier, width, height);
         this.view = newView;
         return newView;

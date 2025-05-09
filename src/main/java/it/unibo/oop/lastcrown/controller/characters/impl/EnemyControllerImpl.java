@@ -31,7 +31,7 @@ public class EnemyControllerImpl extends GenericCharacterControllerImpl implemen
 
     @Override
     public final GenericCharacterGUI createView(final int width, final int height) {
-        final EnemyGUI newView = new EnemyGUIImpl(this, CardType.ENEMY.get(), this.charName,
+        final EnemyGUI newView = new EnemyGUIImpl(this, this, CardType.ENEMY.get(), this.charName,
         this.speedMultiplier, width, height);
         this.view = newView;
         return newView;

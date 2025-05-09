@@ -32,7 +32,7 @@ public class HeroControllerImpl extends GenericCharacterControllerImpl implement
 
     @Override
     public final GenericCharacterGUI createView(final int width, final int height) {
-        final HeroGUI newView = new HeroGUIImpl(this, this.charName,
+        final HeroGUI newView = new HeroGUIImpl(this, this, this.charName,
         this.speedMultiplier, width, height);
         this.view = newView;
         return newView;

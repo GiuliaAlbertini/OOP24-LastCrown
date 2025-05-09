@@ -34,7 +34,7 @@ public class BossControllerImpl extends GenericCharacterControllerImpl implement
 
     @Override
     public final GenericCharacterGUI createView(final int width, final int height) {
-        return new EnemyGUIImpl(this, "boss", this.charName,
+        return new EnemyGUIImpl(this, this, "boss", this.charName,
         this.speedMultiplier, width, height);
     }
 

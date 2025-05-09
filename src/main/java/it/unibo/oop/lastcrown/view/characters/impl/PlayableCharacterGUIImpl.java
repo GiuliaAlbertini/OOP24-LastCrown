@@ -6,6 +6,7 @@ import java.util.List;
 
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
+import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
 import it.unibo.oop.lastcrown.view.characters.api.PlayableCharacterGUI;
 
 /**
@@ -17,16 +18,17 @@ public class PlayableCharacterGUIImpl extends GenericCharacterGUIImpl implements
     private final List<BufferedImage> jumpForwardImages;
 
     /**
-     * @param obs the observer of the character attacks
-     * @param charType the type of the playable character
+     * @param atckObs the observer of the character attacks
+     * @param movObs the observer of the character movements
+     * @param charType the type of the character
      * @param charName the name of the character
      * @param speedMultiplier the speed multiplier of the character
      * @param width the horizontal size of the character animation panel
      * @param height the vertical size of the character animation panel
      */
-    public PlayableCharacterGUIImpl(final CharacterAttackObserver obs, final String charType,
-     final String charName, final Double speedMultiplier, final int width, final int height) {
-        super(obs, charType, charName, speedMultiplier, width, height);
+    public PlayableCharacterGUIImpl(final CharacterAttackObserver atckObs, final CharacterMovementObserver movObs,
+     final String charType, final String charName, final Double speedMultiplier, final int width, final int height) {
+        super(atckObs, movObs, charType, charName, speedMultiplier, width, height);
 
         this.jumpUpImages = this.getSelectedFrames(Keyword.JUMPUP.get());
         this.jumpDownImages = this.getSelectedFrames(Keyword.JUMPDOWN.get());

@@ -13,6 +13,7 @@ import it.unibo.oop.lastcrown.view.characters.AnimationHandler;
 import it.unibo.oop.lastcrown.view.characters.CustomLock;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
+import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
 import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
 
@@ -36,20 +37,21 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
 
     /**
      * @param atckObs the observer of the character attacks
+     * @param movObs the observer of the character movements
      * @param charType the type of the character
      * @param charName the name of the character
      * @param speedMultiplier the speed multiplier of the character
      * @param width the horizontal size of the character animation panel
      * @param height the vertical size of the character animation panel
      */
-    public GenericCharacterGUIImpl(final CharacterAttackObserver atckObs, final String charType,
-    final String charName, final Double speedMultiplier, final int width, final int height) {
+    public GenericCharacterGUIImpl(final CharacterAttackObserver atckObs, final CharacterMovementObserver movObs,
+     final String charType, final String charName, final Double speedMultiplier, final int width, final int height) {
         this.atckObs = atckObs;
         this.charType = charType;
         this.charName = charName;
         this.charWidth = width;
         this.charHeight = height;
-        this.anHandler = new AnimationHandler(speedMultiplier);
+        this.anHandler = new AnimationHandler(movObs, speedMultiplier);
         this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get());
         this.stopImages = this.getSelectedFrames(Keyword.STOP.get());
         this.deathImages = this.getSelectedFrames(Keyword.DEATH.get());
