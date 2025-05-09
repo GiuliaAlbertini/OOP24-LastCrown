@@ -138,14 +138,14 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
         this.notifyDone();
         new Thread(() -> {
                 int cont = 0;
-                this.lock.acquireLock();
+                this.acquireLock();
                 this.start();
                 while (!done) {
                     this.anHandler.startAnimationSequence(attacksImages.get(cont), Keyword.ATTACK, this.animationPanel);
                     this.observer.doAttack();
                     cont = (cont + 1) % this.attacksImages.size();
                 }
-                this.lock.releaseLock();
+                this.freeLock();
             }).start();
     }
 
@@ -157,7 +157,7 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
     public final void startAnimationSequence(final List<BufferedImage> frames, final Keyword keyword) {
         this.notifyDone();
         new Thread(() -> {
-            this.lock.acquireLock();
+            this.acquireLock();
             this.start();
             switch (keyword) {
                 case Keyword.STOP, Keyword.STOP_LEFT, Keyword.RUN_RIGHT, Keyword.RUN_LEFT, Keyword.RETREAT:
@@ -175,27 +175,29 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
                 this.animationPanel.disposeClosing();
                 this.animationPanel = null;
             }
-            this.lock.releaseLock();
+            this.freeLock();
         }).start();
     }
 
-    /**
-     * Notify the current working thread that
-     * it has to finish doing the animation loop and to release the mutual exclusion.
-     * If no thread currently posess the mutual exclusion it does anything.
-     */
-    public void notifyDone() {
+    @Override
+    public final void notifyDone() {
         this.done = true;
         this.anHandler.stop();
     }
 
-    /**
-     * Set the boolean flag done to false. The current working thread
-     * will start doing the animation loop and it won't stop
-     * until another thread calls the notifyDone() method.
-     */
-    public void start() {
+    @Override
+    public final void start() {
         this.done = false;
         this.anHandler.start();
+    }
+
+    @Override
+    public final void freeLock() {
+        this.lock.releaseLock();
+    }
+
+    @Override
+    public final void acquireLock() {
+        this.lock.acquireLock();
     }
 }

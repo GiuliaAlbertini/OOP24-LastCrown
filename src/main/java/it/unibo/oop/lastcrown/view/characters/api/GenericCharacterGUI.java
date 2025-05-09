@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 /**
  * An interface that handles the graphic side of a generic character.
  */
-public interface GenericCharacterGUI {
+public interface GenericCharacterGUI extends AnimationInterruptor {
     /**
      * Set the size of the animation panel linked to this character GUI.
      * @param newWidth new panel width
