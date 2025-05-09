@@ -63,12 +63,6 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
             (int) (this.getWidth() * BAR_WIDTH_RESIZE), this.healthBar.getHeight());
         }
         this.healthBar.setVisible(true);
-        this.healthBar.repaint();
-    }
-
-    @Override
-    public void setHealthBarPosition() {
-        this.healthBar.setLocation(this.healthBar.getX(), this.healthBar.getY());
     }
 
     @Override
