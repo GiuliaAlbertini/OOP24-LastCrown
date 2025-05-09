@@ -30,8 +30,8 @@ public class PlayableCharacterGUIImpl extends GenericCharacterGUIImpl implements
      final String charType, final String charName, final Double speedMultiplier, final int width, final int height) {
         super(atckObs, movObs, charType, charName, speedMultiplier, width, height);
 
-        this.jumpUpImages = this.getSelectedFrames(Keyword.JUMPUP.get());
-        this.jumpDownImages = this.getSelectedFrames(Keyword.JUMPDOWN.get());
+        this.jumpUpImages = this.getSelectedFrames(Keyword.JUMPUP.get(), charType, charName);
+        this.jumpDownImages = this.getSelectedFrames(Keyword.JUMPDOWN.get(), charType, charName);
         this.jumpForwardImages = new ArrayList<>();
         this.jumpForwardImages.addAll(this.jumpUpImages);
         for (final var frame : jumpDownImages) {

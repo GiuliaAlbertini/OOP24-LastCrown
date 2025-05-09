@@ -28,8 +28,8 @@ public class EnemyGUIImpl extends GenericCharacterGUIImpl implements EnemyGUI {
      final String charType, final String charName, final Double speedMultiplier, final int width, final int height) {
         super(atckObs, movObs, charType, charName, speedMultiplier, width, height);
 
-        this.runImages = this.getSelectedFrames(Keyword.RUN_LEFT.get());
-        this.retreatImages = this.getSelectedFrames(Keyword.RETREAT.get());
+        this.runImages = this.getSelectedFrames(Keyword.RUN_LEFT.get(), charType, charName);
+        this.retreatImages = this.getSelectedFrames(Keyword.RETREAT.get(), charType, charName);
     }
 
     @Override

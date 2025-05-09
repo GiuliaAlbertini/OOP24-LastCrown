@@ -39,10 +39,10 @@ public class HeroGUIImpl extends GenericCharacterGUIImpl implements HeroGUI {
         this.height = height;
         this.widthVariation = (int) (this.width * RESIZE_SCALE);
         this.heightVariation = (int) (this.height * RESIZE_SCALE);
-        this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get());
-        this.runLeftImages = this.getSelectedFrames(Keyword.RUN_LEFT.get());
-        this.stopImages = this.getSelectedFrames(Keyword.STOP.get());
-        this.stopLeftImages = this.getSelectedFrames(Keyword.STOP_LEFT.get());
+        this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get(), CardType.HERO.get(), charName);
+        this.runLeftImages = this.getSelectedFrames(Keyword.RUN_LEFT.get(), CardType.HERO.get(), charName);
+        this.stopImages = this.getSelectedFrames(Keyword.STOP.get(), CardType.HERO.get(), charName);
+        this.stopLeftImages = this.getSelectedFrames(Keyword.STOP_LEFT.get(), CardType.HERO.get(), charName);
     }
 
     @Override

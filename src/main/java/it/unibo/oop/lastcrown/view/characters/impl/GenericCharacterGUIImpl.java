@@ -25,7 +25,6 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
     private volatile int charHeight;
     private final CharacterAttackObserver atckObs;
     private final String charType;
-    private final String charName;
     private final List<BufferedImage> runImages;
     private final  List<BufferedImage> stopImages;
     private final  List<List<BufferedImage>> attacksImages;
@@ -48,13 +47,12 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
      final String charType, final String charName, final Double speedMultiplier, final int width, final int height) {
         this.atckObs = atckObs;
         this.charType = charType;
-        this.charName = charName;
         this.charWidth = width;
         this.charHeight = height;
         this.anHandler = new AnimationHandler(movObs, speedMultiplier);
-        this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get());
-        this.stopImages = this.getSelectedFrames(Keyword.STOP.get());
-        this.deathImages = this.getSelectedFrames(Keyword.DEATH.get());
+        this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get(), charType, charName);
+        this.stopImages = this.getSelectedFrames(Keyword.STOP.get(), charType, charName);
+        this.deathImages = this.getSelectedFrames(Keyword.DEATH.get(), charType, charName);
         final List<List<String>> attackPaths = CharacterPathLoader.loadAttackPaths(charType, charName);
         this.attacksImages = new ArrayList<>();
         for (final var paths : attackPaths) {
@@ -64,11 +62,13 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
 
     /**
      * @param keyword the animation keyword
+     * @param charType the type of the character
+     * @param charName the name of the character
      * @return the frames of this character corresponding to the given keyword
      */
-    public final List<BufferedImage> getSelectedFrames(final String keyword) {
-        return ImageLoader.getAnimationFrames(CharacterPathLoader.loadPaths(this.charType, 
-        this.charName, keyword), this.charWidth, this.charHeight);
+    public final List<BufferedImage> getSelectedFrames(final String keyword, final String charType, final String charName) {
+        return ImageLoader.getAnimationFrames(CharacterPathLoader.loadPaths(charType, charName, keyword),
+         this.charWidth, this.charHeight);
     }
 
     @Override
