@@ -136,4 +136,9 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
     public void doAttack() {
         this.opponent.takeHit(this.character.getAttack());
     }
+
+    @Override
+    public void notifyMovement(final int deltaX, final int deltaY) {
+        //Here will be added some methods call to change the hitbox model.
+    }
 }
