@@ -22,7 +22,7 @@ import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
 public class GenericCharacterGUIImpl implements GenericCharacterGUI {
     private volatile int charWidth;
     private volatile int charHeight;
-    private final CharacterAttackObserver observer;
+    private final CharacterAttackObserver atckObs;
     private final String charType;
     private final String charName;
     private final List<BufferedImage> runImages;
@@ -35,21 +35,20 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
     private volatile boolean done;
 
     /**
-     * @param obs the observer of the character attacks
+     * @param atckObs the observer of the character attacks
      * @param charType the type of the character
      * @param charName the name of the character
      * @param speedMultiplier the speed multiplier of the character
      * @param width the horizontal size of the character animation panel
      * @param height the vertical size of the character animation panel
      */
-    public GenericCharacterGUIImpl(final CharacterAttackObserver obs, final String charType,
+    public GenericCharacterGUIImpl(final CharacterAttackObserver atckObs, final String charType,
     final String charName, final Double speedMultiplier, final int width, final int height) {
-        this.observer = obs;
+        this.atckObs = atckObs;
         this.charType = charType;
         this.charName = charName;
         this.charWidth = width;
         this.charHeight = height;
-        this.animationPanel = this.createAnimationPanel();
         this.anHandler = new AnimationHandler(speedMultiplier);
         this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get());
         this.stopImages = this.getSelectedFrames(Keyword.STOP.get());
@@ -70,12 +69,18 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
         this.charName, keyword), this.charWidth, this.charHeight);
     }
 
+    @Override
+    public final void createAnimationPanel() {
+        this.animationPanel = this.getAnimationPanel();
+    }
+
     /**
      * Create a new animation panel of this character. 
      * Set the color of the health bar according to this character type.
+     * It's public because it's designed to be overridden by PlayableCharacterGUIImpl.
      * @return new Animation Panel of this character.
      */
-    private CharacterAnimationPanelImpl createAnimationPanel() {
+    public CharacterAnimationPanelImpl getAnimationPanel() {
         final Color color;
         if (CardType.ENEMY.get().equals(this.charType) || CardType.BOSS.get().equals(this.charType)) {
             color = Color.RED;
@@ -135,18 +140,7 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
 
     @Override
     public final void startAttackLoop() {
-        this.notifyDone();
-        new Thread(() -> {
-                int cont = 0;
-                this.acquireLock();
-                this.start();
-                while (!done) {
-                    this.anHandler.startAnimationSequence(attacksImages.get(cont), Keyword.ATTACK, this.animationPanel);
-                    this.observer.doAttack();
-                    cont = (cont + 1) % this.attacksImages.size();
-                }
-                this.freeLock();
-            }).start();
+       this.startAnimationSequence(attacksImages.get(0), Keyword.ATTACK);
     }
 
     /**
@@ -165,10 +159,16 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
                         this.anHandler.startAnimationSequence(frames, keyword, this.animationPanel);
                     }
                     break;
+                case Keyword.ATTACK:
+                    int cont = 0;
+                    while (!done) {
+                        this.anHandler.startAnimationSequence(this.attacksImages.get(cont), keyword, animationPanel);
+                        this.atckObs.doAttack();
+                        cont = (cont + 1) % this.attacksImages.size();
+                    }
+                    break;
                 case Keyword.DEATH, Keyword.JUMPUP, Keyword.JUMPDOWN, Keyword.JUMPFORWARD:
                     this.anHandler.startAnimationSequence(frames, keyword, this.animationPanel);
-                    break;
-                default:
                     break;
             }
             if (Keyword.DEATH.equals(keyword)) {

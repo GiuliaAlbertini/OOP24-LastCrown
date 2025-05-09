@@ -51,6 +51,7 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
     @Override
     public final void attachCharacterAnimationPanel(final int width, final int height) {
         this.view = createView(width, height);
+        this.view.createAnimationPanel();
     }
 
     /**
