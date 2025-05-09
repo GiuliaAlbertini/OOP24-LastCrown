@@ -73,23 +73,24 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
 
     @Override
     public final void createAnimationPanel() {
-        this.animationPanel = this.getAnimationPanel();
+        this.animationPanel = this.getAnimationPanel(this.charType);
     }
 
     /**
      * Create a new animation panel of this character. 
      * Set the color of the health bar according to this character type.
      * It's public because it's designed to be overridden by PlayableCharacterGUIImpl.
+     * @param charType the type of the character
      * @return new Animation Panel of this character.
      */
-    public CharacterAnimationPanelImpl getAnimationPanel() {
+    public CharacterAnimationPanelImpl getAnimationPanel(final String charType) {
         final Color color;
-        if (CardType.ENEMY.get().equals(this.charType) || CardType.BOSS.get().equals(this.charType)) {
+        if (CardType.ENEMY.get().equals(charType) || CardType.BOSS.get().equals(charType)) {
             color = Color.RED;
         } else {
             color = Color.GREEN;
         }
-        return CharacterAnimationPanelImpl.create(charWidth, charHeight, this.charType, color);
+        return CharacterAnimationPanelImpl.create(charWidth, charHeight, charType, color);
     }
 
     @Override

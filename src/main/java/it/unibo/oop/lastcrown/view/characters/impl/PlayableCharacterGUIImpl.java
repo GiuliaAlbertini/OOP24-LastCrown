@@ -1,21 +1,30 @@
 package it.unibo.oop.lastcrown.view.characters.impl;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
 import it.unibo.oop.lastcrown.view.characters.Keyword;
+import it.unibo.oop.lastcrown.view.characters.api.CharacterAnimationPanel;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
+import it.unibo.oop.lastcrown.view.characters.api.Movement;
 import it.unibo.oop.lastcrown.view.characters.api.PlayableCharacterGUI;
 
 /**
  * A standard implementation of PlayableCharacterGUI interface.
  */
 public class PlayableCharacterGUIImpl extends GenericCharacterGUIImpl implements PlayableCharacterGUI {
+    private final List<BufferedImage> runImages;
     private final List<BufferedImage> jumpUpImages;
     private final List<BufferedImage> jumpDownImages;
     private final List<BufferedImage> jumpForwardImages;
+    private final CharacterMovementObserver movObs;
+    private final int panelWidth;
+    private final int panelHeight;
+    private CharacterAnimationPanel animationPanel;
+    private int cont;
 
     /**
      * @param atckObs the observer of the character attacks
@@ -29,7 +38,12 @@ public class PlayableCharacterGUIImpl extends GenericCharacterGUIImpl implements
     public PlayableCharacterGUIImpl(final CharacterAttackObserver atckObs, final CharacterMovementObserver movObs,
      final String charType, final String charName, final Double speedMultiplier, final int width, final int height) {
         super(atckObs, movObs, charType, charName, speedMultiplier, width, height);
-
+        this.cont = 0;
+        this.animationPanel = null;
+        this.movObs = movObs;
+        this.panelWidth = width;
+        this.panelHeight = height;
+        this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get(), charType, charName);
         this.jumpUpImages = this.getSelectedFrames(Keyword.JUMPUP.get(), charType, charName);
         this.jumpDownImages = this.getSelectedFrames(Keyword.JUMPDOWN.get(), charType, charName);
         this.jumpForwardImages = new ArrayList<>();
@@ -37,6 +51,13 @@ public class PlayableCharacterGUIImpl extends GenericCharacterGUIImpl implements
         for (final var frame : jumpDownImages) {
             this.jumpForwardImages.addLast(frame);
         }
+    }
+
+    @Override
+    public final CharacterAnimationPanelImpl getAnimationPanel(final String charType) {
+        final var newPanel = CharacterAnimationPanelImpl.create(panelWidth, panelHeight, charType, Color.GREEN);
+        this.animationPanel = newPanel;
+        return newPanel;
     }
 
     @Override
@@ -52,5 +73,25 @@ public class PlayableCharacterGUIImpl extends GenericCharacterGUIImpl implements
     @Override
     public final void startJumpForwardSequence() {
         this.startAnimationSequence(this.jumpForwardImages, Keyword.JUMPFORWARD);
+    }
+
+    @Override
+    public final void startManualRunningAnimation() {
+        this.notifyDone();
+        this.acquireLock();
+    }
+
+    @Override
+    public final void doSelectedMovement(final Movement movement) {
+        this.animationPanel.setCharacterImage(this.runImages.get(cont));
+        this.animationPanel.setLocation(this.animationPanel.getX() + movement.x(),
+        this.animationPanel.getY() + movement.y());
+        this.movObs.notifyMovement(movement.x(), movement.y());
+        cont = (cont + 1) % this.runImages.size();
+    }
+
+    @Override
+    public final void stopManualRunningAnimation() {
+        this.freeLock();
     }
 }
