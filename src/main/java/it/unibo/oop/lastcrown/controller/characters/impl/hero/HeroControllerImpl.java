@@ -1,9 +1,10 @@
-package it.unibo.oop.lastcrown.controller.characters.impl;
+package it.unibo.oop.lastcrown.controller.characters.impl.hero;
 
 import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
+import it.unibo.oop.lastcrown.controller.characters.impl.GenericCharacterControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Hero;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
