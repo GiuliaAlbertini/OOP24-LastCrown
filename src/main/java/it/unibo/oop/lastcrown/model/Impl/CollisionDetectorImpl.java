@@ -6,11 +6,11 @@ import it.unibo.oop.lastcrown.model.api.Collidable;
 import it.unibo.oop.lastcrown.model.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.api.CollisionManager;
 
-public class CollisionDetector {
+public class CollisionDetectorImpl {
     List<Collidable> object = new ArrayList<>();
     CollisionManager collisionManager;
 
-    public CollisionDetector(CollisionManager collisionManager) {
+    public CollisionDetectorImpl(CollisionManager collisionManager) {
         this.collisionManager= collisionManager;
     }
 

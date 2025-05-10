@@ -1,8 +1,7 @@
 package it.unibo.oop.lastcrown;
 
-import it.unibo.oop.lastcrown.controller.impl.GameControllerImpl;
-import it.unibo.oop.lastcrown.controller.api.GameController;
-import it.unibo.oop.lastcrown.view.MainView;
+import it.unibo.oop.lastcrown.controller.impl.Gameloop;
+import it.unibo.oop.lastcrown.view.api.MainView;
 
 public final class App {
     private App() {
@@ -10,12 +9,9 @@ public final class App {
     }
 
     public static void main(final String[] args) {
-        //creo la vista
-        MainView view = new MainView();
-
-        //Creo il controller, passando la vista come parametro
-        GameController engine = new GameControllerImpl(view);
-        //avvia il game loop
-		engine.run();
+        Gameloop controller = new Gameloop(); // 1. crea controller
+        MainView view = new MainView(controller);                 // 2. crea vista
+        controller.setView(view);                                 // 3. collega vista al controller
+        controller.run();                                         // 4. avvia il gioco
     }
 }
