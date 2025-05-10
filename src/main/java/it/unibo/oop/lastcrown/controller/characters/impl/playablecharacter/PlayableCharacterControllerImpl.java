@@ -1,7 +1,8 @@
-package it.unibo.oop.lastcrown.controller.characters.impl;
+package it.unibo.oop.lastcrown.controller.characters.impl.playablecharacter;
 
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
+import it.unibo.oop.lastcrown.controller.characters.impl.GenericCharacterControllerImpl;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
 import it.unibo.oop.lastcrown.view.characters.api.PlayableCharacterGUI;
