@@ -28,4 +28,9 @@ public interface Deck {
      * @param card the {@link CardIdentifier} to remove
      */
     void removeCard(CardIdentifier card);
+
+    /**
+     * Initializes the first hero to use.
+     */
+    void initHero();
 }
