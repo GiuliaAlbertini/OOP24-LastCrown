@@ -1,35 +1,35 @@
-package it.unibo.oop.lastcrown.model.impl;
+package it.unibo.oop.lastcrown.model.Impl;
 
 import it.unibo.oop.lastcrown.model.api.Vect2D;
 
-public class Vect2Dimpl implements Vect2D {
+public class Vect2DImpl implements Vect2D {
     private final double x;
     private final double y;
 
-    public Vect2Dimpl(double x, double y){
+    public Vect2DImpl(double x, double y){
         this.x=x;
         this.y=y;
     }
     
     @Override
     public Vect2D sum(Vect2D v) {
-        return new Vect2Dimpl(this.x + v.x(), this.y +v.y());
+        return new Vect2DImpl(this.x + v.x(), this.y +v.y());
     }
 
     @Override
     public Vect2D subtract(Vect2D v) {
-       return new Vect2Dimpl(this.x - v.x(), this.y - v.y());
+       return new Vect2DImpl(this.x - v.x(), this.y - v.y());
     }
 
     @Override
     public Vect2D mul(final double factor) {
-        return new Vect2Dimpl(this.x * factor, this.y * factor);
+        return new Vect2DImpl(this.x * factor, this.y * factor);
     }
 
     @Override
     public Vect2D normalized() {
         double module=(double)Math.sqrt(x*x+y*y);
-        return new Vect2Dimpl(x/module,y/module);
+        return new Vect2DImpl(x/module,y/module);
     }
 
     @Override
