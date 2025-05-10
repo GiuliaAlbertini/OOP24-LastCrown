@@ -21,4 +21,11 @@ public interface UserCollection {
      * @param newCard the card to add
      */
     void addCard(CardIdentifier newCard);
+
+    /**
+     * Adds a listener to the collection.
+     * 
+     * @param listener the listener to add
+     */
+    void addListener(UserCollectionListener listener);
 }
