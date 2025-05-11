@@ -80,7 +80,7 @@ public class SpellsParser implements Parser<Map<CardIdentifier, Spell>> {
     private int parseInt(final String token, final String fieldName, final String context) {
         try {
             return Integer.parseInt(token.trim());
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new IllegalArgumentException(
                 "Invalid integer for " + fieldName + " in '" + context + "': '" + token + "'", e
             );
