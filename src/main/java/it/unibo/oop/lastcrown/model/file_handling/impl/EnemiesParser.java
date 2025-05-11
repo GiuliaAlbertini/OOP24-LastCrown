@@ -14,41 +14,81 @@ import it.unibo.oop.lastcrown.model.file_handling.api.Parser;
  * Implementation of a {@link Parser} for the {@link Enemy} file.
  */
 public class EnemiesParser implements Parser<List<List<Enemy>>> {
-    private static final String REGEX = "\\s*,\\s*";
-    private static final int MAX_RANK = 4;
+    private static final String DELIMITER = ",";
+    private static final int EXPECTED_FIELDS = 5;
     private static final int MIN_RANK = 1;
+    private static final int MAX_RANK = 4;
     private static final String TYPE_ENEMY = "enemy";
     private static final String TYPE_BOSS = "boss";
 
     @Override
     public final List<List<Enemy>> parse(final List<String> lines) {
-        final Map<Integer, List<Enemy>> grouped = lines.stream()
+        if (lines == null) {
+            throw new IllegalArgumentException("Input lines cannot be null");
+        }
+
+        final var nonEmpty = lines.stream()
             .map(String::trim)
             .filter(l -> !l.isEmpty())
-            .map(line -> {
-                final String[] tokens = line.split(REGEX);
-                final int rank = Integer.parseInt(tokens[0]);
-                final String name = tokens[1];
-                final int attack = Integer.parseInt(tokens[2]);
-                final int health = Integer.parseInt(tokens[3]);
-                final double speed = Double.parseDouble(tokens[4]);
-                final Enemy enemy = EnemyFactory.createEnemy(
-                    name,
-                    rank,
-                    rank == 4 ? TYPE_BOSS : TYPE_ENEMY,
-                    attack,
-                    health,
-                    speed
-                );
-                return Map.entry(rank, enemy);
-            })
+            .toList();
+
+        final Map<Integer, List<Enemy>> grouped = nonEmpty.stream()
+            .map(this::parseLine)
             .collect(Collectors.groupingBy(
                 Map.Entry::getKey,
                 Collectors.mapping(Map.Entry::getValue, Collectors.toUnmodifiableList())
             ));
 
         return IntStream.rangeClosed(MIN_RANK, MAX_RANK)
-                .mapToObj(rank -> grouped.getOrDefault(rank, Collections.emptyList()))
-                .collect(Collectors.toUnmodifiableList());
+            .mapToObj(rank -> grouped.getOrDefault(rank, Collections.emptyList()))
+            .collect(Collectors.toUnmodifiableList());
+    }
+
+    private Map.Entry<Integer, Enemy> parseLine(final String line) {
+        final String[] tokens = line.split(DELIMITER);
+        if (tokens.length < EXPECTED_FIELDS) {
+            throw new IllegalArgumentException(
+                "Invalid record: expected " + EXPECTED_FIELDS + " fields but got " + tokens.length + " in '" + line + "'"
+            );
+        }
+
+        final int rank = parseIntField(tokens[0], "rank", line);
+        validateRank(rank);
+        final String name = tokens[1].trim();
+        final int attack = parseIntField(tokens[2], "attack", line);
+        final int health = parseIntField(tokens[3], "health", line);
+        final double speed = parseDoubleField(tokens[4], "speed", line);
+
+        final String type = rank == MAX_RANK ? TYPE_BOSS : TYPE_ENEMY;
+        final Enemy enemy = EnemyFactory.createEnemy(name, rank, type, attack, health, speed);
+        return Map.entry(rank, enemy);
+    }
+
+    private int parseIntField(final String token, final String fieldName, final String context) {
+        try {
+            return Integer.parseInt(token.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                "Invalid integer for " + fieldName + " in '" + context + "': '" + token + "'", e
+            );
+        }
+    }
+
+    private double parseDoubleField(final String token, final String fieldName, final String context) {
+        try {
+            return Double.parseDouble(token.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                "Invalid double for " + fieldName + " in '" + context + "': '" + token + "'", e
+            );
+        }
+    }
+
+    private void validateRank(final int rank) {
+        if (rank < MIN_RANK || rank > MAX_RANK) {
+            throw new IllegalArgumentException(
+                "Rank must be between " + MIN_RANK + " and " + MAX_RANK + ", got " + rank
+            );
+        }
     }
 }
