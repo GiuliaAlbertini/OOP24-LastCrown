@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.model.characters.impl.enemy.EnemyFactory;
 import it.unibo.oop.lastcrown.model.file_handling.api.Parser;
@@ -18,8 +19,6 @@ public class EnemiesParser implements Parser<List<List<Enemy>>> {
     private static final int EXPECTED_FIELDS = 5;
     private static final int MIN_RANK = 1;
     private static final int MAX_RANK = 4;
-    private static final String TYPE_ENEMY = "enemy";
-    private static final String TYPE_BOSS = "boss";
 
     @Override
     public final List<List<Enemy>> parse(final List<String> lines) {
@@ -59,7 +58,7 @@ public class EnemiesParser implements Parser<List<List<Enemy>>> {
         final int health = parseIntField(tokens[3], "health", line);
         final double speed = parseDoubleField(tokens[4], "speed", line);
 
-        final String type = rank == MAX_RANK ? TYPE_BOSS : TYPE_ENEMY;
+        final String type = rank == MAX_RANK ? CardType.BOSS.get() : CardType.ENEMY.get();
         final Enemy enemy = EnemyFactory.createEnemy(name, rank, type, attack, health, speed);
         return Map.entry(rank, enemy);
     }
