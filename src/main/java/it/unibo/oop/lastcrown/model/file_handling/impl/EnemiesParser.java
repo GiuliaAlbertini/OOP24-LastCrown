@@ -67,7 +67,7 @@ public class EnemiesParser implements Parser<List<List<Enemy>>> {
     private int parseIntField(final String token, final String fieldName, final String context) {
         try {
             return Integer.parseInt(token.trim());
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new IllegalArgumentException(
                 "Invalid integer for " + fieldName + " in '" + context + "': '" + token + "'", e
             );
@@ -77,7 +77,7 @@ public class EnemiesParser implements Parser<List<List<Enemy>>> {
     private double parseDoubleField(final String token, final String fieldName, final String context) {
         try {
             return Double.parseDouble(token.trim());
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new IllegalArgumentException(
                 "Invalid double for " + fieldName + " in '" + context + "': '" + token + "'", e
             );
