@@ -1,8 +1,9 @@
 package it.unibo.oop.lastcrown.model.file_handling.impl;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -16,52 +17,55 @@ import it.unibo.oop.lastcrown.model.spell.impl.SpellFactory;
  * Implementation of a {@link Parser} for the {@link Spell} file.
  */
 public class SpellsParser implements Parser<Map<CardIdentifier, Spell>> {
-
-    private static final String REGEX = "\\s*,\\s*";
-    private static final String NONE  = "none";
+    private static final String DELIMITER = ",";
+    private static final int EXPECTED_FIELDS = 8;
+    private static final String NONE = "none";
     private static final String TYPE_SPELL = "spell";
 
     @Override
     public final Map<CardIdentifier, Spell> parse(final List<String> lines) {
-        return lines.stream()
+        if (lines == null) {
+            throw new IllegalArgumentException("Input lines cannot be null");
+        }
+        final var nonEmpty = lines.stream()
             .map(String::trim)
-            .filter(line -> !line.isEmpty())
-            .map(this::createSpellEntry)
+            .filter(l -> !l.isEmpty())
+            .toList();
+
+        return nonEmpty.stream()
+            .map(this::parseLine)
             .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private Entry<CardIdentifier, Spell> createSpellEntry(final String line) {
-        final String[] tokens = line.split(REGEX);
-        int index = 0;
-        final int id = Integer.parseInt(tokens[index]);
-        index++;
-        final String name = tokens[index];
-        index++;
-        final int cost = Integer.parseInt(tokens[index]);
-        index++;
-        final int copiesPerRound = Integer.parseInt(tokens[index]);
-        index++;
-        final int energyToPlay = Integer.parseInt(tokens[index]);
-        index++;
-        final String effectCategory = tokens[index];
-        index++;
-        final int effectAmount = Integer.parseInt(tokens[index]);
-        index++;
-        final String effectTarget = tokens[index];
-        index++;
-        final Optional<Integer> duration = NONE.equalsIgnoreCase(tokens[index])
+    private Map.Entry<CardIdentifier, Spell> parseLine(final String line) {
+        final String[] tokens = line.split(DELIMITER);
+        if (tokens.length < EXPECTED_FIELDS) {
+            throw new IllegalArgumentException(
+                "Invalid record: expected " + EXPECTED_FIELDS + " fields but got " + tokens.length + " in '" + line + "'"
+            );
+        }
+        final Iterator<String> it = Arrays.asList(tokens).iterator();
+
+        final int id = parseInt(it.next(), "id", line);
+        final String name = it.next().trim();
+        final int cost = parseInt(it.next(), "cost", line);
+        final int copiesPerRound = parseInt(it.next(), "copies per round", line);
+        final int energyToPlay = parseInt(it.next(), "energy to play", line);
+
+        final String category = it.next().trim();
+        final int amount = parseInt(it.next(), "effect amount", line);
+        final String target = it.next().trim();
+        final String durToken = it.next().trim();
+        final Optional<Integer> duration = NONE.equalsIgnoreCase(durToken)
             ? Optional.empty()
-            : Optional.of(Integer.parseInt(tokens[index]));
-        final SpellEffect effect = new SpellEffect(
-            effectCategory,
-            effectAmount,
-            effectTarget,
-            duration
-        );
-        index++;
-        final Optional<Integer> actionRange = NONE.equalsIgnoreCase(tokens[index])
+            : Optional.of(parseInt(durToken, "effect duration", line));
+        final SpellEffect effect = new SpellEffect(category, amount, target, duration);
+
+        final String rangeToken = it.next().trim();
+        final Optional<Integer> actionRange = NONE.equalsIgnoreCase(rangeToken)
             ? Optional.empty()
-            : Optional.of(Integer.parseInt(tokens[index]));
+            : Optional.of(parseInt(rangeToken, "action range", line));
+
         final Spell spell = SpellFactory.createSpell(
             name,
             cost,
@@ -71,5 +75,15 @@ public class SpellsParser implements Parser<Map<CardIdentifier, Spell>> {
             actionRange
         );
         return Map.entry(new CardIdentifier(id, TYPE_SPELL), spell);
+    }
+
+    private int parseInt(final String token, final String fieldName, final String context) {
+        try {
+            return Integer.parseInt(token.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                "Invalid integer for " + fieldName + " in '" + context + "': '" + token + "'", e
+            );
+        }
     }
 }
