@@ -96,7 +96,7 @@ public class HeroesParser implements Parser<Map<CardIdentifier, Hero>> {
     private int parseIntField(final String token, final String fieldName, final String context) {
         try {
             return Integer.parseInt(token.trim());
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new IllegalArgumentException(
                 "Invalid integer for " + fieldName + " in '" + context + "': '" + token + "'", e
             );
