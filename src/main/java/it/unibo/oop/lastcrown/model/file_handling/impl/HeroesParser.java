@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Hero;
 import it.unibo.oop.lastcrown.model.characters.api.PassiveEffect;
 import it.unibo.oop.lastcrown.model.characters.api.Requirement;
@@ -21,7 +22,6 @@ public class HeroesParser implements Parser<Map<CardIdentifier, Hero>> {
     private static final String DELIMITER = ",";
     private static final int EXPECTED_FIELDS = 11;
     private static final String NONE = "none";
-    private static final String TYPE_HERO = "hero";
 
     @Override
     public final Map<CardIdentifier, Hero> parse(final List<String> lines) {
@@ -79,7 +79,7 @@ public class HeroesParser implements Parser<Map<CardIdentifier, Hero>> {
             wallHealth
         );
 
-        final CardIdentifier key = new CardIdentifier(id, TYPE_HERO);
+        final CardIdentifier key = new CardIdentifier(id, CardType.HERO.get());
         return Map.entry(key, hero);
     }
 
