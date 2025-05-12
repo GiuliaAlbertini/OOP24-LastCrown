@@ -55,10 +55,7 @@ public class HeroesParser implements Parser<Map<CardIdentifier, Hero>> {
         final String reqType = it.next().trim();
         final Requirement requirement = new Requirement(reqType, reqAmount);
 
-        final String passiveToken = it.next().trim();
-        final Optional<PassiveEffect> passive = NONE.equalsIgnoreCase(passiveToken)
-            ? Optional.empty()
-            : parsePassive(passiveToken);
+        final Optional<PassiveEffect> passive = getPassive(line, it);
 
         final int meleeCards = parseIntField(it.next(), "melee cards", line);
         final int rangedCards = parseIntField(it.next(), "ranged cards", line);
@@ -83,14 +80,16 @@ public class HeroesParser implements Parser<Map<CardIdentifier, Hero>> {
         return Map.entry(key, hero);
     }
 
-    private Optional<PassiveEffect> parsePassive(final String token) {
-        final String[] parts = token.split(";");
-        if (parts.length != 2) {
-            throw new IllegalArgumentException("Invalid passive effect definition: '" + token + "'");
+    private Optional<PassiveEffect> getPassive(final String line, final Iterator<String> it) {
+        final String effectType = it.next().trim();
+        final Optional<PassiveEffect> passive;
+        if (!NONE.equalsIgnoreCase(effectType)) {
+            final int effectPercentage = parseIntField(it.next(), "Effect percentage", line);
+            passive =  Optional.of(new PassiveEffect(effectType, effectPercentage));
+        } else {
+            passive = Optional.empty();
         }
-        final String effectName = parts[0].trim();
-        final int effectValue = parseIntField(parts[1], "passive effect value", token);
-        return Optional.of(new PassiveEffect(effectName, effectValue));
+        return passive;
     }
 
     private int parseIntField(final String token, final String fieldName, final String context) {
