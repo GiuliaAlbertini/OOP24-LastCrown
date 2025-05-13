@@ -8,5 +8,5 @@ public interface GameController {
     /*
      * Starts the game loop
      */
-    void run();    
+    void run(boolean exploration);    
 }

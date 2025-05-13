@@ -1,64 +1,37 @@
-package it.unibo.oop.lastcrown.controller.Impl;
-
-
-import java.util.logging.*;
-
-
+package it.unibo.oop.lastcrown.controller.impl;
 import it.unibo.oop.lastcrown.controller.api.GameController;
-import it.unibo.oop.lastcrown.model.impl.Ball;
-import it.unibo.oop.lastcrown.model.impl.Point2DImpl;
-import it.unibo.oop.lastcrown.model.impl.Vect2Dimpl;
+import it.unibo.oop.lastcrown.controller.api.MainController;
 import it.unibo.oop.lastcrown.view.MainView;
 
-
-public class GameControllerImpl implements GameController, Runnable{
-    private boolean running = false;
-    private long period= 20; //periodi tra frame in millisecondi (framerate di 50 fotogrammi al secondo (50 FPS))
-    private Logger logger = Logger.getLogger("GameEngine");
-    private MainView view;
-	private Ball ball;
-    Thread gameThread;
-    
-
-
-    public GameControllerImpl(MainView view){
-        this.view= view;
-		ball= new Ball(new Point2DImpl(200, 200), new Vect2Dimpl(300, 300), 20);
-		view.setBall(ball);
+public class GameControllerImpl implements GameController{
+    MainController controller;
+    MainView view;
+    Thread gameLoop;
+    public GameControllerImpl(final MainController controller){
+        this.controller= controller;
+        this.view= this.controller.getMainView();
     }
-
+    
     @Override
-    public void run() {
-        long lastTime=System.currentTimeMillis(); //tempo di partenza
-        while(true){
-            long current= System.currentTimeMillis(); //tempo attuale
-            int elapse= (int)(current-lastTime);//tempo trascorso tra due frame, espresso in millisecondi
-			updateGame(elapse);
-			render();
-			waitForNextFrame(current);
-			lastTime = current;
+    public void run(final boolean exploration) {
+        if(this.gameLoop == null && this.gameLoop.isAlive()){
+            if(!exploration){
+                this.endGame();
+            }else{
+                this.startGameLoop();
+            }
         }
     }
- 
-    /**
-	 * current-> tempo inizio frame
-	 * dt-> È il tempo già trascorso da quando il frame è iniziato
-	 * period-> tempo massimo
-	 */
-    protected void waitForNextFrame(long current){
-		long dt = System.currentTimeMillis() - current; // Calcola il tempo trascorso dall'inizio del frame corrente
-		if (dt < period){
-			try {
-				Thread.sleep(period-dt);
-			} catch (Exception ex){}
-		}
-	}
-	
-	protected void updateGame(int elapse){
-		ball.update(elapse/1000.0, 800, 600);
-	}
-	
-	protected void render(){
-		view.render();
-	}
+    
+    public void startGameLoop(){
+        this.view.showPanel(GameState.GAME);
+        this.gameLoop= new Gameloop(controller);
+        this.gameLoop.start();
+    }
+    
+    
+    public void endGame(){
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'initPanel'");
+    }
 }
