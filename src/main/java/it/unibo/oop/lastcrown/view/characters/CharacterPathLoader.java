@@ -10,6 +10,8 @@ import java.util.List;
  */
 public final class CharacterPathLoader {
     private static final String SEP = System.getProperty("file.separator");
+    private static final String ICON = "icon";
+    private static final String ICON_GREY = "icon_grey"; 
     private CharacterPathLoader() { }
     /**
      * @param charType the character type
@@ -37,16 +39,46 @@ public final class CharacterPathLoader {
     public static synchronized List<String> loadPaths(final String charType, final String charName, final String keyWord) {
         int cont = 1;
         final List<String> paths = new ArrayList<>();
-        String relativePath = "src" + SEP + "main" + SEP + "resources" + SEP + "pngs"
-         + SEP + charType + SEP + charName + SEP + keyWord + cont + ".png";
+        String relativePath = getGenericCharacterPath(charType, charName, keyWord + cont);
         boolean exists = Files.exists(Paths.get(relativePath));
         while (exists) {
             paths.addLast(relativePath);
             cont++;
-            relativePath = ("src" + SEP + "main" + SEP + "resources" + SEP + "pngs"
-             + SEP + charType + SEP + charName + SEP + keyWord + cont + ".png");
+            relativePath = getGenericCharacterPath(charType, charName, keyWord + cont);
             exists = Files.exists(Paths.get(relativePath));
         }
         return paths;
+    }
+
+    /**
+     * @param charType the character type
+     * @param charName the character name
+     * @return the icon corresponding to the given character type and name
+     */
+    public static synchronized String loadIconPath(final String charType, final String charName) {
+        return getGenericCharacterPath(charType, charName, ICON);
+    }
+
+     /**
+     * @param charType the character type
+     * @param charName the character name
+     * @return the grey icon corresponding to the given character type and name
+     */
+    public static synchronized String loadGreyIconPath(final String charType, final String charName) {
+        return getGenericCharacterPath(charType, charName, ICON_GREY);
+    }
+
+    /**
+     * @param charType the character type
+     * @return the border corresponding to the given character type
+     */
+    public static synchronized String loadBorderPath(final String charType) {
+        return "src" + SEP + "main" + SEP + "resources" + SEP + "pngs"
+         + SEP + charType + SEP + charType + "_border";
+    }
+
+    private static String getGenericCharacterPath(final String charType, final String charName, final String keyword) {
+        return "src" + SEP + "main" + SEP + "resources" + SEP + "pngs"
+         + SEP + charType + SEP + charName + SEP + keyword + ".png";
     }
 }

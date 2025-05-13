@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.controller.characters.impl;
+package it.unibo.oop.lastcrown.controller.characters.impl.boss;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,6 +7,8 @@ import java.util.Set;
 import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
+import it.unibo.oop.lastcrown.controller.characters.impl.GenericCharacterControllerImpl;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
 import it.unibo.oop.lastcrown.view.characters.impl.EnemyGUIImpl;
@@ -26,14 +28,14 @@ public class BossControllerImpl extends GenericCharacterControllerImpl implement
      * @param boss the Generic character linked to this controller
      */
     public BossControllerImpl(final CharacterDeathObserver obs, final int id, final Enemy boss) {
-        super(obs, id, boss, "boss");
+        super(obs, id, boss, CardType.BOSS);
         this.charName = boss.getName();
         this.speedMultiplier = boss.getSpeedMultiplier();
     }
 
     @Override
     public final GenericCharacterGUI createView(final int width, final int height) {
-        return new EnemyGUIImpl(this, "boss", this.charName,
+        return new EnemyGUIImpl(this, this, "boss", this.charName,
         this.speedMultiplier, width, height);
     }
 

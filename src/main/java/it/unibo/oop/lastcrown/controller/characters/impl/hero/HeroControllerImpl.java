@@ -1,9 +1,11 @@
-package it.unibo.oop.lastcrown.controller.characters.impl;
+package it.unibo.oop.lastcrown.controller.characters.impl.hero;
 
 import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
+import it.unibo.oop.lastcrown.controller.characters.impl.GenericCharacterControllerImpl;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Hero;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
 import it.unibo.oop.lastcrown.view.characters.api.HeroGUI;
@@ -23,7 +25,7 @@ public class HeroControllerImpl extends GenericCharacterControllerImpl implement
      * @param hero the ehero linked to this controller
      */
     public HeroControllerImpl(final CharacterDeathObserver obs, final int id, final Hero hero) {
-        super(obs, id, hero, "hero");
+        super(obs, id, hero, CardType.HERO);
         this.view = null;
         this.charName = hero.getName();
         this.speedMultiplier = hero.getSpeedMultiplier();
@@ -31,7 +33,7 @@ public class HeroControllerImpl extends GenericCharacterControllerImpl implement
 
     @Override
     public final GenericCharacterGUI createView(final int width, final int height) {
-        final HeroGUI newView = new HeroGUIImpl(this, this.charName,
+        final HeroGUI newView = new HeroGUIImpl(this, this, this.charName,
         this.speedMultiplier, width, height);
         this.view = newView;
         return newView;

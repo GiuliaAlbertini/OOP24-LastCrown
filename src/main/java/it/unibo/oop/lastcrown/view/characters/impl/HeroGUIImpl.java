@@ -3,9 +3,11 @@ package it.unibo.oop.lastcrown.view.characters.impl;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
+import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
 import it.unibo.oop.lastcrown.view.characters.api.HeroGUI;
 
 /**
@@ -23,23 +25,24 @@ public class HeroGUIImpl extends GenericCharacterGUIImpl implements HeroGUI {
     private List<BufferedImage> stopLeftImages;
 
     /**
-     * @param obs the observer of the enemy attacks
+     * @param atckObs the observer of the character attacks
+     * @param movObs the observer of the character movements
      * @param charName the name of the enemy
      * @param speedMultiplier the speed multiplier of the enemy
      * @param width the horizontal size of the character animation panel
      * @param height the vertical size of the character animation panel
      */
-    public HeroGUIImpl(final CharacterAttackObserver obs, final String charName,
-     final Double speedMultiplier, final int width, final int height) {
-        super(obs, "hero", charName, speedMultiplier, width, height);
+    public HeroGUIImpl(final CharacterAttackObserver atckObs, final CharacterMovementObserver movObs,
+     final String charName, final Double speedMultiplier, final int width, final int height) {
+        super(atckObs, movObs, CardType.HERO.get(), charName, speedMultiplier, width, height);
         this.width = width;
         this.height = height;
         this.widthVariation = (int) (this.width * RESIZE_SCALE);
         this.heightVariation = (int) (this.height * RESIZE_SCALE);
-        this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get());
-        this.runLeftImages = this.getSelectedFrames(Keyword.RUN_LEFT.get());
-        this.stopImages = this.getSelectedFrames(Keyword.STOP.get());
-        this.stopLeftImages = this.getSelectedFrames(Keyword.STOP_LEFT.get());
+        this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get(), CardType.HERO.get(), charName);
+        this.runLeftImages = this.getSelectedFrames(Keyword.RUN_LEFT.get(), CardType.HERO.get(), charName);
+        this.stopImages = this.getSelectedFrames(Keyword.STOP.get(), CardType.HERO.get(), charName);
+        this.stopLeftImages = this.getSelectedFrames(Keyword.STOP_LEFT.get(), CardType.HERO.get(), charName);
     }
 
     @Override

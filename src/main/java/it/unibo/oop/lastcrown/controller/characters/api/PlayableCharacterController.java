@@ -19,5 +19,10 @@ public interface PlayableCharacterController extends GenericCharacterController 
      * Make this character jump forward.
      */
     void jumpForward();
+
+    /**
+     * @return the action range of this character.
+     */
+    int getActionRange();
 }
 

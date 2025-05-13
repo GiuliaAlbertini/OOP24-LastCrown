@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAnimationPanel;
+import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
 
 /**
  * Handle the different animation of a character.
@@ -14,13 +15,16 @@ public class AnimationHandler {
     private static final int JUMPING_SIZE = 3;
     private static final int MOVEMENT_PIXELS = 5;
     private static final int TIME = 100;
+     private final CharacterMovementObserver observer;
     private volatile Double speedMultiplier;
     private volatile boolean stop;
 
     /**
+     * @param movObs the observer of the character movements
      * @param speedMultiplier the speedMultiplier applied to the animations
      */
-    public AnimationHandler(final Double speedMultiplier) {
+    public AnimationHandler(final CharacterMovementObserver movObs, final Double speedMultiplier) {
+        this.observer = movObs;
         this.speedMultiplier = speedMultiplier;
     }
 
@@ -90,7 +94,7 @@ public class AnimationHandler {
         for (int i = 0; i < frames.size() && !this.stop; i++) {
             panel.setCharacterImage(frames.get(i));
             panel.setLocation(panel.getX() + variation, panel.getY());
-            panel.setHealthBarPosition();
+            this.observer.notifyMovement(variation, 0);
             try {
                 Thread.sleep(TIME);
             } catch (final InterruptedException e) {
@@ -112,7 +116,7 @@ public class AnimationHandler {
         for (int i = 0; i < frames.size() && !this.stop; i++) {
             panel.setCharacterImage(frames.get(i));
             panel.setLocation(panel.getX() + xVariation, panel.getY() + yVariation);
-            panel.setHealthBarPosition();
+            this.observer.notifyMovement(xVariation, yVariation);
             try {
                 Thread.sleep(TIME);
             } catch (final InterruptedException e) {

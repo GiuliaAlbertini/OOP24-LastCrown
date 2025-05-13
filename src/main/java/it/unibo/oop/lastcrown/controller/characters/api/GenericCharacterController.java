@@ -4,11 +4,12 @@ import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
+import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
 
 /**
  * A controller that handles the behaviour of a single Generic Character in game.
  */
-public interface GenericCharacterController extends CharacterAttackObserver, CharacterHitObserver {
+public interface GenericCharacterController extends CharacterAttackObserver, CharacterHitObserver, CharacterMovementObserver {
     /**
      * @return this controller id
      */
@@ -55,6 +56,27 @@ public interface GenericCharacterController extends CharacterAttackObserver, Cha
      * @throws NullPointerException if the actual opponent is null
      */
     void startAttacking();
+
+    /**
+     * Applies a variation to the actual character attack value.
+     * @param variation the amount of attack variation. Can be positive
+     * to increase the attack or negative to decrease it
+     */
+    void setAttackValue(int variation);
+
+    /**
+     * Applies a variation to the actual character maximum health value.
+     * @param variation the amount of health variation. Can be positive
+     * to increase the maximum health or negative to decrease it
+     */
+    void setMaximumHealthValue(int variation);
+
+    /**
+     * Applies a variation to the actual character speed multiplier value.
+     * @param variation the amount of speedMultiplier variation. Can be positive
+     * to increase the speed multiplier or negative to decrease it
+     */
+    void setSpeedMultiplierValue(double variation);
 
     /**
      * The linked character health will be restore.

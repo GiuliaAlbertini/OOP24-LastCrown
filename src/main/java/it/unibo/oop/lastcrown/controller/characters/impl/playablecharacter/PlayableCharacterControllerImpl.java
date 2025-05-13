@@ -1,7 +1,8 @@
-package it.unibo.oop.lastcrown.controller.characters.impl;
+package it.unibo.oop.lastcrown.controller.characters.impl.playablecharacter;
 
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
+import it.unibo.oop.lastcrown.controller.characters.impl.GenericCharacterControllerImpl;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
 import it.unibo.oop.lastcrown.view.characters.api.PlayableCharacterGUI;
@@ -15,6 +16,7 @@ public class PlayableCharacterControllerImpl extends GenericCharacterControllerI
     private final String charName;
     private final String playableCharType;
     private final Double speedMultiplier;
+    private final int actionRange;
 
     /**
      * @param obs the character death observer that communicates with the main controller
@@ -27,13 +29,14 @@ public class PlayableCharacterControllerImpl extends GenericCharacterControllerI
         super(obs, id, playableChar, playableChar.getType());
         this.view = null;
         this.charName = playableChar.getName();
-        this.playableCharType = playableChar.getType();
+        this.playableCharType = playableChar.getType().get();
         this.speedMultiplier = playableChar.getSpeedMultiplier();
+        this.actionRange = playableChar.getActionRange();
     }
 
     @Override
     public final GenericCharacterGUI createView(final int width, final int height) {
-        final PlayableCharacterGUI newView = new PlayableCharacterGUIImpl(this,
+        final PlayableCharacterGUI newView = new PlayableCharacterGUIImpl(this, this,
          this.playableCharType, this.charName, this.speedMultiplier, width, height);
         this.view = newView;
         return newView;
@@ -52,5 +55,10 @@ public class PlayableCharacterControllerImpl extends GenericCharacterControllerI
     @Override
     public final void jumpForward() {
         this.view.startJumpForwardSequence();
+    }
+
+    @Override
+    public final int getActionRange() {
+        return this.actionRange;
     }
 }

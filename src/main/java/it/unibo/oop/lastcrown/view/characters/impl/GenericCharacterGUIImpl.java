@@ -7,11 +7,13 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.characters.AnimationHandler;
 import it.unibo.oop.lastcrown.view.characters.CustomLock;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
+import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
 import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
 
@@ -21,9 +23,8 @@ import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
 public class GenericCharacterGUIImpl implements GenericCharacterGUI {
     private volatile int charWidth;
     private volatile int charHeight;
-    private final CharacterAttackObserver observer;
+    private final CharacterAttackObserver atckObs;
     private final String charType;
-    private final String charName;
     private final List<BufferedImage> runImages;
     private final  List<BufferedImage> stopImages;
     private final  List<List<BufferedImage>> attacksImages;
@@ -34,25 +35,24 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
     private volatile boolean done;
 
     /**
-     * @param obs the observer of the character attacks
+     * @param atckObs the observer of the character attacks
+     * @param movObs the observer of the character movements
      * @param charType the type of the character
      * @param charName the name of the character
      * @param speedMultiplier the speed multiplier of the character
      * @param width the horizontal size of the character animation panel
      * @param height the vertical size of the character animation panel
      */
-    public GenericCharacterGUIImpl(final CharacterAttackObserver obs, final String charType,
-    final String charName, final Double speedMultiplier, final int width, final int height) {
-        this.observer = obs;
+    public GenericCharacterGUIImpl(final CharacterAttackObserver atckObs, final CharacterMovementObserver movObs,
+     final String charType, final String charName, final Double speedMultiplier, final int width, final int height) {
+        this.atckObs = atckObs;
         this.charType = charType;
-        this.charName = charName;
         this.charWidth = width;
         this.charHeight = height;
-        this.animationPanel = this.createAnimationPanel();
-        this.anHandler = new AnimationHandler(speedMultiplier);
-        this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get());
-        this.stopImages = this.getSelectedFrames(Keyword.STOP.get());
-        this.deathImages = this.getSelectedFrames(Keyword.DEATH.get());
+        this.anHandler = new AnimationHandler(movObs, speedMultiplier);
+        this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get(), charType, charName);
+        this.stopImages = this.getSelectedFrames(Keyword.STOP.get(), charType, charName);
+        this.deathImages = this.getSelectedFrames(Keyword.DEATH.get(), charType, charName);
         final List<List<String>> attackPaths = CharacterPathLoader.loadAttackPaths(charType, charName);
         this.attacksImages = new ArrayList<>();
         for (final var paths : attackPaths) {
@@ -62,26 +62,35 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
 
     /**
      * @param keyword the animation keyword
+     * @param charType the type of the character
+     * @param charName the name of the character
      * @return the frames of this character corresponding to the given keyword
      */
-    public final List<BufferedImage> getSelectedFrames(final String keyword) {
-        return ImageLoader.getAnimationFrames(CharacterPathLoader.loadPaths(this.charType, 
-        this.charName, keyword), this.charWidth, this.charHeight);
+    public final List<BufferedImage> getSelectedFrames(final String keyword, final String charType, final String charName) {
+        return ImageLoader.getAnimationFrames(CharacterPathLoader.loadPaths(charType, charName, keyword),
+         this.charWidth, this.charHeight);
+    }
+
+    @Override
+    public final void createAnimationPanel() {
+        this.animationPanel = this.getAnimationPanel(this.charType);
     }
 
     /**
      * Create a new animation panel of this character. 
      * Set the color of the health bar according to this character type.
+     * It's public because it's designed to be overridden by PlayableCharacterGUIImpl.
+     * @param charType the type of the character
      * @return new Animation Panel of this character.
      */
-    private CharacterAnimationPanelImpl createAnimationPanel() {
+    public CharacterAnimationPanelImpl getAnimationPanel(final String charType) {
         final Color color;
-        if ("enemy".equals(this.charType)) {
+        if (CardType.ENEMY.get().equals(charType) || CardType.BOSS.get().equals(charType)) {
             color = Color.RED;
         } else {
             color = Color.GREEN;
         }
-        return CharacterAnimationPanelImpl.create(charWidth, charHeight, this.charType, color);
+        return CharacterAnimationPanelImpl.create(charWidth, charHeight, charType, color);
     }
 
     @Override
@@ -134,18 +143,7 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
 
     @Override
     public final void startAttackLoop() {
-        this.notifyDone();
-        new Thread(() -> {
-                int cont = 0;
-                this.lock.acquireLock();
-                this.start();
-                while (!done) {
-                    this.anHandler.startAnimationSequence(attacksImages.get(cont), Keyword.ATTACK, this.animationPanel);
-                    this.observer.doAttack();
-                    cont = (cont + 1) % this.attacksImages.size();
-                }
-                this.lock.releaseLock();
-            }).start();
+       this.startAnimationSequence(attacksImages.get(0), Keyword.ATTACK);
     }
 
     /**
@@ -156,7 +154,7 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
     public final void startAnimationSequence(final List<BufferedImage> frames, final Keyword keyword) {
         this.notifyDone();
         new Thread(() -> {
-            this.lock.acquireLock();
+            this.acquireLock();
             this.start();
             switch (keyword) {
                 case Keyword.STOP, Keyword.STOP_LEFT, Keyword.RUN_RIGHT, Keyword.RUN_LEFT, Keyword.RETREAT:
@@ -164,37 +162,45 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
                         this.anHandler.startAnimationSequence(frames, keyword, this.animationPanel);
                     }
                     break;
+                case Keyword.ATTACK:
+                    int cont = 0;
+                    while (!done) {
+                        this.anHandler.startAnimationSequence(this.attacksImages.get(cont), keyword, animationPanel);
+                        this.atckObs.doAttack();
+                        cont = (cont + 1) % this.attacksImages.size();
+                    }
+                    break;
                 case Keyword.DEATH, Keyword.JUMPUP, Keyword.JUMPDOWN, Keyword.JUMPFORWARD:
                     this.anHandler.startAnimationSequence(frames, keyword, this.animationPanel);
-                    break;
-                default:
                     break;
             }
             if (Keyword.DEATH.equals(keyword)) {
                 this.animationPanel.disposeClosing();
                 this.animationPanel = null;
             }
-            this.lock.releaseLock();
+            this.freeLock();
         }).start();
     }
 
-    /**
-     * Notify the current working thread that
-     * it has to finish doing the animation loop and to release the mutual exclusion.
-     * If no thread currently posess the mutual exclusion it does anything.
-     */
-    public void notifyDone() {
+    @Override
+    public final void notifyDone() {
         this.done = true;
         this.anHandler.stop();
     }
 
-    /**
-     * Set the boolean flag done to false. The current working thread
-     * will start doing the animation loop and it won't stop
-     * until another thread calls the notifyDone() method.
-     */
-    public void start() {
+    @Override
+    public final void start() {
         this.done = false;
         this.anHandler.start();
+    }
+
+    @Override
+    public final void freeLock() {
+        this.lock.releaseLock();
+    }
+
+    @Override
+    public final void acquireLock() {
+        this.lock.acquireLock();
     }
 }

@@ -8,6 +8,7 @@ import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.GenericCharacter;
 import it.unibo.oop.lastcrown.model.characters.api.InGameCharacter;
 import it.unibo.oop.lastcrown.model.characters.impl.ingamecharacter.InGameCharacterFactory;
@@ -31,7 +32,7 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
      * @param charType the type of the linked character
      */
     public GenericCharacterControllerImpl(final CharacterDeathObserver obs,
-     final int id, final GenericCharacter character, final String charType) {
+     final int id, final GenericCharacter character, final CardType charType) {
         this.deathObserver = obs;
         this.character = InGameCharacterFactory.createInGameCharacter(charType, character.getName(),
         character.getHealthValue(), character.getAttackValue(), character.getSpeedMultiplier());
@@ -51,6 +52,7 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
     @Override
     public final void attachCharacterAnimationPanel(final int width, final int height) {
         this.view = createView(width, height);
+        this.view.createAnimationPanel();
     }
 
     /**
@@ -105,6 +107,21 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
         this.view.setHealthPercentage(this.character.getHealthPercentage());
     }
 
+    @Override
+    public final synchronized void setAttackValue(final int variation) {
+        this.character.changeAttack(variation);
+    }
+
+    @Override
+    public final synchronized void setMaximumHealthValue(final int variation) {
+        this.character.changeMaximumHealth(variation);
+    }
+
+    @Override
+    public final synchronized void setSpeedMultiplierValue(final double variation) {
+        this.character.changeSpeedMultiplier(variation);
+    }
+
     /**
      * Start this character death sequence and notify the main controller of this character death.
      */
@@ -120,5 +137,10 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
     @Override
     public void doAttack() {
         this.opponent.takeHit(this.character.getAttack());
+    }
+
+    @Override
+    public void notifyMovement(final int deltaX, final int deltaY) {
+        //Here will be added some methods call to change the hitbox model.
     }
 }

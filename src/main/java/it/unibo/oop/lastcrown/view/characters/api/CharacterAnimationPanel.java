@@ -19,11 +19,6 @@ public interface CharacterAnimationPanel {
     void setHealthBarAlignment();
 
     /**
-     * Move this character health bar position after moving the animation panel.
-     */
-    void setHealthBarPosition();
-
-    /**
      * @return the horizontal position of the top left corner of this animation panel
      */
     int getX();
