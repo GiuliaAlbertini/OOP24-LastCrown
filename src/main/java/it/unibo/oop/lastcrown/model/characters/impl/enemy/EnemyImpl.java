@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.model.characters.impl.enemy;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.model.characters.impl.GenericCharacterImpl;
 
@@ -8,7 +9,7 @@ import it.unibo.oop.lastcrown.model.characters.impl.GenericCharacterImpl;
  */
 public class EnemyImpl extends GenericCharacterImpl implements Enemy {
     private final int rank;
-    private final String enemyType;
+    private final CardType enemyType;
 
     /**
      * @param name the name of this enemy
@@ -18,7 +19,7 @@ public class EnemyImpl extends GenericCharacterImpl implements Enemy {
      * @param health the health value of this character
      * @param speedMultiplier the speed multiplier of this enemy
      */
-    public EnemyImpl(final String name, final int rank, final String enemyType,
+    public EnemyImpl(final String name, final int rank, final CardType enemyType,
     final int attack, final int health, final double speedMultiplier) {
         super(name, attack, health, speedMultiplier);
         this.rank = rank;
@@ -31,7 +32,7 @@ public class EnemyImpl extends GenericCharacterImpl implements Enemy {
     }
 
     @Override
-    public final String getEnemyType() {
+    public final CardType getEnemyType() {
         return this.enemyType;
     }
 }
