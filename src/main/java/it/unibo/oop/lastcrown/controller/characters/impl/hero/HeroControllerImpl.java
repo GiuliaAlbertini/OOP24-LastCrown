@@ -25,7 +25,7 @@ public class HeroControllerImpl extends GenericCharacterControllerImpl implement
      * @param hero the ehero linked to this controller
      */
     public HeroControllerImpl(final CharacterDeathObserver obs, final int id, final Hero hero) {
-        super(obs, id, hero, CardType.HERO.get());
+        super(obs, id, hero, CardType.HERO);
         this.view = null;
         this.charName = hero.getName();
         this.speedMultiplier = hero.getSpeedMultiplier();

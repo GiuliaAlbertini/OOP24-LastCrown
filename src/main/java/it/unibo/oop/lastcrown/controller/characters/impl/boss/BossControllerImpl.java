@@ -28,7 +28,7 @@ public class BossControllerImpl extends GenericCharacterControllerImpl implement
      * @param boss the Generic character linked to this controller
      */
     public BossControllerImpl(final CharacterDeathObserver obs, final int id, final Enemy boss) {
-        super(obs, id, boss, CardType.BOSS.get());
+        super(obs, id, boss, CardType.BOSS);
         this.charName = boss.getName();
         this.speedMultiplier = boss.getSpeedMultiplier();
     }

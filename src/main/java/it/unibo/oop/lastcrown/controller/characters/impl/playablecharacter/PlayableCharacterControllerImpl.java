@@ -26,7 +26,7 @@ public class PlayableCharacterControllerImpl extends GenericCharacterControllerI
      */
     public PlayableCharacterControllerImpl(final CharacterDeathObserver obs, final int id,
     final PlayableCharacter playableChar) {
-        super(obs, id, playableChar, playableChar.getType().get());
+        super(obs, id, playableChar, playableChar.getType());
         this.view = null;
         this.charName = playableChar.getName();
         this.playableCharType = playableChar.getType().get();

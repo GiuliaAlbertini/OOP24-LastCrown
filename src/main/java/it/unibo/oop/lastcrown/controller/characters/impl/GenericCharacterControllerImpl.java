@@ -8,6 +8,7 @@ import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.GenericCharacter;
 import it.unibo.oop.lastcrown.model.characters.api.InGameCharacter;
 import it.unibo.oop.lastcrown.model.characters.impl.ingamecharacter.InGameCharacterFactory;
@@ -31,7 +32,7 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
      * @param charType the type of the linked character
      */
     public GenericCharacterControllerImpl(final CharacterDeathObserver obs,
-     final int id, final GenericCharacter character, final String charType) {
+     final int id, final GenericCharacter character, final CardType charType) {
         this.deathObserver = obs;
         this.character = InGameCharacterFactory.createInGameCharacter(charType, character.getName(),
         character.getHealthValue(), character.getAttackValue(), character.getSpeedMultiplier());

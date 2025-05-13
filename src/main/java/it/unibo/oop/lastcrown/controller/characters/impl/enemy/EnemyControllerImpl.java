@@ -24,7 +24,7 @@ public class EnemyControllerImpl extends GenericCharacterControllerImpl implemen
      * @param enemy the enemy linked to this controller
      */
     public EnemyControllerImpl(final CharacterDeathObserver obs, final int id, final Enemy enemy) {
-        super(obs, id, enemy, CardType.ENEMY.get());
+        super(obs, id, enemy, CardType.ENEMY);
         this.charName = enemy.getName();
         this.speedMultiplier = enemy.getSpeedMultiplier();
         this.view = null;
