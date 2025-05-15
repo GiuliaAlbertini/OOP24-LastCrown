@@ -2,10 +2,12 @@ package it.unibo.oop.lastcrown.view.characters.api;
 
 import java.awt.Image;
 
+import it.unibo.oop.lastcrown.view.AnimationPanel;
+
 /**
  * An interface modeling an animation panel of one specific character.
  */
-public interface CharacterAnimationPanel {
+public interface CharacterAnimationPanel extends AnimationPanel {
 
     /**
      * Set the next frame to be shown.
@@ -17,23 +19,6 @@ public interface CharacterAnimationPanel {
      * Set the initial alignment of the characterHealthBar.
      */
     void setHealthBarAlignment();
-
-    /**
-     * @return the horizontal position of the top left corner of this animation panel
-     */
-    int getX();
-
-    /**
-     * @return the vertical position of the top left corner of this animation panel
-     */
-    int getY();
-
-    /**
-     * Set the location (coordinates x, y) of this animation panel.
-     * @param x horizontal coordinate of the top left corner 
-     * @param y vertical coordinate of the top left corner
-     */
-    void setLocation(int x, int y);
 
     /**
      * Set new percentage value of this character health bar.
