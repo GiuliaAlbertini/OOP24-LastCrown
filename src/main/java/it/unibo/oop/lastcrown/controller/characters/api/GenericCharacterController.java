@@ -1,5 +1,7 @@
 package it.unibo.oop.lastcrown.controller.characters.api;
 
+import javax.swing.JComponent;
+
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
@@ -19,6 +21,11 @@ public interface GenericCharacterController extends CharacterAttackObserver, Cha
      * @param height the height of the character animation panel
      */
     void attachCharacterAnimationPanel(int width, int height);
+
+    /**
+     * @return the graphical component linked to this character controller
+     */
+    JComponent getGraphicalComponent();
 
     /**
      * Make the linked character start running.
