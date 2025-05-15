@@ -3,6 +3,7 @@ package it.unibo.oop.lastcrown.view.characters.api;
 import java.awt.Image;
 
 import it.unibo.oop.lastcrown.view.AnimationPanel;
+import it.unibo.oop.lastcrown.view.ReadOnlyAnimationPanel;
 
 /**
  * An interface modeling an animation panel of one specific character.

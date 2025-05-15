@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.view.characters.api;
+package it.unibo.oop.lastcrown.view;
 
 import javax.swing.JComponent;
 

@@ -2,8 +2,6 @@ package it.unibo.oop.lastcrown.view;
 
 import java.lang.reflect.Proxy;
 
-import it.unibo.oop.lastcrown.view.characters.api.ReadOnlyAnimationPanel;
-
 /**
  * A proxy that returns a protected version of the given Animation Panel.
  * It prevents all possible unpredicted external modification and it permits 
