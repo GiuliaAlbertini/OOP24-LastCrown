@@ -66,7 +66,7 @@ public class DeckImpl implements Deck, UserCollectionListener {
         }
         final CardType type;
         try {
-            type = CardType.valueOf(card.type());
+            type = card.type();
         } catch (final IllegalArgumentException e) {
             LOG.warning("Unknown card type: " + card.type());
             return;
@@ -117,7 +117,7 @@ public class DeckImpl implements Deck, UserCollectionListener {
         return this.userCollection.stream()
             .filter(c -> {
                 try {
-                    return CardType.valueOf(c.type()) == CardType.HERO;
+                    return c.type() == CardType.HERO;
                 } catch (final IllegalArgumentException e) {
                     return false;
                 }
@@ -134,7 +134,7 @@ public class DeckImpl implements Deck, UserCollectionListener {
         if (!newHero.equals(heroId)) {
             this.deck.removeIf(c -> {
                 try {
-                    return CardType.valueOf(c.type()) == CardType.HERO;
+                    return c.type() == CardType.HERO;
                 } catch (final IllegalArgumentException e) {
                     return false;
                 }
@@ -153,7 +153,7 @@ public class DeckImpl implements Deck, UserCollectionListener {
         return this.deck.stream()
             .filter(c -> {
                 try {
-                    return CardType.valueOf(c.type()) == type;
+                    return c.type() == type;
                 } catch (final IllegalArgumentException e) {
                     return false;
                 }
