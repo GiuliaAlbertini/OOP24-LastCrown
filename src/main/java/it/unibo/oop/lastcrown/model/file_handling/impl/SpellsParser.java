@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.file_handling.api.Parser;
 import it.unibo.oop.lastcrown.model.spell.api.Spell;
 import it.unibo.oop.lastcrown.model.spell.api.SpellEffect;
@@ -20,7 +21,6 @@ public class SpellsParser implements Parser<Map<CardIdentifier, Spell>> {
     private static final String DELIMITER = ",";
     private static final int EXPECTED_FIELDS = 8;
     private static final String NONE = "none";
-    private static final String TYPE_SPELL = "spell";
 
     @Override
     public final Map<CardIdentifier, Spell> parse(final List<String> lines) {
@@ -74,7 +74,7 @@ public class SpellsParser implements Parser<Map<CardIdentifier, Spell>> {
             effect,
             actionRange
         );
-        return Map.entry(new CardIdentifier(id, TYPE_SPELL), spell);
+        return Map.entry(new CardIdentifier(id, CardType.SPELL), spell);
     }
 
     private int parseInt(final String token, final String fieldName, final String context) {

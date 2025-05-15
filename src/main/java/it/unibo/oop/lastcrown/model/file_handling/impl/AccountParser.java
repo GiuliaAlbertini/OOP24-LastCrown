@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.file_handling.api.Parser;
 import it.unibo.oop.lastcrown.model.user.api.Account;
 import it.unibo.oop.lastcrown.model.user.api.UserCollection;
@@ -84,7 +85,19 @@ public class AccountParser implements Parser<Account> {
             throw new IllegalArgumentException("Invalid card token: '" + token + "'");
         }
         final int count = parseIntField(parts[0], "card count");
-        final String type = parts[1].trim();
+        final CardType type = getCardType(parts[1].trim());
         return new CardIdentifier(count, type);
+    }
+
+    private CardType getCardType(final String type) {
+        if (CardType.MELEE.get().equalsIgnoreCase(type)) {
+            return CardType.MELEE;
+        } else if (CardType.RANGED.get().equalsIgnoreCase(type)) {
+            return CardType.RANGED;
+        } else if (CardType.HERO.get().equalsIgnoreCase(type)) {
+            return CardType.HERO;
+        } else {
+            return CardType.SPELL;
+        }
     }
 }
