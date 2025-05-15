@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 
+import it.unibo.oop.lastcrown.view.AnimationPanelProxy;
 import it.unibo.oop.lastcrown.view.ImageLoader;
+import it.unibo.oop.lastcrown.view.ReadOnlyAnimationPanel;
 import it.unibo.oop.lastcrown.view.spell.api.SpellGUI;
 
 /**
@@ -38,23 +40,24 @@ public class SpellGUIImpl implements SpellGUI {
     }
 
     @Override
-    public final void setSpellAnimationPanelPosition(final JPanel matchPanel, final int x, final int y) {
-        this.animationPanel.setBounds(x - this.frameSize / 2, y - this.frameSize / 2, this.frameSize, this.frameSize);
-        matchPanel.add(animationPanel);
-        matchPanel.repaint();
-        new Thread(() -> this.startAnimationSequence(matchPanel)).start();
+    public final JComponent getGraphicalComponent() {
+        final ReadOnlyAnimationPanel safePanel = AnimationPanelProxy.createSafePanel(this.animationPanel);
+        return safePanel.getComponent();
+    }
+
+    @Override
+    public final void startAnimation() {
+        new Thread(this::startAnimationSequence).start();
     }
 
     /**
      * Start this spell animation sequence. At the end remove the spell panel from the superior panel.
-     * @param matchPanel the panel where the animation must appear
      */
-    private void startAnimationSequence(final JPanel matchPanel) {
+    private void startAnimationSequence() {
         if (this.duration.isEmpty()) {
             for (final BufferedImage bufferedImage : spellImages) {
                 this.nextFrame(bufferedImage);
             }
-            this.animationPanel.setSpellImage(null);
         } else {
             boolean finished = false;
             final int startTime = (int) System.currentTimeMillis();
@@ -62,23 +65,21 @@ public class SpellGUIImpl implements SpellGUI {
                 final int elapsedTime = (int) (System.currentTimeMillis() - startTime);
                 if (elapsedTime >= this.duration.get() * MILLIS) {
                     finished = true;
-                    this.animationPanel.setSpellImage(null);
                 } else {
                     frameCont = (frameCont + 1) % this.spellImages.size();
                     this.nextFrame(this.spellImages.get(frameCont));
                 }
             }
         }
-        matchPanel.remove(this.animationPanel);
-        matchPanel.repaint();
+        this.nextFrame(null);
     }
 
     /**
      * Set the next animation frame to be shown.
      * @param frame the next frame to be shown
      */
-    private void nextFrame(final BufferedImage frame) {
-        this.animationPanel.setSpellImage(frame);
+    private  void nextFrame(final BufferedImage frame) {
+        animationPanel.setSpellImage(frame);
         try {
             Thread.sleep(TIME);
         } catch (final InterruptedException e) {
