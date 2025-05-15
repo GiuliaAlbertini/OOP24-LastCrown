@@ -74,7 +74,7 @@ public class SpellsParser implements Parser<Map<CardIdentifier, Spell>> {
             effect,
             actionRange
         );
-        return Map.entry(new CardIdentifier(id, CardType.SPELL.get()), spell);
+        return Map.entry(new CardIdentifier(id, CardType.SPELL), spell);
     }
 
     private int parseInt(final String token, final String fieldName, final String context) {

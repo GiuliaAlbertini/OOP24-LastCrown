@@ -76,7 +76,7 @@ public class HeroesParser implements Parser<Map<CardIdentifier, Hero>> {
             wallHealth
         );
 
-        final CardIdentifier key = new CardIdentifier(id, CardType.HERO.get());
+        final CardIdentifier key = new CardIdentifier(id, CardType.HERO);
         return Map.entry(key, hero);
     }
 
