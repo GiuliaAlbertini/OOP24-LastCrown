@@ -3,12 +3,14 @@ package it.unibo.oop.lastcrown.view.spell;
 import java.awt.Graphics;
 import java.awt.Image;
 
-import javax.swing.JPanel;
+import javax.swing.JComponent;
+
+import it.unibo.oop.lastcrown.view.AnimationPanel;
 
 /**
  * The panel linked to a specific spell.
  */
-final class SpellAnimationPanel extends JPanel {
+final class SpellAnimationPanel extends JComponent implements AnimationPanel {
     private static final long serialVersionUID = 1L;
     private transient Image currentImage;
 
