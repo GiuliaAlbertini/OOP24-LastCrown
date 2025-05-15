@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.model.characters.impl.playablecharacter.PlayableCharacterFactory;
 import it.unibo.oop.lastcrown.model.file_handling.api.Parser;
@@ -46,7 +47,9 @@ public class PlayableCharactersParser implements Parser<Map<CardIdentifier, Play
         final String name = it.next().trim();
         final int coinCost = parseIntField(it.next(), "coin cost", line);
         final int copiesPerRound = parseIntField(it.next(), "copies per round", line);
-        final String type = it.next().trim();
+        final CardType type = "melee".equalsIgnoreCase(it.next().trim())
+                                    ? CardType.MELEE
+                                    : CardType.RANGED;
         final int attackValue = parseIntField(it.next(), "attack value", line);
         final int actionRange = parseIntField(it.next(), "action range", line);
         final int healthValue = parseIntField(it.next(), "health value", line);
