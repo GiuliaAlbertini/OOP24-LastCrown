@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.view.spell;
+package it.unibo.oop.lastcrown.view.spell.impl;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.view.ImageLoader;
+import it.unibo.oop.lastcrown.view.spell.api.SpellGUI;
 
 /**
  * A standard implementation of SpellGUI interface.

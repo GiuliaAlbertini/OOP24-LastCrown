@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.view.spell;
+package it.unibo.oop.lastcrown.view.spell.api;
 
 import javax.swing.JPanel;
 
