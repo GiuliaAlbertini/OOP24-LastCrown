@@ -5,9 +5,10 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.model.card.CardType;
+import it.unibo.oop.lastcrown.view.AnimationPanelProxy;
 import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.characters.AnimationHandler;
 import it.unibo.oop.lastcrown.view.characters.CustomLock;
@@ -15,6 +16,7 @@ import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
+import it.unibo.oop.lastcrown.view.characters.api.ReadOnlyAnimationPanel;
 import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
 
 /**
@@ -79,11 +81,11 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
     /**
      * Create a new animation panel of this character. 
      * Set the color of the health bar according to this character type.
-     * It's public because it's designed to be overridden by PlayableCharacterGUIImpl.
+     * It's package protected because it's designed to be overridden by PlayableCharacterGUIImpl and HeroGUIImpl.
      * @param charType the type of the character
      * @return new Animation Panel of this character.
      */
-    public CharacterAnimationPanelImpl getAnimationPanel(final String charType) {
+    protected CharacterAnimationPanelImpl getAnimationPanel(final String charType) {
         final Color color;
         if (CardType.ENEMY.get().equals(charType) || CardType.BOSS.get().equals(charType)) {
             color = Color.RED;
@@ -94,19 +96,9 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
     }
 
     @Override
-    public final void setAnimationPanelSize(final int newWidth, final int newHeight) {
-        this.charWidth = newWidth;
-        this.charHeight = newHeight;
-        this.animationPanel.setSize(this.charWidth, this.charHeight);
-    }
-
-    @Override
-    public final void setAnimationPanelPosition(final JPanel mainPanel, final int x, final int y) {
-        this.animationPanel.setBounds(x - charWidth / 2, y - charHeight / 2, charWidth, charHeight);
-        this.animationPanel.setHealthBarAlignment();
-        mainPanel.add(animationPanel);
-        mainPanel.repaint();
-        this.startStopLoop();
+    public final JComponent getGraphicalComponent() {
+        final ReadOnlyAnimationPanel safePanel = AnimationPanelProxy.createSafePanel(this.animationPanel); 
+        return safePanel.getComponent();
     }
 
     @Override

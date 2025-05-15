@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.model.card.CardType;
@@ -81,5 +82,10 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
     public void paint(final Graphics g) {
         super.paint(g);
         g.drawImage(currentImage, 0, 0, this);
+    }
+
+    @Override
+    public JComponent getComponent() {
+        return this;
     }
 }

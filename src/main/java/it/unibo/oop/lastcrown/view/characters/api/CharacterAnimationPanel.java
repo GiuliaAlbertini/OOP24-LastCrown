@@ -7,7 +7,7 @@ import it.unibo.oop.lastcrown.view.AnimationPanel;
 /**
  * An interface modeling an animation panel of one specific character.
  */
-public interface CharacterAnimationPanel extends AnimationPanel {
+public interface CharacterAnimationPanel extends AnimationPanel, ReadOnlyAnimationPanel {
 
     /**
      * Set the next frame to be shown.
