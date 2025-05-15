@@ -42,13 +42,11 @@ public class HeroControllerImpl extends GenericCharacterControllerImpl implement
     @Override
     public final void setHeroInGame(final JPanel matchPanel, final int initialX, final int initialY) {
         this.view.useInGameFrames();
-        this.setCharacterPanelPosition(matchPanel, initialX, initialY);
     }
 
     @Override
     public final void setHeroInShop(final JPanel shopPanel, final int initialX, final int initialY) {
         this.view.useShopFrames();
-        this.setCharacterPanelPosition(shopPanel, initialX, initialY);
     }
 
     @Override
