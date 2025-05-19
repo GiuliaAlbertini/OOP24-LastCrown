@@ -36,5 +36,5 @@ public interface MainController {
      *
      * @return the CombatController used during combat
      */
-    CombatController getCombatController();
+    MatchController getMatchController();
 }

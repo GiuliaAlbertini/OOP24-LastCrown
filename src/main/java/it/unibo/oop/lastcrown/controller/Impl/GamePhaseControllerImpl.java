@@ -11,7 +11,7 @@ public class GamePhaseControllerImpl implements GamePhaseController{
     public GamePhaseControllerImpl(final MainController controller){
         this.controller=controller;
         this.view= controller.getMainView();
-        this.currenState= GameState.MENU;
+        this.currenState= GameState.GAME;
     }
 
     @Override

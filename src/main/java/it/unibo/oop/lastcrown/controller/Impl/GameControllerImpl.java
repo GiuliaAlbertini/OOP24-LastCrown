@@ -14,10 +14,11 @@ public class GameControllerImpl implements GameController{
     
     @Override
     public void run(final boolean exploration) {
-        if(this.gameLoop == null && this.gameLoop.isAlive()){
+        if(this.gameLoop == null || !this.gameLoop.isAlive()){
             if(!exploration){
                 this.endGame();
             }else{
+                 System.out.println("Il gioco è iniziato!");
                 this.startGameLoop();
             }
         }
