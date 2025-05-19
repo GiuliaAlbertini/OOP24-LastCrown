@@ -5,6 +5,7 @@ import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterControl
 import it.unibo.oop.lastcrown.controller.characters.impl.GenericCharacterControllerImpl;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
+import it.unibo.oop.lastcrown.view.characters.api.Movement;
 import it.unibo.oop.lastcrown.view.characters.api.PlayableCharacterGUI;
 import it.unibo.oop.lastcrown.view.characters.impl.PlayableCharacterGUIImpl;
 
@@ -60,5 +61,20 @@ public class PlayableCharacterControllerImpl extends GenericCharacterControllerI
     @Override
     public final int getActionRange() {
         return this.actionRange;
+    }
+
+     @Override
+    public final void setManualRunningAnimation() {
+        this.view.startManualRunningAnimation();
+    }
+
+    @Override
+    public final void stopManualRunningAnimation() {
+        this.view.stopManualRunningAnimation();
+    }
+
+    @Override
+    public final void movePanel(final Movement movement) {
+        this.view.doSelectedMovement(movement);
     }
 }

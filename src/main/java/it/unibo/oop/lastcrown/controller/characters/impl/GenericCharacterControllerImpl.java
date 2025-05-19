@@ -2,7 +2,7 @@ package it.unibo.oop.lastcrown.controller.characters.impl;
 
 import java.util.Objects;
 
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
@@ -55,17 +55,17 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
         this.view.createAnimationPanel();
     }
 
+    @Override
+    public final JComponent getGraphicalComponent() {
+        return this.view.getGraphicalComponent();
+    }
+
     /**
      * @param width the width of the new animation panel 
      * @param height the width of the new animation panel 
      * @return new linked character GUI.
      */
     public abstract GenericCharacterGUI createView(int width, int height);
-
-    @Override
-    public final void setCharacterPanelPosition(final JPanel matchPanel, final int initialX, final int initialY) {
-        this.view.setAnimationPanelPosition(matchPanel, initialX, initialY);
-    }
 
     @Override
     public final void startRunning() {

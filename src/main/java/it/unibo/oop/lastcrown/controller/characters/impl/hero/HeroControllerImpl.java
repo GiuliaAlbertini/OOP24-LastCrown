@@ -1,7 +1,5 @@
 package it.unibo.oop.lastcrown.controller.characters.impl.hero;
 
-import javax.swing.JPanel;
-
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
 import it.unibo.oop.lastcrown.controller.characters.impl.GenericCharacterControllerImpl;
@@ -40,15 +38,13 @@ public class HeroControllerImpl extends GenericCharacterControllerImpl implement
     }
 
     @Override
-    public final void setHeroInGame(final JPanel matchPanel, final int initialX, final int initialY) {
+    public final void setHeroInGame() {
         this.view.useInGameFrames();
-        this.setCharacterPanelPosition(matchPanel, initialX, initialY);
     }
 
     @Override
-    public final void setHeroInShop(final JPanel shopPanel, final int initialX, final int initialY) {
+    public final void setHeroInShop() {
         this.view.useShopFrames();
-        this.setCharacterPanelPosition(shopPanel, initialX, initialY);
     }
 
     @Override

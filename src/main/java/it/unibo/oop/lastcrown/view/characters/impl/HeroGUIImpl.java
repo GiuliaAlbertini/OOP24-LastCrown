@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.view.characters.impl;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class HeroGUIImpl extends GenericCharacterGUIImpl implements HeroGUI {
     private static final double RESIZE_SCALE = 0.5;
     private int width;
     private int height;
+    private CharacterAnimationPanelImpl animationPanel;
     private final int widthVariation;
     private final int heightVariation;
     private List<BufferedImage> runImages;
@@ -37,12 +39,32 @@ public class HeroGUIImpl extends GenericCharacterGUIImpl implements HeroGUI {
         super(atckObs, movObs, CardType.HERO.get(), charName, speedMultiplier, width, height);
         this.width = width;
         this.height = height;
+        this.animationPanel = null;
         this.widthVariation = (int) (this.width * RESIZE_SCALE);
         this.heightVariation = (int) (this.height * RESIZE_SCALE);
         this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get(), CardType.HERO.get(), charName);
         this.runLeftImages = this.getSelectedFrames(Keyword.RUN_LEFT.get(), CardType.HERO.get(), charName);
         this.stopImages = this.getSelectedFrames(Keyword.STOP.get(), CardType.HERO.get(), charName);
         this.stopLeftImages = this.getSelectedFrames(Keyword.STOP_LEFT.get(), CardType.HERO.get(), charName);
+    }
+
+
+    @Override
+    public final CharacterAnimationPanelImpl getAnimationPanel(final String charType) {
+        final var newPanel = CharacterAnimationPanelImpl.create(width, height, charType, Color.GREEN);
+        this.animationPanel = newPanel;
+        return newPanel;
+    }
+       /**
+     * Set the size of the animation panel linked to this character GUI.
+     * @param newWidth new panel width
+     * @param newHeight new panel height
+     */
+     private void setAnimationPanelSize(final int newWidth, final int newHeight) {
+        this.width = newWidth;
+        this.height = newHeight;
+        this.animationPanel.setSize(newWidth, newHeight);
+        this.animationPanel.setHealthBarAlignment();
     }
 
     @Override
