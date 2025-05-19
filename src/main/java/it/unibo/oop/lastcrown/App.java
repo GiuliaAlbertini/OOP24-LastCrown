@@ -1,17 +1,10 @@
 package it.unibo.oop.lastcrown;
-
-import it.unibo.oop.lastcrown.controller.impl.Gameloop;
-import it.unibo.oop.lastcrown.view.api.MainView;
+import it.unibo.oop.lastcrown.controller.impl.MainControllerImpl;
 
 public final class App {
-    private App() {
-        throw new UnsupportedOperationException();
-    }
+    private App() { }
 
     public static void main(final String[] args) {
-        Gameloop controller = new Gameloop(); // 1. crea controller
-        MainView view = new MainView(controller);                 // 2. crea vista
-        controller.setView(view);                                 // 3. collega vista al controller
-        controller.run();                                         // 4. avvia il gioco
+       new MainControllerImpl();              
     }
 }
