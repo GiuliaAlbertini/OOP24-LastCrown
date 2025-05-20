@@ -7,9 +7,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
-import it.unibo.oop.lastcrown.view.AnimationPanelProxy;
 import it.unibo.oop.lastcrown.view.ImageLoader;
-import it.unibo.oop.lastcrown.view.ReadOnlyAnimationPanel;
 import it.unibo.oop.lastcrown.view.spell.api.SpellGUI;
 
 /**
@@ -41,8 +39,7 @@ public class SpellGUIImpl implements SpellGUI {
 
     @Override
     public final JComponent getGraphicalComponent() {
-        final ReadOnlyAnimationPanel safePanel = AnimationPanelProxy.createSafePanel(this.animationPanel);
-        return safePanel.getComponent();
+        return this.animationPanel.getComponent();
     }
 
     @Override
