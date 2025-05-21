@@ -88,9 +88,4 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
     public JComponent getComponent() {
         return this;
     }
-
-    @Override
-    public BufferedImage getCurrentFrame() {
-        return this.currentImage;
-    }
 }
