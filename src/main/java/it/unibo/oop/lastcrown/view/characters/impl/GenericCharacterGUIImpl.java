@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.characters.AnimationHandler;
@@ -36,6 +37,7 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
 
     /**
      * @param atckObs the observer of the character attacks
+     * @param id the id of the linked character controller
      * @param movObs the observer of the character movements
      * @param charType the type of the character
      * @param charName the name of the character
@@ -43,13 +45,14 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
      * @param width the horizontal size of the character animation panel
      * @param height the vertical size of the character animation panel
      */
-    public GenericCharacterGUIImpl(final CharacterAttackObserver atckObs, final CharacterMovementObserver movObs,
-     final String charType, final String charName, final Double speedMultiplier, final int width, final int height) {
+    public GenericCharacterGUIImpl(final CharacterAttackObserver atckObs, final CardIdentifier id, 
+     final CharacterMovementObserver movObs, final String charType, final String charName,
+     final Double speedMultiplier, final int width, final int height) {
         this.atckObs = atckObs;
         this.charType = charType;
         this.charWidth = width;
         this.charHeight = height;
-        this.anHandler = new AnimationHandler(movObs, speedMultiplier);
+        this.anHandler = new AnimationHandler(movObs, id, speedMultiplier);
         this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get(), charType, charName);
         this.stopImages = this.getSelectedFrames(Keyword.STOP.get(), charType, charName);
         this.deathImages = this.getSelectedFrames(Keyword.DEATH.get(), charType, charName);
