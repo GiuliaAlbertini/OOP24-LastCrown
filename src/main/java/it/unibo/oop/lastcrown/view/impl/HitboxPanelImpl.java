@@ -6,11 +6,11 @@ import javax.swing.JPanel;
 import it.unibo.oop.lastcrown.model.api.Hitbox;
 import it.unibo.oop.lastcrown.model.impl.Point2DImpl;
 
-public class HitboxPanel {
+public class HitboxPanelImpl {
     Hitbox hitbox;
     JPanel hitboxPanel;
 
-    public HitboxPanel(Hitbox hitbox){
+    public HitboxPanelImpl(Hitbox hitbox){
         this.hitbox=hitbox;
         this.hitboxPanel= new JPanel();
         this.hitboxPanel.setBackground(new Color(255, 0, 0, 100)); // Rosso semi-trasparente per debug

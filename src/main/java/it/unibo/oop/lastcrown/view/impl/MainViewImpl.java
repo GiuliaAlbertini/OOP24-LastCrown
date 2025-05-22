@@ -2,19 +2,21 @@ package it.unibo.oop.lastcrown.view.impl;
 
 import it.unibo.oop.lastcrown.controller.api.MainController;
 import it.unibo.oop.lastcrown.controller.impl.GameState;
+import it.unibo.oop.lastcrown.view.GamePanel;
 import it.unibo.oop.lastcrown.view.MainView;
-import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class MainViewImpl extends JFrame implements MainView {
     
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
+    private GamePanel gamePanel;  // la classe wrapper
     private final MainController controller;
-    GenericCharacterGUI character;
-    
+    private final JButton addCharacterBtn = new JButton("Aggiungi personaggio");  
+
     public MainViewImpl(MainController controller) {
         this.controller = controller;
         this.cardLayout = new CardLayout();
@@ -39,20 +41,10 @@ public class MainViewImpl extends JFrame implements MainView {
         menuPanel.setName(GameState.MENU.toString());
         menuPanel.add(new JLabel("Menu del gioco"));
 
-        // Game Panel - IMPORTANTE: usa layout null per posizionamento assoluto
-        JPanel gamePanel = new JPanel();
-        gamePanel.setLayout(null);
-        gamePanel.setName(GameState.GAME.toString());
-        gamePanel.setBackground(Color.LIGHT_GRAY); // Colore di debug
-        gamePanel.setPreferredSize(new Dimension(800, 600));
-        
 
-        JButton addCharacterBtn = new JButton("Aggiungi personaggio");
+        this.gamePanel= new GamePanelImpl();
         addCharacterBtn.setBounds(10, 50, 200, 30);
-        addCharacterBtn.addActionListener(e -> controller.getMatchController().onAddCharacterButtonPressed());
-        gamePanel.add(addCharacterBtn);
-
-
+        gamePanel.getPanel().add(addCharacterBtn);
 
         // Pause Panel
         JPanel pausePanel = new JPanel();
@@ -61,7 +53,7 @@ public class MainViewImpl extends JFrame implements MainView {
 
         // Aggiungi i pannelli al mainPanel
         mainPanel.add(menuPanel, GameState.MENU.toString());
-        mainPanel.add(gamePanel, GameState.GAME.toString());
+        mainPanel.add(gamePanel.getPanel(), GameState.GAME.toString());
         mainPanel.add(pausePanel, GameState.MENU_IN_GAME.toString());
     }
 
@@ -81,4 +73,16 @@ public class MainViewImpl extends JFrame implements MainView {
         }
         return null;
     }
+
+
+    @Override
+    public void setAddCharacterListener(ActionListener listener) {
+        addCharacterBtn.addActionListener(listener);
+    }
+
+    @Override
+        public GamePanel getGamePanel() {
+            return this.gamePanel;
+        }
+
 }
