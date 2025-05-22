@@ -8,9 +8,7 @@ import java.util.List;
 import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.model.card.CardType;
-import it.unibo.oop.lastcrown.view.AnimationPanelProxy;
 import it.unibo.oop.lastcrown.view.ImageLoader;
-import it.unibo.oop.lastcrown.view.ReadOnlyAnimationPanel;
 import it.unibo.oop.lastcrown.view.characters.AnimationHandler;
 import it.unibo.oop.lastcrown.view.characters.CustomLock;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
@@ -97,8 +95,7 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
 
     @Override
     public final JComponent getGraphicalComponent() {
-        final ReadOnlyAnimationPanel safePanel = AnimationPanelProxy.createSafePanel(this.animationPanel); 
-        return safePanel.getComponent();
+        return this.animationPanel.getComponent();
     }
 
     @Override

@@ -13,7 +13,7 @@ public interface GenericCharacterGUI extends AnimationInterruptor {
     void createAnimationPanel();
 
     /**
-     * @return the graphical component linked to this character.
+     * @return the read only version of the graphical component linked to this character.
      */
     JComponent getGraphicalComponent();
 

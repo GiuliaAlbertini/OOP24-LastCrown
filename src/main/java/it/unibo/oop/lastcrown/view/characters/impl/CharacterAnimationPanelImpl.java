@@ -1,7 +1,7 @@
 package it.unibo.oop.lastcrown.view.characters.impl;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -19,7 +19,7 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
     private static final double BAR_WIDTH_RESIZE = 0.75;
     private String charType;
     private CharacterHealthBar healthBar;
-    private transient Image currentImage;
+    private transient BufferedImage currentImage;
 
     private CharacterAnimationPanelImpl() { }
 
@@ -48,7 +48,7 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
     }
 
     @Override
-    public void setCharacterImage(final Image image) {
+    public void setCharacterImage(final BufferedImage image) {
         this.currentImage = image;
         this.repaint();
     }

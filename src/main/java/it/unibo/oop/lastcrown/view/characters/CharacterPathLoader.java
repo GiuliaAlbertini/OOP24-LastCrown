@@ -74,7 +74,16 @@ public final class CharacterPathLoader {
      */
     public static synchronized String loadBorderPath(final String charType) {
         return "src" + SEP + "main" + SEP + "resources" + SEP + "pngs"
-         + SEP + charType + SEP + charType + "_border";
+         + SEP + charType + SEP + charType + "_border.png";
+    }
+
+    /**
+     * @param charType the character type
+     * @param charName the character name
+     * @return the hitbox path corresponding to the given character type and names
+     */
+    public static synchronized String loadHitboxPath(final String charType, final String charName) {
+        return getGenericCharacterPath(charType, charName, Keyword.STOP.get() + 1);
     }
 
     private static String getGenericCharacterPath(final String charType, final String charName, final String keyword) {

@@ -1,6 +1,6 @@
 package it.unibo.oop.lastcrown.view.characters.api;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import it.unibo.oop.lastcrown.view.AnimationPanel;
 import it.unibo.oop.lastcrown.view.ReadOnlyAnimationPanel;
@@ -14,7 +14,7 @@ public interface CharacterAnimationPanel extends AnimationPanel, ReadOnlyAnimati
      * Set the next frame to be shown.
      * @param image the next frame to be shown
      */
-    void setCharacterImage(Image image);
+    void setCharacterImage(BufferedImage image);
 
     /**
      * Set the initial alignment of the characterHealthBar.
