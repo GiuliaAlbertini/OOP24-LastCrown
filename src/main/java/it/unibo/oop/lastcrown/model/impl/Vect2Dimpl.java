@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.model.Impl;
+package it.unibo.oop.lastcrown.model.impl;
 
 import it.unibo.oop.lastcrown.model.api.Vect2D;
 
