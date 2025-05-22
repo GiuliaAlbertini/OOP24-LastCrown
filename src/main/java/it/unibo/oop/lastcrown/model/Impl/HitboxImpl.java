@@ -41,6 +41,16 @@ public class HitboxImpl implements Hitbox{
         double centerY = this.position.y() + this.height / 2.0;
         return new Point2DImpl(centerX, centerY);
     }
+    
+    @Override
+    public void setWidth(int width) {
+        this.width = width;
+    }
+    
+    @Override
+    public void setHeight(int height) {
+        this.height = height;
+    }
 
     @Override
     //implementazione Axis-Aligned Bounding Box 

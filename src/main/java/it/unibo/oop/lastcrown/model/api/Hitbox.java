@@ -32,6 +32,21 @@ public interface Hitbox {
      * @return the height in pixels
      */
     int getHeight();
+    
+    /**
+     * Sets the width of the hitbox.
+     *
+     * @param width the width in pixels
+     */
+    void setWidth(int width);
+
+        /**
+     * Sets the height of the hitbox.
+     *
+     * @param height the height in pixels
+     */
+    void setHeight(int height); 
+
 
     /**
      * Calculates and returns the center point of the hitbox.
