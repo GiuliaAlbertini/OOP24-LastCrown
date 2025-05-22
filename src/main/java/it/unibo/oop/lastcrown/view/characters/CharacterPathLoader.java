@@ -74,7 +74,7 @@ public final class CharacterPathLoader {
      */
     public static synchronized String loadBorderPath(final String charType) {
         return "src" + SEP + "main" + SEP + "resources" + SEP + "pngs"
-         + SEP + charType + SEP + charType + "_border";
+         + SEP + charType + SEP + charType + "_border.png";
     }
 
     /**
