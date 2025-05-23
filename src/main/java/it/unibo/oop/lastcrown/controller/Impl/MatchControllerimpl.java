@@ -1,4 +1,5 @@
 package it.unibo.oop.lastcrown.controller.impl;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
@@ -17,11 +18,12 @@ import it.unibo.oop.lastcrown.model.characters.impl.playablecharacter.PlayableCh
 import it.unibo.oop.lastcrown.model.impl.HitboxImpl;
 import it.unibo.oop.lastcrown.model.impl.Point2DImpl;
 import it.unibo.oop.lastcrown.view.GamePanel;
+import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.MainView;
 import it.unibo.oop.lastcrown.view.characters.AnimationHandler;
+import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
-import it.unibo.oop.lastcrown.view.characters.api.Movement;
 import it.unibo.oop.lastcrown.view.impl.HitboxMaskBounds;
 import it.unibo.oop.lastcrown.view.impl.HitboxPanelImpl;
 
@@ -75,17 +77,21 @@ public class MatchControllerimpl implements MatchController {
             "Knight", CardType.MELEE, 20, 10, 20, 2, 100, 2, 100);
         int newId = characters.size();
         PlayableCharacterController soldato= PlCharControllerFactory.createPlCharController(dummyDeathObs, newId, playableChar);
-        soldato.attachCharacterAnimationPanel(80, 70);
+        soldato.attachCharacterAnimationPanel(150, 100);
         JComponent charComp = soldato.getGraphicalComponent();
         charComp.setLocation(100, 100);
         gamePanel.addCharacterComponent(charComp);
-        soldato.startRunning();
+        
 
-
-        Hitbox hitbox = new HitboxImpl(50, 50, new Point2DImpl(charComp.getX(), charComp.getY())); // inizializza come vuoi
+        
+        Hitbox hitbox = new HitboxImpl(10, 10, new Point2DImpl(charComp.getX(), charComp.getY())); // inizializza come vuoi
         HitboxPanelImpl hitboxPanel = new HitboxPanelImpl(hitbox);
         // Assumi che charComponent sia il componente che disegna il personaggio
+        String path=CharacterPathLoader.loadHitboxPath("melee", "Knight");
+        BufferedImage image=ImageLoader.getImage(path, 150, 100);
         HitboxMaskBounds hitboxMaskBounds = new HitboxMaskBounds(hitbox, charComp, hitboxPanel);
-        
+        hitboxMaskBounds.calculateHitboxCenter(image);
+        gamePanel.addCharacterComponent(hitboxPanel.getHitboxPanel());
+        soldato.stop();
     }
 }

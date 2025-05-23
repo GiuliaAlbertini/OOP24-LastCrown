@@ -6,9 +6,8 @@ import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.model.api.Hitbox;
 import it.unibo.oop.lastcrown.model.impl.Point2DImpl;
-import it.unibo.oop.lastcrown.view.api.FrameListener;
 
-public class HitboxMaskBounds implements FrameListener {
+public class HitboxMaskBounds{
     int width,height,minX,minY,maxX,maxY; 
     private final Hitbox hitbox;
     private final JComponent charComponent; 
@@ -51,10 +50,5 @@ public class HitboxMaskBounds implements FrameListener {
         
         System.out.println("Hitbox aggiornata: pos=" + hitbox.getPosition() + 
                            " size=" + newWidth + "x" + newHeight);
-    }
-
-    @Override
-    public void onFrame(BufferedImage frame) {
-        calculateHitboxCenter(frame);
     }
 }

@@ -45,7 +45,7 @@ public class AnimationHandler {
     public void startAnimationSequence(final List<BufferedImage> frames, final Keyword keyword,
      final CharacterAnimationPanel panel) {
         switch (keyword) {
-            case Keyword.STOP, Keyword.STOP_LEFT, Keyword.ATTACK, Keyword.DEATH:
+            case STOP, STOP_LEFT, ATTACK, DEATH:
                 for (int i = 0; i < frames.size() && !this.stop; i++) {
                     panel.setCharacterImage(frames.get(i));
                     try {
@@ -56,7 +56,7 @@ public class AnimationHandler {
                 }
                 break;
 
-            case Keyword.RUN_RIGHT, Keyword.RETREAT:
+            case RUN_RIGHT, RETREAT:
                 this.startRunAnimation(frames, (int) (MOVEMENT_PIXELS * this.speedMultiplier), panel);
                 break;
 
@@ -64,15 +64,15 @@ public class AnimationHandler {
                 this.startRunAnimation(frames, -(int) (MOVEMENT_PIXELS * this.speedMultiplier), panel);
                 break;
 
-            case Keyword.JUMPUP:
+            case JUMPUP:
                 this.startJumpAnimation(frames, 0, -(int) (this.speedMultiplier * JUMPING_SIZE), panel);
                 break;
 
-            case Keyword.JUMPDOWN:
+            case JUMPDOWN:
                 this.startJumpAnimation(frames, 0, (int) (this.speedMultiplier * JUMPING_SIZE), panel);
                 break;
 
-            case Keyword.JUMPFORWARD:
+            case JUMPFORWARD:
                 final List<BufferedImage> jumpUpFrames = frames.subList(0, frames.size() / 2);
                 final List<BufferedImage> jumpDownFrames = frames.subList(frames.size() / 2, frames.size());
                 this.startJumpAnimation(jumpUpFrames, (int) (this.speedMultiplier * JUMPING_SIZE),

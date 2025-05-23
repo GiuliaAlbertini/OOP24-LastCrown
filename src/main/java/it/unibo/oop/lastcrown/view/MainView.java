@@ -1,7 +1,5 @@
 package it.unibo.oop.lastcrown.view;
 import java.awt.event.ActionListener;
-
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import it.unibo.oop.lastcrown.controller.impl.GameState;
 public interface MainView {

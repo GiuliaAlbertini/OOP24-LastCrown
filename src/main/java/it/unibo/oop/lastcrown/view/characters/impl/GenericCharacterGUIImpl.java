@@ -146,12 +146,12 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
             this.acquireLock();
             this.start();
             switch (keyword) {
-                case Keyword.STOP, Keyword.STOP_LEFT, Keyword.RUN_RIGHT, Keyword.RUN_LEFT, Keyword.RETREAT:
+                case STOP, STOP_LEFT, RUN_RIGHT, RUN_LEFT, RETREAT:
                     while (!done) {
                         this.anHandler.startAnimationSequence(frames, keyword, this.animationPanel);
                     }
                     break;
-                case Keyword.ATTACK:
+                case ATTACK:
                     int cont = 0;
                     while (!done) {
                         this.anHandler.startAnimationSequence(this.attacksImages.get(cont), keyword, animationPanel);
@@ -159,7 +159,7 @@ public class GenericCharacterGUIImpl implements GenericCharacterGUI {
                         cont = (cont + 1) % this.attacksImages.size();
                     }
                     break;
-                case Keyword.DEATH, Keyword.JUMPUP, Keyword.JUMPDOWN, Keyword.JUMPFORWARD:
+                case DEATH, JUMPUP, JUMPDOWN, JUMPFORWARD:
                     this.anHandler.startAnimationSequence(frames, keyword, this.animationPanel);
                     break;
             }
