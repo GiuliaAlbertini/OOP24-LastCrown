@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAnimationPanel;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
@@ -21,6 +22,7 @@ public class PlayableCharacterGUIImpl extends GenericCharacterGUIImpl implements
     private final List<BufferedImage> jumpDownImages;
     private final List<BufferedImage> jumpForwardImages;
     private final CharacterMovementObserver movObs;
+    private final CardIdentifier id;
     private final int panelWidth;
     private final int panelHeight;
     private CharacterAnimationPanel animationPanel;
@@ -28,6 +30,7 @@ public class PlayableCharacterGUIImpl extends GenericCharacterGUIImpl implements
 
     /**
      * @param atckObs the observer of the character attacks
+     * @param id the id of the linked character controller
      * @param movObs the observer of the character movements
      * @param charType the type of the character
      * @param charName the name of the character
@@ -35,12 +38,14 @@ public class PlayableCharacterGUIImpl extends GenericCharacterGUIImpl implements
      * @param width the horizontal size of the character animation panel
      * @param height the vertical size of the character animation panel
      */
-    public PlayableCharacterGUIImpl(final CharacterAttackObserver atckObs, final CharacterMovementObserver movObs,
-     final String charType, final String charName, final Double speedMultiplier, final int width, final int height) {
-        super(atckObs, movObs, charType, charName, speedMultiplier, width, height);
+    public PlayableCharacterGUIImpl(final CharacterAttackObserver atckObs, final CardIdentifier id,
+     final CharacterMovementObserver movObs, final String charType, final String charName,
+      final Double speedMultiplier, final int width, final int height) {
+        super(atckObs, id, movObs, charType, charName, speedMultiplier, width, height);
         this.cont = 0;
         this.animationPanel = null;
         this.movObs = movObs;
+        this.id = id;
         this.panelWidth = width;
         this.panelHeight = height;
         this.runImages = this.getSelectedFrames(Keyword.RUN_RIGHT.get(), charType, charName);
@@ -86,7 +91,7 @@ public class PlayableCharacterGUIImpl extends GenericCharacterGUIImpl implements
         this.animationPanel.setCharacterImage(this.runImages.get(cont));
         this.animationPanel.setLocation(this.animationPanel.getX() + movement.x(),
         this.animationPanel.getY() + movement.y());
-        this.movObs.notifyMovement(movement.x(), movement.y());
+        this.movObs.notifyMovement(id, movement.x(), movement.y());
         cont = (cont + 1) % this.runImages.size();
     }
 

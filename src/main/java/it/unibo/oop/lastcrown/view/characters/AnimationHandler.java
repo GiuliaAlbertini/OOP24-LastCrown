@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.logging.Logger;
 
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAnimationPanel;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
 
@@ -15,16 +16,20 @@ public class AnimationHandler {
     private static final int JUMPING_SIZE = 3;
     private static final int MOVEMENT_PIXELS = 5;
     private static final int TIME = 100;
-     private final CharacterMovementObserver observer;
+    private final CharacterMovementObserver observer;
+    private final CardIdentifier id;
     private volatile Double speedMultiplier;
     private volatile boolean stop;
 
     /**
      * @param movObs the observer of the character movements
+     * @param id the id of the linked character controller
      * @param speedMultiplier the speedMultiplier applied to the animations
      */
-    public AnimationHandler(final CharacterMovementObserver movObs, final Double speedMultiplier) {
+    public AnimationHandler(final CharacterMovementObserver movObs,
+     final CardIdentifier id, final Double speedMultiplier) {
         this.observer = movObs;
+        this.id = id;
         this.speedMultiplier = speedMultiplier;
     }
 
@@ -94,7 +99,7 @@ public class AnimationHandler {
         for (int i = 0; i < frames.size() && !this.stop; i++) {
             panel.setCharacterImage(frames.get(i));
             panel.setLocation(panel.getX() + variation, panel.getY());
-            this.observer.notifyMovement(variation, 0);
+            this.observer.notifyMovement(id, variation, 0);
             try {
                 Thread.sleep(TIME);
             } catch (final InterruptedException e) {
@@ -116,7 +121,7 @@ public class AnimationHandler {
         for (int i = 0; i < frames.size() && !this.stop; i++) {
             panel.setCharacterImage(frames.get(i));
             panel.setLocation(panel.getX() + xVariation, panel.getY() + yVariation);
-            this.observer.notifyMovement(xVariation, yVariation);
+            this.observer.notifyMovement(id, xVariation, yVariation);
             try {
                 Thread.sleep(TIME);
             } catch (final InterruptedException e) {

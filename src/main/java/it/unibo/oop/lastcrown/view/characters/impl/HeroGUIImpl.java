@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
@@ -28,15 +29,17 @@ public class HeroGUIImpl extends GenericCharacterGUIImpl implements HeroGUI {
 
     /**
      * @param atckObs the observer of the character attacks
+     * @param id the id of the linked character controller
      * @param movObs the observer of the character movements
      * @param charName the name of the enemy
      * @param speedMultiplier the speed multiplier of the enemy
      * @param width the horizontal size of the character animation panel
      * @param height the vertical size of the character animation panel
      */
-    public HeroGUIImpl(final CharacterAttackObserver atckObs, final CharacterMovementObserver movObs,
-     final String charName, final Double speedMultiplier, final int width, final int height) {
-        super(atckObs, movObs, CardType.HERO.get(), charName, speedMultiplier, width, height);
+    public HeroGUIImpl(final CharacterAttackObserver atckObs, final CardIdentifier id,
+     final CharacterMovementObserver movObs, final String charName, 
+     final Double speedMultiplier, final int width, final int height) {
+        super(atckObs, id, movObs, CardType.HERO.get(), charName, speedMultiplier, width, height);
         this.width = width;
         this.height = height;
         this.animationPanel = null;

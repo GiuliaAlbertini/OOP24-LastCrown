@@ -3,6 +3,7 @@ package it.unibo.oop.lastcrown.view.characters.impl;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
@@ -17,6 +18,7 @@ public class EnemyGUIImpl extends GenericCharacterGUIImpl implements EnemyGUI {
 
     /**
      * @param atckObs the observer of the enemy attacks
+     * @param id the id of the linked character controller
      * @param movObs the observer of the enemy movements
      * @param charType the type of the enemy (normal enemy or boss)
      * @param charName the name of the enemy
@@ -24,9 +26,10 @@ public class EnemyGUIImpl extends GenericCharacterGUIImpl implements EnemyGUI {
      * @param width the horizontal size of the character animation panel
      * @param height the vertical size of the character animation panel
      */
-     public EnemyGUIImpl(final CharacterAttackObserver atckObs, final CharacterMovementObserver movObs,
-     final String charType, final String charName, final Double speedMultiplier, final int width, final int height) {
-        super(atckObs, movObs, charType, charName, speedMultiplier, width, height);
+     public EnemyGUIImpl(final CharacterAttackObserver atckObs, final CardIdentifier id,
+      final CharacterMovementObserver movObs, final String charType, final String charName,
+      final Double speedMultiplier, final int width, final int height) {
+        super(atckObs, id, movObs, charType, charName, speedMultiplier, width, height);
 
         this.runImages = this.getSelectedFrames(Keyword.RUN_LEFT.get(), charType, charName);
         this.retreatImages = this.getSelectedFrames(Keyword.RETREAT.get(), charType, charName);

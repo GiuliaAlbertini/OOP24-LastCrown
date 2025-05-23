@@ -15,7 +15,7 @@ import it.unibo.oop.lastcrown.view.characters.api.CharacterAnimationPanel;
  */
 final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnimationPanel {
     private static final long serialVersionUID = 1L;
-    private static final int BAR_HEIGHT_DIVISOR = 9;
+    private static final int BAR_HEIGHT_DIVISOR = 5;
     private static final double BAR_WIDTH_RESIZE = 0.75;
     private String charType;
     private CharacterHealthBar healthBar;
@@ -42,9 +42,10 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
         this.setLayout(null);
         this.charType = charType;
         this.healthBar = CharacterHealthBar.create(width, height, color);
-        this.setOpaque(false);
         this.setSize(width, height);
         this.add(this.healthBar);
+        this.setOpaque(false);
+        this.setHealthBarAlignment();
     }
 
     @Override

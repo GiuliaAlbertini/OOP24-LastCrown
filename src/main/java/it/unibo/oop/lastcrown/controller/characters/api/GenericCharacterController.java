@@ -4,12 +4,11 @@ import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAttackObserver;
-import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
 
 /**
  * A controller that handles the behaviour of a single Generic Character in game.
  */
-public interface GenericCharacterController extends CharacterAttackObserver, CharacterHitObserver, CharacterMovementObserver {
+public interface GenericCharacterController extends CharacterAttackObserver, CharacterHitObserver {
     /**
      * @return this controller id
      */
