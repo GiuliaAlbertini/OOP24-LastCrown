@@ -61,18 +61,12 @@ public class SpellsParser implements Parser<Map<CardIdentifier, Spell>> {
             : Optional.of(parseInt(durToken, "effect duration", line));
         final SpellEffect effect = new SpellEffect(category, amount, target, duration);
 
-        final String rangeToken = it.next().trim();
-        final Optional<Integer> actionRange = NONE.equalsIgnoreCase(rangeToken)
-            ? Optional.empty()
-            : Optional.of(parseInt(rangeToken, "action range", line));
-
         final Spell spell = SpellFactory.createSpell(
             name,
             cost,
             copiesPerRound,
             energyToPlay,
-            effect,
-            actionRange
+            effect
         );
         return Map.entry(new CardIdentifier(id, CardType.SPELL), spell);
     }

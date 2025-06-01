@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.model.file_handling.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,13 +31,13 @@ public class AccountSerializer implements Serializer<Account> {
     }
 
     private List<String> getBaseFields(final Account account) {
-        return List.of(
+        return new ArrayList<>(List.of(
             account.getUsername(),
             String.valueOf(account.getCoins()),
             String.valueOf(account.getBossesDefeated()),
             String.valueOf(account.getPlayedGames()),
             String.valueOf(account.getPlaytime())
-        );
+        ));
     }
 
     private String buildCardsLine(final Set<CardIdentifier> cards) {
