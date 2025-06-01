@@ -1,7 +1,5 @@
 package it.unibo.oop.lastcrown.model.spell.api;
 
-import java.util.Optional;
-
 import it.unibo.oop.lastcrown.model.card.PlayableCard;
 
 /**
@@ -19,9 +17,4 @@ public interface Spell extends PlayableCard {
      * The effect ends in 10 seconds)
      */
     SpellEffect getSpellEffect();
-
-    /**
-     * @return if it's present, this spell action range
-     */
-    Optional<Integer> getActionRange();
 }
