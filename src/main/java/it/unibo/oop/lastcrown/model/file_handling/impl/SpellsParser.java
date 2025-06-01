@@ -53,11 +53,9 @@ public class SpellsParser implements Parser<Map<CardIdentifier, Spell>> {
         final String category = it.next().trim();
         final int amount = parseInt(it.next(), "effect amount", line);
         final String targetName = it.next().trim();
-        final CardType target = "melee".equalsIgnoreCase(targetName)
-                                    ? CardType.MELEE
-                                    : "ranged".equalsIgnoreCase(targetName)
-                                        ? CardType.RANGED
-                                        : CardType.ENEMY;
+        final CardType target = "friendly".equalsIgnoreCase(targetName)
+                                    ? CardType.FRIENDLY
+                                    : CardType.ENEMY;
         final SpellEffect effect = new SpellEffect(category, amount, target);
 
         final Spell spell = SpellFactory.createSpell(
