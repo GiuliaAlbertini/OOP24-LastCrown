@@ -1,8 +1,8 @@
 package it.unibo.oop.lastcrown.controller.characters.impl.boss;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
@@ -18,7 +18,7 @@ import it.unibo.oop.lastcrown.view.characters.impl.EnemyGUIImpl;
  * A standard implementation of BossController interface.
  */
 public class BossControllerImpl extends GenericCharacterControllerImpl implements BossController {
-    private final Map<Integer, CharacterHitObserver> opponents = new HashMap<>();
+    private final Map<Integer, CharacterHitObserver> opponents = new ConcurrentHashMap<>();
     private final CharacterMovementObserver movObs;
     private final String charName;
     private final double speedMultiplier;
