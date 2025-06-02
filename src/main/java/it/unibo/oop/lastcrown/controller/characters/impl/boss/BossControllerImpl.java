@@ -66,7 +66,7 @@ public class BossControllerImpl extends GenericCharacterControllerImpl implement
     public final void doAttack() {
         for (final var entry: this.opponents.entrySet()) {
             final CharacterHitObserver obs = entry.getValue();
-            if (obs != null) {
+            if (obs != null && !obs.isDead()) {
                 obs.takeHit(this.getAttackValue());
             }
         }
