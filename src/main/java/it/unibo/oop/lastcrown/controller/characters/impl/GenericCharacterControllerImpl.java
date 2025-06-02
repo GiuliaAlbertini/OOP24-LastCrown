@@ -143,6 +143,13 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
      */
     @Override
     public void doAttack() {
-        this.opponent.takeHit(this.character.getAttack());
+        if (this.opponent != null && !this.opponent.isDead()) {
+            this.opponent.takeHit(this.character.getAttack());
+        }
+    }
+
+    @Override
+    public final boolean isDead() {
+        return this.character.isDead();
     }
 }
