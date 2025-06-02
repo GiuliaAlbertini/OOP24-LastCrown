@@ -107,6 +107,13 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
         this.view.setHealthPercentage(this.character.getHealthPercentage());
     }
 
+    /**
+     * @return the current attack value of the linked character. 
+     */
+    public final synchronized int getAttackValue() {
+        return this.character.getAttack();
+    }
+
     @Override
     public final synchronized void setAttackValue(final int variation) {
         this.character.changeAttack(variation);

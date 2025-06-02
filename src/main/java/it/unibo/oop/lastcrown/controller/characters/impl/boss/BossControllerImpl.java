@@ -61,4 +61,14 @@ public class BossControllerImpl extends GenericCharacterControllerImpl implement
     public final void removeOpponent(final int id) {
         this.opponents.remove(id);
     }
+
+    @Override
+    public final void doAttack() {
+        for (final var entry: this.opponents.entrySet()) {
+            final CharacterHitObserver obs = entry.getValue();
+            if (obs != null) {
+                obs.takeHit(this.getAttackValue());
+            }
+        }
+    }
 }
