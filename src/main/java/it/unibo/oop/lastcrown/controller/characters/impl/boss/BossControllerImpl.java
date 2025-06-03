@@ -1,7 +1,7 @@
 package it.unibo.oop.lastcrown.controller.characters.impl.boss;
 
 import java.util.Map;
-import java.util.Set;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import it.unibo.oop.lastcrown.controller.characters.api.BossController;
@@ -51,7 +51,7 @@ public class BossControllerImpl extends GenericCharacterControllerImpl implement
     }
 
     @Override
-    public final void setOpponents(final Set<CharacterHitObserver> opponents) {
+    public final void setOpponents(final List<CharacterHitObserver> opponents) {
         for (final var opponent : opponents) {
             this.opponents.put(opponent.getObserverId(), opponent);
         }
