@@ -2,6 +2,7 @@ package it.unibo.oop.lastcrown.controller.menu.impl;
 
 import java.util.Set;
 
+import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.AccountController;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
