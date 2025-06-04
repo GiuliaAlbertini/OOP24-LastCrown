@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.model.characters.impl.ingamecharacter;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.InGameCharacter;
 
 /**
@@ -16,7 +17,7 @@ public final class InGameCharacterFactory {
      * @param speedMultiplier the speed multiplier of this character
      * @return a new InGameCharacter
      */
-    public static InGameCharacter createInGameCharacter(final String type,
+    public static InGameCharacter createInGameCharacter(final CardType type,
      final String name, final int health, final int attack, final double speedMultiplier) {
         return new InGameCharacterImpl(type, name, health, attack, speedMultiplier);
      }

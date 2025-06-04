@@ -16,9 +16,10 @@ public final class CharacterHealthBar extends JProgressBar {
     private static final Logger LOG = Logger.getLogger(CharacterHealthBar.class.getName());
     private static final int HEIGHT_DIVISOR = 20;
     private static final int LIMIT = 30;
-    private static final int TIME = 100;
+    private static final int TIME = 200;
     private static final int BORDER_THICKNESS = 1;
     private volatile int percentage;
+    private volatile boolean flashing;
     private Color originalColor;
 
     private CharacterHealthBar() { }
@@ -54,7 +55,8 @@ public final class CharacterHealthBar extends JProgressBar {
     public void setPercentage(final int newPercentage) {
         this.percentage = newPercentage;
         this.setValue(this.percentage);
-        if (0 < this.percentage && this.percentage <= LIMIT) {
+        if (0 < this.percentage && this.percentage <= LIMIT && !flashing) {
+            this.flashing = true;
             new Thread(this::startFlashing).start();
         }
     }
@@ -70,6 +72,7 @@ public final class CharacterHealthBar extends JProgressBar {
             this.brighterColor();
         }
         this.setForeground(this.originalColor);
+        this.flashing = false;
     }
 
     /**
@@ -77,12 +80,12 @@ public final class CharacterHealthBar extends JProgressBar {
      */
     private void brighterColor() {
         this.setForeground(this.getForeground().brighter());
+        this.repaint();
             try {
                 Thread.sleep(TIME);
             } catch (final InterruptedException e) {
                 LOG.fine("Error during brighterColor() method");
             }
-        this.repaint();
     }
 
     /**
@@ -90,12 +93,12 @@ public final class CharacterHealthBar extends JProgressBar {
      */
     private void darkerColor() {
         this.setForeground(this.getForeground().darker());
+        this.repaint();
             try {
                 Thread.sleep(TIME);
             } catch (final InterruptedException e) {
                 LOG.fine("Error during darkerColor() method");
             }
-        this.repaint();
     }
 }
 

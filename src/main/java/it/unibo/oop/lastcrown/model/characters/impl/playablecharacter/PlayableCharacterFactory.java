@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.model.characters.impl.playablecharacter;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 
 /**
@@ -20,7 +21,7 @@ public final class PlayableCharacterFactory {
      * @param actionRange this character action range (distance form witch this character can spot enemies)
      * @return new Playable Character
      */
-    public static PlayableCharacter createPlayableCharacter(final String name, final String type,
+    public static PlayableCharacter createPlayableCharacter(final String name, final CardType type,
     final int cost, final int attack, final int health,
     final int copiesPerRound, final int energyToPlay, final double speedMultiplier, final int actionRange) {
 
