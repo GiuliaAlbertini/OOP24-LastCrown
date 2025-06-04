@@ -83,7 +83,7 @@ public final class CardPanel extends JPanel {
             case CardType.SPELL -> cc.getSpell(card).ifPresent(s -> {
                 info.add(createLabel("Name: "   + s.getName()));
                 info.add(createLabel("Effect category: " + s.getSpellEffect().category()));
-                info.add(createLabel("Target: " + (s.getSpellEffect().target().get())));
+                info.add(createLabel("Target: " + s.getSpellEffect().target().get()));
                 info.add(createLabel("Energy: " + s.getEnergyToPlay()));
                 info.add(createLabel("Cost: "   + s.getCost()));
             });
