@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 
 /**

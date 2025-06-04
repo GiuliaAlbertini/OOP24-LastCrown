@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.AccountController;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;

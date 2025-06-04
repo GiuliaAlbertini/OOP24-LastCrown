@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.user.api.UsernameController;
 import it.unibo.oop.lastcrown.controller.user.impl.UsernameControllerImpl;
 import it.unibo.oop.lastcrown.view.menu.api.LoginView;
