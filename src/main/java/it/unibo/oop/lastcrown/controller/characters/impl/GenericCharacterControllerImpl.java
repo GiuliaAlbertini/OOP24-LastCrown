@@ -2,12 +2,13 @@ package it.unibo.oop.lastcrown.controller.characters.impl;
 
 import java.util.Objects;
 
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.GenericCharacter;
 import it.unibo.oop.lastcrown.model.characters.api.InGameCharacter;
 import it.unibo.oop.lastcrown.model.characters.impl.ingamecharacter.InGameCharacterFactory;
@@ -31,7 +32,7 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
      * @param charType the type of the linked character
      */
     public GenericCharacterControllerImpl(final CharacterDeathObserver obs,
-     final int id, final GenericCharacter character, final String charType) {
+     final int id, final GenericCharacter character, final CardType charType) {
         this.deathObserver = obs;
         this.character = InGameCharacterFactory.createInGameCharacter(charType, character.getName(),
         character.getHealthValue(), character.getAttackValue(), character.getSpeedMultiplier());
@@ -51,6 +52,12 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
     @Override
     public final void attachCharacterAnimationPanel(final int width, final int height) {
         this.view = createView(width, height);
+        this.view.createAnimationPanel();
+    }
+
+    @Override
+    public final JComponent getGraphicalComponent() {
+        return this.view.getGraphicalComponent();
     }
 
     /**
@@ -59,11 +66,6 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
      * @return new linked character GUI.
      */
     public abstract GenericCharacterGUI createView(int width, int height);
-
-    @Override
-    public final void setCharacterPanelPosition(final JPanel matchPanel, final int initialX, final int initialY) {
-        this.view.setAnimationPanelPosition(matchPanel, initialX, initialY);
-    }
 
     @Override
     public final void startRunning() {
@@ -105,6 +107,13 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
         this.view.setHealthPercentage(this.character.getHealthPercentage());
     }
 
+    /**
+     * @return the current attack value of the linked character. 
+     */
+    public final synchronized int getAttackValue() {
+        return this.character.getAttack();
+    }
+
     @Override
     public final synchronized void setAttackValue(final int variation) {
         this.character.changeAttack(variation);
@@ -134,6 +143,13 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
      */
     @Override
     public void doAttack() {
-        this.opponent.takeHit(this.character.getAttack());
+        if (this.opponent != null && !this.opponent.isDead()) {
+            this.opponent.takeHit(this.character.getAttack());
+        }
+    }
+
+    @Override
+    public final boolean isDead() {
+        return this.character.isDead();
     }
 }

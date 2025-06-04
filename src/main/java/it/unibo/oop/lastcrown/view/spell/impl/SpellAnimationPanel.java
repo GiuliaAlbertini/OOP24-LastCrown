@@ -1,14 +1,17 @@
-package it.unibo.oop.lastcrown.view.spell;
+package it.unibo.oop.lastcrown.view.spell.impl;
 
 import java.awt.Graphics;
 import java.awt.Image;
 
-import javax.swing.JPanel;
+import javax.swing.JComponent;
+
+import it.unibo.oop.lastcrown.view.AnimationPanel;
+import it.unibo.oop.lastcrown.view.ReadOnlyAnimationPanel;
 
 /**
  * The panel linked to a specific spell.
  */
-final class SpellAnimationPanel extends JPanel {
+final class SpellAnimationPanel extends JComponent implements AnimationPanel, ReadOnlyAnimationPanel {
     private static final long serialVersionUID = 1L;
     private transient Image currentImage;
 
@@ -30,6 +33,11 @@ final class SpellAnimationPanel extends JPanel {
         this.setLayout(null);
         this.setOpaque(false);
         this.setSize(width, height);
+    }
+
+    @Override
+    public JComponent getComponent() {
+        return this;
     }
 
     /**

@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.model.characters.impl.enemy;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 
 /**
@@ -18,7 +19,7 @@ public final class EnemyFactory {
      * @param speedMultiplier the speed multiplier of this enemy
      * @return a new Enemy
      */
-    public static Enemy createEnemy(final String name, final int rank, final String enemyType,
+    public static Enemy createEnemy(final String name, final int rank, final CardType enemyType,
     final int attack, final int health, final double speedMultiplier) {
         return new EnemyImpl(name, rank, enemyType, attack, health, speedMultiplier);
     }

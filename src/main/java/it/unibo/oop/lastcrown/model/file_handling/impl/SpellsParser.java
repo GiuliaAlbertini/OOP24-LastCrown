@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
@@ -20,7 +19,6 @@ import it.unibo.oop.lastcrown.model.spell.impl.SpellFactory;
 public class SpellsParser implements Parser<Map<CardIdentifier, Spell>> {
     private static final String DELIMITER = ",";
     private static final int EXPECTED_FIELDS = 8;
-    private static final String NONE = "none";
 
     @Override
     public final Map<CardIdentifier, Spell> parse(final List<String> lines) {
@@ -54,25 +52,18 @@ public class SpellsParser implements Parser<Map<CardIdentifier, Spell>> {
 
         final String category = it.next().trim();
         final int amount = parseInt(it.next(), "effect amount", line);
-        final String target = it.next().trim();
-        final String durToken = it.next().trim();
-        final Optional<Integer> duration = NONE.equalsIgnoreCase(durToken)
-            ? Optional.empty()
-            : Optional.of(parseInt(durToken, "effect duration", line));
-        final SpellEffect effect = new SpellEffect(category, amount, target, duration);
-
-        final String rangeToken = it.next().trim();
-        final Optional<Integer> actionRange = NONE.equalsIgnoreCase(rangeToken)
-            ? Optional.empty()
-            : Optional.of(parseInt(rangeToken, "action range", line));
+        final String targetName = it.next().trim();
+        final CardType target = "friendly".equalsIgnoreCase(targetName)
+                                    ? CardType.FRIENDLY
+                                    : CardType.ENEMY;
+        final SpellEffect effect = new SpellEffect(category, amount, target);
 
         final Spell spell = SpellFactory.createSpell(
             name,
             cost,
             copiesPerRound,
             energyToPlay,
-            effect,
-            actionRange
+            effect
         );
         return Map.entry(new CardIdentifier(id, CardType.SPELL), spell);
     }
