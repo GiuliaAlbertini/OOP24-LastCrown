@@ -16,4 +16,9 @@ public interface CharacterHitObserver {
      * @param damage the damage the character is going to take
      */
     void takeHit(int damage);
+
+    /**
+     * @return True if the linked character is dead, false otherwise.
+    */
+    boolean isDead();
 }

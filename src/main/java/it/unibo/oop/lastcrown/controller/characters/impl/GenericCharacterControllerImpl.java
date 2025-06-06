@@ -12,7 +12,9 @@ import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.GenericCharacter;
 import it.unibo.oop.lastcrown.model.characters.api.InGameCharacter;
 import it.unibo.oop.lastcrown.model.characters.impl.ingamecharacter.InGameCharacterFactory;
+import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.GenericCharacterGUI;
+import it.unibo.oop.lastcrown.view.characters.api.Movement;
 
 /**
  * A standard implementation of CharacterController interface.
@@ -60,27 +62,27 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
         return this.view.getGraphicalComponent();
     }
 
+     @Override
+    public final void setNextAnimation(final Keyword animation) {
+        this.view.setNextAnimation(animation);
+    }
+
+    @Override
+    public final void showNextFrame() {
+        this.view.setNextFrame();
+    }
+
+    @Override
+    public final void showNextFrameAndMove(final Movement movement) {
+        this.view.setNextFrameAndMovement(movement.x(), movement.y());
+    }
+
     /**
      * @param width the width of the new animation panel 
      * @param height the width of the new animation panel 
      * @return new linked character GUI.
      */
     public abstract GenericCharacterGUI createView(int width, int height);
-
-    @Override
-    public final void startRunning() {
-        this.view.startRunLoop();
-    }
-
-    @Override
-    public final void stop() {
-        this.view.startStopLoop();
-    }
-
-    @Override
-    public final void startAttacking() {
-        this.view.startAttackLoop();
-    }
 
     /**
      * This method is designed to be overridable by the BossController implementation
@@ -97,7 +99,7 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
         this.character.takeDamage(damage);
         this.view.setHealthPercentage(this.character.getHealthPercentage());
         if (this.character.isDead()) {
-            new Thread(this::startDeath).start();
+            this.deathObserver.notifyDeath(this.id);
         }
     }
 
@@ -105,6 +107,13 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
     public final synchronized void heal(final int cure) {
         this.character.restoreHealth(cure);
         this.view.setHealthPercentage(this.character.getHealthPercentage());
+    }
+
+    /**
+     * @return the current attack value of the linked character. 
+     */
+    public final synchronized int getAttackValue() {
+        return this.character.getAttack();
     }
 
     @Override
@@ -122,12 +131,9 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
         this.character.changeSpeedMultiplier(variation);
     }
 
-    /**
-     * Start this character death sequence and notify the main controller of this character death.
-     */
-    private void startDeath() {
-        this.view.startDeathSequence();
-        this.deathObserver.notifyDeath(this.id);
+    @Override
+    public final synchronized double getSpeedMultiplierValue() {
+        return this.character.getSpeedMultiplier();
     }
 
     /**
@@ -136,6 +142,18 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
      */
     @Override
     public void doAttack() {
-        this.opponent.takeHit(this.character.getAttack());
+        if (this.opponent != null && !this.opponent.isDead()) {
+            this.opponent.takeHit(this.character.getAttack());
+        }
+    }
+
+    @Override
+    public final boolean isDead() {
+        return this.character.isDead();
+    }
+
+    @Override
+    public final int getDeathAnimationSize() {
+        return this.view.getDeathAnimationSize();
     }
 }
