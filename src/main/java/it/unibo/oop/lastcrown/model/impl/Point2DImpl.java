@@ -21,7 +21,7 @@ public class Point2DImpl implements Point2D{
 
     @Override
     public double getDistance(Point2D p) {
-        return Math.sqrt(Math.pow(this.x - p.x(), 2) + Math.pow(this.y - p.y(), 2));
+       return Math.sqrt(Math.pow(this.x - p.x(), 2) + Math.pow(this.y - p.y(), 2));
     }
 
     @Override
