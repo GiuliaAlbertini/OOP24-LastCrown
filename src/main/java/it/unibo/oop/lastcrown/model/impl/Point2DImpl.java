@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.model.impl;
+package it.unibo.oop.lastcrown.model.Impl;
 
 import it.unibo.oop.lastcrown.model.api.Point2D;
 import it.unibo.oop.lastcrown.model.api.Vect2D;
@@ -21,7 +21,7 @@ public class Point2DImpl implements Point2D{
 
     @Override
     public double getDistance(Point2D p) {
-       return Math.sqrt(Math.pow(this.x - p.x(), 2) + Math.pow(this.y - p.y(), 2));
+        return Math.sqrt((this.x - p.x()) * (this.x-p.x()) + (this.y-p.y()) * (this.y)-p.y());
     }
 
     @Override
