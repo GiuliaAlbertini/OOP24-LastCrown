@@ -2,15 +2,17 @@ package it.unibo.oop.lastcrown.model.impl;
 
 import it.unibo.oop.lastcrown.model.api.Collidable;
 import it.unibo.oop.lastcrown.model.api.CollisionEvent;
+import it.unibo.oop.lastcrown.model.api.EventType;
 
 public class CollisionEventImpl implements CollisionEvent{
     private final Collidable collidable1;
     private final Collidable collidable2;
+    private final EventType event;
     
-    public CollisionEventImpl(Collidable collidable1, Collidable collidable2) {
+    public CollisionEventImpl(EventType event, Collidable collidable1, Collidable collidable2) {
         this.collidable1 = collidable1;
+        this.event= event;
         this.collidable2 = collidable2;
-        
     }
     
     public Collidable getCollidable1() {
@@ -21,5 +23,8 @@ public class CollisionEventImpl implements CollisionEvent{
         return collidable2;
     }
     
+    public EventType getType(){
+        return this.event;
+    }
 }
 

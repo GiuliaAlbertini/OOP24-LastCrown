@@ -14,4 +14,6 @@ public interface CollisionEvent {
      * @return the second collidable object involved in the collision
      */
     Collidable getCollidable2();
+    
+    EventType getType();
 }
