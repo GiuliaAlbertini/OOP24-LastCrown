@@ -5,8 +5,9 @@ import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.model.api.Hitbox;
 import it.unibo.oop.lastcrown.model.impl.Point2DImpl;
+import it.unibo.oop.lastcrown.view.api.HitboxPanel;
 
-public class HitboxPanelImpl {
+public class HitboxPanelImpl implements HitboxPanel{
     Hitbox hitbox;
     JPanel hitboxPanel;
 
@@ -32,7 +33,7 @@ public class HitboxPanelImpl {
     }
     
     public void setPanelPosition(int x, int y){
-        hitbox.setPosition(new Point2DImpl(x, y));
-        updatePanel();
+       hitbox.setPosition(new Point2DImpl(x, y));
+       updatePanel();
     }
 }
