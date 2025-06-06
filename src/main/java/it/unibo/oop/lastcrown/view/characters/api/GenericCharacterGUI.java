@@ -2,10 +2,17 @@ package it.unibo.oop.lastcrown.view.characters.api;
 
 import javax.swing.JComponent;
 
+import it.unibo.oop.lastcrown.view.characters.Keyword;
+
 /**
  * An interface that handles the graphic side of a generic character.
  */
-public interface GenericCharacterGUI extends AnimationInterruptor {
+public interface GenericCharacterGUI {
+
+     /**
+     * @return the death animation size (the length of the corresponding list)
+     */
+    int getDeathAnimationSize();
 
     /**
      * Must be called before everything else. Creates a new animation panel for this character.
@@ -18,34 +25,26 @@ public interface GenericCharacterGUI extends AnimationInterruptor {
     JComponent getGraphicalComponent();
 
     /**
-     * Set the animation speed multiplier.
-     * @param newSpeedMul new speed multiplier
-     */
-    void setSpeedMultiplier(double newSpeedMul);
-
-    /**
      * Set the new health bar percent linked to this character.
      * @param percentage
      */
     void setHealthPercentage(int percentage);
 
     /**
-     * Make this character start running.
+     * Set the new animation to be used.
+     * @param animation the next animation
      */
-    void startRunLoop();
+    void setNextAnimation(Keyword animation);
 
     /**
-     * Make this character stop.
+     * Set the next frame of the current animation to be shown on the panel.
      */
-    void startStopLoop();
+    void setNextFrame();
 
     /**
-     * Make this character start attacking.
+     * Set the next frame to be shown and the movement of the linked panel.
+     * @param x horizontal movement
+     * @param y vertical movement
      */
-    void startAttackLoop();
-
-    /**
-     * Make this character die.
-     */
-    void startDeathSequence();
+    void setNextFrameAndMovement(int x, int y);
 }
