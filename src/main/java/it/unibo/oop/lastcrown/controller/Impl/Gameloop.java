@@ -28,7 +28,7 @@ public class Gameloop extends Thread{
         long dt = System.currentTimeMillis() - current;
         if (dt < period) {
             try {
-                Thread.sleep(period - dt);
+                sleep(period - dt);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -37,7 +37,7 @@ public class Gameloop extends Thread{
 
 
     private void updateGame(int elapse) {
-        // Qui puoi aggiornare posizione, stato, ecc.
+        controller.getMatchController().update(elapse);
     }
 
     private void render() {
