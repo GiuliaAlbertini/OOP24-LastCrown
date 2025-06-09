@@ -75,11 +75,6 @@ public interface GenericCharacterController extends CharacterAttackObserver, Cha
     void setSpeedMultiplierValue(double variation);
 
     /**
-     * @return the speed multiplier value linked to this character.
-     */
-    double getSpeedMultiplierValue();
-
-    /**
      * The linked character health will be restore.
      * The amount of healing is specified by the param.
      * @param cure the amount of healing this linked character will take.
