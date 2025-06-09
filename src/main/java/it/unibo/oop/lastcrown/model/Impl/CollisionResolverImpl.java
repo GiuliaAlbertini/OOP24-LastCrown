@@ -26,15 +26,15 @@ public class CollisionResolverImpl implements CollisionResolver {
 	public void notify(CollisionEvent event) {
 		switch (event.getType()) {
 			case FOLLOW_ENEMY -> handleFollowEnemy(event);
+			
 			default -> System.out.println("[WARN] Evento collisione non gestito: " + event.getType());
 		}
 	}
 
 	private void handleFollowEnemy(CollisionEvent event) {
-		//System.out.println("sono nel resolver");
 		int characterId = event.getCollidable1().getCardidentifier().number();
 		HandleFollowEnemy movement = new HandleFollowEnemy(event, movbs, movbstop);
-		movement.updateMovement(0);
+		//movement.update(deltaMs);
 		activeFollowMovements.put(characterId, movement);
 	}
 
@@ -43,7 +43,7 @@ public class CollisionResolverImpl implements CollisionResolver {
 
 		for (final var handle : activeFollowMovements.entrySet()) {
 			HandleFollowEnemy movement = handle.getValue();
-			movement.updateMovement(deltaMs);
+			movement.update(deltaMs);
 			updatedCharacters.add(movement.getCharacter());
 		}
 		return updatedCharacters;
@@ -52,7 +52,6 @@ public class CollisionResolverImpl implements CollisionResolver {
 	@Override
 	public Point2D getCharacterPosition(int characterId) {
 		HandleFollowEnemy movement = activeFollowMovements.get(characterId);
-		//System.out.println("sono in getCharacterPosition");
 		if (movement != null) {
 			return movement.getCurrentPosition();
 		} else {
