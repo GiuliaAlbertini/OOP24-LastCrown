@@ -1,15 +1,12 @@
 package it.unibo.oop.lastcrown.controller.impl;
 
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
-
 import it.unibo.oop.lastcrown.controller.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.api.MainController;
 import it.unibo.oop.lastcrown.controller.api.MatchController;
@@ -17,48 +14,34 @@ import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
-import it.unibo.oop.lastcrown.controller.characters.impl.enemy.EnemyControllerFactory;
-import it.unibo.oop.lastcrown.controller.characters.impl.playablecharacter.PlCharControllerFactory;
-import it.unibo.oop.lastcrown.model.api.Collidable;
 import it.unibo.oop.lastcrown.model.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.api.CollisionManager;
 import it.unibo.oop.lastcrown.model.api.CollisionResolver;
-import it.unibo.oop.lastcrown.model.api.EventType;
-import it.unibo.oop.lastcrown.model.api.Hitbox;
-import it.unibo.oop.lastcrown.model.api.Radius;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.model.characters.impl.enemy.EnemyImpl;
 import it.unibo.oop.lastcrown.model.characters.impl.playablecharacter.PlayableCharacterImpl;
 import it.unibo.oop.lastcrown.model.impl.CharacterMovementStop;
-import it.unibo.oop.lastcrown.model.impl.CollidableImpl;
-import it.unibo.oop.lastcrown.model.impl.CollisionEventImpl;
 import it.unibo.oop.lastcrown.model.impl.CollisionManagerImpl;
 import it.unibo.oop.lastcrown.model.impl.CollisionResolverImpl;
-import it.unibo.oop.lastcrown.model.impl.HitboxImpl;
-import it.unibo.oop.lastcrown.model.impl.Point2DImpl;
-import it.unibo.oop.lastcrown.model.impl.RadiusImpl;
 import it.unibo.oop.lastcrown.view.GamePanel;
-import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.MainView;
-import it.unibo.oop.lastcrown.view.api.HitboxPanel;
 import it.unibo.oop.lastcrown.view.characters.AnimationHandler;
-import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
+import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
 import it.unibo.oop.lastcrown.view.characters.api.Movement;
-import it.unibo.oop.lastcrown.view.impl.HitboxMaskBounds;
-import it.unibo.oop.lastcrown.view.impl.HitboxPanelImpl;
-import it.unibo.oop.lastcrown.view.impl.RadiusPanel;
-import it.unibo.oop.lastcrown.view.impl.RadiusPanelImpl;
 
 public class MatchControllerimpl implements MatchController {
     private final MainController controller;
     private final Map<Integer, GenericCharacterController> charactersController = new HashMap<>();
     private final Map<GenericCharacterController, HitboxController> hitboxControllers = new HashMap<>();
     private final CollisionManager collisionManager = new CollisionManagerImpl();
+    private final Set<Integer> stoppedCharacters = new HashSet<>();
     private CharacterMovementObserver movb;
     private final CollisionResolver collisionResolver;
+    private final CharacterSpawnerController spawner;
+    private final EnemyRadiusScanner radiusScanner;
     private CharacterMovementStop stop;
     private int id = 1;
     private final GamePanel gamePanel;
@@ -70,17 +53,17 @@ public class MatchControllerimpl implements MatchController {
         this.controller = controller;
         this.view = controller.getMainView();
         this.gamePanel = controller.getMainView().getGamePanel();
+        this.spawner = new CharacterSpawnerController(gamePanel);
+        this.radiusScanner = new EnemyRadiusScanner(hitboxControllers);
         this.view.setAddCharacterListener(e -> onAddCharacterButtonPressed());
         this.movb = (id, dx, dy) -> {
-                System.out.println("[DEBUG] Movimento notificato: ID " + id.number() + ", dx " + dx + ", dy " + dy);
-                moveSoldierTowards(id.number(), dx, dy);
+            moveSoldierTowards(id.number(), dx, dy);
         };
 
-        this.stop=(characterid, enemyid) -> {
-            System.out.println("si deve stoppare");   
-            stop(characterid, enemyid);             
+        this.stop = (characterid, enemyid) -> {
+            stop(characterid, enemyid);
         };
-        this.collisionResolver = new CollisionResolverImpl(movb,stop);
+        this.collisionResolver = new CollisionResolverImpl(movb, stop);
         this.collisionManager.addObserver(collisionResolver);
     }
 
@@ -93,93 +76,25 @@ public class MatchControllerimpl implements MatchController {
     @Override
     public void onAddCharacterButtonPressed() {
         final int newId = generateUniqueCharacterId();
-
-        CharacterDeathObserver deathObserver = id -> System.out.println("[DEBUG] Morte personaggio: " + id);
-        CharacterMovementObserver movementObserver = (id, dx, dy) -> {
-            System.out.println("[DEBUG] Movimento player ID player: " + id.number() + ", dx: " + dx + ", dy: " + dy);
-            handleMovement(id.number(), dx, dy);
-        };
-
-        PlayableCharacter playableChar = new PlayableCharacterImpl(
-                "Warrior", CardType.MELEE, 20, 10, 20, 2, 100, 1, 100);
-        PlayableCharacterController soldato = PlCharControllerFactory.createPlCharController(deathObserver,
-                movementObserver, newId, playableChar);
-        soldato.attachCharacterAnimationPanel(150, 100);
-        setupCharacter(newId, soldato, playableChar, 100, 100);
-        soldato.stop();
-        addEnemyCharacter();
+        CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
+        PlayableCharacter newChar = new PlayableCharacterImpl("Warrior", CardType.MELEE, 20, 10, 20, 2, 100, 2, 100);
+        Enemy newEnemy = new EnemyImpl("Bat", 1, CardType.ENEMY, 20, 30, 2);
+        spawnAndRegisterCharacter(1, newChar, obs, 100, 200);
+        spawnAndRegisterCharacter(2, newEnemy, obs, 500, 100);
     }
 
-    public void addEnemyCharacter() {
-        final int newId = 3;
-        CharacterDeathObserver deathObserver = id -> System.out.println("[DEBUG] Morte personaggio: " + id);
-        CharacterMovementObserver movnemico = (id, dx, dy) -> {
-            handleMovement(id.number(), dx, dy);
-        };
-
-        Enemy EnemyChar = new EnemyImpl("Bat", newId, CardType.ENEMY, 20, 50, 0.8);
-        EnemyController nemico = EnemyControllerFactory.createEnemyController(deathObserver,
-                movnemico, newId, EnemyChar);
-
-        nemico.attachCharacterAnimationPanel(100, 100);
-        setupEnemy(newId, nemico, EnemyChar, 500, 50);
-
-        nemico.startRunning();
-
+    private void spawnAndRegisterCharacter(int id, Object model, CharacterDeathObserver observer, int x, int y) {
+        SpawnedCharacter spawned = spawnCharacter(id, model, observer, x, y);
+        addCharacter(id, spawned.controller(), spawned.hitboxController());
     }
 
-    private void setupEnemy(int id, EnemyController controller, Enemy character, int x, int y) {
-        JComponent charComp = controller.getGraphicalComponent();
-        charComp.setLocation(x, y);
-        gamePanel.addCharacterComponent(charComp);
-
-        Hitbox hitbox = new HitboxImpl(10, 10, new Point2DImpl(x, y));
-        HitboxPanel hitboxPanel = new HitboxPanelImpl(hitbox);
-        gamePanel.addCharacterComponent(hitboxPanel.getHitboxPanel());
-
-        HitboxMaskBounds bounds = setupHitboxMaskEnemy(hitbox, charComp, hitboxPanel, character);
-        HitboxController hitboxController = new HitboxControllerImpl(hitbox, hitboxPanel, bounds);
-
-        addCharacter(id, controller, hitboxController);
-    }
-
-    private void setupCharacter(int id, PlayableCharacterController controller, PlayableCharacter character, int x,
-            int y) {
-        JComponent charComp = controller.getGraphicalComponent();
-        charComp.setLocation(x, y);
-        gamePanel.addCharacterComponent(charComp);
-
-        Hitbox hitbox = new HitboxImpl(10, 10, new Point2DImpl(x, y));
-        HitboxPanel hitboxPanel = new HitboxPanelImpl(hitbox);
-        gamePanel.addCharacterComponent(hitboxPanel.getHitboxPanel());
-
-        HitboxMaskBounds bounds = setupHitboxMask(hitbox, charComp, hitboxPanel, character);
-        HitboxController hitboxController = new HitboxControllerImpl(hitbox, hitboxPanel, bounds);
-        addRadiusPanel(hitbox, 200, bounds, hitboxController);
-
-        addCharacter(id, controller, hitboxController);
-    }
-
-    public HitboxMaskBounds setupHitboxMaskEnemy(Hitbox hitbox, JComponent target, HitboxPanel panel,
-            Enemy character) {
-        String chartype = character.getEnemyType().name().toLowerCase();
-        String name = character.getName();
-        String path = CharacterPathLoader.loadHitboxPath(chartype, name);
-        BufferedImage image = ImageLoader.getImage(path, 150, 100);
-        HitboxMaskBounds hitboxMaskBounds = new HitboxMaskBounds(hitbox, target, panel);
-        hitboxMaskBounds.calculateHitboxCenter(image);
-        return hitboxMaskBounds;
-    }
-
-    public HitboxMaskBounds setupHitboxMask(Hitbox hitbox, JComponent target, HitboxPanel panel,
-            PlayableCharacter character) {
-        String chartype = character.getType().name().toLowerCase();
-        String name = character.getName();
-        String path = CharacterPathLoader.loadHitboxPath(chartype, name);
-        BufferedImage image = ImageLoader.getImage(path, 150, 100);
-        HitboxMaskBounds hitboxMaskBounds = new HitboxMaskBounds(hitbox, target, panel);
-        hitboxMaskBounds.calculateHitboxCenter(image);
-        return hitboxMaskBounds;
+    public SpawnedCharacter spawnCharacter(int id, Object model, CharacterDeathObserver observer, int x, int y) {
+        if (model instanceof PlayableCharacter pc) {
+            return spawner.spawnPlayableCharacter(id, pc, observer, x, y);
+        } else if (model instanceof Enemy e) {
+            return spawner.spawnEnemyCharacter(id, e, observer, x, y);
+        }
+        throw new IllegalArgumentException("Model type non supportato");
     }
 
     public void updateCharacterPosition(GenericCharacterController controller, int dx, int dy) {
@@ -203,73 +118,14 @@ public class MatchControllerimpl implements MatchController {
         });
     }
 
-
-
-    private void handleMovement(int id, int dx, int dy) {
-        GenericCharacterController controller = charactersController.get(id);
-        if (controller == null) {
-            System.err.println("[ERROR] Nessun controller trovato per ID: " + id);
-            return;
-        }
-        updateCharacterPosition(controller, dx, dy);
-    }
-
     private int generateUniqueCharacterId() {
         return this.id++;
     }
 
-    private void addRadiusPanel(Hitbox origin, double radius, HitboxMaskBounds mask,
-            HitboxController hitboxController) {
-        Radius radiusCharacter = new RadiusImpl(origin, radius);
-        RadiusPanel radiusPanel = new RadiusPanelImpl(radiusCharacter, mask);
-        hitboxController.setRadius(radiusCharacter);
-        hitboxController.setRadiusPanel(radiusPanel);
-        gamePanel.addCharacterComponent(radiusPanel.getRadiusPanel());
-    }
-
     public void checkEnemyInRadius() {
-        List<Hitbox> enemies = collectAllEnemies();
-        checkRadiusForNonEnemies(enemies);
-    }
-
-    private List<Hitbox> collectAllEnemies() {
-        List<Hitbox> enemies = new ArrayList<>();
-        for (Map.Entry<GenericCharacterController, HitboxController> entry : hitboxControllers.entrySet()) {
-            GenericCharacterController controller = entry.getKey();
-            if (controller.getId().type() == CardType.ENEMY) {
-                enemies.add(entry.getValue().getHitbox());
-            }
-        }
-
-        return enemies;
-    }
-
-    private void checkRadiusForNonEnemies(List<Hitbox> enemies) {
-        for (Map.Entry<GenericCharacterController, HitboxController> entry : hitboxControllers.entrySet()) {
-            GenericCharacterController controller = entry.getKey();
-            HitboxController hitboxController = entry.getValue();
-
-            if (controller.getId().type() != CardType.ENEMY) {
-                Optional<Hitbox> enemyInRadius = checkEnemyInRadiusForCharacter(hitboxController, enemies);
-                //System.out.println("Nemico più vicino: " + enemyInRadius.orElse(null));
-
-                if (enemyInRadius.isPresent()) {
-                    // 1. Trova il controller del nemico corrispondente alla hitbox
-                    GenericCharacterController enemyController = findEnemyController(enemyInRadius.get());
-
-                    if (enemyController != null) {
-                        // 2. Crea i Collidable
-                        Collidable playerCollidable = new CollidableImpl(hitboxController.getHitbox(),
-                                controller.getId());
-                        Collidable enemyCollidable = new CollidableImpl(enemyInRadius.get(), enemyController.getId());
-                        // 3. Crea e notifica l'evento
-                        CollisionEvent event = new CollisionEventImpl(EventType.FOLLOW_ENEMY, playerCollidable,
-                                enemyCollidable);
-                        notifyCollisionObservers(event);
-                        follow = true;
-                    }
-                }
-            }
+        for (CollisionEvent event : radiusScanner.scanForFollowEvents()) {
+            notifyCollisionObservers(event);
+            follow = true;
         }
     }
 
@@ -277,42 +133,29 @@ public class MatchControllerimpl implements MatchController {
         final var character = charactersController.get(id);
         if (character != null && character instanceof PlayableCharacterController) {
             final var soldier = (PlayableCharacterController) character;
-            soldier.setManualRunningAnimation();
             Movement mov = new Movement(dx, dy);
-            soldier.movePanel(mov);
-            soldier.stopManualRunningAnimation();
+            soldier.showNextFrame();
+            soldier.showNextFrameAndMove(mov);
         }
     }
 
-    private void stop(int characterid, int enemyid){
-        
-        System.out.println("ma io qui entro?");
+    private void stop(int characterid, int enemyid) {
+            // Evita di rieseguire il blocco se già fermi
+        if (stoppedCharacters.contains(characterid) && stoppedCharacters.contains(enemyid)) {
+            return;
+        }
         final var character = charactersController.get(characterid);
         final var enemy = charactersController.get(enemyid);
-        if (character != null && character instanceof PlayableCharacterController) {
-        final var soldier = (PlayableCharacterController) character;
-        final var adverse= (EnemyController) enemy;
-            soldier.stop();
-            adverse.stop();
-            soldier.stopManualRunningAnimation();
+        if (character != null && enemy != null && character instanceof GenericCharacterController) {
+            final var soldier = (PlayableCharacterController) character;
+            final var adverse = (EnemyController) enemy;
+            soldier.setNextAnimation(Keyword.STOP);
+            adverse.setNextAnimation(Keyword.STOP);
+            soldier.showNextFrame();
+            adverse.showNextFrame();
+            stoppedCharacters.add(characterid); // blocca aggiornamenti successivi
+            stoppedCharacters.add(enemyid); // blocca aggiornamenti successivi
         }
-    }
-
-    private Optional<Hitbox> checkEnemyInRadiusForCharacter(HitboxController hitboxController, List<Hitbox> enemies) {
-        var radius = hitboxController.getRadius();
-        if (radius != null && radius.hasEnemyInRadius(enemies)) {
-            return radius.getClosestEnemyInRadius(enemies);
-        }
-        return Optional.empty();
-    }
-
-    private GenericCharacterController findEnemyController(Hitbox enemyHitbox) {
-        for (Map.Entry<GenericCharacterController, HitboxController> entry : hitboxControllers.entrySet()) {
-            if (entry.getValue().getHitbox().equals(enemyHitbox)) {
-                return entry.getKey();
-            }
-        }
-        return null;
     }
 
     private void notifyCollisionObservers(CollisionEvent event) {
@@ -321,8 +164,32 @@ public class MatchControllerimpl implements MatchController {
 
     @Override
     public void update(int deltaTime) {
-        checkEnemyInRadius();
-        
-        collisionResolver.updateAllMovements(deltaTime);
+        final var character = charactersController.get(1);
+        final var enemy = charactersController.get(2);
+
+        if (character != null && character instanceof GenericCharacterController) {
+            final var soldier = (PlayableCharacterController) character;
+            final var adverse = (EnemyController) enemy;
+            if (!stoppedCharacters.contains(1)){
+                // personaggio
+                soldier.setNextAnimation(Keyword.RUN_RIGHT);
+                Movement movement = new Movement(2, 0);
+                soldier.showNextFrameAndMove(movement);
+
+                if (adverse != null) {
+                    adverse.setNextAnimation(Keyword.RUN_LEFT);
+                    Movement movementEnemy = new Movement(-2, 0);
+                    adverse.showNextFrameAndMove(movementEnemy);
+                    updateCharacterPosition(soldier, movement.x(), movement.y());
+                    updateCharacterPosition(adverse, movementEnemy.x(), movementEnemy.y());
+                } else {
+                    System.out.println("[DEBUG] Adverse null quando si tenta di settare l'animazione.");
+                }
+            }
+
+            checkEnemyInRadius();
+            collisionResolver.updateAllMovements(deltaTime);
+
+        }
     }
 }
