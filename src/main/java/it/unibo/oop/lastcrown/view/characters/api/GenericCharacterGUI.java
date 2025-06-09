@@ -1,25 +1,21 @@
 package it.unibo.oop.lastcrown.view.characters.api;
 
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 
 /**
  * An interface that handles the graphic side of a generic character.
  */
-public interface GenericCharacterGUI {
-    /**
-     * Set the size of the animation panel linked to this character GUI.
-     * @param newWidth new panel width
-     * @param newHeight new panel height
-     */
-    void setAnimationPanelSize(int newWidth, int newHeight);
+public interface GenericCharacterGUI extends AnimationInterruptor {
 
     /**
-     * Set the position of the animation panel linked to this character GUI (centered on the coordinates given).
-     * @param mainPanel the panel where the character animation panel must spawn
-     * @param x coordinate x
-     * @param y coordinate y
+     * Must be called before everything else. Creates a new animation panel for this character.
      */
-    void setAnimationPanelPosition(JPanel mainPanel, int x, int y);
+    void createAnimationPanel();
+
+    /**
+     * @return the read only version of the graphical component linked to this character.
+     */
+    JComponent getGraphicalComponent();
 
     /**
      * Set the animation speed multiplier.

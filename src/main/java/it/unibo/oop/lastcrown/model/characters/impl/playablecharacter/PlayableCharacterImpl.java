@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.model.characters.impl.playablecharacter;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.model.characters.impl.GenericCharacterImpl;
 
@@ -7,7 +8,7 @@ import it.unibo.oop.lastcrown.model.characters.impl.GenericCharacterImpl;
  * A standard implementation of Playable Character interface.
  */
 public class PlayableCharacterImpl extends GenericCharacterImpl implements PlayableCharacter {
-    private final String type;
+    private final CardType type;
     private final int cost;
     private final int copiesPerRound;
     private final int energyToPlay;
@@ -24,7 +25,7 @@ public class PlayableCharacterImpl extends GenericCharacterImpl implements Playa
      * @param speedMultiplier the speed multiplier of this character(ex 1.5 -> standard_speed * 1.5)
      * @param actionRange this character action range (distance form witch this character can spot enemies)
      */
-    public PlayableCharacterImpl(final String name, final String type, final int cost,
+    public PlayableCharacterImpl(final String name, final CardType type, final int cost,
     final int attack, final int health, final int copiesPerRound,
     final int energyToPlay, final double speedMultiplier, final int actionRange) {
         super(name, attack, health, speedMultiplier);
@@ -36,7 +37,7 @@ public class PlayableCharacterImpl extends GenericCharacterImpl implements Playa
     }
 
     @Override
-    public final String getType() {
+    public final CardType getType() {
         return this.type;
     }
 

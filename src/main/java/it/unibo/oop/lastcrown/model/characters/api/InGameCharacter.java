@@ -1,5 +1,7 @@
 package it.unibo.oop.lastcrown.model.characters.api;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
+
 /**
  * A generic character currently involved in a match.
  */
@@ -7,7 +9,7 @@ public interface InGameCharacter {
     /**
      * @return the type of this character
      */
-    String getType();
+    CardType getType();
 
     /**
      * @return the name of this character

@@ -1,10 +1,12 @@
 package it.unibo.oop.lastcrown.view.characters.impl;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.characters.CharacterHealthBar;
 import it.unibo.oop.lastcrown.view.characters.api.CharacterAnimationPanel;
 
@@ -13,11 +15,11 @@ import it.unibo.oop.lastcrown.view.characters.api.CharacterAnimationPanel;
  */
 final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnimationPanel {
     private static final long serialVersionUID = 1L;
-    private static final int BAR_HEIGHT_DIVISOR = 9;
+    private static final int BAR_HEIGHT_DIVISOR = 5;
     private static final double BAR_WIDTH_RESIZE = 0.75;
     private String charType;
     private CharacterHealthBar healthBar;
-    private transient Image currentImage;
+    private transient BufferedImage currentImage;
 
     private CharacterAnimationPanelImpl() { }
 
@@ -40,20 +42,21 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
         this.setLayout(null);
         this.charType = charType;
         this.healthBar = CharacterHealthBar.create(width, height, color);
-        this.setOpaque(false);
         this.setSize(width, height);
         this.add(this.healthBar);
+        this.setOpaque(false);
+        this.setHealthBarAlignment();
     }
 
     @Override
-    public void setCharacterImage(final Image image) {
+    public void setCharacterImage(final BufferedImage image) {
         this.currentImage = image;
         this.repaint();
     }
 
     @Override
     public void setHealthBarAlignment() {
-        if ("enemy".equals(this.charType) || "boss".equals(this.charType)) {
+        if (CardType.ENEMY.get().equals(this.charType) || CardType.BOSS.get().equals(this.charType)) {
             this.healthBar.setBounds((int) (this.getWidth() * (1 - BAR_WIDTH_RESIZE)),
              this.getHeight() / BAR_HEIGHT_DIVISOR,
             (int) (this.getWidth() * BAR_WIDTH_RESIZE), this.healthBar.getHeight());
@@ -62,12 +65,6 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
             (int) (this.getWidth() * BAR_WIDTH_RESIZE), this.healthBar.getHeight());
         }
         this.healthBar.setVisible(true);
-        this.healthBar.repaint();
-    }
-
-    @Override
-    public void setHealthBarPosition() {
-        this.healthBar.setLocation(this.healthBar.getX(), this.healthBar.getY());
     }
 
     @Override
@@ -86,5 +83,10 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
     public void paint(final Graphics g) {
         super.paint(g);
         g.drawImage(currentImage, 0, 0, this);
+    }
+
+    @Override
+    public JComponent getComponent() {
+        return this;
     }
 }

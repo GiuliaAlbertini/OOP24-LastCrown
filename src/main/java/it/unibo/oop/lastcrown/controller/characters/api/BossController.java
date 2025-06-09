@@ -1,6 +1,6 @@
 package it.unibo.oop.lastcrown.controller.characters.api;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * A controller that handles the behaviour of a single Boss in game.
@@ -9,9 +9,9 @@ public interface BossController extends GenericCharacterController {
 
     /**
      * Add a set of opponents to this boss.
-     * @param opponents the set of opponents to be add
+     * @param opponents the list of opponents to be added
      */
-    void setOpponents(Set<CharacterHitObserver> opponents);
+    void setOpponents(List<CharacterHitObserver> opponents);
 
     /**
      * Remove one opponent specified by the given id from this boss.
