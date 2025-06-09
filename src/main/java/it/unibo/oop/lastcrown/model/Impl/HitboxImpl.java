@@ -66,7 +66,8 @@ public class HitboxImpl implements Hitbox{
         double by2= by1+other.getHeight();
 
         //se tutte le condizioni di non sovrapposizioni sono vere allora non c'è collisione
-        return !(ax2 <= bx1 || bx2 <= ax1 || ay2 <= by1 || by2 <= ay1);
+        return !(ax2 < bx1 || bx2 < ax1 || ay2 < by1 || by2 < ay1);
+
         
     }
 }
