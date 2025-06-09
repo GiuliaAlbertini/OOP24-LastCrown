@@ -27,23 +27,12 @@ public class CreditsControllerImpl implements CreditsController {
         this.creditsFileHandler = new ReadOnlyFileHandlerImpl<>(new CreditsParser(), PATH);
     }
 
-    /**
-     * Retrieves the list of credits from the credits file.
-     *
-     * @return a list of credits.
-     * @throws IllegalStateException if the credits file is not found or is empty.
-     */
     @Override
-    public List<String> getCreditsList() {
+    public final List<String> getCreditsList() {
         final Optional<List<String>> result = this.creditsFileHandler.readFromFile(CREDITS);
         return result.orElseThrow(() -> new IllegalStateException("Credits file not found or is empty"));
     }
 
-    /**
-     * Builds the filesystem path where the credits files is stored.
-     *
-     * @return the base directory for credit's file.
-     */
     private static String getPath() {
         return "OOP24-LastCrown"
         + File.separator
