@@ -31,7 +31,7 @@ public class CollectionControllerImpl implements CollectionController {
     private static final Set<CardIdentifier> INITIAL_SET = new HashSet<>();
     private static final CompleteCollectionImpl COMPLETE_COLLECTION = new CompleteCollectionImpl();
 
-    private final Optional<List<List<Enemy>>> enemies;
+    private final List<List<Enemy>> enemies;
 
     /**
      * Constucts a new {@code CollectionControllerImpl}.
@@ -40,12 +40,12 @@ public class CollectionControllerImpl implements CollectionController {
     public CollectionControllerImpl() {
         final ReadOnlyFileHandler<List<List<Enemy>>> enemyReader =
             new ReadOnlyFileHandlerImpl<>(new EnemiesParser(), ENEMIES_PATH);
-        this.enemies = enemyReader.readFromFile(ENEMIES);
+        this.enemies = enemyReader.readFromFile(ENEMIES).get();
     }
 
     @Override
-    public final Optional<List<List<Enemy>>> getEnemies() {
-        return Optional.of(Collections.unmodifiableList(this.enemies.get()));
+    public final List<List<Enemy>> getEnemies() {
+        return Collections.unmodifiableList(this.enemies);
     }
 
     @Override

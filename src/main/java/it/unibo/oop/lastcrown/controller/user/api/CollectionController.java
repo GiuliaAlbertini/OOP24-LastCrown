@@ -39,7 +39,7 @@ public interface CollectionController {
      * 
      * @return the {@link List} containing all the enemies
      */
-    Optional<List<List<Enemy>>> getEnemies();
+    List<List<Enemy>> getEnemies();
 
     /**
      * Getter for the name of a card.
