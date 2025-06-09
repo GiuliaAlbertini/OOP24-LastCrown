@@ -4,7 +4,7 @@ import it.unibo.oop.lastcrown.controller.api.MainController;
 public class Gameloop extends Thread{
     MainController controller;
     private boolean running;
-    private long period = 20;
+    private long period = 64;
 
     public Gameloop(MainController controller) {
         this.controller=controller;
@@ -16,9 +16,7 @@ public class Gameloop extends Thread{
         long lastTime = System.currentTimeMillis();
         while (this.running) {
             long current = System.currentTimeMillis();
-            int elapse = (int) (current - lastTime);
-            updateGame(elapse);
-            render();
+            this.controller.getMatchController().update((int) (current - lastTime));
             waitForNextFrame(current);
             lastTime = current;
         }
@@ -33,15 +31,6 @@ public class Gameloop extends Thread{
                 ex.printStackTrace();
             }
         }
-    }
-
-
-    private void updateGame(int elapse) {
-        controller.getMatchController().update(elapse);
-    }
-
-    private void render() {
-        
     }
 
 
