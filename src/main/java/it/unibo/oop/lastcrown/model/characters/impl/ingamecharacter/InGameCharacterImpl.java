@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.model.characters.impl.ingamecharacter;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.InGameCharacter;
 
 /**
@@ -7,7 +8,7 @@ import it.unibo.oop.lastcrown.model.characters.api.InGameCharacter;
  */
 public class InGameCharacterImpl implements InGameCharacter {
     private final String name;
-    private final String type;
+    private final CardType type;
     private int currentHealth;
     private int maximumHealth;
     private int attack;
@@ -22,7 +23,7 @@ public class InGameCharacterImpl implements InGameCharacter {
      * @param attack the attack value of this character
      * @param speedMultiplier the speed multiplier of this character
      */
-    public InGameCharacterImpl(final String type, final String name,
+    public InGameCharacterImpl(final CardType type, final String name,
      final int health, final int attack, final double speedMultiplier) {
         this.type = type;
         this.name = name;
@@ -34,7 +35,7 @@ public class InGameCharacterImpl implements InGameCharacter {
     }
 
     @Override
-    public final String getType() {
+    public final CardType getType() {
         return this.type;
     }
 
