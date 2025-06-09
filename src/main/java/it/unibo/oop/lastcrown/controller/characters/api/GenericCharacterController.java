@@ -90,4 +90,9 @@ public interface GenericCharacterController extends CharacterAttackObserver, Cha
      * @return the size of the death animation of the linked character.
      */
     int getDeathAnimationSize();
+
+    /**
+     * @return True if the linked character is in Combat, false otherwise.
+     */
+    boolean isInCombat();
 }

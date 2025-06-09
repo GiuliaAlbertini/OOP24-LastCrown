@@ -65,6 +65,11 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
      @Override
     public final void setNextAnimation(final Keyword animation) {
         this.view.setNextAnimation(animation);
+        if (animation.equals(Keyword.ATTACK)) {
+            this.character.setInCombat(true);
+        } else {
+            this.character.setInCombat(false);
+        }
     }
 
     @Override
@@ -155,5 +160,10 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
     @Override
     public final int getDeathAnimationSize() {
         return this.view.getDeathAnimationSize();
+    }
+
+    @Override
+    public final boolean isInCombat() {
+        return this.character.isInCombat();
     }
 }
