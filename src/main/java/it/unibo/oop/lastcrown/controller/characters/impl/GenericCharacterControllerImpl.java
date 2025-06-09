@@ -65,6 +65,11 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
      @Override
     public final void setNextAnimation(final Keyword animation) {
         this.view.setNextAnimation(animation);
+        if (animation.equals(Keyword.ATTACK)) {
+            this.character.setInCombat(true);
+        } else {
+            this.character.setInCombat(false);
+        }
     }
 
     @Override
@@ -74,7 +79,10 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
 
     @Override
     public final void showNextFrameAndMove(final Movement movement) {
-        this.view.setNextFrameAndMovement(movement.x(), movement.y());
+        this.view.setNextFrameAndMovement(
+            (int) (movement.x() * this.character.getSpeedMultiplier()),
+            (int) (movement.y() * this.character.getSpeedMultiplier())
+            );
     }
 
     /**
@@ -131,11 +139,6 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
         this.character.changeSpeedMultiplier(variation);
     }
 
-    @Override
-    public final synchronized double getSpeedMultiplierValue() {
-        return this.character.getSpeedMultiplier();
-    }
-
     /**
      * This method is designed to be overridable by the BossController implementation
      * because a boss can have multiple opponents at the same time.
@@ -155,5 +158,10 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
     @Override
     public final int getDeathAnimationSize() {
         return this.view.getDeathAnimationSize();
+    }
+
+    @Override
+    public final boolean isInCombat() {
+        return this.character.isInCombat();
     }
 }

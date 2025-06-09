@@ -75,11 +75,6 @@ public interface GenericCharacterController extends CharacterAttackObserver, Cha
     void setSpeedMultiplierValue(double variation);
 
     /**
-     * @return the speed multiplier value linked to this character.
-     */
-    double getSpeedMultiplierValue();
-
-    /**
      * The linked character health will be restore.
      * The amount of healing is specified by the param.
      * @param cure the amount of healing this linked character will take.
@@ -90,4 +85,9 @@ public interface GenericCharacterController extends CharacterAttackObserver, Cha
      * @return the size of the death animation of the linked character.
      */
     int getDeathAnimationSize();
+
+    /**
+     * @return True if the linked character is in Combat, false otherwise.
+     */
+    boolean isInCombat();
 }
