@@ -5,5 +5,5 @@ package it.unibo.oop.lastcrown.model.card;
  * @param number the number of the specific card Id
  * @param type the type of the specific card Id (playableCharacter, hero, enemy, spell)
  */
-public record CardIdentifier(int number, String type) {
+public record CardIdentifier(int number, CardType type) {
 }
