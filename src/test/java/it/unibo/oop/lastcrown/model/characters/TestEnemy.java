@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.model.characters.impl.enemy.EnemyFactory;
 
@@ -12,7 +13,7 @@ import it.unibo.oop.lastcrown.model.characters.impl.enemy.EnemyFactory;
  */
 final class TestEnemy {
     private static final String NAME = "UndeadExecutioner";
-    private static final String TYPE = "boss";
+    private static final CardType TYPE = CardType.BOSS;
     private static final int RANK = 1;
     private static final int ATTACK = 20;
     private static final int HEALTH = 400;

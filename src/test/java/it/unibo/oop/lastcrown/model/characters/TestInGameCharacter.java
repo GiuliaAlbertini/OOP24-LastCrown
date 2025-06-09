@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.InGameCharacter;
 import it.unibo.oop.lastcrown.model.characters.impl.ingamecharacter.InGameCharacterFactory;
 
@@ -14,7 +15,7 @@ import it.unibo.oop.lastcrown.model.characters.impl.ingamecharacter.InGameCharac
  * A simple test of InGameCharacter implementation.
  */
 final class TestInGameCharacter {
-    private static final String TYPE = "melee";
+    private static final CardType TYPE = CardType.MELEE;
     private static final String NAME = "Mario";
     private static final int ATTACK = 10;
     private static final int HEALTH = 100;
