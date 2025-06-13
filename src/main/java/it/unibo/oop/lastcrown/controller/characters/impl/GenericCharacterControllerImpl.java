@@ -74,7 +74,10 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
 
     @Override
     public final void showNextFrameAndMove(final Movement movement) {
-        this.view.setNextFrameAndMovement(movement.x(), movement.y());
+        this.view.setNextFrameAndMovement(
+            (int) (movement.x() * this.character.getSpeedMultiplier()),
+            (int) (movement.y() * this.character.getSpeedMultiplier())
+            );
     }
 
     /**
@@ -129,11 +132,6 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
     @Override
     public final synchronized void setSpeedMultiplierValue(final double variation) {
         this.character.changeSpeedMultiplier(variation);
-    }
-
-    @Override
-    public final synchronized double getSpeedMultiplierValue() {
-        return this.character.getSpeedMultiplier();
     }
 
     /**
