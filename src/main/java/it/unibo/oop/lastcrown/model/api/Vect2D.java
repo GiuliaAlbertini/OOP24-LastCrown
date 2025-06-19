@@ -30,7 +30,7 @@ public interface Vect2D {
      * @param factor the scalar value to multiply the vector by
      * @return a new vector representing this vector scaled by the given factor
      */
-    Vect2D mul(final double factor);
+    Vect2D mul(double factor);
 
     /**
      * Normalizes this vector, returning a unit vector (vector with magnitude 1)

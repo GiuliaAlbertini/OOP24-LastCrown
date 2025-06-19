@@ -11,8 +11,8 @@ public interface Hitbox {
      * @return the position as a Point2D
      */
     Point2D getPosition();
-    
-    /** 
+
+    /**
      * Sets the position (top-left corner) of this hitbox.
      *
      * @param newPos the new position as a Point2D
@@ -32,7 +32,7 @@ public interface Hitbox {
      * @return the height in pixels
      */
     int getHeight();
-    
+
     /**
      * Sets the width of the hitbox.
      *
@@ -45,7 +45,7 @@ public interface Hitbox {
      *
      * @param height the height in pixels
      */
-    void setHeight(int height); 
+    void setHeight(int height);
 
 
     /**

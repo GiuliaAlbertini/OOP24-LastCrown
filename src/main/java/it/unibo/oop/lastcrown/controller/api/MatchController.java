@@ -1,17 +1,24 @@
 package it.unibo.oop.lastcrown.controller.api;
 
+import java.util.Optional;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
+import it.unibo.oop.lastcrown.model.api.CollisionEvent;
+import it.unibo.oop.lastcrown.model.api.CollisionResolver;
 
+/**
+ * Interface representing the controller of a match.
+ * Handles characters, updates, collisions, and interactions.
+ */
 public interface MatchController {
 
     /**
      * Adds a character to the match with the given controller and hitbox.
      *
-     * @param ID to assign the character to
+     * @param n the ID to assign to the character
      * @param controller the character's controller logic
      * @param hitbox the character's hitbox for collision detection
      */
-    void addCharacter(final int n, GenericCharacterController controller, HitboxController hitbox);
+    void addCharacter(int n, GenericCharacterController controller, HitboxController hitbox);
 
     /**
      * Called when the "Add Character" button is pressed in the UI.
@@ -21,8 +28,54 @@ public interface MatchController {
 
     /**
      * Updates the match model.
-     * @param deltaTime how much time passed since last update.
+     *
+     * @param deltaTime the amount of time passed since the last update, in milliseconds
      */
     void update(int deltaTime);
 
+    /**
+     * Updates the position of a character based on its controller.
+     *
+     * @param controller the controller managing the character
+     * @param dx the change in X position
+     * @param dy the change in Y position
+     */
+    void updateCharacterPosition(GenericCharacterController controller, int dx, int dy);
+
+    /**
+     * Returns the collision resolver used in the match.
+     *
+     * @return the CollisionResolver instance
+     */
+    CollisionResolver getCollisionResolver();
+
+    /**
+     * Notifies all registered collision observers about a collision event.
+     *
+     * @param event the collision event to broadcast
+     */
+    void notifyCollisionObservers(CollisionEvent event);
+
+    /**
+     * Retrieves a character controller by its assigned ID.
+     *
+     * @param id the ID of the character
+     * @return an Optional containing the controller if found, or empty if not
+     */
+    Optional<GenericCharacterController> getCharacterControllerById(int id);
+
+    /**
+     * Retrieves a character's hitbox controller by its ID.
+     *
+     * @param id the ID of the character
+     * @return an Optional containing the hitbox controller if found, or empty if not
+     */
+    Optional<HitboxController> getCharacterHitboxById(int id);
+
+    /**
+     * Completely removes a character and its related components from the match using its ID.
+     *
+     * @param characterId the ID of the character to remove
+     */
+    void removeCharacterCompletelyById(int characterId); 
 }

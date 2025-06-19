@@ -6,17 +6,26 @@ import it.unibo.oop.lastcrown.controller.api.MainController;
 import it.unibo.oop.lastcrown.controller.api.MatchController;
 import it.unibo.oop.lastcrown.view.MainView;
 
-public class MainControllerImpl implements MainController{
+/**
+ * Concrete implementation of the MainController interface.
+ * Manages the main components of the game including the view, game logic,
+ * match controller, and game phase flow.
+ */
+public final class MainControllerImpl implements MainController {
     private final MainView view;
     private final GameController game;
     private final MatchControllerimpl match;
     private final GamePhaseController flow;
-    
-    public MainControllerImpl(){
-        this.view= new MainViewImpl(this);
+
+    /**
+     * Initializes the main view,match controller, game controller, and game phase controller.
+     * Automatically starts a new game upon creation.
+     */
+    public MainControllerImpl() {
+        this.view = new MainViewImpl(this);
         this.match = new MatchControllerimpl(this);
-        this.game= new GameControllerImpl(this);
-        this.flow= new GamePhaseControllerImpl(this);
+        this.game = new GameControllerImpl(this);
+        this.flow = new GamePhaseControllerImpl(this);
         startNewGame();
     }
 
@@ -35,10 +44,8 @@ public class MainControllerImpl implements MainController{
         return this.game;
     }
 
-
     @Override
     public MatchController getMatchController() {
         return this.match;
     }
-    
 }

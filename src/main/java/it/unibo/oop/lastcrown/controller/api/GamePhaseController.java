@@ -12,7 +12,7 @@ public interface GamePhaseController {
      *
      * @param newState the new GameState to transition to
      */
-    void changeState(final GameState newState);
+    void changeState(GameState newState);
 
     /**
      * Returns the current state of the game.

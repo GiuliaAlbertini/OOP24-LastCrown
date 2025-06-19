@@ -1,61 +1,105 @@
 package it.unibo.oop.lastcrown.model.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import it.unibo.oop.lastcrown.model.api.Collidable;
 import it.unibo.oop.lastcrown.model.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.api.CollisionResolver;
 import it.unibo.oop.lastcrown.model.api.Point2D;
-import it.unibo.oop.lastcrown.model.impl.Handler.HandleFollowEnemy;
-import it.unibo.oop.lastcrown.view.characters.api.CharacterMovementObserver;
+import it.unibo.oop.lastcrown.model.impl.handler.HandleFollowEnemy;
+import it.unibo.oop.lastcrown.view.characters.api.Movement;
 
-public class CollisionResolverImpl implements CollisionResolver {
-	private final Map<Integer, HandleFollowEnemy> activeFollowMovements = new HashMap<>();
-	CharacterMovementObserver movbs;
-	CharacterMovementStop movbstop;
-	
-	public CollisionResolverImpl(CharacterMovementObserver movbs, CharacterMovementStop movbstop){
-		this.movbs=movbs;
-		this.movbstop=movbstop;
-	}
+/**
+ * Implements CollisionResolver to handle "follow enemy" collision events.
+ * Manages active follow movements and tracks completed ones.
+ */
+public final class CollisionResolverImpl implements CollisionResolver {
+    private final Map<Integer, HandleFollowEnemy> activeFollowMovements = new HashMap<>();
+    private final Map<Integer, Integer> completedFollows = new HashMap<>(); //nemico-personaggio
+    /**
+     * Costruttore vuoto di default per CollisionResolverImpl.
+     */
+    public CollisionResolverImpl() { }
+    @Override
+    public void notify(final CollisionEvent event) {
+        switch (event.getType()) {
+            case FOLLOW_ENEMY -> handleFollowEnemy(event);
+            //default -> System.out.println("[WARN] Evento collisione non gestito: " + event.getType());
+        }
+    }
 
-	@Override
-	public void notify(CollisionEvent event) {
-		switch (event.getType()) {
-			case FOLLOW_ENEMY -> handleFollowEnemy(event);
-			
-			default -> System.out.println("[WARN] Evento collisione non gestito: " + event.getType());
-		}
-	}
+    private void handleFollowEnemy(final CollisionEvent event) {
+        final int characterId = event.getCollidable1().getCardidentifier().number();
+        final HandleFollowEnemy movement = new HandleFollowEnemy(event);
+        movement.startFollowing();
 
-	private void handleFollowEnemy(CollisionEvent event) {
-		int characterId = event.getCollidable1().getCardidentifier().number();
-		HandleFollowEnemy movement = new HandleFollowEnemy(event, movbs, movbstop);
-		//movement.update(deltaMs);
-		activeFollowMovements.put(characterId, movement);
-	}
+        activeFollowMovements.put(characterId, movement);
+    }
 
-	public List<Collidable> updateAllMovements(long deltaMs) {
-		List<Collidable> updatedCharacters = new ArrayList<>();
+    @Override
+    public Optional<MovementResult> updateMovementFor(final int characterId, final long deltaMs) {
+        final HandleFollowEnemy movement = activeFollowMovements.get(characterId);
+        if (movement != null) {
+            final var stillMoving = movement.update(deltaMs);
+            // non si sta più muovendo
+            if (!stillMoving) {
+                activeFollowMovements.remove(characterId);
+                //character ha raggiunto il nemico
+                final int enemyId = movement.getEnemy().getCardidentifier().number();
+                completedFollows.put(enemyId, characterId);
+            }
+            final Point2D delta = movement.getDelta();
+            final Movement movementDelta = new Movement((int) delta.x(), (int) delta.y());
+            return Optional.of(new MovementResult(
+                    movement.getCharacter(),
+                    movement.getCurrentPosition(),
+                    movementDelta,
+                    stillMoving));
+        }
+        return Optional.empty();
+    }
 
-		for (final var handle : activeFollowMovements.entrySet()) {
-			HandleFollowEnemy movement = handle.getValue();
-			movement.update(deltaMs);
-			updatedCharacters.add(movement.getCharacter());
-		}
-		return updatedCharacters;
-	}
+    @Override
+    public Point2D getCharacterPosition(final int characterId) {
+        final HandleFollowEnemy movement = activeFollowMovements.get(characterId);
+        if (movement != null) {
+            return movement.getCurrentPosition();
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	public Point2D getCharacterPosition(int characterId) {
-		HandleFollowEnemy movement = activeFollowMovements.get(characterId);
-		if (movement != null) {
-			return movement.getCurrentPosition();
-		} else {
-			return null; 
-		}	
-	}	
+    @Override
+    public boolean wasEnemyCollided(final int enemyId) {
+        return completedFollows.containsKey(enemyId);
+    }
+
+    @Override
+    public void clearEnemyCollision(final int enemyId, final int characterId) {
+        completedFollows.remove(enemyId, characterId);
+        //System.out.println(completedFollows);
+    }
+
+    @Override
+    public int getEnemyId(final int characterId) {
+        int enemyId = 0;
+        for (final Map.Entry<Integer, Integer> entry : completedFollows.entrySet()) {
+            if (entry.getValue().equals(characterId)) {
+                enemyId = entry.getKey();
+            }
+        }
+        return enemyId;
+    }
+
+    @Override
+    public int getCharacterId(final int enemyId) {
+        int characterId = 0;
+        for (final Map.Entry<Integer, Integer> entry : completedFollows.entrySet()) {
+            if (entry.getKey().equals(enemyId)) {
+                characterId = entry.getValue();
+            }
+        }
+        return characterId;
+    }
 }

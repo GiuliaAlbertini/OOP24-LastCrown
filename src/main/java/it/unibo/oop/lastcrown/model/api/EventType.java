@@ -1,30 +1,38 @@
 package it.unibo.oop.lastcrown.model.api;
 
 /**
- * Represents the different types of events that can occur in the game related to collisions or input.
+ * Represents the different types of events that can occur in the game 
+ * related to collisions or user input.
  */
 public enum EventType {
+
     /**
-     * Event triggered when player engages an enemy.
+     * Event triggered when the player starts following or engaging an enemy.
      */
     FOLLOW_ENEMY,
+
     /**
-     * Event triggered when player collides with enemy.
+     * Event triggered when the player collides with an enemy.
      */
     ENEMY_COLLISION,
 
     /**
-     * Event triggered when an hero collides with a shop.
+     * Event triggered when the player enters combat mode.
+     */
+    COMBAT,
+
+    /**
+     * Event triggered when the hero collides with a shop.
      */
     SHOP_COLLISION,
 
     /**
-     * Event triggered when an entity collides with a wall.
+     * Event triggered when any entity collides with a wall.
      */
     WALL_COLLISION,
 
     /**
-     * Event triggered by a key press input.
+     * Event triggered by a key press input from the user.
      */
     KEY_PRESS;
 }

@@ -1,23 +1,34 @@
-package it.unibo.oop.lastcrown.model.Impl;
+package it.unibo.oop.lastcrown.model.impl;
 
 import it.unibo.oop.lastcrown.model.api.Vect2D;
 
-public class Vect2DImpl implements Vect2D {
+/**
+ * Implementation of the Vect2D interface.
+ * Represents a 2D vector with basic vector operations such as addition, subtraction,
+ * scalar multiplication, normalization, and module (magnitude) calculation.
+ */
+public final class Vect2DImpl implements Vect2D {
     private final double x;
     private final double y;
 
-    public Vect2DImpl(double x, double y){
-        this.x=x;
-        this.y=y;
-    }
-    
-    @Override
-    public Vect2D sum(Vect2D v) {
-        return new Vect2DImpl(this.x + v.x(), this.y +v.y());
+    /**
+     * Constructs a 2D vector with the specified x and y components.
+     *
+     * @param x the x component of the vector
+     * @param y the y component of the vector
+     */
+    public Vect2DImpl(final double x, final double y) {
+        this.x = x;
+        this.y = y;
     }
 
     @Override
-    public Vect2D subtract(Vect2D v) {
+    public Vect2D sum(final Vect2D v) {
+        return new Vect2DImpl(this.x + v.x(), this.y + v.y());
+    }
+
+    @Override
+    public Vect2D subtract(final Vect2D v) {
        return new Vect2DImpl(this.x - v.x(), this.y - v.y());
     }
 
@@ -28,13 +39,13 @@ public class Vect2DImpl implements Vect2D {
 
     @Override
     public Vect2D normalized() {
-        double module=(double)Math.sqrt(x*x+y*y);
-        return new Vect2DImpl(x/module,y/module);
+        final double module = Math.sqrt(x * x + y * y);
+        return new Vect2DImpl(x / module, y / module);
     }
 
     @Override
     public double module() {
-        return (double)Math.sqrt(x*x+y*y);
+        return Math.sqrt(x * x + y * y);
     }
 
     @Override
@@ -46,10 +57,9 @@ public class Vect2DImpl implements Vect2D {
     public double y() {
         return y;
     }
-    
-    @Override
-    public String toString(){
-        return "Vect2d("+x+", "+y+")";
-    }
 
+    @Override
+    public String toString() {
+        return "Vect2d(" + x + ", " + y + ")";
+    }
 }

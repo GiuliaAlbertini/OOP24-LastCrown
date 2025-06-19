@@ -8,7 +8,18 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
  * which includes its position, hitbox, and other relevant properties.
  */
 public interface Collidable {
-    public Hitbox getHitbox();
-    public CardIdentifier getCardidentifier();
-}
 
+    /**
+     * Returns the hitbox associated with this collidable entity.
+     *
+     * @return the hitbox of the entity
+     */
+    Hitbox getHitbox();
+
+    /**
+     * Returns the identifier of the card associated with this entity.
+     *
+     * @return the card identifier
+     */
+    CardIdentifier getCardidentifier();
+}

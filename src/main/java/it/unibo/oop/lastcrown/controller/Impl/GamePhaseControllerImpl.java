@@ -3,20 +3,28 @@ import it.unibo.oop.lastcrown.controller.api.GamePhaseController;
 import it.unibo.oop.lastcrown.controller.api.MainController;
 import it.unibo.oop.lastcrown.view.MainView;
 
-public class GamePhaseControllerImpl implements GamePhaseController{
-    MainController controller;
-    MainView view;
-    GameState currenState;
+/**
+ * Manages transitions between different game states and updates the view accordingly.
+ * Delegates control to the appropriate controller based on the current GameState
+ */
+public final class GamePhaseControllerImpl implements GamePhaseController {
+    private MainController controller;
+    private MainView view;
+    private GameState currenState;
 
-    public GamePhaseControllerImpl(final MainController controller){
-        this.controller=controller;
-        this.view= controller.getMainView();
-        this.currenState= GameState.GAME;
+    /**
+     * Initializes the current game state to GameState.GAME and retrieves the main view.
+     * @param controller the main controller of the application
+     */
+    public GamePhaseControllerImpl(final MainController controller) {
+        this.controller = controller;
+        this.view = controller.getMainView();
+        this.currenState = GameState.GAME;
     }
 
     @Override
-    public void changeState(final GameState newState){
-        this.currenState= newState;
+    public void changeState(final GameState newState) {
+        this.currenState = newState;
         view.showPanel(newState);
         switch (newState) {
             case GAME: controller.getGameController().run(true);
@@ -26,7 +34,7 @@ public class GamePhaseControllerImpl implements GamePhaseController{
     }
 
     @Override
-    public GameState getCurrentState(){
+    public GameState getCurrentState() {
         return this.currenState;
     }
 }

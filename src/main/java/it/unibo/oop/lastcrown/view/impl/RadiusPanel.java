@@ -1,25 +1,24 @@
 package it.unibo.oop.lastcrown.view.impl;
 
-
 import javax.swing.JPanel;
 
 /**
- * Interfaccia che rappresenta un pannello grafico per la visualizzazione
- * di un raggio attorno a un'entità o punto specifico nella UI.
+ * Interface representing a graphical panel that displays a radius
+ * around a specific entity or point in the UI.
  */
 public interface RadiusPanel {
 
     /**
-     * Restituisce il pannello Swing che visualizza il raggio.
+     * Returns the Swing panel that visualizes the radius.
      *
-     * @return il JPanel che rappresenta graficamente il raggio
+     * @return the JPanel that graphically represents the radius
      */
     JPanel getRadiusPanel();
 
     /**
-     * Aggiorna la posizione del pannello sulla base della posizione corrente
-     * del centro e del raggio. Questo metodo dovrebbe essere chiamato ogni
-     * volta che l'entità monitorata cambia posizione.
+     * Updates the position of the panel based on the current
+     * center position and radius. This method should be called
+     * whenever the monitored entity changes its position.
      */
     void updatePosition();
 }

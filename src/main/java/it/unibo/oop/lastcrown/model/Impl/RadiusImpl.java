@@ -7,10 +7,22 @@ import it.unibo.oop.lastcrown.model.api.Hitbox;
 import it.unibo.oop.lastcrown.model.api.Point2D;
 import it.unibo.oop.lastcrown.model.api.Radius;
 
-public class RadiusImpl implements Radius {
+/**
+ * Implementation of the Radius interface.
+ * Represents a detection radius around a hitbox, used to find nearby enemies
+ * and perform spatial calculations relative to a semicircle in front of the origin.
+ */
+public final class RadiusImpl implements Radius {
     private final Hitbox origin;
     private final double radius;
 
+    /**
+     * Constructs a new RadiusImpl with a specified hitbox as origin
+     * and a radius value.
+     *
+     * @param origin the hitbox which acts as the center of the radius
+     * @param radius the size of the radius
+     */
     public RadiusImpl(final Hitbox origin, final double radius) {
         this.origin = origin;
         this.radius = radius;
@@ -19,9 +31,9 @@ public class RadiusImpl implements Radius {
     // lista di nemici nel raggio
     @Override
     public List<Hitbox> getEnemiesInRadius(final List<Hitbox> enemies) {
-        List<Hitbox> result = new ArrayList<>();
-        for (Hitbox h : enemies) {
-            if (h.getCenter().getDistance(origin.getCenter()) <= radius) {
+        final List<Hitbox> result = new ArrayList<>();
+        for (final Hitbox h : enemies) {
+            if (h.getCenter().getDistance(origin.getCenter()) <= radius && isInRightSemicircle(h.getCenter())) {
                 result.add(h);
             }
         }
@@ -33,9 +45,9 @@ public class RadiusImpl implements Radius {
     public Optional<Hitbox> getClosestEnemyInRadius(final List<Hitbox> enemies) {
         Hitbox closest = null;
         double minDistance = Double.MAX_VALUE; // valore arbitrario
-        for (Hitbox h : enemies) {
-            double distance = h.getCenter().getDistance(origin.getCenter());
-            if (distance <= radius && distance < minDistance) {
+        for (final Hitbox h : enemies) {
+            final double distance = h.getCenter().getDistance(origin.getCenter());
+            if (distance <= radius && distance < minDistance && isInRightSemicircle(h.getCenter())) {
                 minDistance = distance;
                 closest = h;
             }
@@ -48,15 +60,10 @@ public class RadiusImpl implements Radius {
 
     @Override
     public boolean hasEnemyInRadius(final List<Hitbox> enemies) {
-        for (Hitbox h : enemies) {
-            if (h.getCenter().getDistance(origin.getCenter()) <= radius) {
+        for (final Hitbox h : enemies) {
+            if (h.getCenter().getDistance(origin.getCenter()) <= radius && isInRightSemicircle(h.getCenter())) {
                 return true;
             }
-            double dist = h.getCenter().getDistance(origin.getCenter());
-            if (dist <= radius) {
-                return true;
-            }
-
         }
         return false;
     }
@@ -69,5 +76,11 @@ public class RadiusImpl implements Radius {
     @Override
     public double getRadius() {
         return this.radius;
+    }
+
+    private boolean isInRightSemicircle(final Point2D target) {
+        final Point2D originCenter = origin.getCenter();
+        // Controlla se il punto è nella metà destra del cerchio
+        return target.x() >= originCenter.x();
     }
 }

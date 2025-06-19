@@ -4,30 +4,53 @@ import it.unibo.oop.lastcrown.controller.api.MainController;
 import it.unibo.oop.lastcrown.controller.impl.GameState;
 import it.unibo.oop.lastcrown.view.GamePanel;
 import it.unibo.oop.lastcrown.view.MainView;
-
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.event.ActionListener;
 
-public class MainViewImpl extends JFrame implements MainView {
-    
+/**
+ * Main implementation of the MainView interface using Swing.
+ * This class manages the main application window with different panels
+ * such as menu, game, and pause, using a CardLayout to switch between them.
+ */
+public final class MainViewImpl extends JFrame implements MainView {
+    private static final long serialVersionUID = 1L;
+
+    // Constants for window size
+    private static final int WINDOW_WIDTH = 800;
+    private static final int WINDOW_HEIGHT = 600;
+
+    // Constants for button position and size
+    private static final int BUTTON_X = 10;
+    private static final int BUTTON_Y = 50;
+    private static final int BUTTON_WIDTH = 200;
+    private static final int BUTTON_HEIGHT = 30;
+
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
-    private GamePanel gamePanel;  // la classe wrapper
-    private final MainController controller;
-    private final JButton addCharacterBtn = new JButton("Aggiungi personaggio");  
+    private GamePanel gamePanel; // la classe wrapper
+    private final JButton addCharacterBtn = new JButton("Aggiungi personaggio");
 
-    public MainViewImpl(MainController controller) {
-        this.controller = controller;
+    /**
+     * Constructs the main application window, initializes the layout and panels,
+     * sets basic window properties such as title, size, and close operation.
+     *
+     * @param controller the main controller to link with the view (currently not used directly here)
+     */
+    public MainViewImpl(final MainController controller) {
         this.cardLayout = new CardLayout();
         this.mainPanel = new JPanel(cardLayout); // IMPORTANTE: Assegna il CardLayout al mainPanel
 
         // Impostazioni di base della finestra
         setTitle("Last Crown");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        
+
         // Aggiungi il pannello principale
         add(mainPanel);
         initPanel();
@@ -37,17 +60,16 @@ public class MainViewImpl extends JFrame implements MainView {
     @Override
     public void initPanel() {
         // Menu Panel
-        JPanel menuPanel = new JPanel();
+        final JPanel menuPanel = new JPanel();
         menuPanel.setName(GameState.MENU.toString());
         menuPanel.add(new JLabel("Menu del gioco"));
 
-
-        this.gamePanel= new GamePanelImpl();
-        addCharacterBtn.setBounds(10, 50, 200, 30);
+        this.gamePanel = new GamePanelImpl();
+        addCharacterBtn.setBounds(BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
         gamePanel.getPanel().add(addCharacterBtn);
 
         // Pause Panel
-        JPanel pausePanel = new JPanel();
+        final JPanel pausePanel = new JPanel();
         pausePanel.setName(GameState.MENU_IN_GAME.toString());
         pausePanel.add(new JLabel("Pausa"));
 
@@ -58,31 +80,29 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     @Override
-    public void showPanel(GameState panel) {
+    public void showPanel(final GameState panel) {
         cardLayout.show(mainPanel, panel.toString());
     }
 
     @Override
-    public JPanel getPanel(GameState panel) {
-        Component[] components = mainPanel.getComponents();
-        for (Component comp : components) {
-            if (comp instanceof JPanel && comp.getName() != null && 
-                comp.getName().equals(panel.toString())) {
+    public JPanel getPanel(final GameState panel) {
+        final Component[] components = mainPanel.getComponents();
+        for (final Component comp : components) {
+            if (comp instanceof JPanel && comp.getName() != null
+                    && comp.getName().equals(panel.toString())) {
                 return (JPanel) comp;
             }
         }
         return null;
     }
 
-
     @Override
-    public void setAddCharacterListener(ActionListener listener) {
+    public void setAddCharacterListener(final ActionListener listener) {
         addCharacterBtn.addActionListener(listener);
     }
 
     @Override
-        public GamePanel getGamePanel() {
-            return this.gamePanel;
-        }
-
+    public GamePanel getGamePanel() {
+        return this.gamePanel;
+    }
 }
