@@ -164,4 +164,9 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
     public final boolean isInCombat() {
         return this.character.isInCombat();
     }
+
+    @Override
+    public final void setInCombat(final boolean inCombat) {
+        this.character.setInCombat(inCombat);
+    }
 }
