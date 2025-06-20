@@ -154,4 +154,14 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
     public final int getDeathAnimationSize() {
         return this.view.getDeathAnimationSize();
     }
+
+    @Override
+    public final boolean isInCombat() {
+        return this.character.isInCombat();
+    }
+
+    @Override
+    public final void setInCombat(final boolean inCombat) {
+        this.character.setInCombat(inCombat);
+    }
 }
