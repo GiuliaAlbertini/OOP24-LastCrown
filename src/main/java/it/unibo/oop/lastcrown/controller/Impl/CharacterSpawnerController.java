@@ -38,7 +38,7 @@ public final class CharacterSpawnerController {
     private static final int CHARACTER_HEIGHT = 100;
     private static final int HITBOX_WIDTH = 10;
     private static final int HITBOX_HEIGHT = 10;
-    private static final int DEFAULT_RADIUS = 150;
+    private static final int DEFAULT_RADIUS = 200;
 
     private final GamePanel gamePanel;
 
@@ -54,7 +54,7 @@ public final class CharacterSpawnerController {
     /**
      * Spawns a playable character, attaches its animation panel,
      * and sets up graphical and collision-related components.
-     * 
+     *
      * @param id unique identifier for the character
      * @param characterModel the model representing the playable character
      * @param observer observer for character death events
@@ -64,7 +64,7 @@ public final class CharacterSpawnerController {
      */
     public SpawnedCharacter spawnPlayableCharacter(final int id, final PlayableCharacter characterModel,
             final CharacterDeathObserver observer, final int x, final int y) {
-        final PlayableCharacterController controller = 
+        final PlayableCharacterController controller =
             PlCharControllerFactory.createPlCharController(observer, id, characterModel);
         controller.attachCharacterAnimationPanel(CHARACTER_WIDTH, CHARACTER_HEIGHT);
         return setupCharacter(controller, characterModel.getType().name().toLowerCase(Locale.ROOT),
