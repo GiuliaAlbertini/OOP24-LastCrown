@@ -61,7 +61,8 @@ public final class RadiusImpl implements Radius {
     @Override
     public boolean hasEnemyInRadius(final List<Hitbox> enemies) {
         for (final Hitbox h : enemies) {
-            if (h.getCenter().getDistance(origin.getCenter()) <= radius && isInRightSemicircle(h.getCenter())) {
+            final double distance = h.getCenter().getDistance(origin.getCenter());
+            if (distance <= radius && isInRightSemicircle(h.getCenter())) {
                 return true;
             }
         }
