@@ -34,7 +34,7 @@ public final class MatchControllerimpl implements MatchController {
     private final CollisionResolver collisionResolver;
     private final CharacterSpawnerController spawner;
     private final EnemyRadiusScanner radiusScanner;
-    private final int id = 1;
+    private int nextId = 1;
     private final GamePanel gamePanel;
     private final MainView view;
 
@@ -59,14 +59,15 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public void onAddCharacterButtonPressed() {
-        //final int newId = generateUniqueCharacterId();
         final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
-        final PlayableCharacter newChar = new PlayableCharacterImpl("Warrior", CardType.MELEE, 20, 23, 100, 2, 100, 0.8, 100);
+        final PlayableCharacter Char1 = new PlayableCharacterImpl("Warrior", CardType.MELEE, 20, 50, 100, 2, 100, 0.8, 100);
+        final PlayableCharacter Char2 = new PlayableCharacterImpl("Knight", CardType.MELEE, 20, 50, 100, 2, 100, 0.8, 100);
         final Enemy newEnemy = new EnemyImpl("Bat", 1, CardType.ENEMY, 3, 100, 0.8);
         final Enemy nemico2 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 3, 200, 0.8);
-        spawnAndRegisterCharacter(new SecureRandom().nextInt(), newChar, obs, 100, 200);
-        spawnAndRegisterCharacter(new SecureRandom().nextInt(), newEnemy, obs, 500, 100);
-        spawnAndRegisterCharacter(new SecureRandom().nextInt(), nemico2, obs, 200, 400);
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), Char1, obs, 100, 200);
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), Char2, obs, 100, 200);
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), newEnemy, obs, 500, 100);
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico2, obs, 200, 400);
 
     }
 
@@ -179,6 +180,10 @@ public final class MatchControllerimpl implements MatchController {
             gamePanel.removeCharacterComponent(component);
             gamePanel.repaintGamePanel();
         }
+    }
+
+    private int generateUniqueCharacterId() {
+        return nextId++;
     }
 
 }
