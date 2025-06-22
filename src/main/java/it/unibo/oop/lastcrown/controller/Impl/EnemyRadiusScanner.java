@@ -25,71 +25,84 @@ import it.unibo.oop.lastcrown.model.impl.CollisionEventImpl;
 public final class EnemyRadiusScanner {
     private final Map<GenericCharacterController, HitboxController> hitboxControllers;
 
-    /**
-     * Constructs a new EnemyRadiusScanner.
-     *
-     * @param hitboxControllers a mapping of all character controllers to their associated hitbox controllers
-     */
     public EnemyRadiusScanner(final Map<GenericCharacterController, HitboxController> hitboxControllers) {
         this.hitboxControllers = hitboxControllers;
     }
 
-
-    /**
-     * Scans all playable characters' radii for enemies and generates FOLLOW_ENEMY events
-     * for each detected interaction between a player and a nearby enemy.
-     *
-     * @return a list of collision events where enemies are within the radius of playable characters
-     */
     public List<CollisionEvent> scanForFollowEvents() {
-        final List<Hitbox> enemyHitboxes = new ArrayList<>();
-        final Map<Hitbox, EnemyController> hitboxToEnemy = new HashMap<>();
-
-        for (final Map.Entry<GenericCharacterController, HitboxController> entry : hitboxControllers.entrySet()) {
-            final GenericCharacterController controller = entry.getKey();
-            if (controller.getId().type() == CardType.ENEMY) {
-                final HitboxController hbc = entry.getValue();
-                final Hitbox hitbox = hbc.getHitbox();
-                enemyHitboxes.add(hitbox);
-                hitboxToEnemy.put(hitbox, (EnemyController) controller);
-            }
-        }
+        final List<Hitbox> enemyHitboxes = getAllEnemyHitboxes();
+        final Map<Hitbox, EnemyController> hitboxToEnemy = mapHitboxesToEnemies();
 
         final List<CollisionEvent> events = new ArrayList<>();
 
-        for (final Map.Entry<GenericCharacterController, HitboxController> entry : hitboxControllers.entrySet()) {
+        for (final var entry : hitboxControllers.entrySet()) {
             final GenericCharacterController controller = entry.getKey();
+
             if (controller.getId().type() != CardType.ENEMY) {
                 final PlayableCharacterController player = (PlayableCharacterController) controller;
                 final HitboxController playerHitboxController = entry.getValue();
 
-                if (playerHitboxController.getRadius() != null
-                    && playerHitboxController.getRadius().hasEnemyInRadius(enemyHitboxes)) {
-
-                    final Optional<Hitbox> maybeClosest = 
-                        playerHitboxController.getRadius().getClosestEnemyInRadius(enemyHitboxes);
-
-                    if (maybeClosest.isPresent()) {
-                        final Hitbox closestHitbox = maybeClosest.get();
-                        final EnemyController enemy = hitboxToEnemy.get(closestHitbox);
-
-                        if (enemy != null) {
-                            final HitboxController enemyHitboxController = hitboxControllers.get(enemy);
-                            if (enemyHitboxController != null) {
-                                final Collidable playerCol =
-                                    new CollidableImpl(playerHitboxController.getHitbox(), player.getId());
-                                final Collidable enemyCol = 
-                                    new CollidableImpl(enemyHitboxController.getHitbox(), enemy.getId());
-//System.out.println("[DEBUG] Nemico intercettato! Player ID: " + 
-//player.getId().number() + " -> Enemy ID: " + enemy.getId().number());
-                                events.add(new CollisionEventImpl(EventType.FOLLOW_ENEMY, playerCol, enemyCol));
-                            }
-                        }
-                    }
-                }
+                addEventIfEnemyInRadius(events, player, playerHitboxController, enemyHitboxes, hitboxToEnemy);
             }
         }
 
         return events;
     }
+
+    private List<Hitbox> getAllEnemyHitboxes() {
+        final List<Hitbox> enemyHitboxes = new ArrayList<>();
+        for (final var entry : hitboxControllers.entrySet()) {
+            if (entry.getKey().getId().type() == CardType.ENEMY) {
+                enemyHitboxes.add(entry.getValue().getHitbox());
+            }
+        }
+        return enemyHitboxes;
+    }
+
+    private Map<Hitbox, EnemyController> mapHitboxesToEnemies() {
+        final Map<Hitbox, EnemyController> map = new HashMap<>();
+        for (final var entry : hitboxControllers.entrySet()) {
+            if (entry.getKey().getId().type() == CardType.ENEMY) {
+                map.put(entry.getValue().getHitbox(), (EnemyController) entry.getKey());
+            }
+        }
+        return map;
+    }
+
+    private void addEventIfEnemyInRadius(
+        final List<CollisionEvent> events,
+        final PlayableCharacterController player,
+        final HitboxController playerHitboxController,
+        final List<Hitbox> enemyHitboxes,
+        final Map<Hitbox, EnemyController> hitboxToEnemy
+    ) {
+        if (playerHitboxController.getRadius() != null && playerHitboxController.getRadius().hasEnemyInRadius(enemyHitboxes)) {
+                System.out.println(playerHitboxController.getRadius().hasEnemyInRadius(enemyHitboxes));
+            playerHitboxController.getRadius()
+                .getClosestEnemyInRadius(enemyHitboxes)
+                .flatMap(hitbox -> Optional.ofNullable(hitboxToEnemy.get(hitbox)))
+                .filter(enemy -> !enemy.isInCombat())
+                .ifPresent(enemy -> createCollisionEvent(events, player, enemy));
+        }
+    }
+
+    private void createCollisionEvent(
+        final List<CollisionEvent> events,
+        final PlayableCharacterController player,
+        final EnemyController enemy
+    ) {
+        final HitboxController playerHitboxController = hitboxControllers.get(player);
+        final HitboxController enemyHitboxController = hitboxControllers.get(enemy);
+
+        if (playerHitboxController != null && enemyHitboxController != null) {
+            final Collidable playerCol = new CollidableImpl(playerHitboxController.getHitbox(), player.getId());
+            final Collidable enemyCol = new CollidableImpl(enemyHitboxController.getHitbox(), enemy.getId());
+
+            System.out.println("[DEBUG] Nemico intercettato! Player ID: " + player.getId().number()
+                    + " -> Enemy ID: " + enemy.getId().number());
+            events.add(new CollisionEventImpl(EventType.FOLLOW_ENEMY, playerCol, enemyCol));
+
+        }
+    }
 }
+
