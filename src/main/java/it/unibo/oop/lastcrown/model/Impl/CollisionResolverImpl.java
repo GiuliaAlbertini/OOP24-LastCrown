@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import it.unibo.oop.lastcrown.controller.api.MatchController;
 import it.unibo.oop.lastcrown.model.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.api.CollisionResolver;
 import it.unibo.oop.lastcrown.model.api.Point2D;
@@ -17,10 +18,14 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
 public final class CollisionResolverImpl implements CollisionResolver {
     private final Map<Integer, HandleFollowEnemy> activeFollowMovements = new HashMap<>();
     private final Map<Integer, Integer> completedFollows = new HashMap<>(); //nemico-personaggio
+    MatchController matchController;
     /**
      * Costruttore vuoto di default per CollisionResolverImpl.
      */
-    public CollisionResolverImpl() { }
+    public CollisionResolverImpl(MatchController controller) {
+        this.matchController=controller;
+    }
+
     @Override
     public void notify(final CollisionEvent event) {
         switch (event.getType()) {
@@ -33,21 +38,26 @@ public final class CollisionResolverImpl implements CollisionResolver {
         final int characterId = event.getCollidable1().getCardidentifier().number();
         final HandleFollowEnemy movement = new HandleFollowEnemy(event);
         movement.startFollowing();
-
         activeFollowMovements.put(characterId, movement);
+        //System.out.println(activeFollowMovements);
     }
 
     @Override
     public Optional<MovementResult> updateMovementFor(final int characterId, final long deltaMs) {
+
         final HandleFollowEnemy movement = activeFollowMovements.get(characterId);
+        final int enemyId = movement.getEnemy().getCardidentifier().number();
+
         if (movement != null) {
             final var stillMoving = movement.update(deltaMs);
             // non si sta più muovendo
             if (!stillMoving) {
                 activeFollowMovements.remove(characterId);
                 //character ha raggiunto il nemico
-                final int enemyId = movement.getEnemy().getCardidentifier().number();
+
                 completedFollows.put(enemyId, characterId);
+
+
             }
             final Point2D delta = movement.getDelta();
             final Movement movementDelta = new Movement((int) delta.x(), (int) delta.y());
@@ -82,24 +92,27 @@ public final class CollisionResolverImpl implements CollisionResolver {
     }
 
     @Override
-    public int getEnemyId(final int characterId) {
+    public Optional<Integer> getEnemyId(final int characterId) {
         int enemyId = 0;
         for (final Map.Entry<Integer, Integer> entry : completedFollows.entrySet()) {
             if (entry.getValue().equals(characterId)) {
                 enemyId = entry.getKey();
+                return Optional.of(enemyId);
             }
         }
-        return enemyId;
+        return Optional.empty();
     }
 
     @Override
-    public int getCharacterId(final int enemyId) {
+    public Optional<Integer> getCharacterId(final int enemyId) {
         int characterId = 0;
         for (final Map.Entry<Integer, Integer> entry : completedFollows.entrySet()) {
             if (entry.getKey().equals(enemyId)) {
                 characterId = entry.getValue();
+                return Optional.of(characterId);
             }
         }
-        return characterId;
+        return Optional.empty();
     }
+
 }

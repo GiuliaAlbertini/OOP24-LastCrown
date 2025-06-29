@@ -49,7 +49,7 @@ public interface CollisionResolver extends CollisionObserver {
      * @param characterId the unique identifier of the character
      * @return the enemy ID that collided with the character, or 0 if none
      */
-    int getEnemyId(int characterId);
+    Optional<Integer> getEnemyId(int characterId);
 
     /**
      * Returns the character ID that collided with the given enemy ID.
@@ -57,5 +57,5 @@ public interface CollisionResolver extends CollisionObserver {
      * @param enemyId the unique identifier of the enemy
      * @return the character ID that collided with the enemy, or 0 if none
      */
-    int getCharacterId(int enemyId);
+    Optional<Integer> getCharacterId(int enemyId);
 }
