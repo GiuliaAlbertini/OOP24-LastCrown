@@ -46,7 +46,7 @@ public final class EventFactory {
         registerHandler(CharacterState.FOLLOWING, new FollowingHandler(matchController, resolver, this));
         registerHandler(CharacterState.STOPPED, new StoppingHandler(this));
         registerHandler(CharacterState.COMBAT, new CombatHandler(this, resolver, matchController));
-        registerHandler(CharacterState.DEAD, new DeadHandler());
+        registerHandler(CharacterState.DEAD, new DeadHandler(matchController, this));
     }
 
     /**

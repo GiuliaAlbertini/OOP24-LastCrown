@@ -6,10 +6,10 @@ import it.unibo.oop.lastcrown.model.impl.Point2DImpl;
 
 public final class HandleFollowEnemy {
     private final Collidable character;
-    private final Collidable enemy; 
-    private final double speed = 20.0; 
+    private final Collidable enemy;
+    private final double speed = 20.0;
     //private final double baseCurveIntensity = 2;
-    private double t = 0.0; 
+    private double t = 0.0;
     private final boolean stopped; //false
     private boolean active; //false
     private final Point2D previousPosition;
@@ -130,21 +130,21 @@ public final class HandleFollowEnemy {
  * double dy = p2.y() - p0.y();
  * double dist = Math.hypot(dx, dy);
  * double dynamicCurveIntensity = baseCurveIntensity + (30.0 - speed) * 0.05;
- * 
+ *
  * double baseFactor = 0.2 + Math.pow(dist / 500.0, 1.5);
  * baseFactor = Math.min(baseFactor, 1.5);
- * 
+ *
  * double factor = baseFactor * dynamicCurveIntensity;
- * 
+ *
  * double midX = (p0.x() + p2.x()) / 2;
  * double midY = (p0.y() + p2.y()) / 2;
- * 
+ *
  * double heightDiff = p2.y() - p0.y();
  * double heightAdjustment = heightDiff * 5;
  * double offsetY = curveUp
  * ? (midY - dist * factor + heightAdjustment)
  * : (midY + dist * factor + heightAdjustment);
- * 
+ *
  * return new Point2DImpl(midX, offsetY);
  * }
  */
