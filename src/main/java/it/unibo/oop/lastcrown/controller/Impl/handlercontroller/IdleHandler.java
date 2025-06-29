@@ -54,48 +54,45 @@ public final class IdleHandler implements StateHandler {
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
             final int deltaTime) {
+
         if (character != null) {
             final var player = character instanceof PlayableCharacterController;
-            character.setNextAnimation(
-                    player
-                            ? Keyword.RUN_RIGHT
-                            : Keyword.RUN_LEFT);
+            // Imposta l'animazione in base al tipo di personaggio
+            character.setNextAnimation(player ? Keyword.RUN_RIGHT : Keyword.RUN_LEFT);
+            // Muovi il personaggio
             final Movement movementCharacter = new Movement(player ? 2 : -2, 0);
             character.showNextFrameAndMove(movementCharacter);
+
             matchController.updateCharacterPosition(character, movementCharacter.x(), movementCharacter.y());
 
-            final List<CollisionEvent> followEvents = scanner.scanForFollowEvents();
-            if (player && isCharacterInvolved(followEvents, character)) {
-                System.out.println("Player coinvolto in eventi: " + followEvents.size());
+            // Logica per personaggi giocanti
+            if (player) {
+                // Scanner gestisce già il controllo "in combattimento" in modo sincronizzato
+                final List<CollisionEvent> followEvents = scanner.scanForFollowEvents();
 
-                for (final CollisionEvent event : followEvents) {
-                    final int id1 = event.getCollidable1().getCardidentifier().number();
-                    final int id2 = event.getCollidable2().getCardidentifier().number();
-                    final int enemyId = character.getId().number() == id1 ? id2 : id1;
-                    final var enemy = matchController.getCharacterControllerById(enemyId).get();
-        System.out.println("Controllo nemico con ID " + enemyId + ", in combattimento: " + enemy.isInCombat());
+                if (isCharacterInvolved(followEvents, character) && !followEvents.isEmpty()) {
+                    final CollisionEvent event = followEvents.get(0);
 
-                    if (!enemy.isInCombat()) {
-                        enemy.setInCombat(true);
-                        combattimento=enemy.isInCombat();
-                        System.out.println("ora il nemico è in combattimento?"+ combattimento);
-                        matchController.notifyCollisionObservers(event);
-                        queue.enqueue(eventFactory.createEvent(CharacterState.FOLLOWING));
-                        return CharacterState.FOLLOWING;
-                    }
-                        System.out.println("Nessun nemico libero trovato, resto in IDLE");
+                    // Notifica gli osservatori della collisione
+                    matchController.notifyCollisionObservers(event);
 
+                    // Passa allo stato FOLLOWING
+                    queue.enqueue(eventFactory.createEvent(CharacterState.FOLLOWING));
+                    return CharacterState.FOLLOWING;
                 }
-            } else if (!player) {
+            }
+            // Logica per nemici
+            else {
                 final boolean collision = resolver.wasEnemyCollided(character.getId().number());
                 if (collision) {
-                    // resolver.clearEnemyCollision(character.getId().number());
+                    // Passa allo stato STOPPED se c'è collisione
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
                 }
             }
         }
 
+        // Resta in IDLE se non ci sono transizioni di stato
         queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
         return CharacterState.IDLE;
     }
