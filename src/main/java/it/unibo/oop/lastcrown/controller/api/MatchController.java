@@ -4,6 +4,7 @@ import java.util.Optional;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.model.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.api.CollisionResolver;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 
 /**
  * Interface representing the controller of a match.
@@ -77,5 +78,6 @@ public interface MatchController {
      *
      * @param characterId the ID of the character to remove
      */
-    void removeCharacterCompletelyById(int characterId); 
+    void removeCharacterCompletelyById(int characterId);
+    boolean engageEnemy(int enemyId, int playerId);
 }
