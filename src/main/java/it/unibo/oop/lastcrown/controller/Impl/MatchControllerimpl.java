@@ -5,15 +5,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.swing.JComponent;
 import it.unibo.oop.lastcrown.controller.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.api.MainController;
 import it.unibo.oop.lastcrown.controller.api.MatchController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
+import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.model.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.api.CollisionManager;
 import it.unibo.oop.lastcrown.model.api.CollisionResolver;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.model.characters.api.GenericCharacter;
@@ -26,10 +31,14 @@ import it.unibo.oop.lastcrown.view.GamePanel;
 import it.unibo.oop.lastcrown.view.MainView;
 
 public final class MatchControllerimpl implements MatchController {
-    //private final MainController controller;
+    // private final MainController controller;
     private final Map<Integer, CharacterFSM> playerFSMs = new HashMap<>();
     private final Map<Integer, GenericCharacterController> charactersController = new HashMap<>();
     private final Map<GenericCharacterController, HitboxController> hitboxControllers = new HashMap<>();
+    // Aggiungi queste mappe
+    private final Map<Integer, Integer> engagedEnemies = new HashMap<>(); // enemyId -> playerId
+    private final Map<Integer, Object> enemyLocks = new HashMap<>();
+
     private final CollisionManager collisionManager = new CollisionManagerImpl();
     private final CollisionResolver collisionResolver;
     private final CharacterSpawnerController spawner;
@@ -39,13 +48,13 @@ public final class MatchControllerimpl implements MatchController {
     private final MainView view;
 
     public MatchControllerimpl(final MainController controller) {
-        //this.controller = controller;
+        // this.controller = controller;
         this.view = controller.getMainView();
         this.gamePanel = controller.getMainView().getGamePanel();
         this.spawner = new CharacterSpawnerController(gamePanel);
-        this.radiusScanner = new EnemyRadiusScanner(hitboxControllers);
+        this.radiusScanner = new EnemyRadiusScanner(hitboxControllers, this);
         this.view.setAddCharacterListener(e -> onAddCharacterButtonPressed());
-        this.collisionResolver = new CollisionResolverImpl();
+        this.collisionResolver = new CollisionResolverImpl(this);
         this.collisionManager.addObserver(collisionResolver);
 
     }
@@ -60,11 +69,12 @@ public final class MatchControllerimpl implements MatchController {
     @Override
     public void onAddCharacterButtonPressed() {
         final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
-        final PlayableCharacter Char1 = new PlayableCharacterImpl("Warrior", CardType.MELEE, 20, 50, 100, 2, 100, 0.8, 100);
-        final PlayableCharacter Char2 = new PlayableCharacterImpl("Knight", CardType.MELEE, 20, 50, 100, 2, 100, 0.8, 100);
+        final PlayableCharacter Char1 = new PlayableCharacterImpl("Warrior", CardType.MELEE, 20, 25, 100, 2, 100, 0.8,
+                100);
+        final PlayableCharacter Char2 = new PlayableCharacterImpl("Knight", CardType.MELEE, 20, 50, 100, 2, 100, 0.8,100);
         final Enemy newEnemy = new EnemyImpl("Bat", 1, CardType.ENEMY, 3, 100, 0.8);
         final Enemy nemico2 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 3, 200, 0.8);
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), Char1, obs, 100, 200);
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), Char1, obs, 100, 300);
         spawnAndRegisterCharacter(generateUniqueCharacterId(), Char2, obs, 100, 200);
         spawnAndRegisterCharacter(generateUniqueCharacterId(), newEnemy, obs, 500, 100);
         spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico2, obs, 200, 400);
@@ -80,7 +90,7 @@ public final class MatchControllerimpl implements MatchController {
             final GenericCharacterController playerController = spawned.controller();
             playerFSMs.put(id, new CharacterFSM(playerController, this, radiusScanner, this.collisionResolver));
         }
-        //System.out.println(playerFSMs.size());
+        // System.out.println(playerFSMs.size());
     }
 
     public SpawnedCharacter spawnCharacter(final int id, final Object model, final CharacterDeathObserver observer,
@@ -101,7 +111,6 @@ public final class MatchControllerimpl implements MatchController {
             return;
         }
 
-
         final int newX = component.getX() + dx;
         final int newY = component.getY() + dy;
         component.setLocation(newX, newY);
@@ -117,12 +126,6 @@ public final class MatchControllerimpl implements MatchController {
 
     }
 
-    /*
-    private int generateUniqueCharacterId() {
-        return this.id++;
-    }
-    */
-
     @Override
     public void notifyCollisionObservers(final CollisionEvent event) {
         collisionManager.notify(event);
@@ -137,7 +140,8 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public Optional<GenericCharacterController> getCharacterControllerById(final int id) {
-        return Optional.ofNullable(this.charactersController.get(id)); // dove characters è la mappa di tutti i controller
+        return Optional.ofNullable(this.charactersController.get(id)); // dove characters è la mappa di tutti i
+                                                                       // controller
     }
 
     @Override
@@ -163,7 +167,7 @@ public final class MatchControllerimpl implements MatchController {
         // 2. Rimuovi il controller
         final GenericCharacterController controller = charactersController.remove(characterId);
         if (controller == null) {
-            //System.out.println("Nessun controller trovato per ID: " + characterId);
+            // System.out.println("Nessun controller trovato per ID: " + characterId);
             return;
         }
 
@@ -185,5 +189,65 @@ public final class MatchControllerimpl implements MatchController {
     private int generateUniqueCharacterId() {
         return nextId++;
     }
+
+
+
+    /**
+ * Aggiorna lo stato di un nemico e pulisce le mappe se necessario.
+ * @param enemyId ID del nemico
+ * @param playerId ID del giocatore (null se rilascio)
+ * @return true se lo stato è cambiato
+ */
+private boolean updateEnemyState(int enemyId, int playerId) {
+    Object lock = enemyLocks.computeIfAbsent(enemyId, k -> new Object());
+    synchronized (lock) {
+        try {
+            if (!engagedEnemies.containsKey(enemyId)) {
+                engagedEnemies.put(enemyId, playerId);
+                setEnemyInCombat(enemyId, true);
+                System.out.println("aggiungo alla lista ingaggiati" + engagedEnemies);
+                return true;
+            } else {
+                System.out.println("qui io rilascio il tutto");
+                // Rilascia il nemico e pulisci TUTTO
+                engagedEnemies.remove(enemyId);
+                System.out.println("lista ingaggiati" + engagedEnemies);
+                setEnemyInCombat(enemyId, false);
+                enemyLocks.remove(enemyId);
+                return false;
+            }
+        } finally {
+            /*
+            // Pulizia aggiuntiva se il nemico non esiste più
+            if (playerId == null && !isEnemyInGame(enemyId)) {
+                enemyLocks.remove(enemyId);
+
+            }
+                */
+        }
+    }
+}
+
+
+
+// Metodi pubblici (invariati)
+@Override
+public boolean engageEnemy(int enemyId, int playerId) {
+    return updateEnemyState(enemyId, playerId);
+}
+
+
+private void setEnemyInCombat(int enemyId, boolean inCombat) {
+    getCharacterControllerById(enemyId).ifPresent(enemy -> {
+        if (enemy instanceof EnemyController) {
+            Object lock = enemyLocks.computeIfAbsent(enemyId, k -> new Object());
+            synchronized (lock) {
+                ((EnemyController) enemy).setInCombat(inCombat);
+            }
+            System.out.println("il nemico è in settato in combattimento: " + enemy.isInCombat());
+        }
+    });
+}
+
 
 }
