@@ -1,5 +1,9 @@
 package it.unibo.oop.lastcrown.controller.menu.api;
 
+import java.util.Set;
+
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+
 /**
  * Provides methods to handle the visualization of differents scenes.
  */
@@ -15,4 +19,11 @@ public interface SceneManager {
      * Closes the whole application.
      */
     void closeApplication();
+
+    /**
+     * Update the user's collection used by the DeckController.
+     * 
+     * @param newSet the new collection to use
+     */
+    void updateDeckController(Set<CardIdentifier> newSet);
 }

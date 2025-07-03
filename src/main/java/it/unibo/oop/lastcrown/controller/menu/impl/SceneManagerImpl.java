@@ -8,6 +8,7 @@ import it.unibo.oop.lastcrown.controller.user.api.AccountController;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.controller.user.api.DeckController;
 import it.unibo.oop.lastcrown.controller.user.impl.DeckControllerImpl;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
 import it.unibo.oop.lastcrown.view.menu.impl.MainViewImpl;
 
@@ -56,5 +57,10 @@ public class SceneManagerImpl implements SceneManager {
     @Override
     public final void closeApplication() {
         this.mainView.closeApplication();
+    }
+
+    @Override
+    public final void updateDeckController(Set<CardIdentifier> newSet) {
+        this.mainView.updateDeckView(newSet);
     }
 }

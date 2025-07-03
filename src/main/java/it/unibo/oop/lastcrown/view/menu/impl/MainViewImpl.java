@@ -15,6 +15,7 @@ import it.unibo.oop.lastcrown.controller.user.api.AccountController;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.controller.user.api.DeckController;
 import it.unibo.oop.lastcrown.controller.user.impl.DeckControllerImpl;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
 import it.unibo.oop.lastcrown.view.menu.api.Scene;
 
@@ -38,7 +39,7 @@ public class MainViewImpl extends JFrame implements MainView {
     private final Scene menuView;
     private final Scene creditView;
     private final Scene statsView;
-    private final Scene deckView;
+    private Scene deckView;
     private final Scene collectionView;
 
     /**
@@ -118,6 +119,11 @@ public class MainViewImpl extends JFrame implements MainView {
     @Override
     public final void closeApplication() {
         this.dispose();
+    }
+
+    @Override
+    public final void updateDeckView(Set<CardIdentifier> newSet) {
+        this.deckView = (Scene) DeckView.create(this.sceneManager, new DeckControllerImpl(newSet));
     }
 
     private void setUpPanels() {
