@@ -50,6 +50,11 @@ public class MainControllerImpl implements MainController {
     }
 
     @Override
+    public final void updateDeckUsers(Set<CardIdentifier> newSet) {
+        this.sceneManager.get().updateDeckController(newSet);
+    }
+
+    @Override
     public final void closeAll() {
         this.sceneManager.get().closeApplication();
     }
