@@ -16,5 +16,5 @@ public interface ShopCardsSelectionController {
      * @param type the requested CardType (HERO, SPELL, or grouping of MELEE/RANGED)
      * @return a list of up to three CardIdentifier
      */
-    List<CardIdentifier> getRandomCardsByType(final CardType type);
+    List<CardIdentifier> getRandomCardsByType(CardType type);
 }
