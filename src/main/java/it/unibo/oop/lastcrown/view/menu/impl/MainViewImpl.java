@@ -122,8 +122,8 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     @Override
-    public final void updateDeckView(Set<CardIdentifier> newSet) {
-        this.deckView = (Scene) DeckView.create(this.sceneManager, new DeckControllerImpl(newSet));
+    public final void updateDeckView(final Set<CardIdentifier> newSet) {
+        this.deckView = DeckView.create(this.sceneManager, new DeckControllerImpl(newSet));
     }
 
     private void setUpPanels() {
