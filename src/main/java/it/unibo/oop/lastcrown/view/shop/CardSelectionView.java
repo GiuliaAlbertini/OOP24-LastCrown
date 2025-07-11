@@ -20,7 +20,7 @@ import it.unibo.oop.lastcrown.view.menu.impl.CardPanel;
  * based on a card type provided at construction, each with a select button
  * that prompts a purchase confirmation dialog.
  */
-public class CardSelectionView extends JPanel {
+public final class CardSelectionView extends JPanel {
     private static final long serialVersionUID = 1L;
     private static final int H_GAP = 10;
     private static final int V_GAP = 10;
@@ -28,26 +28,33 @@ public class CardSelectionView extends JPanel {
 
     private CardIdentifier selectedCard;
 
+    private CardSelectionView() {
+        this.selectedCard = null;
+    }
+
     /**
-     * Constructs a selection view for cards of the given type.
+     * Create a selection view for cards of the given type.
      *
      * @param type the CardType to display (HERO, MELEE/RANGED as friendly, SPELL)
      * @param shopController the controller providing the card list
+     * @return the created CardSelectionView
      */
-    public CardSelectionView(final CardType type,
+    public static CardSelectionView create(final CardType type,
                              final ShopCardsSelectionControllerImpl shopController) {
-        this.selectedCard = null;
+        final CardSelectionView selectionView = new CardSelectionView();
 
         final List<CardIdentifier> cards = shopController.getRandomCardsByType(type);
         final int columns = cards.size();
 
-        setLayout(new GridLayout(1, columns, H_GAP, V_GAP));
-        setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));
-        setOpaque(false);
+        selectionView.setLayout(new GridLayout(1, columns, H_GAP, V_GAP));
+        selectionView.setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));
+        selectionView.setOpaque(false);
 
         for (final CardIdentifier card : cards) {
-            add(createCardWithButton(card));
+            selectionView.add(selectionView.createCardWithButton(card));
         }
+
+        return selectionView;
     }
 
     /**
@@ -68,11 +75,12 @@ public class CardSelectionView extends JPanel {
                     "Purchase confirmation",
                     JOptionPane.YES_NO_OPTION
             );
-            final boolean confirmed = result == JOptionPane.YES_OPTION;
-            System.out.println(confirmed ? "Yes" : "No");
-            final Window window = SwingUtilities.getWindowAncestor(this);
-            if (window != null) {
-                window.dispose();
+            if (result == JOptionPane.YES_OPTION) {
+                this.setVisible(false);
+            }
+            final Window dialog = SwingUtilities.getWindowAncestor((JButton) e.getSource());
+            if (dialog != null) {
+                dialog.dispose();
             }
         });
         container.add(selectButton, BorderLayout.SOUTH);
