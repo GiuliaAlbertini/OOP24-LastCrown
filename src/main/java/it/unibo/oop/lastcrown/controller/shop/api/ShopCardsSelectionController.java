@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.controller;
+package it.unibo.oop.lastcrown.controller.shop.api;
 
 import java.util.List;
 

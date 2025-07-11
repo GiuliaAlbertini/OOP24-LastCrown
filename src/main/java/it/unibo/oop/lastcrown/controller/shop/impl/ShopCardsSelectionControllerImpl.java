@@ -1,10 +1,11 @@
-package it.unibo.oop.lastcrown.controller;
+package it.unibo.oop.lastcrown.controller.shop.impl;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import it.unibo.oop.lastcrown.controller.shop.api.ShopCardsSelectionController;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;

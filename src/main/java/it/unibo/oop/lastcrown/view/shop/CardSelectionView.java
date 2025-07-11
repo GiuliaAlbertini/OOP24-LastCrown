@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import it.unibo.oop.lastcrown.controller.ShopCardsSelectionControllerImpl;
+import it.unibo.oop.lastcrown.controller.shop.impl.ShopCardsSelectionControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.menu.impl.CardPanel;
