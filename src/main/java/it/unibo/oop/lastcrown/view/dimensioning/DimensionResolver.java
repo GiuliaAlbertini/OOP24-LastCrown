@@ -17,12 +17,12 @@ public enum DimensionResolver {
     /**
      * Character panel percentage. 
      */
-    CHAR(new SizePercentage(0.14, 0.187)),
+    CHAR(new SizePercentage(0.14, 0.186)),
 
     /**
      * Hero panel percentage. 
      */
-    HERO(new SizePercentage(0.20, 0.30)),
+    HERO(new SizePercentage(0.24, 0.35)),
 
     /**
      * Spell panel percentage. 
@@ -42,7 +42,7 @@ public enum DimensionResolver {
     /**
      * Energy bar percentage. 
      */
-    ENERGYBAR(new SizePercentage(0.05, 0.7)),
+    ENERGYBAR(new SizePercentage(0.02, 0.7)),
 
     /**
      * Deck zone percentage. 
@@ -57,17 +57,22 @@ public enum DimensionResolver {
     /**
      * Wall percentage. 
      */
-    WALL(new SizePercentage(0.08, 0.9)),
+    WALL(new SizePercentage(0.03, 0.9)),
 
     /**
      * Trups zone percentage. 
      */
-    TRUPSZONE(new SizePercentage(0.3, 0.9)),
+    TRUPSZONE(new SizePercentage(0.28, 0.9)),
 
     /**
      * Enemies zone percentage. 
      */
-    ENEMIESZONE(new SizePercentage(0.22, 0.9));
+    ENEMIESZONE(new SizePercentage(0.29, 0.9)),
+
+    /**
+     * Utility zone percentage.
+     */
+    UTILITYZONE(new SizePercentage(1, 0.1));
 
     private final SizePercentage size;
 
