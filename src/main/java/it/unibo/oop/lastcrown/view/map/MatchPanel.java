@@ -1,18 +1,15 @@
 package it.unibo.oop.lastcrown.view.map;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.ActionListener;
 
 
 import it.unibo.oop.lastcrown.controller.MainController;
-import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 
@@ -46,7 +43,6 @@ public final class MatchPanel extends JPanel {
     private final int trupsZoneWidth;
     private final int enemiesZoneWidth;
     private final int utilityZoneHeight;
-    private final JButton jb3;
 
     /**
      * @param mainContr mainController interface
@@ -65,14 +61,6 @@ public final class MatchPanel extends JPanel {
         this.enemiesZoneWidth = (int) (frameWidth * DimensionResolver.ENEMIESZONE.width());
         this.utilityZoneHeight = (int) (frameHeight * DimensionResolver.UTILITYZONE.height());
 
-        final ActionListener act = e -> {
-            final var button = (JButton) e.getSource();
-            this.mainContr.notifyButtonPressed((CardIdentifier) button.getClientProperty("info"));
-        };
-
-        jb3 = new JButton("ENEMY");
-        jb3.putClientProperty("info", new CardIdentifier(1, CardType.ENEMY));
-        jb3.addActionListener(act);
         this.mouseListener = new MouseAdapter() {
             @Override
             public void mouseClicked(final MouseEvent e) {
@@ -162,7 +150,6 @@ public final class MatchPanel extends JPanel {
         utilityZone.setOpaque(true);
         utilityZone.setPreferredSize(new Dimension(this.frameWidth, this.utilityZoneHeight));
         utilityZone.setBounds(0, panelsHeight, this.frameWidth, this.utilityZoneHeight);
-        utilityZone.add(jb3);
         this.add(utilityZone);
         this.setComponentZOrder(utilityZone, 0);
     }
