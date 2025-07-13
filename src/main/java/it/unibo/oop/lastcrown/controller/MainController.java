@@ -22,7 +22,8 @@ public interface MainController {
 
     /**
      * Notifies that the player has given the OK to change view from match to the shop.
-     * @param beginning True if 
+     * The position of the hero in the shop changes according to te actual game phase.
+     * @param beginning True if it's the beginning of the game, false otherwise
      */
     void notifyMatchToShop(boolean beginning);
 
