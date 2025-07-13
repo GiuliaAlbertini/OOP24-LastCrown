@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
@@ -14,19 +13,16 @@ import javax.imageio.ImageIO;
  * Load the frames corresponding to the given paths and size.
  */
 public final class ImageLoader {
-    private static final Logger LOG = Logger.getLogger(ImageLoader.class.getName());
     private ImageLoader() { }
     /**
      * @param paths Images paths
-     * @param width width of the returning images
-     * @param height heigth of the returning images
-     * @return a list of the images corresponding to the given paths and size
+     * @param width width of the final images
+     * @param height heigth of the final images
+     * @return a list of the images corresponding to the given paths
      */
-    public static synchronized List<BufferedImage> getAnimationFrames(final List<String> paths,
-     final int width, final int height) {
-
+    public static synchronized List<BufferedImage> getAnimationFrames(final List<String> paths, final int width, final int height) {
         final List<BufferedImage> frames = new ArrayList<>();
-        for (final String path: paths) {
+        for (String path: paths) {
             frames.addLast(getSingleFrame(path, width, height));
         }
         return frames;
@@ -47,11 +43,11 @@ public final class ImageLoader {
         try {
             final BufferedImage originalImage = ImageIO.read(new File(path));
             image = new BufferedImage(width, height, originalImage.getType());
-            final Graphics2D g2d = image.createGraphics();
+            Graphics2D g2d = image.createGraphics();
             g2d.drawImage(originalImage, 0, 0, width, height, null);
             g2d.dispose();
-        } catch (final IOException e) {
-            LOG.fine("Error during image loading");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return image;
     }
@@ -64,7 +60,7 @@ public final class ImageLoader {
      * @return a new list of buffered image with the specified size
      */
     public static List<BufferedImage> resizeFrames(final List<BufferedImage> frames, final int newWidth, final int newHeight) {
-        for (int i = 0; i < frames.size(); i++) {
+        for(int i = 0; i < frames.size(); i++) {
             final BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, frames.get(i).getType());
             final Graphics2D g2d = resizedImage.createGraphics();
             g2d.drawImage(frames.get(i), 0, 0, newWidth, newHeight, null);

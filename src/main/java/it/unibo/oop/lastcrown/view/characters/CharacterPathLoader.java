@@ -13,7 +13,6 @@ public final class CharacterPathLoader {
     private static final String ICON = "icon";
     private static final String ICON_GREY = "icon_grey"; 
     private CharacterPathLoader() { }
-
     /**
      * @param charType the character type
      * @param charName the character name

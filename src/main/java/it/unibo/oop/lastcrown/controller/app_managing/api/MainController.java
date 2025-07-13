@@ -1,0 +1,30 @@
+package it.unibo.oop.lastcrown.controller.app_managing.api;
+
+import java.util.Set;
+
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+
+/**
+ * Provides operations to handle the main phases of the application.
+ */
+public interface MainController {
+
+    /**
+     * Closes the whole application.
+     */
+    void closeAll();
+
+    /**
+     * Notify the classes that uses the deck to update it with the new set.
+     * 
+     * @param newSet the new set to use
+     */
+    void updateDeckUsers(Set<CardIdentifier> newSet);
+
+    /**
+     * Sets the necessary aspects to go in the Menu section.
+     * 
+     * @param username the username representing the account to use
+     */
+    void goOverLogin(String username);
+}
