@@ -26,7 +26,7 @@ public final class CardSelectionView extends JPanel {
     private static final int V_GAP = 10;
     private static final int PADDING = 10;
 
-    private CardIdentifier selectedCard;
+    private transient CardIdentifier selectedCard;
 
     private CardSelectionView() {
         this.selectedCard = null;
@@ -57,9 +57,6 @@ public final class CardSelectionView extends JPanel {
         return selectionView;
     }
 
-    /**
-     * Creates a panel combining the card view and a select button.
-     */
     private JPanel createCardWithButton(final CardIdentifier card) {
         final JPanel container = new JPanel(new BorderLayout());
         container.setOpaque(false);
@@ -88,7 +85,12 @@ public final class CardSelectionView extends JPanel {
         return container;
     }
 
+    /**
+     * Getter for the current selected card.
+     * 
+     * @return the card identifier of the selected card
+     */
     public CardIdentifier getSelectedCard() {
-        return selectedCard;
+        return this.selectedCard;
     }
 }

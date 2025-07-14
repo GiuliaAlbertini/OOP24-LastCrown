@@ -3,13 +3,13 @@ package it.unibo.oop.lastcrown.controller.shop.impl;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import it.unibo.oop.lastcrown.controller.shop.api.ShopCardsSelectionController;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
-import it.unibo.oop.lastcrown.model.user.api.UserCollection;
 
 /**
  * Controller for selecting cards to show in the shop.
@@ -17,7 +17,7 @@ import it.unibo.oop.lastcrown.model.user.api.UserCollection;
 public class ShopCardsSelectionControllerImpl implements ShopCardsSelectionController {
     private static final int MAX_CARDS_TO_SEND = 4;
     private final CollectionController collectionController;
-    private final UserCollection userCollection;
+    private final Set<CardIdentifier> userCollection;
     private final Random random = new Random();
 
     /**
@@ -28,17 +28,16 @@ public class ShopCardsSelectionControllerImpl implements ShopCardsSelectionContr
      */
     public ShopCardsSelectionControllerImpl(
             final CollectionController collectionController,
-            final UserCollection userCollection) {
+            final Set<CardIdentifier> userCollection) {
         this.collectionController = collectionController;
         this.userCollection = userCollection;
     }
 
-    
     @Override
     public final List<CardIdentifier> getRandomCardsByType(final CardType type) {
         final List<CardIdentifier> candidates = collectionController.getCompleteCollection().stream()
             .filter(card -> matchesTypeGroup(card.type(), type))
-            .filter(card -> !userCollection.getCollection().contains(card))
+            .filter(card -> !userCollection.contains(card))
             .collect(Collectors.toList());
 
         Collections.shuffle(candidates, random);
@@ -47,9 +46,6 @@ public class ShopCardsSelectionControllerImpl implements ShopCardsSelectionContr
             .collect(Collectors.toList());
     }
 
-    /**
-     * Determines whether a card's actual type matches the requested group.
-     */
     private boolean matchesTypeGroup(final CardType actual, final CardType requested) {
         switch (requested) {
             case HERO:
