@@ -49,12 +49,10 @@ public final class FollowingHandler implements StateHandler {
                     character.showNextFrameAndMove(mov);
                     matchController.updateCharacterPosition(character, mov.x(), mov.y());
                     if (!movementOpt.get().active()) {
+                        //System.out.println("SEI TU CHE LANCI LO STOPPED? - following");
                         queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                         return CharacterState.STOPPED;
                     }
-                } else {
-                    queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-                    return CharacterState.STOPPED;
                 }
         }
 
