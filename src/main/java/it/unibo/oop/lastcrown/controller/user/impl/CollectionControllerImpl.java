@@ -26,7 +26,7 @@ import it.unibo.oop.lastcrown.model.user.impl.CompleteCollectionImpl;
  */
 public class CollectionControllerImpl implements CollectionController {
     private static final String ENEMIES = "enemies";
-    private static final String ENEMIES_PATH = getPath(ENEMIES);
+    private static final String ENEMIES_PATH = getPath();
 
     private static final Set<CardIdentifier> INITIAL_SET = new HashSet<>();
     private static final CompleteCollectionImpl COMPLETE_COLLECTION = new CompleteCollectionImpl();
@@ -83,13 +83,12 @@ public class CollectionControllerImpl implements CollectionController {
         }
     }
 
-    private static String getPath(final String fileName) {
+    private static String getPath() {
         return "OOP24-LastCrown"
             + File.separator + "src"
             + File.separator + "main"
             + File.separator + "resources"
-            + File.separator + "entities"
-            + File.separator + fileName;
+            + File.separator + "entities";
     }
 }
 
