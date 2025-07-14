@@ -1,7 +1,7 @@
 package it.unibo.oop.lastcrown.controller.impl;
 import it.unibo.oop.lastcrown.controller.api.GamePhaseController;
 import it.unibo.oop.lastcrown.controller.api.MainController;
-import it.unibo.oop.lastcrown.view.MainView;
+import it.unibo.oop.lastcrown.view.api.MainView;
 
 /**
  * Manages transitions between different game states and updates the view accordingly.

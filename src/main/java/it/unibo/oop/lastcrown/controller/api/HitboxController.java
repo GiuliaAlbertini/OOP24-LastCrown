@@ -4,7 +4,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import it.unibo.oop.lastcrown.model.api.Hitbox;
 import it.unibo.oop.lastcrown.model.api.Radius;
-import it.unibo.oop.lastcrown.view.impl.RadiusPanel;
+import it.unibo.oop.lastcrown.view.api.RadiusPanel;
 
 /**
  * Controller interface for managing a hitbox and its graphical representation.

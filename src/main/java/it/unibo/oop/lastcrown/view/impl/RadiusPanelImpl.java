@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.model.api.Point2D;
 import it.unibo.oop.lastcrown.model.api.Radius;
+import it.unibo.oop.lastcrown.view.api.RadiusPanel;
 
 /**
  * Implementation of a panel that graphically represents a character's detection radius

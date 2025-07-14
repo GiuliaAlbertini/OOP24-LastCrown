@@ -1,6 +1,6 @@
 package it.unibo.oop.lastcrown.controller.api;
 
-import it.unibo.oop.lastcrown.view.MainView;
+import it.unibo.oop.lastcrown.view.api.MainView;
 
 /**
  * Main controller interface for managing the overall flow of the game.

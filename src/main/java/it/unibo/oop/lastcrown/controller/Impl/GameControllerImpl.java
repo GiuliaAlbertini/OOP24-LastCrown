@@ -1,7 +1,7 @@
 package it.unibo.oop.lastcrown.controller.impl;
 import it.unibo.oop.lastcrown.controller.api.GameController;
 import it.unibo.oop.lastcrown.controller.api.MainController;
-import it.unibo.oop.lastcrown.view.MainView;
+import it.unibo.oop.lastcrown.view.api.MainView;
 
 /**
  * Implementation of the GameController interface.

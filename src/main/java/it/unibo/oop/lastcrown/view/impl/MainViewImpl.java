@@ -2,8 +2,9 @@ package it.unibo.oop.lastcrown.view.impl;
 
 import it.unibo.oop.lastcrown.controller.api.MainController;
 import it.unibo.oop.lastcrown.controller.impl.GameState;
-import it.unibo.oop.lastcrown.view.GamePanel;
-import it.unibo.oop.lastcrown.view.MainView;
+import it.unibo.oop.lastcrown.view.api.GamePanel;
+import it.unibo.oop.lastcrown.view.api.MainView;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;

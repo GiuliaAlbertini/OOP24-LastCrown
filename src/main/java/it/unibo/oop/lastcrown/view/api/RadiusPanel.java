@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.view.impl;
+package it.unibo.oop.lastcrown.view.api;
 
 import javax.swing.JPanel;
 
