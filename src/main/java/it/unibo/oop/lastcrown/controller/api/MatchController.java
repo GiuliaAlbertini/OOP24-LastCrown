@@ -1,7 +1,10 @@
 package it.unibo.oop.lastcrown.controller.api;
 
 import java.util.Optional;
+import java.util.Set;
+
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
+import it.unibo.oop.lastcrown.controller.impl.EnemyEngagement;
 import it.unibo.oop.lastcrown.model.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.api.CollisionResolver;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
@@ -80,4 +83,9 @@ public interface MatchController {
      */
     void removeCharacterCompletelyById(int characterId);
     boolean engageEnemy(int enemyId, int playerId);
+    boolean isPlayerEngaged(final int playerId);
+    boolean isEnemyEngaged(final int playerId);
+    boolean releaseEngagementFor(final int characterId);
+    Set<EnemyEngagement> getEngagedEnemies();
+    boolean isEngagedWithDead(final int characterId);
 }
