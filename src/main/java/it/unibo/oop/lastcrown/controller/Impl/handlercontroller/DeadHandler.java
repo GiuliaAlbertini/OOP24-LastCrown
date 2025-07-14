@@ -33,13 +33,14 @@ public final class DeadHandler implements StateHandler {
             i++;
 
             if (i==frame){
+                match.releaseEngagementFor(character.getId().number());
+                System.out.println("SONO IN DEAD E STO VEDENDO SE IL MIO PERSONAGGIO è INGAGGIATO" + character.getId().number() + match.isPlayerEngaged(character.getId().number()) + character.getId().type());
                 match.removeCharacterCompletelyById(character.getId().number());
             }
             queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
             return CharacterState.DEAD;
-        }
 
-        queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
+        }
         return CharacterState.DEAD;
     }
 
