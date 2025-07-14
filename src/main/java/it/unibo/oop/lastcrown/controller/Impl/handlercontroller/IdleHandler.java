@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.controller.impl.handlercontroller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import it.unibo.oop.lastcrown.controller.api.MatchController;
@@ -27,8 +28,6 @@ public final class IdleHandler implements StateHandler {
     private final EnemyRadiusScanner scanner;
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;
-    private boolean controllo;
-    private boolean combattimento;
 
     /**
      * Constructs an IdleHandler with the required dependencies.
@@ -67,19 +66,22 @@ public final class IdleHandler implements StateHandler {
 
             // Logica per personaggi giocanti
             if (player) {
-                // Scanner gestisce già il controllo "in combattimento" in modo sincronizzato
-                final List<CollisionEvent> followEvents = scanner.scanForFollowEvents();
-
-                if (isCharacterInvolved(followEvents, character) && !followEvents.isEmpty()) {
-                    final CollisionEvent event = followEvents.get(0);
-
-                    // Notifica gli osservatori della collisione
-                    matchController.notifyCollisionObservers(event);
-
+                /*mi prendo l'evento e lo notifico*/
+                final List<CollisionEvent> events = scanner.scanForFollowEvents();
+                if (!events.isEmpty()) {
+                    final CollisionEvent event = events.get(0);
+                     matchController.notifyCollisionObservers(event);
+                }
+                //System.out.println("sono il personaggio " + character.getId().number());
+                if (matchController.isPlayerEngaged(character.getId().number())) {
+                    System.out.println("sono in idle e al momento il personaggio" + character.getId().number()+ matchController.isPlayerEngaged(character.getId().number()));
+                    System.out.println("entro se sono coinvolto iin un inseguimento");
                     // Passa allo stato FOLLOWING
                     queue.enqueue(eventFactory.createEvent(CharacterState.FOLLOWING));
                     return CharacterState.FOLLOWING;
+
                 }
+
             }
             // Logica per nemici
             else {
@@ -97,10 +99,44 @@ public final class IdleHandler implements StateHandler {
         return CharacterState.IDLE;
     }
 
-    private boolean isCharacterInvolved(final List<CollisionEvent> events, final GenericCharacterController character) {
-        final int id = character.getId().number();
-        return events.stream().anyMatch(ev -> ev.getCollidable1().getCardidentifier().number() == id ||
-                ev.getCollidable2().getCardidentifier().number() == id);
-    }
-
 }
+/*
+ * private boolean isCharacterInvolved(final List<CollisionEvent> events, final
+ * GenericCharacterController character) {
+ * final int id = character.getId().number();
+ * return events.stream().anyMatch(ev ->
+ * ev.getCollidable1().getCardidentifier().number() == id ||
+ * ev.getCollidable2().getCardidentifier().number() == id);
+ * }
+ *
+ */
+
+/*
+ * if (player) {
+ * System.out.println("sono il personaggio " + character.getId().number());
+ *
+ * final List<CollisionEvent> events = scanner.scanForFollowEvents();
+ * if (!events.isEmpty()) {
+ * final CollisionEvent event = events.get(0);
+ * followEvents.add(event);
+ *
+ * System.out.println("vedo gli ingaggiati da engaged del matchcontrolleer");
+ *
+ * System.out.println("vedo la lista cosa contiene" + followEvents);
+ *
+ * System.out.println("sono il personaggio" + character.getId().number());
+ *
+ * if (isCharacterInvolved(followEvents, character) && !followEvents.isEmpty())
+ * {
+ * System.out.println("entro se sono coinvolto iin un inseguimento");
+ * // Notifica gli osservatori della collisione
+ * matchController.notifyCollisionObservers(event);
+ * followEvents.remove(0);
+ * // Passa allo stato FOLLOWING
+ * queue.enqueue(eventFactory.createEvent(CharacterState.FOLLOWING));
+ * return CharacterState.FOLLOWING;
+ * }
+ * }
+ *
+ * }
+ */
