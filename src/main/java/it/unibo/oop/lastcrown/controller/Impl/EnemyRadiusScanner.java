@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import it.unibo.oop.lastcrown.controller.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.api.MatchController;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
@@ -28,18 +29,20 @@ public final class EnemyRadiusScanner {
     private final MatchController matchController;
 
     public EnemyRadiusScanner(final Map<GenericCharacterController, HitboxController> hitboxControllers,
-            MatchController matchController) {
+                              MatchController matchController) {
         this.hitboxControllers = hitboxControllers;
         this.matchController = matchController;
     }
 
     public List<CollisionEvent> scanForFollowEvents() {
-        final List<Hitbox> enemyHitboxes = getAllEnemyHitboxes();
-        final Map<Hitbox, EnemyController> hitboxToEnemy = mapHitboxesToEnemies();
+        // Copia thread-safe della mappa
+        final Map<GenericCharacterController, HitboxController> localCopy = new HashMap<>(hitboxControllers);
 
+        final List<Hitbox> enemyHitboxes = getAllEnemyHitboxes(localCopy);
+        final Map<Hitbox, EnemyController> hitboxToEnemy = mapHitboxesToEnemies(localCopy);
         final List<CollisionEvent> events = new ArrayList<>();
 
-        for (final var entry : hitboxControllers.entrySet()) {
+        for (final var entry : localCopy.entrySet()) {
             final GenericCharacterController controller = entry.getKey();
 
             if (controller.getId().type() != CardType.ENEMY) {
@@ -53,9 +56,9 @@ public final class EnemyRadiusScanner {
         return events;
     }
 
-    private List<Hitbox> getAllEnemyHitboxes() {
+    private List<Hitbox> getAllEnemyHitboxes(Map<GenericCharacterController, HitboxController> map) {
         final List<Hitbox> enemyHitboxes = new ArrayList<>();
-        for (final var entry : hitboxControllers.entrySet()) {
+        for (final var entry : map.entrySet()) {
             if (entry.getKey().getId().type() == CardType.ENEMY) {
                 enemyHitboxes.add(entry.getValue().getHitbox());
             }
@@ -63,14 +66,14 @@ public final class EnemyRadiusScanner {
         return enemyHitboxes;
     }
 
-    private Map<Hitbox, EnemyController> mapHitboxesToEnemies() {
-        final Map<Hitbox, EnemyController> map = new HashMap<>();
-        for (final var entry : hitboxControllers.entrySet()) {
+    private Map<Hitbox, EnemyController> mapHitboxesToEnemies(Map<GenericCharacterController, HitboxController> map) {
+        final Map<Hitbox, EnemyController> result = new HashMap<>();
+        for (final var entry : map.entrySet()) {
             if (entry.getKey().getId().type() == CardType.ENEMY) {
-                map.put(entry.getValue().getHitbox(), (EnemyController) entry.getKey());
+                result.put(entry.getValue().getHitbox(), (EnemyController) entry.getKey());
             }
         }
-        return map;
+        return result;
     }
 
     private void addEventIfEnemyInRadius(
@@ -80,34 +83,28 @@ public final class EnemyRadiusScanner {
             final List<Hitbox> enemyHitboxes,
             final Map<Hitbox, EnemyController> hitboxToEnemy) {
 
-        // controllo se ha un raggio
         if (playerHitboxController.getRadius() == null) {
             return;
         }
 
-        // controllo se ha nemici nel raggio
         if (!playerHitboxController.getRadius().hasEnemyInRadius(enemyHitboxes)) {
             return;
         }
 
-        // controllo il nemico più vicino
         Optional<Hitbox> closestEnemyOpt = playerHitboxController.getRadius().getClosestEnemyInRadius(enemyHitboxes);
         if (closestEnemyOpt.isEmpty()) {
             return;
         }
 
-        // mi prendo il nemico più vicino
         Hitbox closestEnemyHitbox = closestEnemyOpt.get();
         EnemyController enemy = hitboxToEnemy.get(closestEnemyHitbox);
         if (enemy == null) {
             return;
         }
 
-        // Controllo esplicito sullo stato del nemico
         if (!enemy.isInCombat()) {
-            System.out.println("IL NEMICO PIù VICINO " + enemy.getId() + enemy.isInCombat());
-            synchronized (enemy) { // Sincronizzazione sull'oggetto nemico
-                // se l'engagement avviene bene
+            System.out.println("IL NEMICO PIÙ VICINO " + enemy.getId() + enemy.isInCombat());
+            synchronized (enemy) {
                 boolean engaged = matchController.engageEnemy(enemy.getId().number(), player.getId().number());
                 if (engaged) {
                     createCollisionEvent(events, player, enemy);
@@ -126,11 +123,13 @@ public final class EnemyRadiusScanner {
         if (playerHitboxController != null && enemyHitboxController != null) {
             final Collidable playerCol = new CollidableImpl(playerHitboxController.getHitbox(), player.getId());
             final Collidable enemyCol = new CollidableImpl(enemyHitboxController.getHitbox(), enemy.getId());
+
             System.out.println("sono in createcollisionevent " + enemy.isInCombat());
             System.out.println("[DEBUG] Nemico intercettato! Player ID: " + player.getId().number()
                     + " -> Enemy ID: " + enemy.getId().number());
             events.add(new CollisionEventImpl(EventType.FOLLOW_ENEMY, playerCol, enemyCol));
-
+            System.out.println(playerCol.getCardidentifier().number());
+            System.out.println(enemyCol.getCardidentifier().number());
         }
     }
 }
