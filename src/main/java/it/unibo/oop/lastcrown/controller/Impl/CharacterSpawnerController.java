@@ -18,13 +18,13 @@ import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.model.impl.HitboxImpl;
 import it.unibo.oop.lastcrown.model.impl.Point2DImpl;
 import it.unibo.oop.lastcrown.model.impl.RadiusImpl;
-import it.unibo.oop.lastcrown.view.GamePanel;
 import it.unibo.oop.lastcrown.view.ImageLoader;
+import it.unibo.oop.lastcrown.view.api.GamePanel;
 import it.unibo.oop.lastcrown.view.api.HitboxPanel;
+import it.unibo.oop.lastcrown.view.api.RadiusPanel;
 import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
 import it.unibo.oop.lastcrown.view.impl.HitboxMaskBounds;
 import it.unibo.oop.lastcrown.view.impl.HitboxPanelImpl;
-import it.unibo.oop.lastcrown.view.impl.RadiusPanel;
 import it.unibo.oop.lastcrown.view.impl.RadiusPanelImpl;
 
 /**

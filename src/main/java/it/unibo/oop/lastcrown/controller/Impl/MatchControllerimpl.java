@@ -2,6 +2,7 @@ package it.unibo.oop.lastcrown.controller.impl;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -27,8 +28,8 @@ import it.unibo.oop.lastcrown.model.characters.impl.enemy.EnemyImpl;
 import it.unibo.oop.lastcrown.model.characters.impl.playablecharacter.PlayableCharacterImpl;
 import it.unibo.oop.lastcrown.model.impl.CollisionManagerImpl;
 import it.unibo.oop.lastcrown.model.impl.CollisionResolverImpl;
-import it.unibo.oop.lastcrown.view.GamePanel;
-import it.unibo.oop.lastcrown.view.MainView;
+import it.unibo.oop.lastcrown.view.api.GamePanel;
+import it.unibo.oop.lastcrown.view.api.MainView;
 
 public final class MatchControllerimpl implements MatchController {
     // private final MainController controller;
@@ -36,7 +37,7 @@ public final class MatchControllerimpl implements MatchController {
     private final Map<Integer, GenericCharacterController> charactersController = new HashMap<>();
     private final Map<GenericCharacterController, HitboxController> hitboxControllers = new HashMap<>();
     // Aggiungi queste mappe
-    private final Map<Integer, Integer> engagedEnemies = new HashMap<>(); // enemyId -> playerId
+    private final Set<EnemyEngagement> engagedEnemies = ConcurrentHashMap.newKeySet();
     private final Map<Integer, Object> enemyLocks = new HashMap<>();
 
     private final CollisionManager collisionManager = new CollisionManagerImpl();
@@ -51,9 +52,9 @@ public final class MatchControllerimpl implements MatchController {
         // this.controller = controller;
         this.view = controller.getMainView();
         this.gamePanel = controller.getMainView().getGamePanel();
-        this.spawner = new CharacterSpawnerController(gamePanel);
+        this.spawner = new CharacterSpawnerController(gamePanel); // istanzio
         this.radiusScanner = new EnemyRadiusScanner(hitboxControllers, this);
-        this.view.setAddCharacterListener(e -> onAddCharacterButtonPressed());
+        this.view.getGamePanel().setAddCharacterListener(e -> onAddCharacterButtonPressed());
         this.collisionResolver = new CollisionResolverImpl(this);
         this.collisionManager.addObserver(collisionResolver);
 
@@ -69,15 +70,19 @@ public final class MatchControllerimpl implements MatchController {
     @Override
     public void onAddCharacterButtonPressed() {
         final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
-        final PlayableCharacter Char1 = new PlayableCharacterImpl("Warrior", CardType.MELEE, 20, 25, 100, 2, 100, 0.8,
-                100);
-        final PlayableCharacter Char2 = new PlayableCharacterImpl("Knight", CardType.MELEE, 20, 50, 100, 2, 100, 0.8,100);
-        final Enemy newEnemy = new EnemyImpl("Bat", 1, CardType.ENEMY, 3, 100, 0.8);
+        final PlayableCharacter Char1 = new PlayableCharacterImpl("Warrior",CardType.MELEE, 20, 25, 100, 2, 100, 0.8,100);
+        //final PlayableCharacter Char2 = new PlayableCharacterImpl("Knight", CardType.MELEE, 20, 20, 100, 2, 100, 0.8, 100);
+        //final Enemy newEnemy = new EnemyImpl("Bat", 1, CardType.ENEMY, 3, 100, 0.8); sopra
         final Enemy nemico2 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 3, 200, 0.8);
+        final Enemy nemico3 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 3, 200, 0.8);
+        final Enemy nemico4 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 3, 200,0.8);
+
         spawnAndRegisterCharacter(generateUniqueCharacterId(), Char1, obs, 100, 300);
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), Char2, obs, 100, 200);
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), newEnemy, obs, 500, 100);
+        //spawnAndRegisterCharacter(generateUniqueCharacterId(), Char2, obs, 100, 200);
+        //spawnAndRegisterCharacter(generateUniqueCharacterId(), newEnemy, obs, 500, 100);
         spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico2, obs, 200, 400);
+        //spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico3, obs, 700, 100);
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico4, obs, 700, 400);
 
     }
 
@@ -190,64 +195,162 @@ public final class MatchControllerimpl implements MatchController {
         return nextId++;
     }
 
-
-
     /**
- * Aggiorna lo stato di un nemico e pulisce le mappe se necessario.
- * @param enemyId ID del nemico
- * @param playerId ID del giocatore (null se rilascio)
- * @return true se lo stato è cambiato
- */
-private boolean updateEnemyState(int enemyId, int playerId) {
-    Object lock = enemyLocks.computeIfAbsent(enemyId, k -> new Object());
-    synchronized (lock) {
-        try {
-            if (!engagedEnemies.containsKey(enemyId)) {
-                engagedEnemies.put(enemyId, playerId);
+     * Aggiorna lo stato di un nemico e pulisce le mappe se necessario.
+     *
+     * @param enemyId  ID del nemico
+     * @param playerId ID del giocatore (null se rilascio)
+     * @return true se lo stato è cambiato
+     */
+    private boolean updateEnemyState(int enemyId, Integer playerId, boolean engage) {
+        final Object lock = enemyLocks.computeIfAbsent(enemyId, k -> new Object());
+        synchronized (lock) {
+            if (engage) {
+                // Controlla se già esiste un engagement per questo enemyId
+                for (EnemyEngagement e : engagedEnemies) {
+                    if (e.enemyId() == enemyId) {
+                        // Già ingaggiato da qualcuno
+                        return false;
+                    }
+                }
+
+                // Aggiungi nuovo engagement
+                engagedEnemies.add(new EnemyEngagement(enemyId, playerId));
                 setEnemyInCombat(enemyId, true);
-                System.out.println("aggiungo alla lista ingaggiati" + engagedEnemies);
                 return true;
+
             } else {
-                System.out.println("qui io rilascio il tutto");
-                // Rilascia il nemico e pulisci TUTTO
-                engagedEnemies.remove(enemyId);
-                System.out.println("lista ingaggiati" + engagedEnemies);
-                setEnemyInCombat(enemyId, false);
-                enemyLocks.remove(enemyId);
+                // Cerca e rimuovi l'engagement corrispondente
+                EnemyEngagement toRemove = null;
+                for (EnemyEngagement e : engagedEnemies) {
+                    if (e.enemyId() == enemyId && e.playerId() == playerId) {
+                        toRemove = e;
+                        break;
+                    }
+                }
+
+                if (toRemove != null) {
+                    engagedEnemies.remove(toRemove);
+                    setEnemyInCombat(enemyId, false);
+                    enemyLocks.remove(enemyId);
+                    return true;
+                }
                 return false;
             }
-        } finally {
-            /*
-            // Pulizia aggiuntiva se il nemico non esiste più
-            if (playerId == null && !isEnemyInGame(enemyId)) {
-                enemyLocks.remove(enemyId);
-
-            }
-                */
         }
     }
-}
 
-
-
-// Metodi pubblici (invariati)
-@Override
-public boolean engageEnemy(int enemyId, int playerId) {
-    return updateEnemyState(enemyId, playerId);
-}
-
-
-private void setEnemyInCombat(int enemyId, boolean inCombat) {
-    getCharacterControllerById(enemyId).ifPresent(enemy -> {
-        if (enemy instanceof EnemyController) {
-            Object lock = enemyLocks.computeIfAbsent(enemyId, k -> new Object());
-            synchronized (lock) {
-                ((EnemyController) enemy).setInCombat(inCombat);
+    public boolean isPlayerEngaged(final int playerId) {
+        for (EnemyEngagement engagement : engagedEnemies) {
+            if (engagement.playerId() == playerId) {
+                return true;
             }
-            System.out.println("il nemico è in settato in combattimento: " + enemy.isInCombat());
         }
-    });
-}
+        return false;
+    }
 
+    public boolean isEnemyEngaged(final int enemyId) {
+        for (EnemyEngagement engagement : engagedEnemies) {
+            if (engagement.enemyId() == enemyId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean engageEnemy(int enemyId, int playerId) {
+        return updateEnemyState(enemyId, playerId, true);
+    }
+
+    /**
+     * Rimuove un engagement sia che il personaggio sia un enemy che un player.
+     *
+     * @param characterId l'ID del personaggio da sganciare.
+     * @return true se è stato trovato e rimosso un engagement.
+     */
+    public boolean releaseEngagementFor(final int characterId) {
+        EnemyEngagement toRemove = null;
+        synchronized (engagedEnemies) {
+            System.out.println(engagedEnemies);
+            for (EnemyEngagement e : engagedEnemies) {
+                if (e.enemyId() == characterId || e.playerId() == characterId) {
+                    toRemove = e;
+                    break;
+                }
+            }
+            if (toRemove != null) {
+                engagedEnemies.remove(toRemove);
+                setEnemyInCombat(toRemove.enemyId(), false);
+                enemyLocks.remove(toRemove.enemyId());
+                System.out.println("qui è quando li rimuovo" + engagedEnemies);
+
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    private void setEnemyInCombat(int enemyId, boolean inCombat) {
+        getCharacterControllerById(enemyId).ifPresent(enemy -> {
+            if (enemy instanceof EnemyController) {
+                Object lock = enemyLocks.computeIfAbsent(enemyId, k -> new Object());
+                synchronized (lock) {
+                    ((EnemyController) enemy).setInCombat(inCombat);
+                }
+                System.out.println("il nemico è in settato in combattimento: " + enemy.isInCombat());
+            }
+        });
+    }
+
+    public Set<EnemyEngagement> getEngagedEnemies() {
+        return Collections.unmodifiableSet(engagedEnemies);
+    }
+
+    public boolean isEngagedWithDead(final int characterId) {
+        // se il personaggio ha un ingaggio che vedo dalla lista
+        if (isPlayerEngaged(characterId)) {
+            int enemy = getEngagedCounterpart(characterId);
+            if (enemy != -1) {
+                GenericCharacterController enemycontroller = getCharacterControllerById(enemy).get();
+                if (enemycontroller.isDead()) {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        } else {
+            if (isEnemyEngaged(characterId)) {
+                int character = getEngagedCounterpart(characterId);
+                if (character != -1) {
+                    GenericCharacterController charactercontroller = getCharacterControllerById(character).get();
+                    if (charactercontroller.isDead()) {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Restituisce l'ID del personaggio con cui è ingaggiato quello dato.
+     * Se non è ingaggiato con nessuno, restituisce -1.
+     *
+     * @param characterId l'ID del player o nemico
+     * @return l'ID del personaggio ingaggiato, oppure -1 se non trovato
+     */
+    public int getEngagedCounterpart(final int characterId) {
+        for (EnemyEngagement engagement : engagedEnemies) {
+            if (engagement.playerId() == characterId) {
+                return engagement.enemyId();
+            } else if (engagement.enemyId() == characterId) {
+                return engagement.playerId();
+            }
+        }
+        return -1;
+    }
 
 }
