@@ -21,11 +21,12 @@ import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
+import it.unibo.oop.lastcrown.view.menu.api.CollectionScene;
 
 /**
  * View that shows the complete collection.
  */
-public final class CollectionView extends AbstractScene {
+public final class CollectionView extends AbstractScene implements CollectionScene {
     private static final int BTN_FONT_SIZE = 20;
     private static final long serialVersionUID = 1L;
     private static final int FILTER_BAR_HGAP = 8;
@@ -50,6 +51,7 @@ public final class CollectionView extends AbstractScene {
     private final JPanel rightContainer;
     private final JPanel filterBar;
     private final CardGridPanel cardsGridPanel;
+    private final BackButton backButton;
 
     private int detailWidth;
     private int gridColumns = 1;
@@ -86,11 +88,11 @@ public final class CollectionView extends AbstractScene {
         setLayout(new BorderLayout());
         add(mainContainer, BorderLayout.CENTER);
 
-        final var back = BackButton.create("MENU", this.sceneManager);
+        this.backButton = BackButton.create(PANEL_NAME, "MENU", this.sceneManager);
         final var south = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        south.add(back);
+        south.add(backButton);
         add(south, BorderLayout.SOUTH);
-        setComponentsOpacity(back);
+        setComponentsOpacity(backButton);
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -134,6 +136,11 @@ public final class CollectionView extends AbstractScene {
     @Override
     public JPanel getPanel() {
         return this;
+    }
+
+    @Override
+    public void setBackDestination(final String destination) {
+        this.backButton.setBackViewName(destination);
     }
 
     private void loadCards(final Optional<CardType> type) {
