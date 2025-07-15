@@ -9,7 +9,7 @@ import java.util.logging.Logger;
  *  A class that provides a mutual exclusion system based on ReentrantLock and Condition.
  */
 public class CustomLock {
-    private static final Logger LOG = Logger.getLogger(CharacterHealthBar.class.getName());
+    private static final Logger LOG = Logger.getLogger(CustomLock.class.getName());
     private final Lock lock = new ReentrantLock();
     private final Condition condition = lock.newCondition();
     private boolean forceLock;

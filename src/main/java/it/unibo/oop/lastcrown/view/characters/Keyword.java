@@ -63,8 +63,7 @@ public enum Keyword {
     /**
      * Approval animation. Designed for shop traders.
      */
-    APPROVAL("approval"),
-    JUMPFORWARD("jumpforward");
+    APPROVAL("approval");
 
     private final String value;
 
