@@ -65,7 +65,7 @@ public final class CreditsView extends AbstractScene {
         final JScrollPane scrollPane = new HideableScrollPane(creditsPanel);
         add(scrollPane, BorderLayout.CENTER);
 
-        final JButton backButton = BackButton.create(BACK_VIEW, sceneManager);
+        final JButton backButton = BackButton.create(PANEL_NAME, BACK_VIEW, sceneManager);
         final JPanel southPanel = new JPanel();
         southPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         southPanel.add(backButton);
