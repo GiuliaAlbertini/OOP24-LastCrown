@@ -9,7 +9,6 @@ import it.unibo.oop.lastcrown.controller.shop.api.ShopCardsSelectionController;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
-import it.unibo.oop.lastcrown.model.user.api.UserCollection;
 
 /**
  * Controller for selecting cards to show in the shop.
@@ -17,7 +16,7 @@ import it.unibo.oop.lastcrown.model.user.api.UserCollection;
 public class ShopCardsSelectionControllerImpl implements ShopCardsSelectionController {
     private static final int MAX_CARDS_TO_SEND = 4;
     private final CollectionController collectionController;
-    private final UserCollection userCollection;
+    private final List<CardIdentifier> userCollection;
     private final Random random = new Random();
 
     /**
@@ -28,17 +27,16 @@ public class ShopCardsSelectionControllerImpl implements ShopCardsSelectionContr
      */
     public ShopCardsSelectionControllerImpl(
             final CollectionController collectionController,
-            final UserCollection userCollection) {
+            final List<CardIdentifier> userCollection) {
         this.collectionController = collectionController;
-        this.userCollection = userCollection;
+        this.userCollection = Collections.unmodifiableList(userCollection);
     }
 
-    
     @Override
     public final List<CardIdentifier> getRandomCardsByType(final CardType type) {
         final List<CardIdentifier> candidates = collectionController.getCompleteCollection().stream()
             .filter(card -> matchesTypeGroup(card.type(), type))
-            .filter(card -> !userCollection.getCollection().contains(card))
+            .filter(card -> !userCollection.contains(card))
             .collect(Collectors.toList());
 
         Collections.shuffle(candidates, random);
@@ -49,14 +47,16 @@ public class ShopCardsSelectionControllerImpl implements ShopCardsSelectionContr
 
     /**
      * Determines whether a card's actual type matches the requested group.
+     * @param actual the given CardType
+     * @param requested the requested CardType
+     * @return True if it's possible, False otherwise
      */
     private boolean matchesTypeGroup(final CardType actual, final CardType requested) {
         switch (requested) {
             case HERO:
             case SPELL:
                 return actual == requested;
-            case MELEE:
-            case RANGED:
+            case FRIENDLY:
                 return actual == CardType.MELEE || actual == CardType.RANGED;
             default:
                 return false;
