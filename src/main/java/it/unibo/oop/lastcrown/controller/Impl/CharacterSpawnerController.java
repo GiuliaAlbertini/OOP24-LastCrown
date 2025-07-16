@@ -4,16 +4,21 @@ import java.awt.image.BufferedImage;
 import java.util.Locale;
 import javax.swing.JComponent;
 
+import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
+import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
+import it.unibo.oop.lastcrown.controller.characters.impl.boss.BossControllerImpl;
 import it.unibo.oop.lastcrown.controller.characters.impl.enemy.EnemyControllerFactory;
+import it.unibo.oop.lastcrown.controller.characters.impl.hero.HeroControllerImpl;
 import it.unibo.oop.lastcrown.controller.characters.impl.playablecharacter.PlCharControllerFactory;
 import it.unibo.oop.lastcrown.model.api.Hitbox;
 import it.unibo.oop.lastcrown.model.api.Radius;
 import it.unibo.oop.lastcrown.controller.api.HitboxController;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
+import it.unibo.oop.lastcrown.model.characters.api.Hero;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.model.impl.HitboxImpl;
 import it.unibo.oop.lastcrown.model.impl.Point2DImpl;
@@ -36,6 +41,8 @@ public final class CharacterSpawnerController {
 
     private static final int CHARACTER_WIDTH = 150;
     private static final int CHARACTER_HEIGHT = 100;
+    private static final int BOSS_WIDTH = 250;
+    private static final int BOSS_HEIGHT = 200;
     private static final int HITBOX_WIDTH = 10;
     private static final int HITBOX_HEIGHT = 10;
     private static final int DEFAULT_RADIUS = 200;
@@ -68,7 +75,15 @@ public final class CharacterSpawnerController {
             PlCharControllerFactory.createPlCharController(observer, id, characterModel);
         controller.attachCharacterAnimationPanel(CHARACTER_WIDTH, CHARACTER_HEIGHT);
         return setupCharacter(controller, characterModel.getType().name().toLowerCase(Locale.ROOT),
-                              characterModel.getName(), x, y, true);
+                              characterModel.getName(), x, y, true, CHARACTER_WIDTH,CHARACTER_HEIGHT);
+    }
+
+    public SpawnedCharacter spawnHeroCharacter(final int id, final Hero characterModel,
+            final CharacterDeathObserver observer, final int x, final int y) {
+        final HeroController controller = new HeroControllerImpl(observer, id, characterModel);
+        controller.attachCharacterAnimationPanel(CHARACTER_WIDTH, CHARACTER_HEIGHT);
+        return setupCharacter(controller, characterModel.getName().toLowerCase(Locale.ROOT),
+                              characterModel.getName(), x, y, false, CHARACTER_WIDTH,CHARACTER_HEIGHT);
     }
 
     /**
@@ -87,11 +102,19 @@ public final class CharacterSpawnerController {
         final EnemyController controller = EnemyControllerFactory.createEnemyController(observer, id, enemyModel);
         controller.attachCharacterAnimationPanel(CHARACTER_WIDTH, CHARACTER_HEIGHT);
         return setupCharacter(controller, enemyModel.getEnemyType().name().toLowerCase(Locale.ROOT),
-                              enemyModel.getName(), x, y, false);
+                              enemyModel.getName(), x, y, false, CHARACTER_WIDTH,CHARACTER_HEIGHT);
+    }
+
+    public SpawnedCharacter spawnBossCharacter(final int id, final Enemy enemyModel,
+            final CharacterDeathObserver observer, final int x, final int y) {
+        final BossController controller = new BossControllerImpl(observer, id, enemyModel);
+        controller.attachCharacterAnimationPanel(BOSS_WIDTH, BOSS_HEIGHT);
+        return setupCharacter(controller, "enemy", enemyModel.getName(), x, y, false, BOSS_WIDTH, BOSS_HEIGHT);
+        //per il momento metto typefolder enemy perchè altrimenti non viene
     }
 
     private SpawnedCharacter setupCharacter(final GenericCharacterController controller, final String typeFolder,
-            final String name, final int x, final int y, final boolean isPlayable) {
+            final String name, final int x, final int y, final boolean isPlayable, int width, int height) {
 
         final JComponent charComp = controller.getGraphicalComponent();
         charComp.setLocation(x, y);
@@ -102,7 +125,8 @@ public final class CharacterSpawnerController {
         gamePanel.addCharacterComponent(hitboxPanel.getHitboxPanel());
 
         final String path = CharacterPathLoader.loadHitboxPath(typeFolder, name);
-        final BufferedImage image = ImageLoader.getImage(path, CHARACTER_WIDTH, CHARACTER_HEIGHT);
+        final BufferedImage image = ImageLoader.getImage(path, width, height);
+        System.out.println(path);
         final HitboxMaskBounds bounds = new HitboxMaskBounds(hitbox, charComp, hitboxPanel);
         bounds.calculateHitboxCenter(image);
 
