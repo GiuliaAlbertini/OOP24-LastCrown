@@ -66,8 +66,8 @@ public final class MainViewImpl extends JFrame implements MainView {
         menuPanel.add(new JLabel("Menu del gioco"));
 
         this.gamePanel = new GamePanelImpl();
-        addCharacterBtn.setBounds(BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
-        gamePanel.getPanel().add(addCharacterBtn);
+        //addCharacterBtn.setBounds(BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+        //gamePanel.getPanel().add(addCharacterBtn);
 
         // Pause Panel
         final JPanel pausePanel = new JPanel();
