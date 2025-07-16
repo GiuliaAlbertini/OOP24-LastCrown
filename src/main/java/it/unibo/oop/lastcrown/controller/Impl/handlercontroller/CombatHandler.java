@@ -21,6 +21,7 @@ public final class CombatHandler implements StateHandler {
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;
     private final MatchController match;
+    int opponentId;
 
     public CombatHandler(final EventFactory eventFactory,
             final CollisionResolver resolver,
@@ -38,27 +39,25 @@ public final class CombatHandler implements StateHandler {
         }
 
         final boolean isPlayer = character instanceof PlayableCharacterController;
-        final Optional<Integer> opponentIdOpt = isPlayer
-                ? resolver.getEnemyId(character.getId().number())
-                : resolver.getCharacterId(character.getId().number());
-
-        if (opponentIdOpt.isEmpty()) {
-            return CharacterState.IDLE;
+        if (isPlayer){
+            if (match.isPlayerEngaged(character.getId().number())){
+                 opponentId = match.getEngagedCounterpart(character.getId().number());
+            }
+        }else{
+             opponentId = match.getEngagedCounterpart(character.getId().number());
         }
 
-        final int opponentId = opponentIdOpt.get();
         final Optional<GenericCharacterController> opponentOpt = match.getCharacterControllerById(opponentId);
         if (opponentOpt.isEmpty()) {
-            System.out.println("valore di OPPONENT" + opponentOpt.isEmpty());
             return CharacterState.IDLE;
         }
+
         final GenericCharacterController opponent = opponentOpt.get();
         if (isPlayer) {
             // === COMBATTIMENTO GIOCATORE ===
             if (opponent.isDead()) {
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED)); // nemico può morire e animarsi
             } else {
-                System.out.println("sto combattendo e sono il player");
                 setupCombat(character, opponent);
                 queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
                 return CharacterState.COMBAT;
@@ -68,7 +67,6 @@ public final class CombatHandler implements StateHandler {
             if (opponent.isDead()) {
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
             } else {
-                //System.out.println("sto combattendo e sono il nemico");
                 setupCombat(character, opponent);
                 queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
                 return CharacterState.COMBAT;
