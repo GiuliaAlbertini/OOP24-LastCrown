@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import it.unibo.oop.lastcrown.controller.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.api.MatchController;
+import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
@@ -29,7 +30,7 @@ public final class EnemyRadiusScanner {
     private final MatchController matchController;
 
     public EnemyRadiusScanner(final Map<GenericCharacterController, HitboxController> hitboxControllers,
-                              MatchController matchController) {
+            MatchController matchController) {
         this.hitboxControllers = hitboxControllers;
         this.matchController = matchController;
     }
@@ -39,49 +40,61 @@ public final class EnemyRadiusScanner {
         final Map<GenericCharacterController, HitboxController> localCopy = new HashMap<>(hitboxControllers);
 
         final List<Hitbox> enemyHitboxes = getAllEnemyHitboxes(localCopy);
-        final Map<Hitbox, EnemyController> hitboxToEnemy = mapHitboxesToEnemies(localCopy);
+        final Map<Hitbox, GenericCharacterController> hitboxToEnemy = mapHitboxesToEnemies(localCopy);
         final List<CollisionEvent> events = new ArrayList<>();
 
         for (final var entry : localCopy.entrySet()) {
             final GenericCharacterController controller = entry.getKey();
 
-            if (controller.getId().type() != CardType.ENEMY) {
-                final PlayableCharacterController player = (PlayableCharacterController) controller;
+            // Assicurati che sia davvero un giocatore
+            if (controller instanceof PlayableCharacterController player) {
                 final HitboxController playerHitboxController = entry.getValue();
 
                 addEventIfEnemyInRadius(events, player, playerHitboxController, enemyHitboxes, hitboxToEnemy);
             }
+
         }
 
         return events;
     }
 
     private List<Hitbox> getAllEnemyHitboxes(Map<GenericCharacterController, HitboxController> map) {
-        final List<Hitbox> enemyHitboxes = new ArrayList<>();
-        for (final var entry : map.entrySet()) {
-            if (entry.getKey().getId().type() == CardType.ENEMY) {
-                enemyHitboxes.add(entry.getValue().getHitbox());
-            }
-        }
-        return enemyHitboxes;
-    }
+    final List<Hitbox> enemyHitboxes = new ArrayList<>();
+    for (final var entry : map.entrySet()) {
+        final CardType type = entry.getKey().getId().type();
+        final var character = entry.getKey();
 
-    private Map<Hitbox, EnemyController> mapHitboxesToEnemies(Map<GenericCharacterController, HitboxController> map) {
-        final Map<Hitbox, EnemyController> result = new HashMap<>();
-        for (final var entry : map.entrySet()) {
-            if (entry.getKey().getId().type() == CardType.ENEMY) {
-                result.put(entry.getValue().getHitbox(), (EnemyController) entry.getKey());
-            }
+        if ((type == CardType.ENEMY && character instanceof EnemyController)
+            || (type == CardType.BOSS && character instanceof BossController)) {
+            enemyHitboxes.add(entry.getValue().getHitbox());
         }
-        return result;
     }
+    return enemyHitboxes;
+}
+
+
+    private Map<Hitbox, GenericCharacterController> mapHitboxesToEnemies(Map<GenericCharacterController, HitboxController> map) {
+    final Map<Hitbox, GenericCharacterController> result = new HashMap<>();
+    for (final var entry : map.entrySet()) {
+        final CardType type = entry.getKey().getId().type();
+        final var character = entry.getKey();
+
+        if (type == CardType.ENEMY && character instanceof EnemyController enemy) {
+            result.put(entry.getValue().getHitbox(), enemy);
+        } else if (type == CardType.BOSS && character instanceof BossController boss) {
+            result.put(entry.getValue().getHitbox(), boss);
+        }
+    }
+    return result;
+}
+
 
     private void addEventIfEnemyInRadius(
             final List<CollisionEvent> events,
             final PlayableCharacterController player,
             final HitboxController playerHitboxController,
             final List<Hitbox> enemyHitboxes,
-            final Map<Hitbox, EnemyController> hitboxToEnemy) {
+            final Map<Hitbox, GenericCharacterController> hitboxToEnemy) {
 
         if (playerHitboxController.getRadius() == null) {
             return;
@@ -97,12 +110,12 @@ public final class EnemyRadiusScanner {
         }
 
         Hitbox closestEnemyHitbox = closestEnemyOpt.get();
-        EnemyController enemy = hitboxToEnemy.get(closestEnemyHitbox);
+        GenericCharacterController enemy = hitboxToEnemy.get(closestEnemyHitbox);
         if (enemy == null) {
             return;
         }
 
-        if (!enemy.isInCombat()) {
+        if (!enemy.isInCombat() && matchController.isPlayerIdle(player)) {
             System.out.println("IL NEMICO PIÙ VICINO " + enemy.getId() + enemy.isInCombat());
             synchronized (enemy) {
                 boolean engaged = matchController.engageEnemy(enemy.getId().number(), player.getId().number());
@@ -116,7 +129,7 @@ public final class EnemyRadiusScanner {
     private void createCollisionEvent(
             final List<CollisionEvent> events,
             final PlayableCharacterController player,
-            final EnemyController enemy) {
+            final GenericCharacterController enemy) {
         final HitboxController playerHitboxController = hitboxControllers.get(player);
         final HitboxController enemyHitboxController = hitboxControllers.get(enemy);
 
@@ -127,9 +140,9 @@ public final class EnemyRadiusScanner {
             System.out.println("sono in createcollisionevent " + enemy.isInCombat());
             System.out.println("[DEBUG] Nemico intercettato! Player ID: " + player.getId().number()
                     + " -> Enemy ID: " + enemy.getId().number());
+            // MI INTERESSA SOLO SE C'è UN
             events.add(new CollisionEventImpl(EventType.FOLLOW_ENEMY, playerCol, enemyCol));
-            System.out.println(playerCol.getCardidentifier().number());
-            System.out.println(enemyCol.getCardidentifier().number());
+            // matchController.notifyCollisionObservers(events.getLast());
         }
     }
 }
