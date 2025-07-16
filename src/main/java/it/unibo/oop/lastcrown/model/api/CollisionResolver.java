@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.model.api;
 
+import java.util.Map;
 import java.util.Optional;
 
 import it.unibo.oop.lastcrown.model.impl.MovementResult;
@@ -9,14 +10,6 @@ import it.unibo.oop.lastcrown.model.impl.MovementResult;
  * Extends CollisionObserver to receive collision events.
  */
 public interface CollisionResolver extends CollisionObserver {
-
-    /**
-     * Returns the current position of the character identified by the given ID.
-     *
-     * @param characterId the unique identifier of the character
-     * @return the current position as a Point2D
-     */
-    Point2D getCharacterPosition(int characterId);
 
     /**
      * Updates the movement of the specified character based on the elapsed time.
@@ -41,21 +34,5 @@ public interface CollisionResolver extends CollisionObserver {
      * @param enemyId the unique identifier of the enemy
      * @param characterId the unique identifier of the character
      */
-    void clearEnemyCollision(int enemyId, int characterId);
-
-    /**
-     * Returns the enemy ID that collided with the given character ID.
-     *
-     * @param characterId the unique identifier of the character
-     * @return the enemy ID that collided with the character, or 0 if none
-     */
-    Optional<Integer> getEnemyId(int characterId);
-
-    /**
-     * Returns the character ID that collided with the given enemy ID.
-     *
-     * @param enemyId the unique identifier of the enemy
-     * @return the character ID that collided with the enemy, or 0 if none
-     */
-    Optional<Integer> getCharacterId(int enemyId);
+    void clearEnemyCollision(int characterId);
 }

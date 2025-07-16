@@ -17,20 +17,22 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
  */
 public final class CollisionResolverImpl implements CollisionResolver {
     private final Map<Integer, HandleFollowEnemy> activeFollowMovements = new HashMap<>();
-    private final Map<Integer, Integer> completedFollows = new HashMap<>(); //nemico-personaggio
+    private Map<Integer, Integer> completedFollows = new HashMap<>(); // nemico-personaggio
     MatchController matchController;
+
     /**
      * Costruttore vuoto di default per CollisionResolverImpl.
      */
     public CollisionResolverImpl(MatchController controller) {
-        this.matchController=controller;
+        this.matchController = controller;
     }
 
     @Override
     public void notify(final CollisionEvent event) {
         switch (event.getType()) {
             case FOLLOW_ENEMY -> handleFollowEnemy(event);
-            //default -> System.out.println("[WARN] Evento collisione non gestito: " + event.getType());
+            // default -> System.out.println("[WARN] Evento collisione non gestito: " +
+            // event.getType());
         }
     }
 
@@ -39,12 +41,10 @@ public final class CollisionResolverImpl implements CollisionResolver {
         final HandleFollowEnemy movement = new HandleFollowEnemy(event);
         movement.startFollowing();
         activeFollowMovements.put(characterId, movement);
-        //System.out.println(activeFollowMovements);
     }
 
     @Override
     public Optional<MovementResult> updateMovementFor(final int characterId, final long deltaMs) {
-
         final HandleFollowEnemy movement = activeFollowMovements.get(characterId);
         final int enemyId = movement.getEnemy().getCardidentifier().number();
 
@@ -53,10 +53,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
             // non si sta più muovendo
             if (!stillMoving) {
                 activeFollowMovements.remove(characterId);
-                //character ha raggiunto il nemico
-
                 completedFollows.put(enemyId, characterId);
-
 
             }
             final Point2D delta = movement.getDelta();
@@ -70,49 +67,28 @@ public final class CollisionResolverImpl implements CollisionResolver {
         return Optional.empty();
     }
 
+
     @Override
-    public Point2D getCharacterPosition(final int characterId) {
-        final HandleFollowEnemy movement = activeFollowMovements.get(characterId);
-        if (movement != null) {
-            return movement.getCurrentPosition();
-        } else {
-            return null;
+    public boolean wasEnemyCollided(final int id) {
+    return completedFollows.containsKey(id) || completedFollows.containsValue(id);
+}
+
+    @Override
+    public void clearEnemyCollision(final int characterId) {
+        if (completedFollows.containsKey(characterId)) {
+            int otherId = completedFollows.get(characterId);
+            completedFollows.remove(characterId); // Rimuove id -> otherId
+            completedFollows.remove(otherId, characterId); // Se esiste anche otherId -> id, rimuove
+            return;
         }
-    }
 
-    @Override
-    public boolean wasEnemyCollided(final int enemyId) {
-        return completedFollows.containsKey(enemyId);
-    }
-
-    @Override
-    public void clearEnemyCollision(final int enemyId, final int characterId) {
-        completedFollows.remove(enemyId, characterId);
-        //System.out.println(completedFollows);
-    }
-
-    @Override
-    public Optional<Integer> getEnemyId(final int characterId) {
-        int enemyId = 0;
-        for (final Map.Entry<Integer, Integer> entry : completedFollows.entrySet()) {
-            if (entry.getValue().equals(characterId)) {
-                enemyId = entry.getKey();
-                return Optional.of(enemyId);
+        for (Map.Entry<Integer, Integer> entry : completedFollows.entrySet()) {
+            if (entry.getValue() == characterId) {
+                int otherId = entry.getKey();
+                completedFollows.remove(otherId); // Rimuove otherId -> id
+                completedFollows.remove(characterId, otherId); // Se esiste anche id -> otherId, rimuove
+                return;
             }
         }
-        return Optional.empty();
     }
-
-    @Override
-    public Optional<Integer> getCharacterId(final int enemyId) {
-        int characterId = 0;
-        for (final Map.Entry<Integer, Integer> entry : completedFollows.entrySet()) {
-            if (entry.getKey().equals(enemyId)) {
-                characterId = entry.getValue();
-                return Optional.of(characterId);
-            }
-        }
-        return Optional.empty();
-    }
-
 }
