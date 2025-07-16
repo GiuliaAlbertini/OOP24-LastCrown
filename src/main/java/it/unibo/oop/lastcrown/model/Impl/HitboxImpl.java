@@ -10,15 +10,15 @@ import it.unibo.oop.lastcrown.model.api.Point2D;
  * center point calculation, and dimension updates.
  */
 public final class HitboxImpl implements Hitbox {
-    private Point2D position; //coordinate x,y angolo in alto a sinistra
+    private Point2D position; // coordinate x,y angolo in alto a sinistra
     private int width;
     private int height;
 
     /**
      * Constructs a new Hitbox with the specified width, height, and position.
      *
-     * @param width the width of the hitbox
-     * @param height the height of the hitbox
+     * @param width    the width of the hitbox
+     * @param height   the height of the hitbox
      * @param position the top-left corner of the hitbox represented as a Point2D
      */
     public HitboxImpl(final int width, final int height, final Point2D position) {
@@ -29,7 +29,7 @@ public final class HitboxImpl implements Hitbox {
 
     @Override
     public Point2D getPosition() {
-       return this.position;
+        return this.position;
     }
 
     @Override
@@ -65,19 +65,41 @@ public final class HitboxImpl implements Hitbox {
     }
 
     @Override
-    //implementazione Axis-Aligned Bounding Box
     public boolean checkCollision(final Hitbox other) {
-        final double ax1 = this.getPosition().x();
-        final double ay1 = this.getPosition().y();
-        final double ax2 = ax1 + this.width;
-        final double ay2 = ay1 + this.height;
+        final double threshold = 10.0; // margine extra per rendere più morbido il contatto
+
+        final double ax1 = this.getPosition().x() - threshold;
+        final double ay1 = this.getPosition().y() - threshold;
+        final double ax2 = ax1 + this.width + 2 * threshold;
+        final double ay2 = ay1 + this.height + 2 * threshold;
 
         final double bx1 = other.getPosition().x();
         final double by1 = other.getPosition().y();
         final double bx2 = bx1 + other.getWidth();
         final double by2 = by1 + other.getHeight();
 
-        //se tutte le condizioni di non sovrapposizioni sono vere allora non c'è collisione
         return !(ax2 < bx1 || bx2 < ax1 || ay2 < by1 || by2 < ay1);
     }
+
 }
+
+/*
+ * @Override
+ * //implementazione Axis-Aligned Bounding Box
+ * public boolean checkCollision(final Hitbox other) {
+ * final double ax1 = this.getPosition().x();
+ * final double ay1 = this.getPosition().y();
+ * final double ax2 = ax1 + this.width;
+ * final double ay2 = ay1 + this.height;
+ *
+ * final double bx1 = other.getPosition().x();
+ * final double by1 = other.getPosition().y();
+ * final double bx2 = bx1 + other.getWidth();
+ * final double by2 = by1 + other.getHeight();
+ *
+ * //se tutte le condizioni di non sovrapposizioni sono vere allora non c'è
+ * collisione
+ * return !(ax2 < bx1 || bx2 < ax1 || ay2 < by1 || by2 < ay1);
+ * }
+ *
+ */
