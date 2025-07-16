@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
+import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.impl.EnemyEngagement;
 import it.unibo.oop.lastcrown.model.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.api.CollisionResolver;
@@ -88,4 +89,7 @@ public interface MatchController {
     boolean releaseEngagementFor(final int characterId);
     Set<EnemyEngagement> getEngagedEnemies();
     boolean isEngagedWithDead(final int characterId);
+    int getEngagedCounterpart(final int characterId);
+    boolean isPlayerIdle(PlayableCharacterController player);
+
 }

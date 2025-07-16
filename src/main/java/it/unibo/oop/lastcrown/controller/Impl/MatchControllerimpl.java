@@ -16,6 +16,9 @@ import it.unibo.oop.lastcrown.controller.api.MatchController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
+import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
+import it.unibo.oop.lastcrown.controller.characters.impl.boss.BossControllerImpl;
+import it.unibo.oop.lastcrown.controller.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.model.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.api.CollisionManager;
 import it.unibo.oop.lastcrown.model.api.CollisionResolver;
@@ -23,8 +26,12 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.model.characters.api.GenericCharacter;
+import it.unibo.oop.lastcrown.model.characters.api.Hero;
+import it.unibo.oop.lastcrown.model.characters.api.PassiveEffect;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
+import it.unibo.oop.lastcrown.model.characters.api.Requirement;
 import it.unibo.oop.lastcrown.model.characters.impl.enemy.EnemyImpl;
+import it.unibo.oop.lastcrown.model.characters.impl.hero.HeroImpl;
 import it.unibo.oop.lastcrown.model.characters.impl.playablecharacter.PlayableCharacterImpl;
 import it.unibo.oop.lastcrown.model.impl.CollisionManagerImpl;
 import it.unibo.oop.lastcrown.model.impl.CollisionResolverImpl;
@@ -47,12 +54,14 @@ public final class MatchControllerimpl implements MatchController {
     private int nextId = 1;
     private final GamePanel gamePanel;
     private final MainView view;
+    Requirement require = new Requirement("hero", 2);
+    Optional<PassiveEffect> optionalEffect = Optional.of(new PassiveEffect("none", 0));
 
     public MatchControllerimpl(final MainController controller) {
         // this.controller = controller;
         this.view = controller.getMainView();
         this.gamePanel = controller.getMainView().getGamePanel();
-        this.spawner = new CharacterSpawnerController(gamePanel); // istanzio
+        this.spawner = new CharacterSpawnerController(gamePanel);
         this.radiusScanner = new EnemyRadiusScanner(hitboxControllers, this);
         this.view.getGamePanel().setAddCharacterListener(e -> onAddCharacterButtonPressed());
         this.collisionResolver = new CollisionResolverImpl(this);
@@ -70,19 +79,24 @@ public final class MatchControllerimpl implements MatchController {
     @Override
     public void onAddCharacterButtonPressed() {
         final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
-        final PlayableCharacter Char1 = new PlayableCharacterImpl("Warrior",CardType.MELEE, 20, 25, 100, 2, 100, 0.8,100);
-        //final PlayableCharacter Char2 = new PlayableCharacterImpl("Knight", CardType.MELEE, 20, 20, 100, 2, 100, 0.8, 100);
-        //final Enemy newEnemy = new EnemyImpl("Bat", 1, CardType.ENEMY, 3, 100, 0.8); sopra
+        final PlayableCharacter Char1 = new PlayableCharacterImpl("Warrior", CardType.MELEE, 20, 25, 100, 2, 100, 0.8,100);
+        final PlayableCharacter Char2 = new PlayableCharacterImpl("Knight", CardType.MELEE, 20, 22, 100, 2, 100, 0.8,100);
+        final Enemy newEnemy = new EnemyImpl("Bat", 1, CardType.ENEMY, 3, 100, 0.8);
         final Enemy nemico2 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 3, 200, 0.8);
         final Enemy nemico3 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 3, 200, 0.8);
-        final Enemy nemico4 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 3, 200,0.8);
 
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), Char1, obs, 100, 300);
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), Char2, obs, 100, 200);
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), newEnemy, obs, 500, 100);
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico2, obs, 200, 400);
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico3, obs, 700, 100);
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico4, obs, 700, 400);
+        //final Enemy boss = new EnemyImpl("Cthulu", 1, CardType.BOSS, 23, 200,0.2);
+
+        // final Hero eroe = new HeroImpl("Valandor", new Requirement("Bosses", 80), 20,300, Optional.of(new PassiveEffect("health", 45)),3, 3, 4,8, 400);
+        // spawnAndRegisterCharacter(generateUniqueCharacterId(), eroe, obs, 100, 200);
+
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), Char1, obs, 100, 300); /* bro sotto */
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), Char2, obs, 100, 200);
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), newEnemy, obs, 500, 100);
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico2, obs, 200,400);
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico3, obs, 700, 100);
+
+        //spawnAndRegisterCharacter(generateUniqueCharacterId(), boss, obs, 700,200);
 
     }
 
@@ -92,6 +106,7 @@ public final class MatchControllerimpl implements MatchController {
 
         addCharacter(id, spawned.controller(), spawned.hitboxController());
         if (model instanceof GenericCharacter) {
+
             final GenericCharacterController playerController = spawned.controller();
             playerFSMs.put(id, new CharacterFSM(playerController, this, radiusScanner, this.collisionResolver));
         }
@@ -101,10 +116,19 @@ public final class MatchControllerimpl implements MatchController {
     public SpawnedCharacter spawnCharacter(final int id, final Object model, final CharacterDeathObserver observer,
             final int x, final int y) {
         if (model instanceof PlayableCharacter pc) {
-
             return spawner.spawnPlayableCharacter(id, pc, observer, x, y);
-        } else if (model instanceof Enemy e) {
-            return spawner.spawnEnemyCharacter(id, e, observer, x, y);
+        } else if (model instanceof Hero hero) {
+            return spawner.spawnHeroCharacter(id, hero, observer, x, y); // solo se Hero NON implementa
+                                                                         // PlayableCharacter
+        } else if (model instanceof Enemy enemy) {
+            if (enemy.getEnemyType() == CardType.BOSS) {
+                System.out.println("entro qui");
+                return spawner.spawnBossCharacter(id, enemy, observer, x, y);
+            } else {
+                System.out.println("se entro qui sono un coglione");
+                return spawner.spawnEnemyCharacter(id, enemy, observer, x, y);
+            }
+
         }
         throw new IllegalArgumentException("Model type non supportato");
     }
@@ -213,6 +237,7 @@ public final class MatchControllerimpl implements MatchController {
                         return false;
                     }
                 }
+                System.out.println("sto aggancianfo il personaggio in matchcontroller");
 
                 // Aggiungi nuovo engagement
                 engagedEnemies.add(new EnemyEngagement(enemyId, playerId));
@@ -220,6 +245,7 @@ public final class MatchControllerimpl implements MatchController {
                 return true;
 
             } else {
+                System.out.println("sto sganciando il personaggio in matchcontroller");
                 // Cerca e rimuovi l'engagement corrispondente
                 EnemyEngagement toRemove = null;
                 for (EnemyEngagement e : engagedEnemies) {
@@ -272,7 +298,7 @@ public final class MatchControllerimpl implements MatchController {
     public boolean releaseEngagementFor(final int characterId) {
         EnemyEngagement toRemove = null;
         synchronized (engagedEnemies) {
-            System.out.println(engagedEnemies);
+            System.out.println("lista prima di essere eliminata" + engagedEnemies);
             for (EnemyEngagement e : engagedEnemies) {
                 if (e.enemyId() == characterId || e.playerId() == characterId) {
                     toRemove = e;
@@ -284,6 +310,7 @@ public final class MatchControllerimpl implements MatchController {
                 setEnemyInCombat(toRemove.enemyId(), false);
                 enemyLocks.remove(toRemove.enemyId());
                 System.out.println("qui è quando li rimuovo" + engagedEnemies);
+                System.out.println("sto sganciando il personaggio in matchcontroller");
 
                 return true;
             }
@@ -351,6 +378,15 @@ public final class MatchControllerimpl implements MatchController {
             }
         }
         return -1;
+    }
+
+    @Override
+    public boolean isPlayerIdle(final PlayableCharacterController player) {
+        CharacterFSM fsm = this.playerFSMs.get(player.getId().number());
+        if (fsm != null) {
+            return fsm.getCurrentState() == CharacterState.IDLE;
+        }
+        return false;
     }
 
 }
