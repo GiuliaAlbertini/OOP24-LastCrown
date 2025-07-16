@@ -42,7 +42,6 @@ public final class DeadHandler implements StateHandler {
 
             if (i==frame){
                 match.releaseEngagementFor(character.getId().number());
-                System.out.println("SONO IN DEAD E STO VEDENDO SE IL MIO PERSONAGGIO è INGAGGIATO" + character.getId().number() + match.isPlayerEngaged(character.getId().number()) + character.getId().type());
                 match.removeCharacterCompletelyById(character.getId().number());
                 resolver.clearEnemyCollision(character.getId().number());
             }
