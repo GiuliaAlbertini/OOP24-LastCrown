@@ -1,6 +1,8 @@
 package it.unibo.oop.lastcrown.model.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,6 +21,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
     private final Map<Integer, HandleFollowEnemy> activeFollowMovements = new HashMap<>();
     private Map<Integer, Integer> completedFollows = new HashMap<>(); // nemico-personaggio
     MatchController matchController;
+    List<Pair<Integer, Integer>> opponent = new ArrayList<>();
 
     /**
      * Costruttore vuoto di default per CollisionResolverImpl.
@@ -30,7 +33,8 @@ public final class CollisionResolverImpl implements CollisionResolver {
     @Override
     public void notify(final CollisionEvent event) {
         switch (event.getType()) {
-            case FOLLOW_ENEMY -> handleFollowEnemy(event);
+            case ENEMY -> handleFollowEnemy(event);
+            case BOSS -> opponentBoss(event);
             // default -> System.out.println("[WARN] Evento collisione non gestito: " +
             // event.getType());
         }
@@ -41,6 +45,63 @@ public final class CollisionResolverImpl implements CollisionResolver {
         final HandleFollowEnemy movement = new HandleFollowEnemy(event);
         movement.startFollowing();
         activeFollowMovements.put(characterId, movement);
+    }
+
+    public void opponentBoss(final CollisionEvent event) {
+        System.out.println("vediamo se qui entro");
+        final int characterId = event.getCollidable1().getCardidentifier().number();
+        final int enemyId = event.getCollidable2().getCardidentifier().number();
+
+        opponent.add(new Pair<Integer, Integer>(characterId, enemyId));
+    }
+
+    public boolean hasOpponentBossPartner(final int id) {
+        for (Pair<Integer, Integer> pair : opponent) {
+            if (pair.get1() == id || pair.get2() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Rimuove tutte le coppie di combattimento presenti nella lista opponent.
+     */
+    public void clearAllOpponentPairs() {
+        opponent.clear();
+    }
+
+
+    public int getOpponentBossPartner(final int id) {
+        for (Pair<Integer, Integer> pair : opponent) {
+            if (pair.get1() == id) {
+                return pair.get2();
+            } else if (pair.get2() == id) {
+                return pair.get1();
+            }
+        }
+        return -1; // Valore che indica "non trovato"
+    }
+
+    public List<Integer> getAllCharacterIdsInBossFight() {
+        final List<Integer> result = new ArrayList<>();
+        for (Pair<Integer, Integer> pair : opponent) {
+            result.add(pair.get1()); // Aggiunge solo il characterId (giocatore)
+        }
+        return result;
+    }
+
+    public void clearBossFightPairById(final int id) {
+        Pair<Integer, Integer> toRemove = null;
+        for (Pair<Integer, Integer> pair : opponent) {
+            if (pair.get1() == id || pair.get2() == id) {
+                toRemove = pair;
+                break;
+            }
+        }
+        if (toRemove != null) {
+            opponent.remove(toRemove);
+        }
     }
 
     @Override
@@ -67,11 +128,10 @@ public final class CollisionResolverImpl implements CollisionResolver {
         return Optional.empty();
     }
 
-
     @Override
     public boolean wasEnemyCollided(final int id) {
-    return completedFollows.containsKey(id) || completedFollows.containsValue(id);
-}
+        return completedFollows.containsKey(id) || completedFollows.containsValue(id);
+    }
 
     @Override
     public void clearEnemyCollision(final int characterId) {

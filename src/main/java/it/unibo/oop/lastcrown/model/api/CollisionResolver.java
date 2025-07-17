@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.model.api;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -35,4 +36,10 @@ public interface CollisionResolver extends CollisionObserver {
      * @param characterId the unique identifier of the character
      */
     void clearEnemyCollision(int characterId);
+    void opponentBoss(final CollisionEvent event);
+    boolean hasOpponentBossPartner(final int id);
+    int getOpponentBossPartner(final int id);
+    List<Integer> getAllCharacterIdsInBossFight();
+    void clearBossFightPairById(final int id);
+    void clearAllOpponentPairs();
 }
