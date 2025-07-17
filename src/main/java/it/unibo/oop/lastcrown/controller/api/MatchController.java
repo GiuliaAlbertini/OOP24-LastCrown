@@ -91,5 +91,5 @@ public interface MatchController {
     boolean isEngagedWithDead(final int characterId);
     int getEngagedCounterpart(final int characterId);
     boolean isPlayerIdle(PlayableCharacterController player);
-
+    boolean isBossFightPartnerDead(final int id);
 }
