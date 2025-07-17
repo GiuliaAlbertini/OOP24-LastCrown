@@ -1,7 +1,7 @@
 package it.unibo.oop.lastcrown.model.api;
 
 /**
- * Represents the different types of events that can occur in the game 
+ * Represents the different types of events that can occur in the game
  * related to collisions or user input.
  */
 public enum EventType {
@@ -9,13 +9,12 @@ public enum EventType {
     /**
      * Event triggered when the player starts following or engaging an enemy.
      */
-    FOLLOW_ENEMY,
+    ENEMY,
 
     /**
      * Event triggered when the player collides with an enemy.
      */
-    ENEMY_COLLISION,
-
+    BOSS,
     /**
      * Event triggered when the player enters combat mode.
      */
