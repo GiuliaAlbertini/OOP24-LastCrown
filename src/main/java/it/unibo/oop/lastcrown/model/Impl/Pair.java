@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.controller.impl;
+package it.unibo.oop.lastcrown.model.impl;
 import java.util.Objects;
 
 /*
