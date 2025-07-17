@@ -10,6 +10,7 @@ import it.unibo.oop.lastcrown.controller.impl.eventcharacters.EventFactory;
 import it.unibo.oop.lastcrown.controller.impl.eventcharacters.EventQueue;
 import it.unibo.oop.lastcrown.controller.impl.eventcharacters.StateHandler;
 import it.unibo.oop.lastcrown.model.api.CollisionResolver;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 
 /**
@@ -41,9 +42,13 @@ public final class DeadHandler implements StateHandler {
             i++;
 
             if (i==frame){
+                if (character.getId().type()== CardType.BOSS){
+                    resolver.clearAllOpponentPairs();
+                }
                 match.releaseEngagementFor(character.getId().number());
                 match.removeCharacterCompletelyById(character.getId().number());
                 resolver.clearEnemyCollision(character.getId().number());
+                resolver.clearBossFightPairById(character.getId().number());
             }
             queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
             return CharacterState.DEAD;

@@ -7,12 +7,12 @@ import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.impl.EnemyRadiusScanner;
-import it.unibo.oop.lastcrown.controller.impl.Pair;
 import it.unibo.oop.lastcrown.controller.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.controller.impl.eventcharacters.EventFactory;
 import it.unibo.oop.lastcrown.controller.impl.eventcharacters.EventQueue;
 import it.unibo.oop.lastcrown.controller.impl.eventcharacters.StateHandler;
 import it.unibo.oop.lastcrown.model.api.CollisionResolver;
+import it.unibo.oop.lastcrown.model.impl.Pair;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 
 /**
@@ -39,20 +39,23 @@ public final class StoppingHandler implements StateHandler {
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
             final int deltaTime) {
+                System.out.println("sono nello stopped" + character.getId().type());
         final int charId = character.getId().number();
         final boolean isPlayer = character instanceof PlayableCharacterController;
         final boolean isEngaged = isPlayer ? match.isPlayerEngaged(charId) : match.isEnemyEngaged(charId);
-
-        if (!isEngaged && wait) {
+        final boolean isBossFight= resolver.hasOpponentBossPartner(charId);
+        if (!isEngaged && wait && !isBossFight) {
+            System.out.println("entro qui se ho combattuto e devo continuare a giocare o se non sono stato ingaggiato");
             wait = false;
             queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
             return CharacterState.IDLE;
-        } else if (match.isEngagedWithDead(charId)) {
+        } else if (match.isEngagedWithDead(charId)|| match.isBossFightPartnerDead(charId)) {
             character.setNextAnimation(Keyword.STOP);
             character.showNextFrame();
             wait = true;
             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
         } else {
+            System.out.println("ora combatto");
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
         }
         return CharacterState.STOPPED;

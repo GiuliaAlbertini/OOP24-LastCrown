@@ -8,7 +8,6 @@ import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.impl.EnemyRadiusScanner;
-import it.unibo.oop.lastcrown.controller.impl.Pair;
 import it.unibo.oop.lastcrown.controller.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.controller.impl.eventcharacters.EventFactory;
 import it.unibo.oop.lastcrown.controller.impl.eventcharacters.EventQueue;
@@ -16,6 +15,7 @@ import it.unibo.oop.lastcrown.controller.impl.eventcharacters.StateHandler;
 import it.unibo.oop.lastcrown.model.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.api.CollisionResolver;
 import it.unibo.oop.lastcrown.model.card.CardType;
+import it.unibo.oop.lastcrown.model.impl.Pair;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.Movement;
 
@@ -65,13 +65,20 @@ public final class IdleHandler implements StateHandler {
             // Logica per personaggi giocanti
             if (player) {
                 final List<CollisionEvent> events = scanner.scanForFollowEvents();
+                System.out.println(events);
                 if (!events.isEmpty()) {
+                    System.out.println("ma io qui notifico?");
                     final CollisionEvent event = events.get(0);
                     matchController.notifyCollisionObservers(event);
                 }
+
                 if (matchController.isPlayerEngaged(character.getId().number())) {
                     queue.enqueue(eventFactory.createEvent(CharacterState.FOLLOWING));
                     return CharacterState.FOLLOWING;
+                }else if (resolver.hasOpponentBossPartner(character.getId().number())){
+                    System.out.println("Sono in idle, sono il personaggio e sto per entrare nello stopped");
+                    queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+                    return CharacterState.STOPPED;
                 }
             }
             // Logica per nemici
@@ -80,7 +87,12 @@ public final class IdleHandler implements StateHandler {
                 if (collision) {
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
+                }else if (resolver.hasOpponentBossPartner(character.getId().number())){
+                    System.out.println("nemico in idle che sta per entrare nello stopped");
+                    queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+                    return CharacterState.STOPPED;
                 }
+
             }
         }
         queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
