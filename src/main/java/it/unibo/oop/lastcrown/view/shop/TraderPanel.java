@@ -35,6 +35,7 @@ public final class TraderPanel extends JPanel {
     private transient List<BufferedImage> openImages;
     private transient List<BufferedImage> closeImages;
     private transient List<BufferedImage> approvalImages;
+    private boolean mouseEnabled = true;
     private TraderPanel() { }
 
     /**
@@ -74,7 +75,10 @@ public final class TraderPanel extends JPanel {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(final MouseEvent e) {
-                startAnimation(openImages, Keyword.OPEN);
+                if (mouseEnabled) {
+                   startAnimation(openImages, Keyword.OPEN);
+                   mouseEnabled = false;
+                }
             }
         });
     }
@@ -103,17 +107,11 @@ public final class TraderPanel extends JPanel {
     }
 
     /**
-     * Starts the Open animation sequence.
-     */
-    public void startOpenSequence() {
-        this.startAnimation(openImages, Keyword.OPEN);
-    }
-
-    /**
      * Starts the Close animation sequence.
      */
     public void startCloseSequence() {
         this.startAnimation(this.closeImages, Keyword.CLOSE);
+        this.mouseEnabled = true;
     }
 
     /**
@@ -121,6 +119,7 @@ public final class TraderPanel extends JPanel {
      */
     public void startApprovalSequence() {
         this.startAnimation(this.approvalImages, Keyword.APPROVAL);
+        this.mouseEnabled = false;
     }
 
     private void startAnimation(final List<BufferedImage> frames, final Keyword keyword) {
@@ -142,7 +141,7 @@ public final class TraderPanel extends JPanel {
             } else if (keyword.equals(Keyword.CLOSE)) {
                 this.startStopLoop();
             } else if (keyword.equals(Keyword.APPROVAL)) {
-                this.startCloseSequence();
+                this.startAnimation(this.closeImages, Keyword.CLOSE);
             }
         }).start();
     }
@@ -152,6 +151,7 @@ public final class TraderPanel extends JPanel {
      */
     public void stopAnimations() {
         this.done = true;
+        this.mouseEnabled = true;
     }
 
     @Override

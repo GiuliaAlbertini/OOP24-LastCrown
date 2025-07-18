@@ -9,9 +9,12 @@ import javax.swing.JTextArea;
  */
 public final class CustomInstructions extends JTextArea {
     private static final long serialVersionUID = 1L;
-    private static final String INSTRUCTIONS = "Click on a trader to start a shopping session \n"
-     + "Click on the different buttons in order to open your collection, \n"
-     + "escape from the match or to start a new one.";
+    private static final String INSTRUCTIONS = "Click on the different buttons in order to open your COLLECTION, \n"
+     + "ESCAPE from the MATCH or to start a new one.\n"
+     + "Click on a TRADER to start a shopping session \n"
+     + "BE CAREFUL: once you buy a card by a trader, that specific trader\n"
+     + "will be unavailable until the next time you reach the shop.\n"
+     + "CHOOSE CAREFULLY your new cards";
      private static final int TEXT_SIZE = 20;
 
     /**
