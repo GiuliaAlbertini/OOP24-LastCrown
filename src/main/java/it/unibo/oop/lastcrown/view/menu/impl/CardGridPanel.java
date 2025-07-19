@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.swing.JPanel;
@@ -21,6 +22,7 @@ public final class CardGridPanel extends JPanel {
     private int gridCellSide;
     private final int heightGap;
     private final int verticalGap;
+    private final Set<CardIdentifier> cardsOwned;
 
     /**
      * Constructs a CardGridPanel with initial spacing.
@@ -29,11 +31,12 @@ public final class CardGridPanel extends JPanel {
      * @param hgap horizontal gap between cells (in pixels)
      * @param vgap vertical gap between cells (in pixels)
      */
-    private  CardGridPanel(final int initialColumns, final int hgap, final int vgap) {
+    private CardGridPanel(final int initialColumns, final int hgap, final int vgap, Set<CardIdentifier> cardsOwned) {
         this.gridColumns = initialColumns;
         this.heightGap = hgap;
         this.verticalGap = vgap;
         this.gridCellSide = 0;
+        this.cardsOwned = cardsOwned;
     }
 
     /**
@@ -44,8 +47,8 @@ public final class CardGridPanel extends JPanel {
      * @param vgap vertical gap between cells (in pixels)
      * @return the created CardGridPanel instance
      */
-    public static CardGridPanel create(final int initialColumns, final int hgap, final int vgap) {
-        final CardGridPanel cgp = new CardGridPanel(initialColumns, hgap, vgap);
+    public static CardGridPanel create(final int initialColumns, final int hgap, final int vgap, Set<CardIdentifier> cardsOwned) {
+        final CardGridPanel cgp = new CardGridPanel(initialColumns, hgap, vgap, cardsOwned);
         cgp.setLayout(new GridLayout(0, cgp.gridColumns, hgap, cgp.verticalGap));
         return cgp;
     }
@@ -85,7 +88,8 @@ public final class CardGridPanel extends JPanel {
     public void loadCards(final List<CardIdentifier> cards, final Consumer<CardIdentifier> cardClicked) {
         removeAll();
         for (final CardIdentifier card : cards) {
-            final IconPanel iconPanel = new IconPanel(card, false);
+            final boolean useGrey = this.cardsOwned.contains(card);
+            final IconPanel iconPanel = new IconPanel(card, useGrey);
             iconPanel.setPreferredSize(new Dimension(gridCellSide, gridCellSide));
             iconPanel.addMouseListener(new MouseAdapter() {
                 @Override

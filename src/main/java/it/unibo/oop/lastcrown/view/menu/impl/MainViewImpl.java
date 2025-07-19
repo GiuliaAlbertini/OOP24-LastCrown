@@ -69,10 +69,14 @@ public class MainViewImpl extends JFrame implements MainView {
         this.creditView = CreditsView.create(this.sceneManager);
         this.statsView = StatsView.create(this.sceneManager, this.accountController);
         this.deckView = DeckView.create(this.sceneManager, deckController);
-        this.collectionView = CollectionView.create(this.sceneManager, this.collectionController);
+        this.collectionView = CollectionView.create(this.sceneManager, this.collectionController, getOwnedCards());
 
         setUpPanels();
         this.layout.show(this.mainPanel, menuView.getSceneName());
+    }
+
+    private Set<CardIdentifier> getOwnedCards() {
+        return this.accountController.getAccount().getUserCollection().getCollection();
     }
 
     private void init() {

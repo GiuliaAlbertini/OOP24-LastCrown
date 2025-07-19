@@ -12,6 +12,7 @@ import java.awt.event.ComponentEvent;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -51,15 +52,17 @@ public final class CollectionView extends AbstractScene {
     private final JPanel filterBar;
     private final CardGridPanel cardsGridPanel;
 
+    private final Set<CardIdentifier> cardsOwned;
     private int detailWidth;
     private int gridColumns = 1;
     private transient Optional<CardType> currentFilter = Optional.empty();
 
     private CollectionView(final SceneManager sceneManager,
-                           final CollectionController collectionController) {
+                           final CollectionController collectionController,
+                           final Set<CardIdentifier> cardsOwned) {
         this.sceneManager = sceneManager;
         this.collectionController = collectionController;
-
+                            this.cardsOwned = cardsOwned;
         detailPanel = new JPanel(new BorderLayout());
 
         filterBar = new JPanel(new FlowLayout(FlowLayout.CENTER, FILTER_BAR_HGAP, 0));
@@ -71,7 +74,7 @@ public final class CollectionView extends AbstractScene {
             addFilterButton(type.get(), Optional.of(type));
         }
 
-        cardsGridPanel = CardGridPanel.create(gridColumns, GRID_HGAP, GRID_VGAP);
+        cardsGridPanel = CardGridPanel.create(gridColumns, GRID_HGAP, GRID_VGAP, this.cardsOwned);
         final var scrollPane = new HideableScrollPane(cardsGridPanel);
 
         rightContainer = new JPanel();
@@ -117,13 +120,15 @@ public final class CollectionView extends AbstractScene {
      * 
      * @param sceneManager the {@link SceneManager} to use
      * @param collectionController the {@link CollectionController} to use
+     * @param cardsOwned the set of cards in the user's collection
      * @return the created CollectionView instance
      */
     public static CollectionView create(
         final SceneManager sceneManager,
-        final CollectionController collectionController
+        final CollectionController collectionController,
+        final Set<CardIdentifier> cardsOwned
     ) {
-        return new CollectionView(sceneManager, collectionController);
+        return new CollectionView(sceneManager, collectionController, cardsOwned);
     }
 
     @Override
