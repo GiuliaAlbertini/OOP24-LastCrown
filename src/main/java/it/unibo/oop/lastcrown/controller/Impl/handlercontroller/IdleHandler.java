@@ -55,7 +55,15 @@ public final class IdleHandler implements StateHandler {
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
             final int deltaTime) {
+        //System.out.println("sono in idle");
+
         if (character != null) {
+            //se sei ranged allora vai in stop
+            if (character.getId().type() == CardType.RANGED){
+                queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+                return CharacterState.STOPPED;
+            }
+
             final var player = character instanceof PlayableCharacterController;
             character.setNextAnimation(player ? Keyword.RUN_RIGHT : Keyword.RUN_LEFT);
             final Movement movementCharacter = new Movement(player ? 2 : -2, 0);
@@ -67,7 +75,7 @@ public final class IdleHandler implements StateHandler {
                 final List<CollisionEvent> events = scanner.scanForFollowEvents();
                 System.out.println(events);
                 if (!events.isEmpty()) {
-                    System.out.println("ma io qui notifico?");
+                    //System.out.println("ma io qui notifico?");
                     final CollisionEvent event = events.get(0);
                     matchController.notifyCollisionObservers(event);
                 }
@@ -76,19 +84,27 @@ public final class IdleHandler implements StateHandler {
                     queue.enqueue(eventFactory.createEvent(CharacterState.FOLLOWING));
                     return CharacterState.FOLLOWING;
                 }else if (resolver.hasOpponentBossPartner(character.getId().number())){
-                    System.out.println("Sono in idle, sono il personaggio e sto per entrare nello stopped");
+                    //System.out.println("Sono in idle, sono il personaggio e sto per entrare nello stopped");
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
                 }
             }
             // Logica per nemici
             else {
+                if (matchController.isEnemyDead(character.getId().number())){
+                    resolver.clearAllOpponentRangedPairs();
+
+                    queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
+                    return CharacterState.DEAD;
+
+                }
+
                 final boolean collision = resolver.wasEnemyCollided(character.getId().number());
                 if (collision) {
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
                 }else if (resolver.hasOpponentBossPartner(character.getId().number())){
-                    System.out.println("nemico in idle che sta per entrare nello stopped");
+                    //System.out.println("nemico in idle che sta per entrare nello stopped");
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
                 }

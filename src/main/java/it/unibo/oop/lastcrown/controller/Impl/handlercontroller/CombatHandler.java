@@ -48,8 +48,11 @@ public final class CombatHandler implements StateHandler {
         if (isPlayer){
             if (match.isPlayerEngaged(character.getId().number())){
                  opponentId = match.getEngagedCounterpart(character.getId().number());
-            }else {
+            }else if (resolver.hasOpponentBossPartner(character.getId().number())) {
                 opponentId= resolver.getOpponentBossPartner(character.getId().number());
+            }else if (resolver.hasOpponentRangedPartner(character.getId().number())){
+                opponentId= resolver.getOpponentRangedPartner(character.getId().number());
+
             }
         }else {
             if (match.isEnemyEngaged(character.getId().number())){
@@ -62,16 +65,22 @@ public final class CombatHandler implements StateHandler {
 
         //ti prendi il controller
         final Optional<GenericCharacterController> opponentOpt = match.getCharacterControllerById(opponentId);
-        if (opponentOpt.isEmpty()) {
-            return CharacterState.IDLE;
+        if (opponentOpt.isEmpty() ) {
+            if (character.getId().type() != CardType.RANGED){
+                return CharacterState.IDLE;
+            }else{
+                return CharacterState.STOPPED;
+            }
         }
 
         final GenericCharacterController opponent = opponentOpt.get();
         if (isPlayer) {
             // === COMBATTIMENTO GIOCATORE ===
             if (opponent.isDead()) {
+                //System.out.println("sono il giocatore che va in stop");
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED)); // nemico può morire e animarsi
             } else {
+                //System.out.println("teoricamente dovrebbe entrare anche il ranged" + character.getId().type());
                 setupCombat(character, opponent);
                 queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
                 return CharacterState.COMBAT;
@@ -81,7 +90,7 @@ public final class CombatHandler implements StateHandler {
             // === COMBATTIMENTO NEMICO ===
 
             if (opponent.isDead()) {
-                System.out.println("sono il nemico");
+                System.out.println("sono il nemico e sono morto");
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
             } else {
                 setupCombat(character, opponent);
