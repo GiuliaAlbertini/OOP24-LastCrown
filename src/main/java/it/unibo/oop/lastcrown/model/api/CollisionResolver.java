@@ -42,4 +42,7 @@ public interface CollisionResolver extends CollisionObserver {
     List<Integer> getAllCharacterIdsInBossFight();
     void clearBossFightPairById(final int id);
     void clearAllOpponentPairs();
+    boolean hasOpponentRangedPartner(final int id);
+    int getOpponentRangedPartner(final int id);
+    void clearAllOpponentRangedPairs();
 }

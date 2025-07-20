@@ -2,9 +2,11 @@ package it.unibo.oop.lastcrown.model.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import it.unibo.oop.lastcrown.controller.api.MatchController;
 import it.unibo.oop.lastcrown.model.api.CollisionEvent;
@@ -22,6 +24,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
     private Map<Integer, Integer> completedFollows = new HashMap<>(); // nemico-personaggio
     MatchController matchController;
     List<Pair<Integer, Integer>> opponent = new ArrayList<>();
+    Set<Pair<Integer, Integer>> opponentRanged = new HashSet<>();
 
     /**
      * Costruttore vuoto di default per CollisionResolverImpl.
@@ -35,6 +38,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
         switch (event.getType()) {
             case ENEMY -> handleFollowEnemy(event);
             case BOSS -> opponentBoss(event);
+            case RANGED ->opponentRanged(event);
             // default -> System.out.println("[WARN] Evento collisione non gestito: " +
             // event.getType());
         }
@@ -48,11 +52,41 @@ public final class CollisionResolverImpl implements CollisionResolver {
     }
 
     public void opponentBoss(final CollisionEvent event) {
-        System.out.println("vediamo se qui entro");
+        //System.out.println("vediamo se qui entro");
         final int characterId = event.getCollidable1().getCardidentifier().number();
         final int enemyId = event.getCollidable2().getCardidentifier().number();
 
         opponent.add(new Pair<Integer, Integer>(characterId, enemyId));
+    }
+
+    public void opponentRanged(final CollisionEvent event){
+        System.out.println("ma io qui ci sono entrata?");
+        final int characterId = event.getCollidable1().getCardidentifier().number();
+        final int enemyId = event.getCollidable2().getCardidentifier().number();
+        opponentRanged.add(new Pair<Integer,Integer>(characterId, enemyId));
+        System.out.println("personaggi appena aggiunti" +characterId + enemyId);
+    }
+
+    public boolean hasOpponentRangedPartner(final int id) {
+        for (Pair<Integer, Integer> pair : opponentRanged) {
+            if (pair.get1() == id || pair.get2() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public int getOpponentRangedPartner(final int id) {
+        for (Pair<Integer, Integer> pair : opponentRanged) {
+            if (pair.get1() == id) {
+
+                return pair.get2();
+            } else if (pair.get2() == id) {
+                return pair.get1();
+            }
+        }
+        return -1; // Valore che indica "non trovato"
     }
 
     public boolean hasOpponentBossPartner(final int id) {
@@ -69,6 +103,10 @@ public final class CollisionResolverImpl implements CollisionResolver {
      */
     public void clearAllOpponentPairs() {
         opponent.clear();
+    }
+
+    public void clearAllOpponentRangedPairs(){
+        opponentRanged.clear();
     }
 
 
