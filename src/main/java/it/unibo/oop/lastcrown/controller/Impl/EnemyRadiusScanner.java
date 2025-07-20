@@ -90,6 +90,7 @@ public final class EnemyRadiusScanner {
         return result;
     }
 
+    // metodo chiamato solo dal player
     private void addEventIfEnemyInRadius(
             final List<CollisionEvent> events,
             final PlayableCharacterController player,
@@ -116,18 +117,24 @@ public final class EnemyRadiusScanner {
             return;
         }
 
+        // se il mio player incontra il boss
         if (enemy instanceof BossController) {
-                synchronized (enemy) {
-                    boolean inBossFight = resolver.hasOpponentBossPartner(player.getId().number());
-                    System.out.println("valore di bossFight" + inBossFight);
-                    if (!inBossFight) {
-                        System.out.println("perchè cazzo entro qui se bossfight è false");
-                        createCollisionEvent(events, player, enemy);
-                    }
+            synchronized (enemy) {
+                boolean inBossFight = resolver.hasOpponentBossPartner(player.getId().number());
+                //System.out.println("valore di bossFight" + inBossFight);
+                if (!inBossFight) {
+                    //System.out.println("perchè cazzo entro qui se bossfight è false");
+                    createCollisionEvent(events, player, enemy);
                 }
+            }
 
-            //createCollisionEvent(events, player, enemy);
+            // createCollisionEvent(events, player, enemy);
         } else if (enemy instanceof EnemyController) {
+            //Se sono personaggio ranged e non son in fight
+            boolean isInRangedFight=resolver.hasOpponentRangedPartner(player.getId().number());
+            if (player.getId().type() == CardType.RANGED && !isInRangedFight) {
+                createCollisionEvent(events, player, enemy);
+            }
             if (!enemy.isInCombat() && matchController.isPlayerIdle(player)) {
                 System.out.println("IL NEMICO PIÙ VICINO " + enemy.getId() + enemy.isInCombat());
                 synchronized (enemy) {
@@ -152,15 +159,27 @@ public final class EnemyRadiusScanner {
             final Collidable playerCol = new CollidableImpl(playerHitboxController.getHitbox(), player.getId());
             final Collidable enemyCol = new CollidableImpl(enemyHitboxController.getHitbox(), enemy.getId());
 
-            final EventType eventType = (enemy instanceof BossController)
-                    ? EventType.BOSS
-                    : EventType.ENEMY;
+            //se il player è ranged
+            if (playerCol.getCardidentifier().type() == CardType.RANGED) {
 
-            System.out.println("[DEBUG] Intercettato " + (enemy instanceof BossController ? "Boss" : "Nemico") +
-                    "! Player ID: " + player.getId().number() +
-                    " -> Target ID: " + enemy.getId().number());
+                System.out.println("RANGED" +
+                        "! Player ID: " + player.getId().number() +
+                        " -> Target ID: " + enemy.getId().number());
+                final EventType eventType = EventType.RANGED;
 
-            events.add(new CollisionEventImpl(eventType, playerCol, enemyCol));
+                events.add(new CollisionEventImpl(eventType, playerCol, enemyCol));
+            } else {
+                final EventType eventType = (enemy instanceof BossController)
+                        ? EventType.BOSS
+                        : EventType.ENEMY;
+
+                System.out.println("[DEBUG] Intercettato " + (enemy instanceof BossController ? "Boss" : "Nemico") +
+                        "! Player ID: " + player.getId().number() +
+                        " -> Target ID: " + enemy.getId().number());
+
+                events.add(new CollisionEventImpl(eventType, playerCol, enemyCol));
+            }
+
         }
     }
 }
