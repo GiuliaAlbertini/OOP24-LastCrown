@@ -18,7 +18,7 @@ public enum EventType {
     /**
      * Event triggered when the player enters combat mode.
      */
-    COMBAT,
+    RANGED,
 
     /**
      * Event triggered when the hero collides with a shop.
