@@ -48,6 +48,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
         final int characterId = event.getCollidable1().getCardidentifier().number();
         final HandleFollowEnemy movement = new HandleFollowEnemy(event);
         movement.startFollowing();
+        System.out.println("ho chiamato in tempo handle follow enemy?");
         activeFollowMovements.put(characterId, movement);
     }
 
@@ -60,11 +61,9 @@ public final class CollisionResolverImpl implements CollisionResolver {
     }
 
     public void opponentRanged(final CollisionEvent event){
-        System.out.println("ma io qui ci sono entrata?");
         final int characterId = event.getCollidable1().getCardidentifier().number();
         final int enemyId = event.getCollidable2().getCardidentifier().number();
         opponentRanged.add(new Pair<Integer,Integer>(characterId, enemyId));
-        System.out.println("personaggi appena aggiunti" +characterId + enemyId);
     }
 
     public boolean hasOpponentRangedPartner(final int id) {
@@ -98,6 +97,16 @@ public final class CollisionResolverImpl implements CollisionResolver {
         return false;
     }
 
+    public int getOpponentBossPartner(final int id) {
+        for (Pair<Integer, Integer> pair : opponent) {
+            if (pair.get1() == id) {
+                return pair.get2();
+            } else if (pair.get2() == id) {
+                return pair.get1();
+            }
+        }
+        return -1; // Valore che indica "non trovato"
+    }
     /**
      * Rimuove tutte le coppie di combattimento presenti nella lista opponent.
      */
@@ -110,16 +119,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
     }
 
 
-    public int getOpponentBossPartner(final int id) {
-        for (Pair<Integer, Integer> pair : opponent) {
-            if (pair.get1() == id) {
-                return pair.get2();
-            } else if (pair.get2() == id) {
-                return pair.get1();
-            }
-        }
-        return -1; // Valore che indica "non trovato"
-    }
+
 
     public List<Integer> getAllCharacterIdsInBossFight() {
         final List<Integer> result = new ArrayList<>();
@@ -145,9 +145,11 @@ public final class CollisionResolverImpl implements CollisionResolver {
     @Override
     public Optional<MovementResult> updateMovementFor(final int characterId, final long deltaMs) {
         final HandleFollowEnemy movement = activeFollowMovements.get(characterId);
+        System.out.println("movement" + movement);
         final int enemyId = movement.getEnemy().getCardidentifier().number();
 
-        if (movement != null) {
+
+        if (movement != null ) {
             final var stillMoving = movement.update(deltaMs);
             // non si sta più muovendo
             if (!stillMoving) {
@@ -159,6 +161,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
             final Movement movementDelta = new Movement((int) delta.x(), (int) delta.y());
             return Optional.of(new MovementResult(
                     movement.getCharacter(),
+                    movement.getEnemy(),
                     movement.getCurrentPosition(),
                     movementDelta,
                     stillMoving));
