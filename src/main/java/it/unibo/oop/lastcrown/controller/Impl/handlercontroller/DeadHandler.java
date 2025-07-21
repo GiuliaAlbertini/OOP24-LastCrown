@@ -48,7 +48,9 @@ public final class DeadHandler implements StateHandler {
                 match.releaseEngagementFor(character.getId().number());
                 match.removeCharacterCompletelyById(character.getId().number());
                 resolver.clearEnemyCollision(character.getId().number());
+                resolver.clearAllOpponentRangedPairs();
                 resolver.clearBossFightPairById(character.getId().number());
+
             }
             queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
             return CharacterState.DEAD;

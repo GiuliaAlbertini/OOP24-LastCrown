@@ -2,6 +2,7 @@ package it.unibo.oop.lastcrown.controller.impl.handlercontroller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import it.unibo.oop.lastcrown.controller.api.MatchController;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
@@ -31,6 +32,7 @@ public final class IdleHandler implements StateHandler {
     private final EnemyRadiusScanner scanner;
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;
+
     /**
      * Constructs an IdleHandler with the required dependencies.
      *
@@ -55,63 +57,83 @@ public final class IdleHandler implements StateHandler {
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
             final int deltaTime) {
-        //System.out.println("sono in idle");
-
+                System.out.println("sono il personaggio in idle" + character.getId().type());
         if (character != null) {
-            //se sei ranged allora vai in stop
-            if (character.getId().type() == CardType.RANGED){
+            // se sei ranged allora vai in stop
+            if (character.getId().type() == CardType.RANGED) {
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                 return CharacterState.STOPPED;
+            } else {
+                final var player = character instanceof PlayableCharacterController;
+                character.setNextAnimation(player ? Keyword.RUN_RIGHT : Keyword.RUN_LEFT);
+                final Movement movementCharacter = new Movement(player ? 2 : -2, 0);
+                character.showNextFrameAndMove(movementCharacter);
+
+                matchController.updateCharacterPosition(character, movementCharacter.x(), movementCharacter.y());
+                // Logica per personaggi giocanti
+                if (player) {
+
+                    Optional<GenericCharacterController> controllerOpt = matchController
+                            .getCharacterControllerById(character.getId().number());
+                    if (controllerOpt.isPresent()
+                            && controllerOpt.get() instanceof PlayableCharacterController playerCol) {
+                        Optional<CollisionEvent> eventOpt = scanner.scanForFollowEventForPlayer(playerCol);
+                        eventOpt.ifPresent(event -> {
+                            matchController.notifyCollisionObservers(event);
+                        });
+                    }
+
+                    if (matchController.isPlayerEngaged(character.getId().number())) {
+                        queue.enqueue(eventFactory.createEvent(CharacterState.FOLLOWING));
+                        return CharacterState.FOLLOWING;
+
+                    } else if (resolver.hasOpponentBossPartner(character.getId().number())) {
+                        queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+                        return CharacterState.STOPPED;
+                    }
+                }
+                // Logica per nemici
+                else {
+                    if (matchController.isEnemyDead(character.getId().number())) {
+                        // resolver.clearAllOpponentRangedPairs();
+                        queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
+                        return CharacterState.DEAD;
+                    } else {
+
+                        final boolean collision = resolver.wasEnemyCollided(character.getId().number());
+                        if (collision) {
+                            queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+                            return CharacterState.STOPPED;
+                        } else if (resolver.hasOpponentBossPartner(character.getId().number())) {
+                            // System.out.println("nemico in idle che sta per entrare nello stopped");
+                            queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+                            return CharacterState.STOPPED;
+                        }
+                    }
+                }
             }
 
-            final var player = character instanceof PlayableCharacterController;
-            character.setNextAnimation(player ? Keyword.RUN_RIGHT : Keyword.RUN_LEFT);
-            final Movement movementCharacter = new Movement(player ? 2 : -2, 0);
-            character.showNextFrameAndMove(movementCharacter);
-
-            matchController.updateCharacterPosition(character, movementCharacter.x(), movementCharacter.y());
-            // Logica per personaggi giocanti
-            if (player) {
-                final List<CollisionEvent> events = scanner.scanForFollowEvents();
-                System.out.println(events);
-                if (!events.isEmpty()) {
-                    //System.out.println("ma io qui notifico?");
-                    final CollisionEvent event = events.get(0);
-                    matchController.notifyCollisionObservers(event);
-                }
-
-                if (matchController.isPlayerEngaged(character.getId().number())) {
-                    queue.enqueue(eventFactory.createEvent(CharacterState.FOLLOWING));
-                    return CharacterState.FOLLOWING;
-                }else if (resolver.hasOpponentBossPartner(character.getId().number())){
-                    //System.out.println("Sono in idle, sono il personaggio e sto per entrare nello stopped");
-                    queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-                    return CharacterState.STOPPED;
-                }
-            }
-            // Logica per nemici
-            else {
-                if (matchController.isEnemyDead(character.getId().number())){
-                    resolver.clearAllOpponentRangedPairs();
-
-                    queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
-                    return CharacterState.DEAD;
-
-                }
-
-                final boolean collision = resolver.wasEnemyCollided(character.getId().number());
-                if (collision) {
-                    queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-                    return CharacterState.STOPPED;
-                }else if (resolver.hasOpponentBossPartner(character.getId().number())){
-                    //System.out.println("nemico in idle che sta per entrare nello stopped");
-                    queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-                    return CharacterState.STOPPED;
-                }
-
-            }
         }
         queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
         return CharacterState.IDLE;
     }
 }
+
+
+
+                        /*
+                         * else if (!matchController.isPlayerEngaged(character.getId().number())) {
+                         *
+                         * // System.out.println("sono il personaggio che sono in idle prima di
+                         * // scanForFollowEvents" + character.getId().type());
+                         * final List<CollisionEvent> events = scanner.scanForFollowEvents();
+                         * if (!events.isEmpty()) {
+                         * for (CollisionEvent event : events) {
+                         * if (event.getCollidable1().getCardidentifier().number() ==
+                         * character.getId().number()) {
+                         * System.out.println("Evento trovato da soldato e notifico" + event);
+                         * matchController.notifyCollisionObservers(event);
+                         * }
+                         * }
+                         * }
+                         */

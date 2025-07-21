@@ -23,7 +23,7 @@ public final class EventImpl implements Event {
     @Override
     public CharacterState execute(final GenericCharacterController character, final EventQueue queue,
             final int deltaTime) {
-        // System.out.println("Processing state: " + state);
+        System.out.println("Processing state: " + state);
         return handler.handle(character, queue, deltaTime);
     }
 }

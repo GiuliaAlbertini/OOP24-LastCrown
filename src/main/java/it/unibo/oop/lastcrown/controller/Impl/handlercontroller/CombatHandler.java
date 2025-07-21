@@ -37,38 +37,38 @@ public final class CombatHandler implements StateHandler {
     }
 
     @Override
-    public CharacterState handle(final GenericCharacterController character, final EventQueue queue, final int deltaTime) {
+    public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
+            final int deltaTime) {
         if (character.isDead()) {
-            System.out.println("morte");
             queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
             return CharacterState.DEAD;
         }
 
         final boolean isPlayer = character instanceof PlayableCharacterController;
-        if (isPlayer){
-            if (match.isPlayerEngaged(character.getId().number())){
-                 opponentId = match.getEngagedCounterpart(character.getId().number());
-            }else if (resolver.hasOpponentBossPartner(character.getId().number())) {
-                opponentId= resolver.getOpponentBossPartner(character.getId().number());
-            }else if (resolver.hasOpponentRangedPartner(character.getId().number())){
-                opponentId= resolver.getOpponentRangedPartner(character.getId().number());
+        if (isPlayer) {
+            if (match.isPlayerEngaged(character.getId().number())) {
+                opponentId = match.getEngagedCounterpart(character.getId().number());
+            } else if (resolver.hasOpponentBossPartner(character.getId().number())) {
+                opponentId = resolver.getOpponentBossPartner(character.getId().number());
+            } else if (resolver.hasOpponentRangedPartner(character.getId().number())) {
+                opponentId = resolver.getOpponentRangedPartner(character.getId().number());
 
             }
-        }else {
-            if (match.isEnemyEngaged(character.getId().number())){
+        } else {
+            if (match.isEnemyEngaged(character.getId().number())) {
                 opponentId = match.getEngagedCounterpart(character.getId().number());
-            }else{
-                opponentId= resolver.getOpponentBossPartner(character.getId().number());
+            } else {
+                opponentId = resolver.getOpponentBossPartner(character.getId().number());
             }
 
         }
 
-        //ti prendi il controller
+        // ti prendi il controller
         final Optional<GenericCharacterController> opponentOpt = match.getCharacterControllerById(opponentId);
-        if (opponentOpt.isEmpty() ) {
-            if (character.getId().type() != CardType.RANGED){
+        if (opponentOpt.isEmpty()) {
+            if (character.getId().type() != CardType.RANGED) {
                 return CharacterState.IDLE;
-            }else{
+            } else {
                 return CharacterState.STOPPED;
             }
         }
@@ -77,10 +77,10 @@ public final class CombatHandler implements StateHandler {
         if (isPlayer) {
             // === COMBATTIMENTO GIOCATORE ===
             if (opponent.isDead()) {
-                //System.out.println("sono il giocatore che va in stop");
-                queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED)); // nemico può morire e animarsi
+                queue.clear();
+                queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+                return CharacterState.STOPPED;
             } else {
-                //System.out.println("teoricamente dovrebbe entrare anche il ranged" + character.getId().type());
                 setupCombat(character, opponent);
                 queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
                 return CharacterState.COMBAT;
@@ -90,48 +90,38 @@ public final class CombatHandler implements StateHandler {
             // === COMBATTIMENTO NEMICO ===
 
             if (opponent.isDead()) {
-                System.out.println("sono il nemico e sono morto");
+                queue.clear();
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
             } else {
                 setupCombat(character, opponent);
+
                 queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
                 return CharacterState.COMBAT;
             }
         }
+
         return CharacterState.COMBAT;
     }
-    /*
-    private void setupCombat(GenericCharacterController character,
-            GenericCharacterController opponent) {
-        if (character.getId().type() == CardType.BOSS){
+
+    private void setupCombat(GenericCharacterController character, GenericCharacterController opponent) {
+        if (character.getId().type() == CardType.BOSS && character instanceof BossController boss) {
+            List<Integer> personaggi = resolver.getAllCharacterIdsInBossFight();
+            boss.setOpponents(getCharactersFromIds(personaggi));
+        } else {
             character.setOpponent(opponent);
         }
 
-        character.setOpponent(opponent);
         character.setNextAnimation(Keyword.ATTACK);
         character.showNextFrame();
     }
-    */
-    private void setupCombat(GenericCharacterController character, GenericCharacterController opponent) {
-    if (character.getId().type() == CardType.BOSS && character instanceof BossController boss) {
-        List<Integer> personaggi= resolver.getAllCharacterIdsInBossFight();
-        boss.setOpponents(getCharactersFromIds(personaggi));
-    } else {
-        character.setOpponent(opponent);
+
+    private List<CharacterHitObserver> getCharactersFromIds(final List<Integer> ids) {
+        final List<CharacterHitObserver> characters = new ArrayList<>();
+        for (final Integer id : ids) {
+            final Optional<GenericCharacterController> controllerOpt = match.getCharacterControllerById(id);
+            controllerOpt.ifPresent(characters::add); // valido perché è anche CharacterHitObserver
+        }
+        return characters;
     }
-
-    character.setNextAnimation(Keyword.ATTACK);
-    character.showNextFrame();
-}
-
-private List<CharacterHitObserver> getCharactersFromIds(final List<Integer> ids) {
-    final List<CharacterHitObserver> characters = new ArrayList<>();
-    for (final Integer id : ids) {
-        final Optional<GenericCharacterController> controllerOpt = match.getCharacterControllerById(id);
-        controllerOpt.ifPresent(characters::add); // valido perché è anche CharacterHitObserver
-    }
-    return characters;
-}
-
 
 }
