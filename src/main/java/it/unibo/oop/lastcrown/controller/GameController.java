@@ -1,11 +1,13 @@
 package it.unibo.oop.lastcrown.controller;
 
+import javax.swing.JComponent;
+
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 
 /**
  * An interface that model the main controller.
  */
-public interface MainController {
+public interface GameController {
 
     /**
      * Notifies that the player during the match has pressed a button with a specific CardIdentifier.
@@ -31,4 +33,29 @@ public interface MainController {
      * Notifies that the player has given the OK to change view from match to the menu.
      */
     void notifyEndOfTheGame();
+
+    /**
+     * Notifies that the player has entered the pause menu.
+     */
+    void notifyPause();
+
+    /**
+     * Notifies that the player has exit the pause menu.
+     */
+    void notifyPauseEnd();
+
+    /**
+     * @return the wall health bar graphic component.
+     */
+    JComponent getWallHealthBar();
+
+    /**
+     * @return the event writer graphic component.
+     */
+    JComponent getEventWriter();
+
+    /**
+     * @return the coins writer bar graphic component.
+     */
+    JComponent getCoinsWriter();
 }
