@@ -93,4 +93,5 @@ public interface MatchController {
     boolean isPlayerIdle(PlayableCharacterController player);
     boolean isBossFightPartnerDead(final int id);
     boolean isEnemyDead(int enemyId);
+    boolean isRangedFightPartnerDead(final int id);
 }
