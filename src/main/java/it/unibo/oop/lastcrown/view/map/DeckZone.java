@@ -1,3 +1,4 @@
+
 package it.unibo.oop.lastcrown.view.map;
 
 import java.awt.BorderLayout;
@@ -7,14 +8,15 @@ import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseListener;
+import java.util.List;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
-
-
+import it.unibo.oop.lastcrown.controller.InGameDeckController;
 import it.unibo.oop.lastcrown.controller.GameController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
@@ -29,6 +31,15 @@ public final class DeckZone extends JPanel {
     private static final int GREEN = 120;
     private static final int BLUE = 175;
     private static final String KEY_PROPERTY = "info";
+
+    private static final int MAX_ENERGY = SECTIONS;
+    private static final int TIME_RECHARGE_SINGLE_ENERGY = 1000;
+    private int currentEnergy = 0;
+    private final Timer rechargeTimer;
+    private final InGameDeckController inGameDeckController;
+    private final ActionListener buttonListener;
+    private final MouseListener mouseListener;
+
     private final JButton jb1;
     private final JButton jb2;
     private final JButton jb3;
@@ -40,28 +51,44 @@ public final class DeckZone extends JPanel {
     private final int deckZoneHeight;
 
     /**
+     * Construct the zone.
+     * 
      * @param mainContr main controller
      * @param pos positioning zone
      * @param deckZoneWidth deck zone width
      * @param deckZoneHeight deck zone height
      * @param energyBarWidth energy bar width
+     * @param deckController the InGameDeckController to use
      */
     public DeckZone(final GameController mainContr, final PositioningZone pos, 
-     final int deckZoneWidth, final int deckZoneHeight, final int energyBarWidth) {
+     final int deckZoneWidth, final int deckZoneHeight, final int energyBarWidth,
+     final InGameDeckController deckController) {
         this.deckZoneWidth = deckZoneWidth;
         this.deckZoneHeight = deckZoneHeight;
+        this.inGameDeckController = deckController;
         this.setLayout(null);
         this.setupEnergyBar(this, energyBarWidth);
         this.setBackground(new Color(RED, GREEN, BLUE));
         this.setPreferredSize(new Dimension(this.deckZoneWidth, deckZoneHeight));
-        final ActionListener act = e -> {
+
+        this.rechargeTimer = new Timer(TIME_RECHARGE_SINGLE_ENERGY, e -> {
+            if (currentEnergy < MAX_ENERGY) {
+                currentEnergy++;
+                updateEnergyBar(currentEnergy);
+            } else {
+                rechargeTimer.stop();
+            }
+        });
+        this.rechargeTimer.start();
+
+        this.buttonListener = e -> {
             final var button = (JButton) e.getSource();
             final CardIdentifier id = (CardIdentifier) button.getClientProperty(KEY_PROPERTY);
             lastClicked = id.type();
             mainContr.notifyButtonPressed(id);
         };
 
-        final MouseListener mouseListener = new MouseAdapter() {
+        this.mouseListener = new MouseAdapter() {
             @Override
             public void mouseEntered(final MouseEvent e) {
                 final var jb = (JButton) e.getSource();
@@ -75,31 +102,32 @@ public final class DeckZone extends JPanel {
                 pos.stopHighLight(id.type());
             }
         };
-        this.cardPanel = new JPanel(new GridLayout(4, 1));
+        this.cardPanel = new JPanel(new GridLayout(3, 1, 0, 5));
         this.cardPanel.setPreferredSize(new Dimension(deckZoneWidth - energyBarWidth, deckZoneHeight));
         this.cardPanel.setBounds(energyBarWidth, 0, deckZoneWidth - energyBarWidth, deckZoneHeight);
-        jb1 = new JButton("Warrior");
-        jb1.putClientProperty(KEY_PROPERTY, new CardIdentifier(1, CardType.MELEE));
-        jb1.addActionListener(act);
-        jb1.addMouseListener(mouseListener);
-        jb2 = new JButton("Knight4");
-        jb2.putClientProperty(KEY_PROPERTY, new CardIdentifier(2, CardType.MELEE));
-        jb2.addActionListener(act);
-        jb2.addMouseListener(mouseListener);
-        jb3 = new JButton("Archer3");
-        jb3.putClientProperty(KEY_PROPERTY, new CardIdentifier(3, CardType.RANGED));
-        jb3.addActionListener(act);
-        jb3.addMouseListener(mouseListener);
-        jb4 = new JButton("Explosion");
-        jb4.putClientProperty(KEY_PROPERTY, new CardIdentifier(1, CardType.SPELL));
-        jb4.addActionListener(act);
-        jb4.addMouseListener(mouseListener);
-        this.cardPanel.setLayout(new GridLayout(4, 1));
-        this.cardPanel.add(jb1);
-        this.cardPanel.add(jb2);
-        this.cardPanel.add(jb3);
-        this.cardPanel.add(jb4);
         this.add(cardPanel);
+
+        updateCardButtons(this.buttonListener, this.mouseListener);
+    }
+
+    /**
+     * Refreshes the card buttons based on next available cards.
+     * 
+     * @param act the action listener
+     * @param ml the mouse listener
+     */
+    public void updateCardButtons(final ActionListener act, final MouseListener ml) {
+        cardPanel.removeAll();
+        List<CardIdentifier> nextCards = inGameDeckController.getNextAvailableCards();
+        for (CardIdentifier id : nextCards) {
+            JButton jb = new JButton(id.toString());
+            jb.putClientProperty(KEY_PROPERTY, id);
+            jb.addActionListener(act);
+            jb.addMouseListener(ml);
+            cardPanel.add(jb);
+        }
+        cardPanel.revalidate();
+        cardPanel.repaint();
     }
 
     /**
@@ -120,6 +148,7 @@ public final class DeckZone extends JPanel {
     }
 
     /**
+     * Getter for the last card clicked.
      * @return the CardType of the last clicked button
     */
     public CardType getLastClicked() {
@@ -134,21 +163,34 @@ public final class DeckZone extends JPanel {
         energyBarPanel.removeAll();
         final Color full = new Color(255, 105, 180);
         final Color empty = Color.WHITE;
-        final Color sectionSeparator = Color.DARK_GRAY;
-        final int sections = SECTIONS;
-        final int filledSections = (int) Math.floor(energyLevel);
-
-        for (int i = 0; i < sections; i++) {
-            final JPanel section = new JPanel();
-            section.setLayout(new BorderLayout());
-
-            if (i < filledSections) {
-                section.setBackground(full);
-            } else {
-                section.setBackground(empty);
-            }
-            section.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, sectionSeparator));
+        final Color separator = Color.DARK_GRAY;
+        for (int i = 0; i < SECTIONS; i++) {
+            final JPanel section = new JPanel(new BorderLayout());
+            section.setBackground(i < energyLevel ? full : empty);
+            section.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, separator));
             energyBarPanel.add(section);
         }
+        energyBarPanel.revalidate();
+        energyBarPanel.repaint();
+    }
+
+    /**
+     * Updates the energy bar and notify the InGameController of the card used.
+     * @param id the id of the used card
+     * @return a boolean indicating if a card has bee used or not
+     */
+    public boolean playCard(final CardIdentifier id) {
+        final int cost = inGameDeckController.getEnergyToPlay(id);
+        if (currentEnergy >= cost) {
+            currentEnergy -= cost;
+            updateEnergyBar(currentEnergy);
+            if (!rechargeTimer.isRunning()) {
+                rechargeTimer.start();
+            }
+            inGameDeckController.useCopy(id);
+            updateCardButtons(this.buttonListener, this.mouseListener);
+            return true;
+        }
+        return false;
     }
 }
