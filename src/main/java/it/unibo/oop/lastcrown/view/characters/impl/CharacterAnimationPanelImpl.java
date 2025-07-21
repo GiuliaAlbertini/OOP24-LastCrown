@@ -17,6 +17,7 @@ import it.unibo.oop.lastcrown.view.characters.api.CharacterAnimationPanel;
 final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnimationPanel {
     private static final long serialVersionUID = 1L;
     private static final int BAR_HEIGHT_DIVISOR = 5;
+    private static final double BAR_HEIGHT_MUL = 0.05;
     private static final double BAR_WIDTH_RESIZE = 0.75;
     private int panelWidth;
     private int panelHeight;
@@ -43,11 +44,12 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
 
     private void init(final int width, final int height, final String charType, final Color color) {
         this.setLayout(null);
+        this.charType = charType;
         this.panelWidth = width;
         this.panelHeight = height;
-        this.charType = charType;
-        this.healthBar = CharacterHealthBar.create(width, height, color);
-        this.setSize(width, height);
+        final int barWidth = (int) (panelWidth * BAR_WIDTH_RESIZE);
+        this.healthBar = CharacterHealthBar.create(barWidth, (int) (height * BAR_HEIGHT_MUL), color);
+        this.setPreferredSize(new Dimension(width, height));
         this.add(this.healthBar);
         this.setOpaque(false);
         this.setHealthBarAlignment();
@@ -62,7 +64,7 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
     @Override
     public void setHealthBarAlignment() {
         final int barWidth = (int) (panelWidth * BAR_WIDTH_RESIZE);
-        final int barHeight = this.healthBar.getHeight();
+        final int barHeight = this.healthBar.getPreferredSize().height;
         final int barY = panelHeight / BAR_HEIGHT_DIVISOR;
         final int barX;
         if (CardType.ENEMY.get().equals(this.charType) || CardType.BOSS.get().equals(this.charType)) {
