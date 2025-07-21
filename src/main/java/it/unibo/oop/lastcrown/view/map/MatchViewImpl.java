@@ -22,18 +22,16 @@ public final class MatchViewImpl extends JPanel implements MatchView {
     private static final String NAME = "MATCH";
     private final MainView mainView;
     private final MatchPanel mainPanel;
-    private final transient GameController gameContr;
     private final Map<Integer, JComponent> newComponents;
 
     /**
-     * @param gameContr the main controller linked to the map
+     * @param gameContr the controller that handles the match
      * @param mainView the main view interface of the application
      * @param width the width of the map
      * @param height the height of the map
      */
     public MatchViewImpl(final GameController gameContr, final MainView mainView,
      final int width, final int height) {
-        this.gameContr = gameContr;
         this.mainView = mainView;
         this.newComponents = new ConcurrentHashMap<>();
         this.mainPanel = new MatchPanel(gameContr, width, height);
@@ -67,7 +65,6 @@ public final class MatchViewImpl extends JPanel implements MatchView {
         ok.addActionListener(act -> {
             victory.dispose();
             this.mainView.changePanel(NAME, "SHOP");
-            gameContr.notifyMatchToShop(false);
         });
         victory.addButton(ok);
         victory.setLocationRelativeTo(this);
