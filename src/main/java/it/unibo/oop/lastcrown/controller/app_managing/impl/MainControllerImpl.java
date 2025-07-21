@@ -13,6 +13,7 @@ import it.unibo.oop.lastcrown.controller.user.impl.AccountControllerImpl;
 import it.unibo.oop.lastcrown.controller.user.impl.CollectionControllerImpl;
 import it.unibo.oop.lastcrown.controller.user.impl.DeckControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.user.api.Account;
 import it.unibo.oop.lastcrown.view.menu.api.LoginView;
 import it.unibo.oop.lastcrown.view.menu.impl.LoginViewImpl;
 
@@ -22,6 +23,7 @@ import it.unibo.oop.lastcrown.view.menu.impl.LoginViewImpl;
 public class MainControllerImpl implements MainController {
 
     private Optional<SceneManager> sceneManager;
+    private Optional<AccountController> accountController = Optional.empty();
     private final LoginView loginView;
 
     /**
@@ -35,7 +37,7 @@ public class MainControllerImpl implements MainController {
 
     @Override
     public final void goOverLogin(final String username) {
-        final Optional<AccountController> accountController = Optional.of(
+        this.accountController = Optional.of(
            new AccountControllerImpl(username));
         final CollectionController collectionController = new CollectionControllerImpl();
         final DeckController deckController = new DeckControllerImpl(getUserCollection(accountController));
@@ -57,6 +59,11 @@ public class MainControllerImpl implements MainController {
     @Override
     public final void closeAll() {
         this.sceneManager.get().closeApplication();
+    }
+
+    @Override
+    public final Optional<Account> getAccount() {
+        return this.accountController.map(AccountController::getAccount);
     }
 
     private Set<CardIdentifier> getUserCollection(final Optional<AccountController> accountController) {
