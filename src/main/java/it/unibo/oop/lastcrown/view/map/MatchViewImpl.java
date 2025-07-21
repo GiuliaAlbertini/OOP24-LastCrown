@@ -1,6 +1,7 @@
 package it.unibo.oop.lastcrown.view.map;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -131,5 +132,20 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     @Override
     public void notifyExitToMenu() {
         this.mainView.changePanel(NAME, "MENU");
+    }
+
+    @Override
+    public int getTrupsZoneLimit() {
+        return this.mainPanel.getTrupsZoneLimit();
+    }
+
+    @Override
+    public Dimension getWallSize() {
+        return this.mainPanel.getWallSize();
+    }
+
+    @Override
+    public Point getWallCoordinates() {
+        return this.mainPanel.getWallCoordinates();
     }
 }

@@ -1,5 +1,8 @@
 package it.unibo.oop.lastcrown.view.map;
 
+import java.awt.Dimension;
+import java.awt.Point;
+
 import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.view.menu.api.Scene;
@@ -44,4 +47,19 @@ public interface MatchView extends Scene {
      * Removes all the new graphic components from the map.
      */
     void clearNewGraphicsComponent();
+
+    /**
+     * @return the vertical limit of the trups zone
+     */
+    int getTrupsZoneLimit();
+
+    /**
+     * @return the wall size
+     */
+    Dimension getWallSize();
+
+    /**
+     * @return the upper left corner coordinates of the wall
+     */
+    Point getWallCoordinates();
 }
