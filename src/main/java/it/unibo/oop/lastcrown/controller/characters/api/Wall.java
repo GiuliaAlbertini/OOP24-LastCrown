@@ -2,6 +2,8 @@ package it.unibo.oop.lastcrown.controller.characters.api;
 
 import java.util.List;
 
+import javax.swing.JComponent;
+
 /**
  * A defensive Wall that protects the Hero. When the Wall runs out its health, the bossfight will start.
  */
@@ -44,5 +46,10 @@ public interface Wall extends CharacterHitObserver {
      * @param id the id of the opponent to be removed
      */
     void removeOpponent(int id);
+
+     /**
+     * @return the graphic component of the wall halth bar in order to be added to the map
+     */
+    JComponent getHealthBarComponent();
 }
 
