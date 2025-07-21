@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.view.characters;
+package it.unibo.oop.lastcrown.view;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;

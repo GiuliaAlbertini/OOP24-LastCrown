@@ -11,9 +11,10 @@ public interface SceneManager {
     /**
      * Switch to the scene indicated by the name passed as parameter.
      * 
-     * @param nextName the name of the scene to change the current one with
+     * @param caller the caller of the switch
+     * @param destination the name of the scene to change the current one with
      */
-    void switchScene(String nextName);
+    void switchScene(String caller, String destination);
 
     /**
      * Closes the whole application.

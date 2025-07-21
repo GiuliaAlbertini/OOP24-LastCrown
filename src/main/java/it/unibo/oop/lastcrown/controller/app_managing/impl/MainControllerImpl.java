@@ -3,6 +3,9 @@ package it.unibo.oop.lastcrown.controller.app_managing.impl;
 import java.util.Optional;
 import java.util.Set;
 
+import it.unibo.oop.lastcrown.audio.SoundTrack;
+import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
+import it.unibo.oop.lastcrown.controller.GameController;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.menu.impl.SceneManagerImpl;
@@ -21,7 +24,6 @@ import it.unibo.oop.lastcrown.view.menu.impl.LoginViewImpl;
  * Implementation of {@link MainController}.
  */
 public class MainControllerImpl implements MainController {
-
     private Optional<SceneManager> sceneManager;
     private Optional<AccountController> accountController = Optional.empty();
     private final LoginView loginView;
@@ -33,6 +35,7 @@ public class MainControllerImpl implements MainController {
         this.sceneManager = Optional.empty();
         this.loginView = LoginViewImpl.create(this);
         this.loginView.setVisibility(true);
+        AudioEngine.playSoundTrack(SoundTrack.MENU);
     }
 
     @Override
@@ -41,12 +44,28 @@ public class MainControllerImpl implements MainController {
            new AccountControllerImpl(username));
         final CollectionController collectionController = new CollectionControllerImpl();
         final DeckController deckController = new DeckControllerImpl(getUserCollection(accountController));
+
+        //HERE MISSING GAME CONTROLLER INITIALIZATION
+
+        final GameController gameController = new GameController() {
+            @Override
+            public void notifyShopToMatch() {
+            }
+            @Override
+            public void notifyButtonPressed(final CardIdentifier id) {
+            }
+            @Override
+            public void notifyClicked(final int x, final int y) {
+            }
+        };
+        //= new GameController(hero, boss, playableChars, enemies, spellsMap, 1400, 800);
         this.sceneManager = Optional.of(
             new SceneManagerImpl(
                 this,
                 accountController.get(),
                 collectionController,
-                deckController
+                deckController,
+                gameController
                 ));
         this.closeLoginView();
     }

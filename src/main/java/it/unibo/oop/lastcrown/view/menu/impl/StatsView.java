@@ -65,7 +65,7 @@ public final class StatsView extends AbstractScene {
         gbc.anchor  = GridBagConstraints.CENTER;
         centerPanel.add(statsPanel, gbc);
 
-        final BackButton backButton = BackButton.create("MENU", sceneManager);
+        final BackButton backButton = BackButton.create(PANEL_NAME, "MENU", sceneManager);
         final JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         southPanel.setOpaque(false);
         southPanel.add(backButton);

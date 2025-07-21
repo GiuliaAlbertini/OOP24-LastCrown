@@ -125,7 +125,7 @@ public final class DeckView extends AbstractScene {
         setLayout(new BorderLayout());
         add(mainContainer, BorderLayout.CENTER);
 
-        final JButton back = BackButton.create("MENU", this.sceneManager);
+        final JButton back = BackButton.create(PANEL_NAME, "MENU", this.sceneManager);
         final JPanel south = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         south.add(back);
         add(south, BorderLayout.SOUTH);
