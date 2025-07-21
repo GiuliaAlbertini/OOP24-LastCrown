@@ -24,10 +24,4 @@ public interface GameController {
      * @param y y coordinate
      */
     void notifyClicked(int x, int y);
-
-    /**
-     * Notifies that the player wants to move from the match to the shop.
-     * @param beginning True if it's the beginning of the game. false otherwise
-     */
-    void notifyMatchToShop(boolean beginning);
 }
