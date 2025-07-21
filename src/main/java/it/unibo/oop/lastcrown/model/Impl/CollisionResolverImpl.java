@@ -161,7 +161,6 @@ public final class CollisionResolverImpl implements CollisionResolver {
             final Movement movementDelta = new Movement((int) delta.x(), (int) delta.y());
             return Optional.of(new MovementResult(
                     movement.getCharacter(),
-                    movement.getEnemy(),
                     movement.getCurrentPosition(),
                     movementDelta,
                     stillMoving));
