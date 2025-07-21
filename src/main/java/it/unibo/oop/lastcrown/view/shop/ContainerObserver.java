@@ -11,11 +11,6 @@ import it.unibo.oop.lastcrown.model.card.CardType;
 public interface ContainerObserver {
 
     /**
-     * Notifies that the player wants to exit the shop and start a new battle. 
-     */
-    void notifyExit();
-
-    /**
      * Notifies that the player want to finish this game.
      */
     void notifyEscape();
