@@ -54,7 +54,6 @@ public final class CollectionView extends AbstractScene implements CollectionSce
     private final CardGridPanel cardsGridPanel;
     private final BackButton backButton;
 
-    private final Set<CardIdentifier> cardsOwned;
     private int detailWidth;
     private int gridColumns = 1;
     private transient Optional<CardType> currentFilter = Optional.empty();
@@ -64,19 +63,18 @@ public final class CollectionView extends AbstractScene implements CollectionSce
                            final Set<CardIdentifier> cardsOwned) {
         this.sceneManager = sceneManager;
         this.collectionController = collectionController;
-                            this.cardsOwned = cardsOwned;
         detailPanel = new JPanel(new BorderLayout());
 
         filterBar = new JPanel(new FlowLayout(FlowLayout.CENTER, FILTER_BAR_HGAP, 0));
         filterBar.setMinimumSize(new Dimension(0, FILTER_BUTTON_HEIGHT));
         filterBar.setMaximumSize(new Dimension(Integer.MAX_VALUE, FILTER_BUTTON_HEIGHT));
 
-        addFilterButton("ALL", Optional.empty());
+        addFilterButton("ALL", Optional.empty(), cardsOwned);
         for (final CardType type : TYPES) {
-            addFilterButton(type.get(), Optional.of(type));
+            addFilterButton(type.get(), Optional.of(type), cardsOwned);
         }
 
-        cardsGridPanel = CardGridPanel.create(gridColumns, GRID_HGAP, GRID_VGAP, this.cardsOwned);
+        cardsGridPanel = CardGridPanel.create(gridColumns, GRID_HGAP, GRID_VGAP);
         final var scrollPane = new HideableScrollPane(cardsGridPanel);
 
         rightContainer = new JPanel();
@@ -114,7 +112,7 @@ public final class CollectionView extends AbstractScene implements CollectionSce
             }
         });
 
-        loadCards(this.currentFilter);
+        loadCards(this.currentFilter, cardsOwned);
     }
 
     /**
@@ -148,7 +146,7 @@ public final class CollectionView extends AbstractScene implements CollectionSce
         this.backButton.setBackViewName(destination);
     }
 
-    private void loadCards(final Optional<CardType> type) {
+    private void loadCards(final Optional<CardType> type, final Set<CardIdentifier> cardsOwned) {
         if (currentFilter.isPresent() && type.equals(currentFilter)) {
             return;
         }
@@ -156,7 +154,7 @@ public final class CollectionView extends AbstractScene implements CollectionSce
         final List<CardIdentifier> list = type.isPresent()
             ? collectionController.getCollectionByType(type.get())
             : collectionController.getCompleteCollection();
-        cardsGridPanel.loadCards(Collections.unmodifiableList(list), this::showDetail);
+        cardsGridPanel.loadCards(Collections.unmodifiableList(list), this::showDetail, cardsOwned);
     }
 
     private void showDetail(final CardIdentifier card) {
@@ -181,11 +179,13 @@ public final class CollectionView extends AbstractScene implements CollectionSce
         backButton.setOpaque(true);
     }
 
-    private void addFilterButton(final String label, final Optional<CardType> filterType) {
+    private void addFilterButton(final String label,
+                                 final Optional<CardType> filterType,
+                                 final Set<CardIdentifier> cardsOwned) {
         final var btn = new JButton(label);
         btn.setFont(responsiveFont(Font.BOLD, BTN_FONT_SIZE));
         btn.setPreferredSize(new Dimension(btn.getPreferredSize().width, FILTER_BUTTON_HEIGHT));
-        btn.addActionListener(e -> loadCards(filterType));
+        btn.addActionListener(e -> loadCards(filterType, cardsOwned));
         filterBar.add(btn);
     }
 

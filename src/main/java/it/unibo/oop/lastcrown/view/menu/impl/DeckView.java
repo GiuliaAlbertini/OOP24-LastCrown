@@ -14,7 +14,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -108,8 +107,7 @@ public final class DeckView extends AbstractScene {
 
         cardsGridPanel = CardGridPanel.create(gridColumns, 
                                               scaled(BASE_GRID_HGAP), 
-                                              scaled(BASE_GRID_VGAP),
-                                              new HashSet<>(deckController.getAvailableCards()));
+                                              scaled(BASE_GRID_VGAP));
         final JScrollPane gridScroll = new HideableScrollPane(cardsGridPanel);
 
         rightContainer = new JPanel();
@@ -236,7 +234,7 @@ public final class DeckView extends AbstractScene {
         final List<CardIdentifier> available = type.isPresent()
             ? deckController.getAvailableCardsByType(type.get())
             : deckController.getAvailableCards();
-        cardsGridPanel.loadCards(available, this::showDetail);
+        cardsGridPanel.loadCards(available, this::showDetail, Set.copyOf(available));
     }
 
     private void showDetail(final CardIdentifier card) {
