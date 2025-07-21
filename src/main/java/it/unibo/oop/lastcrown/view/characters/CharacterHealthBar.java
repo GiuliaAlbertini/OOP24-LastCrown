@@ -1,9 +1,11 @@
 package it.unibo.oop.lastcrown.view.characters;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JProgressBar;
 import javax.swing.border.Border;
 
@@ -14,7 +16,6 @@ import javax.swing.border.Border;
 public final class CharacterHealthBar extends JProgressBar {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(CharacterHealthBar.class.getName());
-    private static final int HEIGHT_DIVISOR = 20;
     private static final int LIMIT = 30;
     private static final int TIME = 200;
     private static final int BORDER_THICKNESS = 1;
@@ -45,7 +46,7 @@ public final class CharacterHealthBar extends JProgressBar {
         this.setForeground(this.originalColor);
         final Border customBorder = BorderFactory.createLineBorder(color, BORDER_THICKNESS);
         this.setBorder(customBorder);
-        this.setSize(width, height / HEIGHT_DIVISOR);
+        this.setPreferredSize(new Dimension(width, height));
     }
 
     /**
@@ -100,5 +101,11 @@ public final class CharacterHealthBar extends JProgressBar {
                 LOG.fine("Error during darkerColor() method");
             }
     }
-}
 
+    /**
+     * @return the graphic component linked to this character health bar
+     */
+    public JComponent getComponent() {
+        return this;
+    }
+}
