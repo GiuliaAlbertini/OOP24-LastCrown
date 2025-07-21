@@ -84,7 +84,7 @@ public class MainViewImpl extends JFrame implements MainView {
         this.statsView = StatsView.create(this.sceneManager, this.accountController);
         this.deckView = DeckView.create(this.sceneManager, deckController);
         this.collectionView = CollectionView.create(this.sceneManager, this.collectionController);
-        this.shopView = new ShopViewImpl(gameContr, this, collectionController,
+        this.shopView = new ShopViewImpl(this, collectionController,
          deckContr.getAvailableCards(), WIDTH, HEIGHT);
         this.matchView = new MatchViewImpl(gameContr, this, WIDTH, HEIGHT);
 
@@ -139,10 +139,11 @@ public class MainViewImpl extends JFrame implements MainView {
     public final void changePanel(final String sceneCaller, final String sceneDestination) {
         switch (sceneDestination) {
             case "SHOP" -> {
-                this.gameController.notifyMatchToShop(true);
+                this.shopView.notifyVisible();
                 AudioEngine.playSoundTrack(SoundTrack.SHOP);
             }
             case "MATCH" -> {
+                this.shopView.notifyHidden();
                 this.gameController.notifyShopToMatch();
                 AudioEngine.playSoundTrack(SoundTrack.BATTLE);
             }
