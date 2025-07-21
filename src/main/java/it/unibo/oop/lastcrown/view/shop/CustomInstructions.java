@@ -9,10 +9,12 @@ import javax.swing.JTextArea;
  */
 public final class CustomInstructions extends JTextArea {
     private static final long serialVersionUID = 1L;
-    private static final String INSTRUCTIONS = "Press and hold RIGHT to make the hero run to the right\n"
-     + "Press and hold LEFT to make the hero run to the left\n"
-     + "Press UP to talk to the Traders \n"
-     + "Whenever you want, press SPACE to start a new battle";
+    private static final String INSTRUCTIONS = "Click on the different buttons in order to open your COLLECTION, \n"
+     + "ESCAPE from the MATCH or to start a new one.\n"
+     + "Click on a TRADER to start a shopping session \n"
+     + "BE CAREFUL: once you buy a card by a trader, that specific trader\n"
+     + "will be unavailable until the next time you reach the shop.\n"
+     + "CHOOSE CAREFULLY your new cards";
      private static final int TEXT_SIZE = 20;
 
     /**

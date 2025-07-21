@@ -29,17 +29,20 @@ public final class BackButton extends JButton {
     private static final int BTN_HEIGHT = (int) (SCREEN_HEIGHT * 0.05);
     private static final int BTN_WIDTH  = (int) (SCREEN_WIDTH  * 0.1);
 
-    private final String backViewName;
+    private final String caller;
+    private String backViewName;
     private final transient SceneManager sceneManager;
 
     /**
      * Contructs the button and sets the view and the scene manager to use.
      *
+     * @param caller the caller of the action
      * @param backView the target view identifier
      * @param sceneManager the scene manager to use
      */
-    private BackButton(final String backView, final SceneManager sceneManager) {
+    private BackButton(final String caller, final String backView, final SceneManager sceneManager) {
         super("BACK");
+        this.caller = caller;
         this.backViewName = backView;
         this.sceneManager = sceneManager;
     }
@@ -47,12 +50,13 @@ public final class BackButton extends JButton {
     /**
      * Static factory method to obtain a fully initialized BackButton.
      *
+     * @param caller the caller of the action
      * @param backView the target view identifier
      * @param sceneManager the scene manager to use
      * @return the created BackButton
      */
-    public static BackButton create(final String backView, final SceneManager sceneManager) {
-        final BackButton button = new BackButton(backView, sceneManager);
+    public static BackButton create(final String caller, final String backView, final SceneManager sceneManager) {
+        final BackButton button = new BackButton(caller, backView, sceneManager);
         button.init(new Dimension(BTN_WIDTH, BTN_HEIGHT));
         return button;
     }
@@ -67,12 +71,20 @@ public final class BackButton extends JButton {
     }
 
     private ActionListener backButtonActionListener() {
-        return e -> sceneManager.switchScene(backViewName);
+        return e -> sceneManager.switchScene(caller, backViewName);
     }
 
     private static Font getResponsiveFont(final Font baseFont) {
         final double scaleFactor = (double) SCREEN_WIDTH / BASE_SCREEN_WIDTH;
         final int newSize = (int) (baseFont.getSize() * scaleFactor);
         return new Font(baseFont.getName(), baseFont.getStyle(), newSize);
+    }
+
+    /**
+     * Stes the back-action view.
+     * @param backViewName the name of the view that will be displayed after the back action
+     */
+    public void setBackViewName(final String backViewName) {
+        this.backViewName = backViewName;
     }
 }

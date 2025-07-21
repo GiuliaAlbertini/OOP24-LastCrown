@@ -27,6 +27,7 @@ public final class MenuView extends AbstractScene {
     private static final String NAME_STATS = "STATS";
     private static final String NAME_CREDITS = "CREDITS";
     private static final String NAME_EXIT = "EXIT";
+    private static final String NAME_SHOP = "SHOP";
     private static final long serialVersionUID = 1L;
     private static final double SPACING_FACTOR = 0.05;
     private static final double WEIGHT_Y = 0.9;
@@ -120,19 +121,19 @@ public final class MenuView extends AbstractScene {
         final JButton sourceBtn = (JButton) e.getSource();
         switch (sourceBtn.getText()) {
             case NAME_PLAY:
-            //////
+                this.sceneManager.switchScene(PANEL_NAME, NAME_SHOP);
                 break;
             case NAME_DECK:
-                this.sceneManager.switchScene(NAME_DECK);
+                this.sceneManager.switchScene(PANEL_NAME, NAME_DECK);
                 break;
             case NAME_COLLECTION:
-                this.sceneManager.switchScene(NAME_COLLECTION);
+                this.sceneManager.switchScene(PANEL_NAME, NAME_COLLECTION);
                 break;
             case NAME_STATS:
-                this.sceneManager.switchScene(NAME_STATS);
+                this.sceneManager.switchScene(PANEL_NAME, NAME_STATS);
                 break;
             case NAME_CREDITS:
-                this.sceneManager.switchScene(NAME_CREDITS);
+                this.sceneManager.switchScene(PANEL_NAME, NAME_CREDITS);
                 break;
             case NAME_EXIT:
                 final int option = JOptionPane.showConfirmDialog(

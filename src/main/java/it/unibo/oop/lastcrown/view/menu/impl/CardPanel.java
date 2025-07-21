@@ -31,7 +31,7 @@ public final class CardPanel extends JPanel {
     private CardPanel(final CardIdentifier card) {
         super(new BorderLayout());
         setOpaque(false);
-        setBackground(Color.CYAN);
+        this.setBackground(Color.CYAN);
         setBorder(BorderFactory.createBevelBorder(0));
         final JLabel title = createLabel(card.number() + " (" + card.type() + ")");
         title.setHorizontalAlignment(JLabel.CENTER);

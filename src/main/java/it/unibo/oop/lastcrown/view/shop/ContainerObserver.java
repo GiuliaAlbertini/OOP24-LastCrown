@@ -1,5 +1,10 @@
 package it.unibo.oop.lastcrown.view.shop;
 
+import java.util.Optional;
+
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardType;
+
 /**
  * The observer of the shop frame.
  */
@@ -21,7 +26,21 @@ public interface ContainerObserver {
     void notifyCollection();
 
     /**
-     * Notifies that the player is trying to interact with one of the traders.
+     * Notifues that the player wants to start a new Match.
      */
-    void notifyInteraction();
+    void notifyMatch();
+
+    /**
+     * Notifies that the player wants to start a shopping session of the specified Card Type.
+     * @param id the id of the trader selected by the player
+     * @param cardType the cardType that the selected trader can show
+     */
+    void notifyInteraction(int id, CardType cardType);
+
+    /**
+     * Notifies thaht the player has finished a shopping interaction and might have buyed a new card.
+     * @param cardIdentifier Optional of CardType if it's a new card, Optional empty otherwise.
+     * @param id the numerical id of the trader that notifies the container
+     */
+    void notifyEndInteraction(Optional<CardIdentifier> cardIdentifier, int id);
 }
