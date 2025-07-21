@@ -39,6 +39,9 @@ public class UserCollectionImpl implements UserCollection {
     @Override
     public final void addCard(final CardIdentifier newCard) {
         this.userCollection.add(newCard);
+        for (final var listener : this.listeners) {
+            listener.onCardAdded(newCard);
+        }
     }
 
     @Override
