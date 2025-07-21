@@ -12,9 +12,10 @@ public interface MainView {
     /**
      * Changes the currently displayed panel to the one corresponding to the given scene name.
      *
-     * @param sceneName the name of the scene to display.
+     * @param sceneCaller the name of the calling scene.
+     * @param sceneDestination the name of the scene to be displayed,
      */
-    void changePanel(String sceneName);
+    void changePanel(String sceneCaller, String sceneDestination);
 
     /**
      * Calls the close of the application.

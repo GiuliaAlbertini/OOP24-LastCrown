@@ -116,8 +116,8 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     @Override
-    public final void changePanel(final String sceneName) {
-        this.layout.show(this.mainPanel, sceneName);
+    public final void changePanel(final String scenecaller, final String sceneDestination) {
+        this.layout.show(this.mainPanel, sceneDestination);
     }
 
     @Override
