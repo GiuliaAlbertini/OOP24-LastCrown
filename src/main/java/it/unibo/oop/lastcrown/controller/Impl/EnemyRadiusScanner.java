@@ -26,6 +26,9 @@ import it.unibo.oop.lastcrown.model.impl.CollisionEventImpl;
  * If an enemy is detected within a player's radius, a FOLLOW_ENEMY collision
  * event is generated.
  */
+
+// scanner di tutta la mappa da ogni giocatore. mi dice anche da un player che
+// non è in collisione se un'altro lo è nel caso
 public final class EnemyRadiusScanner {
     private final Map<GenericCharacterController, HitboxController> hitboxControllers;
     private final MatchController matchController;
@@ -38,27 +41,26 @@ public final class EnemyRadiusScanner {
         this.resolver = resolver;
     }
 
-    public List<CollisionEvent> scanForFollowEvents() {
-        // Copia thread-safe della mappa
-        final Map<GenericCharacterController, HitboxController> localCopy = new HashMap<>(hitboxControllers);
-
-        final List<Hitbox> enemyHitboxes = getAllEnemyHitboxes(localCopy);
-        final Map<Hitbox, GenericCharacterController> hitboxToEnemy = mapHitboxesToEnemies(localCopy);
-        final List<CollisionEvent> events = new ArrayList<>();
-
-        for (final var entry : localCopy.entrySet()) {
-            final GenericCharacterController controller = entry.getKey();
-
-            if (controller instanceof PlayableCharacterController player) {
-                final HitboxController playerHitboxController = entry.getValue();
-
-                addEventIfEnemyInRadius(events, player, playerHitboxController, enemyHitboxes, hitboxToEnemy);
-            }
-
-        }
-
-        return events;
+    public Optional<CollisionEvent> scanForFollowEventForPlayer(final PlayableCharacterController player) {
+    final HitboxController playerHitboxController = hitboxControllers.get(player);
+    if (playerHitboxController == null) {
+        return Optional.empty();
     }
+
+    final Map<GenericCharacterController, HitboxController> localCopy = new HashMap<>(hitboxControllers);
+    final List<Hitbox> enemyHitboxes = getAllEnemyHitboxes(localCopy);
+    final Map<Hitbox, GenericCharacterController> hitboxToEnemy = mapHitboxesToEnemies(localCopy);
+
+    final List<CollisionEvent> events = new ArrayList<>();
+    addEventIfEnemyInRadius(events, player, playerHitboxController, enemyHitboxes, hitboxToEnemy);
+
+    if (events.isEmpty()) {
+        return Optional.empty();
+    }
+
+    return Optional.of(events.get(0)); // di solito è uno solo
+}
+
 
     private List<Hitbox> getAllEnemyHitboxes(Map<GenericCharacterController, HitboxController> map) {
         final List<Hitbox> enemyHitboxes = new ArrayList<>();
@@ -121,22 +123,17 @@ public final class EnemyRadiusScanner {
         if (enemy instanceof BossController) {
             synchronized (enemy) {
                 boolean inBossFight = resolver.hasOpponentBossPartner(player.getId().number());
-                //System.out.println("valore di bossFight" + inBossFight);
                 if (!inBossFight) {
-                    //System.out.println("perchè cazzo entro qui se bossfight è false");
                     createCollisionEvent(events, player, enemy);
                 }
             }
 
             // createCollisionEvent(events, player, enemy);
         } else if (enemy instanceof EnemyController) {
-            //Se sono personaggio ranged e non son in fight
-            boolean isInRangedFight=resolver.hasOpponentRangedPartner(player.getId().number());
+            boolean isInRangedFight = resolver.hasOpponentRangedPartner(player.getId().number());
             if (player.getId().type() == CardType.RANGED && !isInRangedFight) {
                 createCollisionEvent(events, player, enemy);
-            }
-            if (!enemy.isInCombat() && matchController.isPlayerIdle(player)) {
-                System.out.println("IL NEMICO PIÙ VICINO " + enemy.getId() + enemy.isInCombat());
+            } else if (!enemy.isInCombat() && matchController.isPlayerIdle(player) && !matchController.isEnemyDead(enemy.getId().number())) {
                 synchronized (enemy) {
                     boolean engaged = matchController.engageEnemy(enemy.getId().number(), player.getId().number());
                     if (engaged) {
@@ -159,7 +156,7 @@ public final class EnemyRadiusScanner {
             final Collidable playerCol = new CollidableImpl(playerHitboxController.getHitbox(), player.getId());
             final Collidable enemyCol = new CollidableImpl(enemyHitboxController.getHitbox(), enemy.getId());
 
-            //se il player è ranged
+            // se il player è ranged
             if (playerCol.getCardidentifier().type() == CardType.RANGED) {
 
                 System.out.println("RANGED" +
@@ -182,4 +179,6 @@ public final class EnemyRadiusScanner {
 
         }
     }
+
+
 }
