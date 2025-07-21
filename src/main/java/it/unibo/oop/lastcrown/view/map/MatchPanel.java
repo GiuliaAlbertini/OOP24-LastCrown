@@ -1,19 +1,16 @@
 package it.unibo.oop.lastcrown.view.map;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import it.unibo.oop.lastcrown.controller.GameController;
-import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 
@@ -43,14 +40,19 @@ public final class MatchPanel extends JPanel {
     private final int trupsZoneWidth;
     private final int enemiesZoneWidth;
     private final int utilityZoneHeight;
-    private final JButton jb3;
 
     /**
+     * @param obs the match view exit observer
      * @param gameContr mainController interface
+     * @param wallHealthBar the wall health bar graphic component
+     * @param eventWriter the event writer graphic component
+     * @param coinsWriter the coins writer graphic component
      * @param frameWidth the width of the map
      * @param frameHeight the height of the map
      */
-    public MatchPanel(final GameController gameContr, final int frameWidth, final int frameHeight) {
+    public MatchPanel(final MatchExitObserver obs, final GameController gameContr,
+     final JComponent wallHealthBar, final JComponent eventWriter, final JComponent coinsWriter,
+     final int frameWidth, final int frameHeight) {
         this.gameContr = gameContr;
         this.frameWidth = frameWidth;
         this.frameHeight = frameHeight;
@@ -62,14 +64,6 @@ public final class MatchPanel extends JPanel {
         this.enemiesZoneWidth = (int) (frameWidth * DimensionResolver.ENEMIESZONE.width());
         this.utilityZoneHeight = (int) (frameHeight * DimensionResolver.UTILITYZONE.height());
 
-        final ActionListener act = e -> {
-            final var button = (JButton) e.getSource();
-            this.gameContr.notifyButtonPressed((CardIdentifier) button.getClientProperty("info"));
-        };
-
-        jb3 = new JButton("ENEMY");
-        jb3.putClientProperty("info", new CardIdentifier(1, CardType.ENEMY));
-        jb3.addActionListener(act);
         this.mouseAdapter = new MouseAdapter() {
             @Override
             public void mouseClicked(final MouseEvent e) {
@@ -101,7 +95,7 @@ public final class MatchPanel extends JPanel {
             }
         };
         initializePanel();
-        setupZone();
+        setupZone(obs, wallHealthBar, eventWriter, coinsWriter);
     }
     /**
      * Initialize the main panel layout and properties.
@@ -114,8 +108,13 @@ public final class MatchPanel extends JPanel {
 
     /**
      * Sets up all the major zones of the map.
+     * @param obs the match view exit observer
+     * @param wallHealthBar the graphic component of the wall health
+     * @param eventWriter the event writer graphic component
+     * @param coinsWriter the coins writer graphic component
      */
-    private void setupZone() {
+    private void setupZone(final MatchExitObserver obs, final JComponent wallHealthBar,
+     final JComponent eventWriter, final JComponent coinsWriter) {
         this.panelsHeight = this.frameHeight - this.utilityZoneHeight;
         this.setOpaque(false);
 
@@ -153,14 +152,33 @@ public final class MatchPanel extends JPanel {
         this.overLayPanel.addMouseListener(this.mouseAdapter);
         this.add(overLayPanel);
 
-        final JPanel utilityZone = new JPanel();
-        utilityZone.setLayout(new BoxLayout(utilityZone, BoxLayout.X_AXIS));
+        final UtilityZone utilityZone = new UtilityZone(obs, gameContr, frameWidth,
+         utilityZoneHeight, wallHealthBar, eventWriter, coinsWriter);
         utilityZone.setBackground(Color.WHITE);
         utilityZone.setOpaque(true);
-        utilityZone.setPreferredSize(new Dimension(this.frameWidth, this.utilityZoneHeight));
         utilityZone.setBounds(0, panelsHeight, this.frameWidth, this.utilityZoneHeight);
-        utilityZone.add(jb3);
         this.add(utilityZone);
         this.setComponentZOrder(utilityZone, 0);
+    }
+
+    /**
+     * @return the trupszone limit of the x coordinate
+     */
+    public int getTrupsZoneLimit() {
+        return this.deckZoneWidth + posZoneWidth + wallZoneWidth + trupsZoneWidth;
+    }
+
+    /**
+     * @return the wall size
+     */
+    public Dimension getWallSize() {
+        return new Dimension(this.wallZoneWidth, this.panelsHeight);
+    }
+
+    /**
+     * @return the coordinates of the upper left corner of the wall
+     */
+    public Point getWallCoordinates() {
+        return new Point(this.deckZoneWidth + this.posZoneWidth, 0);
     }
 }

@@ -1,6 +1,7 @@
 package it.unibo.oop.lastcrown.view.map;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,15 +18,15 @@ import it.unibo.oop.lastcrown.view.menu.api.MainView;
 /**
  * the JFrame that contains the match map. Provides methods to add further components to the map.
  */
-public final class MatchViewImpl extends JPanel implements MatchView {
+public final class MatchViewImpl extends JPanel implements MatchView, MatchExitObserver {
     private static final long serialVersionUID = 1L;
     private static final String NAME = "MATCH";
-    private final MainView mainView;
+    private final transient MainView mainView;
     private final MatchPanel mainPanel;
     private final Map<Integer, JComponent> newComponents;
 
     /**
-     * @param gameContr the controller that handles the match
+     * @param gameContr the main controller linked to the map
      * @param mainView the main view interface of the application
      * @param width the width of the map
      * @param height the height of the map
@@ -34,7 +35,8 @@ public final class MatchViewImpl extends JPanel implements MatchView {
      final int width, final int height) {
         this.mainView = mainView;
         this.newComponents = new ConcurrentHashMap<>();
-        this.mainPanel = new MatchPanel(gameContr, width, height);
+        this.mainPanel = new MatchPanel(this, gameContr, gameContr.getWallHealthBar(),
+        gameContr.getEventWriter(), gameContr.getCoinsWriter(), width, height);
         this.add(mainPanel);
         mainPanel.setBounds(0, 0, width, height);
         this.setSize(new Dimension(width, height));
@@ -65,6 +67,7 @@ public final class MatchViewImpl extends JPanel implements MatchView {
         ok.addActionListener(act -> {
             victory.dispose();
             this.mainView.changePanel(NAME, "SHOP");
+            //gameContr.notifyMatchToShop(false);
         });
         victory.addButton(ok);
         victory.setLocationRelativeTo(this);
@@ -124,5 +127,25 @@ public final class MatchViewImpl extends JPanel implements MatchView {
     @Override
     public JPanel getPanel() {
         return this;
+    }
+
+    @Override
+    public void notifyExitToMenu() {
+        this.mainView.changePanel(NAME, "MENU");
+    }
+
+    @Override
+    public int getTrupsZoneLimit() {
+        return this.mainPanel.getTrupsZoneLimit();
+    }
+
+    @Override
+    public Dimension getWallSize() {
+        return this.mainPanel.getWallSize();
+    }
+
+    @Override
+    public Point getWallCoordinates() {
+        return this.mainPanel.getWallCoordinates();
     }
 }

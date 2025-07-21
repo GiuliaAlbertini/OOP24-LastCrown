@@ -40,13 +40,13 @@ public final class DeckZone extends JPanel {
     private final int deckZoneHeight;
 
     /**
-     * @param gameContr main controller
+     * @param mainContr main controller
      * @param pos positioning zone
      * @param deckZoneWidth deck zone width
      * @param deckZoneHeight deck zone height
      * @param energyBarWidth energy bar width
      */
-    public DeckZone(final GameController gameContr, final PositioningZone pos, 
+    public DeckZone(final GameController mainContr, final PositioningZone pos, 
      final int deckZoneWidth, final int deckZoneHeight, final int energyBarWidth) {
         this.deckZoneWidth = deckZoneWidth;
         this.deckZoneHeight = deckZoneHeight;
@@ -58,7 +58,7 @@ public final class DeckZone extends JPanel {
             final var button = (JButton) e.getSource();
             final CardIdentifier id = (CardIdentifier) button.getClientProperty(KEY_PROPERTY);
             lastClicked = id.type();
-            gameContr.notifyButtonPressed(id);
+            mainContr.notifyButtonPressed(id);
         };
 
         final MouseListener mouseListener = new MouseAdapter() {
@@ -152,4 +152,3 @@ public final class DeckZone extends JPanel {
         }
     }
 }
-
