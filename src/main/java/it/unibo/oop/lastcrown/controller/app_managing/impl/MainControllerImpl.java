@@ -55,9 +55,6 @@ public class MainControllerImpl implements MainController {
             @Override
             public void notifyClicked(final int x, final int y) {
             }
-            @Override
-            public void notifyMatchToShop(final boolean beginning) {
-            }
         };
         //= new GameController(hero, boss, playableChars, enemies, spellsMap, 1400, 800);
         this.sceneManager = Optional.of(
