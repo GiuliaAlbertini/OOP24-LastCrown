@@ -23,16 +23,9 @@ public interface GameController {
     void notifyClicked(int x, int y);
 
     /**
-     * Notifies that the player has given the OK to change view from match to the shop.
-     * The position of the hero in the shop changes according to te actual game phase.
-     * @param beginning True if it's the beginning of the game, false otherwise
+     * Notifies that the player has given the OK to change view from the shop to the menu.
      */
-    void notifyMatchToShop(boolean beginning);
-
-    /**
-     * Notifies that the player has given the OK to change view from match to the menu.
-     */
-    void notifyEndOfTheGame();
+    void notifyShopToMatch();
 
     /**
      * Notifies that the player has entered the pause menu.
