@@ -12,7 +12,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import it.unibo.oop.lastcrown.controller.GameController;
 import it.unibo.oop.lastcrown.controller.shop.impl.ShopCardsSelectionControllerImpl;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
@@ -27,14 +26,12 @@ import it.unibo.oop.lastcrown.view.menu.api.MainView;
 public final class ShopViewImpl extends JPanel implements ShopView, ContainerObserver {
     private static final long serialVersionUID = 1L;
     private static final int ESCAPE_TAX = 100;
-    private static final double FLOOR_HEIGHT = 0.75;
     private static final String NAME = "SHOP";
     private static final String TRADER1 = "trader1";
     private static final String TRADER2 = "trader2"; 
     private static final String TRADER3 = "trader3";
     private final int width;
     private final int height;
-    private final int floor;
     private final int panelSize;
     private final transient CollectionController collContr;
     private final transient List<CardIdentifier> userCollDefensiveCopy;
@@ -42,28 +39,23 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
     private final MainView mainView;
     private final ShopContent shopContent;
     private final List<TraderPanel> traders;
-    private final transient GameController gameContr;
 
     /**
-     * @param gameContr the game controller interface
      * @param mainView the main view interface
      * @param collContr the collection controller
      * @param userColl the observer of the hero action in the shop
      * @param width the width of this JFrame
      * @param height the height of this JFrame
      */
-    public ShopViewImpl(final GameController gameContr, final MainView mainView, 
-       final CollectionController collContr, final List<CardIdentifier> userColl,
-        final int width, final int height) {
+    public ShopViewImpl(final MainView mainView, final CollectionController collContr,
+     final List<CardIdentifier> userColl, final int width, final int height) {
         this.mainView = mainView;
         this.collContr = collContr;
         this.userCollDefensiveCopy = Collections.unmodifiableList(new ArrayList<>(userColl));
         this.userColl = Collections.unmodifiableList(new ArrayList<>(userColl));
-        this.gameContr = gameContr;
         this.traders = new ArrayList<>();
         this.width = width;
         this.height = height;
-        this.floor = (int) (height * FLOOR_HEIGHT);
         this.panelSize = (int) (width * DimensionResolver.TRADER.width());
         this.shopContent = new ShopContent(this, width, height);
         this.setPreferredSize(new Dimension(width, height));
@@ -93,17 +85,6 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
     }
 
     @Override
-    public void addHeroPanel(final JComponent heroComp, final boolean beginning) {
-        this.shopContent.add(heroComp);
-        if (beginning) {
-            heroComp.setLocation(0, this.floor - heroComp.getHeight());
-        } else {
-            heroComp.setLocation(this.width - heroComp.getWidth(), this.floor - heroComp.getHeight());
-        }
-        this.shopContent.setComponentZOrder(heroComp, 0);
-    }
-
-    @Override
     public void notifyVisible() {
         for (final var trader : this.traders) {
             trader.startStopLoop();
@@ -115,21 +96,6 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
         for (final var trader : this.traders) {
             trader.stopAnimations();
         }
-    }
-
-    @Override
-    public void notifyExit() {
-        final String title = "To a new Match...";
-        final String message = "Do you really want to start a new match?";
-        final Dialog dialog = new Dialog(title, message, true);
-        final JButton yes = new JButton("YES");
-        yes.addActionListener(e -> {
-            dialog.dispose();
-            this.gameContr.notifyShopToMatch();
-        });
-        dialog.addButton(yes);
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
     }
 
     @Override
