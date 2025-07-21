@@ -1,17 +1,22 @@
 package it.unibo.oop.lastcrown.controller.characters.impl.wall;
 
+import java.awt.Color;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.JComponent;
+
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.Wall;
+import it.unibo.oop.lastcrown.view.characters.CharacterHealthBar;
 
 /**
  * A standard implementation of Wall interface.
  */
-public class WallImpl implements Wall {
+public final class WallImpl implements Wall {
     private final Map<Integer, CharacterHitObserver> opponents = new ConcurrentHashMap<>();
+    private final CharacterHealthBar healthBar;
     private final int maximumHealth;
     private int currentHealth;
     private final int attack;
@@ -22,8 +27,12 @@ public class WallImpl implements Wall {
      * @param attack the attack value of the new Wall
      * @param health the health value of the new Wall
      * @param id the id of the new Wall
+     * @param healthWidth the width of the health bar
+     * @param healthHeight the height of the health bar
      */
-    public WallImpl(final int attack, final int health, final int id) {
+    public WallImpl(final int attack, final int health, final int id,
+     final int healthWidth, final int healthHeight) {
+        this.healthBar = CharacterHealthBar.create(healthWidth, healthHeight, Color.GREEN);
         this.maximumHealth = health;
         this.currentHealth = health;
         this.attack = attack;
@@ -31,13 +40,14 @@ public class WallImpl implements Wall {
     }
 
     @Override
-    public final int getObserverId() {
+    public int getObserverId() {
         return this.id;
     }
 
     @Override
-    public final void takeHit(final int damage) {
+    public void takeHit(final int damage) {
         this.currentHealth = this.currentHealth - damage;
+        this.healthBar.setPercentage(this.currentHealth * 100 / this.maximumHealth);
         if (currentHealth <= 0) {
             this.currentHealth = 0;
             this.dead = true;
@@ -45,39 +55,40 @@ public class WallImpl implements Wall {
     }
 
     @Override
-    public final boolean isDead() {
+    public boolean isDead() {
         return this.dead;
     }
 
     @Override
-    public final int getAttack() {
+    public int getAttack() {
         return this.attack;
     }
 
     @Override
-    public final int getCurrentHealth() {
+    public int getCurrentHealth() {
         return this.currentHealth;
     }
 
     @Override
-    public final void fullWallHealth() {
+    public void fullWallHealth() {
         this.currentHealth = this.maximumHealth;
+        this.healthBar.setPercentage(100);
     }
 
     @Override
-    public final void addOpponent(final CharacterHitObserver opponent) {
+    public void addOpponent(final CharacterHitObserver opponent) {
         this.opponents.put(opponent.getObserverId(), opponent);
     }
 
     @Override
-    public final void addOpponents(final List<CharacterHitObserver> opponents) {
+    public void addOpponents(final List<CharacterHitObserver> opponents) {
         for (final var opponent : opponents) {
             this.opponents.put(opponent.getObserverId(), opponent);
         }
     }
 
     @Override
-    public final void doAttack() {
+    public void doAttack() {
          for (final var entry: this.opponents.entrySet()) {
             final CharacterHitObserver obs = entry.getValue();
             if (obs != null && !obs.isDead()) {
@@ -87,7 +98,12 @@ public class WallImpl implements Wall {
     }
 
     @Override
-    public final void removeOpponent(final int id) {
+    public void removeOpponent(final int id) {
         this.opponents.remove(id);
+    }
+
+    @Override
+    public JComponent getHealthBarComponent() {
+        return this.healthBar.getComponent();
     }
 }
