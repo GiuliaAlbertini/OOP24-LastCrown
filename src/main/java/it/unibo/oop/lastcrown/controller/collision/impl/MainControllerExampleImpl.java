@@ -1,18 +1,18 @@
 package it.unibo.oop.lastcrown.controller.collision.impl;
 import it.unibo.oop.lastcrown.controller.collision.api.GameController;
 import it.unibo.oop.lastcrown.controller.collision.api.GamePhaseController;
-import it.unibo.oop.lastcrown.controller.collision.api.MainController;
+import it.unibo.oop.lastcrown.controller.collision.api.MainControllerExample;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
-import it.unibo.oop.lastcrown.view.collision.api.MainView;
-import it.unibo.oop.lastcrown.view.collision.impl.MainViewImpl;
+import it.unibo.oop.lastcrown.view.collision.api.MainViewExample;
+import it.unibo.oop.lastcrown.view.collision.impl.MainViewExampleImpl;
 
 /**
  * Concrete implementation of the MainController interface.
  * Manages the main components of the game including the view, game logic,
  * match controller, and game phase flow.
  */
-public final class MainControllerImpl implements MainController {
-    private final MainView view;
+public final class MainControllerExampleImpl implements MainControllerExample {
+    private final MainViewExample view;
     private final GameController game;
     private final MatchControllerimpl match;
     private final GamePhaseController flow;
@@ -22,8 +22,8 @@ public final class MainControllerImpl implements MainController {
      * Initializes the main view,match controller, game controller, and game phase controller.
      * Automatically starts a new game upon creation.
      */
-    public MainControllerImpl() {
-        this.view = new MainViewImpl(this);
+    public MainControllerExampleImpl() {
+        this.view = new MainViewExampleImpl(this);
         this.match = new MatchControllerimpl(this);
         this.game = new GameControllerImpl(this);
         this.flow = new GamePhaseControllerImpl(this);
@@ -32,7 +32,7 @@ public final class MainControllerImpl implements MainController {
     }
 
     @Override
-    public MainView getMainView() {
+    public MainViewExample getMainView() {
         return this.view;
     }
 

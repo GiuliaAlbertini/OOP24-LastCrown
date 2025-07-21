@@ -1,22 +1,22 @@
 package it.unibo.oop.lastcrown.controller.collision.impl;
 import it.unibo.oop.lastcrown.controller.collision.api.GameController;
-import it.unibo.oop.lastcrown.controller.collision.api.MainController;
-import it.unibo.oop.lastcrown.view.collision.api.MainView;
+import it.unibo.oop.lastcrown.controller.collision.api.MainControllerExample;
+import it.unibo.oop.lastcrown.view.collision.api.MainViewExample;
 
 /**
  * Implementation of the GameController interface.
  * Manages the main game loop and handles starting and stopping the game.
  */
 public final class GameControllerImpl implements GameController {
-    private MainController controller;
-    private MainView view;
+    private MainControllerExample controller;
+    private MainViewExample view;
     private Thread gameLoop;
 
     /**
      * Creates a new GameControllerImpl linked to the given main controller.
      * @param controller the main controller that manages overall game flow and view
      */
-    public GameControllerImpl(final MainController controller) {
+    public GameControllerImpl(final MainControllerExample controller) {
         this.controller = controller;
         this.view = this.controller.getMainView();
     }

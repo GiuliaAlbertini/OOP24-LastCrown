@@ -1,12 +1,12 @@
 package it.unibo.oop.lastcrown.controller.collision.api;
 
-import it.unibo.oop.lastcrown.view.collision.api.MainView;
+import it.unibo.oop.lastcrown.view.collision.api.MainViewExample;
 
 /**
  * Main controller interface for managing the overall flow of the game.
  * Acts as a central access point for other controllers and the main view.
  */
-public interface MainController {
+public interface MainControllerExample {
 
     /**
      * Returns the main view of the application, which manages
@@ -14,7 +14,7 @@ public interface MainController {
      *
      * @return the MainView instance used by the game
      */
-    MainView getMainView();
+    MainViewExample getMainView();
 
     /**
      * Starts a new game session, initializing all necessary components

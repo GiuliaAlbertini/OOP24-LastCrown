@@ -2,7 +2,7 @@ package it.unibo.oop.lastcrown.controller.collision.impl;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.unibo.oop.lastcrown.controller.collision.api.MainController;
+import it.unibo.oop.lastcrown.controller.collision.api.MainControllerExample;
 
 /**
  * Game loop thread that updates the match controller at a fixed interval.
@@ -11,7 +11,7 @@ import it.unibo.oop.lastcrown.controller.collision.api.MainController;
 public final class Gameloop extends Thread {
     private static final Logger LOGGER = Logger.getLogger(Gameloop.class.getName());
     private static final long PERIOD = 64;
-    private final MainController controller;
+    private final MainControllerExample controller;
     private boolean running;
 
     /**
@@ -19,7 +19,7 @@ public final class Gameloop extends Thread {
      *
      * @param controller the main controller that provides access to game logic
      */
-    public Gameloop(final MainController controller) {
+    public Gameloop(final MainControllerExample controller) {
         this.controller = controller;
         this.running = false;
     }

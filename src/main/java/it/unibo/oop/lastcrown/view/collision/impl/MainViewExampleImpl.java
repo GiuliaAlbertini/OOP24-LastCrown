@@ -1,9 +1,9 @@
 package it.unibo.oop.lastcrown.view.collision.impl;
 
-import it.unibo.oop.lastcrown.controller.collision.api.MainController;
+import it.unibo.oop.lastcrown.controller.collision.api.MainControllerExample;
 import it.unibo.oop.lastcrown.controller.collision.impl.GameState;
 import it.unibo.oop.lastcrown.view.collision.api.GamePanel;
-import it.unibo.oop.lastcrown.view.collision.api.MainView;
+import it.unibo.oop.lastcrown.view.collision.api.MainViewExample;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,7 +18,7 @@ import java.awt.event.ActionListener;
  * This class manages the main application window with different panels
  * such as menu, game, and pause, using a CardLayout to switch between them.
  */
-public final class MainViewImpl extends JFrame implements MainView {
+public final class MainViewExampleImpl extends JFrame implements MainViewExample {
     private static final long serialVersionUID = 1L;
 
     // Constants for window size
@@ -42,7 +42,7 @@ public final class MainViewImpl extends JFrame implements MainView {
      *
      * @param controller the main controller to link with the view (currently not used directly here)
      */
-    public MainViewImpl(final MainController controller) {
+    public MainViewExampleImpl(final MainControllerExample controller) {
         this.cardLayout = new CardLayout();
         this.mainPanel = new JPanel(cardLayout); // IMPORTANTE: Assegna il CardLayout al mainPanel
 

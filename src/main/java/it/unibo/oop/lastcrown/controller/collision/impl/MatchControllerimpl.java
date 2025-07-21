@@ -15,7 +15,7 @@ import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
-import it.unibo.oop.lastcrown.controller.collision.api.MainController;
+import it.unibo.oop.lastcrown.controller.collision.api.MainControllerExample;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.model.card.CardType;
@@ -33,7 +33,7 @@ import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.model.collision.impl.CollisionManagerImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.CollisionResolverImpl;
 import it.unibo.oop.lastcrown.view.collision.api.GamePanel;
-import it.unibo.oop.lastcrown.view.collision.api.MainView;
+import it.unibo.oop.lastcrown.view.collision.api.MainViewExample;
 
 public final class MatchControllerimpl implements MatchController {
     // private final MainController controller;
@@ -49,11 +49,11 @@ public final class MatchControllerimpl implements MatchController {
     private final EnemyRadiusScanner radiusScanner;
     private int nextId = 1;
     private final GamePanel gamePanel;
-    private final MainView view;
+    private final MainViewExample view;
     Requirement require = new Requirement("hero", 2);
     Optional<PassiveEffect> optionalEffect = Optional.of(new PassiveEffect("none", 0));
 
-    public MatchControllerimpl(final MainController controller) {
+    public MatchControllerimpl(final MainControllerExample controller) {
         // this.controller = controller;
         this.view = controller.getMainView();
         this.gamePanel = controller.getMainView().getGamePanel();

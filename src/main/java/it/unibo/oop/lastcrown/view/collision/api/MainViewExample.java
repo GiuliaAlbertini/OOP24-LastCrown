@@ -12,7 +12,7 @@ import it.unibo.oop.lastcrown.view.collision.api.GamePanel;
  * Provides methods to initialize panels, switch between them, and interact
  * with the current game view (e.g., adding characters or accessing the game panel).
  */
-public interface MainView {
+public interface MainViewExample {
 
     /**
      * Initializes all panels associated with the different game states.
