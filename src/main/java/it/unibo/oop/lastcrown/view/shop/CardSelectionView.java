@@ -29,19 +29,9 @@ public final class CardSelectionView extends JFrame {
     private static final long serialVersionUID = 1L;
     private static final int H_GAP = 10;
     private static final int V_GAP = 10;
-<<<<<<< HEAD
-    private static final int PADDING = 10;
-
-    private transient CardIdentifier selectedCard;
-
-    private CardSelectionView() {
-        this.selectedCard = null;
-    }
-=======
     private final int id;
     private final ContainerObserver obs;
     private transient CardIdentifier selectedCard;
->>>>>>> 72c5403f05b8c33d342c62dbbd63fe4016ae48a2
 
     /**
      * Create a selection view for cards of the given type.
@@ -77,14 +67,6 @@ public final class CardSelectionView extends JFrame {
         });
     }
 
-<<<<<<< HEAD
-=======
-    /**
-     * Creates a panel combining the card view and a select button.
-     * @param card the speicific CardIdentifier of the card shown
-     * @return a new JPanel that contains the specified card
-     */
->>>>>>> 72c5403f05b8c33d342c62dbbd63fe4016ae48a2
     private JPanel createCardWithButton(final CardIdentifier card) {
         final JPanel container = new JPanel(new BorderLayout());
         container.setOpaque(true);
@@ -113,13 +95,9 @@ public final class CardSelectionView extends JFrame {
     }
 
     /**
-<<<<<<< HEAD
      * Getter for the current selected card.
      * 
      * @return the card identifier of the selected card
-=======
-     * @return the CardIdentifier of the specific selected card
->>>>>>> 72c5403f05b8c33d342c62dbbd63fe4016ae48a2
      */
     public CardIdentifier getSelectedCard() {
         return this.selectedCard;
