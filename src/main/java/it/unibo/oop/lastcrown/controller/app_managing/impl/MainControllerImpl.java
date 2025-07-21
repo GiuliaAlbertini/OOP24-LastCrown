@@ -5,7 +5,7 @@ import java.util.Set;
 
 import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
-import it.unibo.oop.lastcrown.controller.GameController;
+import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.menu.impl.SceneManagerImpl;
@@ -47,7 +47,7 @@ public class MainControllerImpl implements MainController {
 
         //HERE MISSING GAME CONTROLLER INITIALIZATION
 
-        final GameController gameController = new GameController() {
+        final GameControllerExample gameController = new GameControllerExample() {
             @Override
             public void notifyShopToMatch() {
             }

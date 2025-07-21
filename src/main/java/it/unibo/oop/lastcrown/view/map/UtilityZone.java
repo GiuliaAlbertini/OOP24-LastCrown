@@ -8,7 +8,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import it.unibo.oop.lastcrown.controller.GameController;
+import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.view.Dialog;
 
 /**
@@ -26,7 +26,7 @@ public final class UtilityZone extends JPanel {
      * @param eventWriter the graphic component that containes the event messages
      * @param coinsWriter the graphic component that contains the number of coins
      */
-    public UtilityZone(final MatchExitObserver obs, final GameController gameContr, final int width, final int height,
+    public UtilityZone(final MatchExitObserver obs, final GameControllerExample gameContr, final int width, final int height,
      final JComponent wallHealthBar, final JComponent eventWriter, final JComponent coinsWriter) {
         final FlowLayout flowLayout = new FlowLayout();
         flowLayout.setAlignment(FlowLayout.CENTER);

@@ -10,7 +10,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import it.unibo.oop.lastcrown.controller.GameController;
+import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.view.Dialog;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
@@ -31,7 +31,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
      * @param width the width of the map
      * @param height the height of the map
      */
-    public MatchViewImpl(final GameController gameContr, final MainView mainView,
+    public MatchViewImpl(final GameControllerExample gameContr, final MainView mainView,
      final int width, final int height) {
         this.mainView = mainView;
         this.newComponents = new ConcurrentHashMap<>();

@@ -2,7 +2,7 @@ package it.unibo.oop.lastcrown.controller.menu.impl;
 
 import java.util.Set;
 
-import it.unibo.oop.lastcrown.controller.GameController;
+import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.AccountController;
@@ -30,14 +30,14 @@ public class SceneManagerImpl implements SceneManager {
      * @param accountController the {@link AccountController} to use
      * @param collectionController the {@link CollectionController} to use
      * @param deckContr the {@link DeckController} to use
-     * @param gameContr the {@link GameController} to use
+     * @param gameContr the {@link GameControllerExample} to use
      */
     public SceneManagerImpl(
         final MainController mainController, 
         final AccountController accountController,
         final CollectionController collectionController,
         final DeckController deckContr,
-        final GameController gameContr
+        final GameControllerExample gameContr
     ) {
         this.mainController = mainController;
         this.accountController = accountController;

@@ -7,7 +7,7 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 /**
  * An interface that model the main controller.
  */
-public interface GameController {
+public interface GameControllerExample {
 
     /**
      * Notifies that the player during the match has pressed a button with a specific CardIdentifier.
