@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 
 
 
-import it.unibo.oop.lastcrown.controller.MainController;
+import it.unibo.oop.lastcrown.controller.GameController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 
@@ -46,7 +46,7 @@ public final class DeckZone extends JPanel {
      * @param deckZoneHeight deck zone height
      * @param energyBarWidth energy bar width
      */
-    public DeckZone(final MainController mainContr, final PositioningZone pos, 
+    public DeckZone(final GameController mainContr, final PositioningZone pos, 
      final int deckZoneWidth, final int deckZoneHeight, final int energyBarWidth) {
         this.deckZoneWidth = deckZoneWidth;
         this.deckZoneHeight = deckZoneHeight;
