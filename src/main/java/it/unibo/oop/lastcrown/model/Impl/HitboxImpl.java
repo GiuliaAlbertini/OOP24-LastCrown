@@ -66,12 +66,12 @@ public final class HitboxImpl implements Hitbox {
 
     @Override
     public boolean checkCollision(final Hitbox other) {
-        final double threshold = 10.0; // margine extra per rendere più morbido il contatto
+        //final double threshold = 10.0; // margine extra per rendere più morbido il contatto
 
-        final double ax1 = this.getPosition().x() - threshold;
-        final double ay1 = this.getPosition().y() - threshold;
-        final double ax2 = ax1 + this.width + 2 * threshold;
-        final double ay2 = ay1 + this.height + 2 * threshold;
+        final double ax1 = this.getPosition().x() /*- threshold*/;
+        final double ay1 = this.getPosition().y() /*- threshold*/;
+        final double ax2 = ax1 + this.width + 2 /* * threshold*/;
+        final double ay2 = ay1 + this.height + 2 /* * /*threshold*/;
 
         final double bx1 = other.getPosition().x();
         final double by1 = other.getPosition().y();
