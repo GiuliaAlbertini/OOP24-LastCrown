@@ -21,17 +21,7 @@ public enum EventType {
     RANGED,
 
     /**
-     * Event triggered when the hero collides with a shop.
-     */
-    SHOP_COLLISION,
-
-    /**
      * Event triggered when any entity collides with a wall.
      */
     WALL_COLLISION,
-
-    /**
-     * Event triggered by a key press input from the user.
-     */
-    KEY_PRESS;
 }
