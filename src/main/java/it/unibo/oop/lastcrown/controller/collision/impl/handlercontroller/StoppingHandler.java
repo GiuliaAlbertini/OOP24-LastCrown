@@ -1,9 +1,7 @@
 package it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller;
 
-import java.util.List;
 import java.util.Optional;
 
-import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
@@ -15,7 +13,6 @@ import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.StateHan
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
-import it.unibo.oop.lastcrown.model.collision.impl.Pair;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 
 /**
@@ -28,7 +25,7 @@ public final class StoppingHandler implements StateHandler {
     final EnemyRadiusScanner scanner;
     private final MatchController match;
     private boolean wait = false;
-    boolean isPlayerInCollision = false;
+
 
     /**
      * @param eventFactory the factory used to create events for the character's
@@ -49,30 +46,31 @@ public final class StoppingHandler implements StateHandler {
         final boolean isPlayer = character instanceof PlayableCharacterController;
         final boolean isEngaged = isPlayer ? match.isPlayerEngaged(charId) : match.isEnemyEngaged(charId);
         final boolean isBossFight = resolver.hasOpponentBossPartner(charId);
-        final boolean isEngagedWithDead = match.isEngagedWithDead(charId);
         //NON SEI INGAGGIATO
-
-        System.out.println("personaggio" + character.getId().type());
-        System.out.println("controlliamo questo ingaggio" + isEngagedWithDead);
+            System.out.println("sono dentro allo stopped"+ character.getId().type());
         if (!isEngaged && wait && !isBossFight) {
-            System.out.println("sono ferma qui in stop 1");
             //System.out.println("entro qui se ho combattuto e devo continuare a giocare o se non sono stato ingaggiato");
             wait = false;
             queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
             return CharacterState.IDLE;
             //se sei ingaggiato con un morto
         } else if (match.isEngagedWithDead(charId) || match.isBossFightPartnerDead(charId) || character.getId().type() == CardType.RANGED) {
-            //sono un ranged
-            System.out.println("sono ferma qui in stop 2"+ character.getId().type());
+            //System.out.println("qui devo entrare per forza");
 
             if (character.getId().type() == CardType.RANGED) {
                 if (match.isRangedFightPartnerDead(charId)){
+                    //System.out.println("qui devo entrare per forza2");
+
                     character.setNextAnimation(Keyword.STOP);
                     character.showNextFrame();
+                    System.out.println("sto guardando da stopping");
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
 
-                }else if (!resolver.hasOpponentRangedPartner(charId) ) {
+                    //se non sono nella lista partner significa che sono nella bossfight
+                }else if (!resolver.hasOpponentRangedPartner(charId) && !resolver.hasOpponentBossPartner(charId) ) {
+                    //System.out.println("qui devo entrare per forza3");
+
                     Optional<GenericCharacterController> controllerOpt = match.getCharacterControllerById(character.getId().number());
                     if (controllerOpt.isPresent() && controllerOpt.get() instanceof PlayableCharacterController playerCol) {
                         Optional<CollisionEvent> eventOpt = scanner.scanForFollowEventForPlayer(playerCol);
@@ -85,6 +83,8 @@ public final class StoppingHandler implements StateHandler {
                             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     }
                 }else{
+
+                    //System.out.println("volevo sapere dove entravo4");
                     queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
                 }
 
@@ -93,8 +93,6 @@ public final class StoppingHandler implements StateHandler {
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
 
             } else {
-                System.out.println("sono ferma qui in stop 3");
-
                 character.setNextAnimation(Keyword.STOP);
                 character.showNextFrame();
                 wait = true;
@@ -103,9 +101,8 @@ public final class StoppingHandler implements StateHandler {
             }
 
         } else {
-            System.out.println("sono ferma qui in stop 4");
-
-            queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
+                queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
+                return CharacterState.COMBAT;
         }
         return CharacterState.STOPPED;
     }

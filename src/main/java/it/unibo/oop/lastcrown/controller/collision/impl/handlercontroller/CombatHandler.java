@@ -39,13 +39,24 @@ public final class CombatHandler implements StateHandler {
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
             final int deltaTime) {
+
         if (character.isDead()) {
             queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
             return CharacterState.DEAD;
         }
+        //System.err.println("sono in combat1" + character.getId().type());
+        boolean soldato =match.isPlayerEngaged(character.getId().number());
+        boolean boss=resolver.hasOpponentBossPartner(character.getId().number());
+        boolean ranged= resolver.hasOpponentRangedPartner(character.getId().number());
 
         final boolean isPlayer = character instanceof PlayableCharacterController;
-        if (isPlayer) {
+        if (isPlayer) {/*
+            System.out.println("collisione soldier " + soldato);
+            System.out.println("collisione boss "+ boss);
+            System.out.println("collisione ranged "+ranged);
+            */
+            System.err.println("sono in combat2"+ character.getId().type());
+
             if (match.isPlayerEngaged(character.getId().number())) {
                 opponentId = match.getEngagedCounterpart(character.getId().number());
             } else if (resolver.hasOpponentBossPartner(character.getId().number())) {
@@ -67,20 +78,30 @@ public final class CombatHandler implements StateHandler {
         final Optional<GenericCharacterController> opponentOpt = match.getCharacterControllerById(opponentId);
         if (opponentOpt.isEmpty()) {
             if (character.getId().type() != CardType.RANGED) {
+                    //System.err.println("sono in combat3"+ character.getId().type());
+
+                queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
                 return CharacterState.IDLE;
             } else {
+                System.err.println("sono in combat4"+ character.getId().type());
+                queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                 return CharacterState.STOPPED;
             }
         }
 
         final GenericCharacterController opponent = opponentOpt.get();
         if (isPlayer) {
+            System.err.println("sono in combat5"+ character.getId().type());
+
             // === COMBATTIMENTO GIOCATORE ===
             if (opponent.isDead()) {
                 queue.clear();
+                System.out.println("non penso di entrare in stopped se non sono morta" + character.getId().type());
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                 return CharacterState.STOPPED;
             } else {
+                System.err.println("sono in combat6"+ character.getId().type());
+
                 setupCombat(character, opponent);
                 queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
                 return CharacterState.COMBAT;
@@ -91,6 +112,7 @@ public final class CombatHandler implements StateHandler {
 
             if (opponent.isDead()) {
                 queue.clear();
+                System.out.println("non penso di entrare in stopped se non sono morta" + character.getId().type());
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
             } else {
                 setupCombat(character, opponent);
@@ -99,7 +121,6 @@ public final class CombatHandler implements StateHandler {
                 return CharacterState.COMBAT;
             }
         }
-
         return CharacterState.COMBAT;
     }
 

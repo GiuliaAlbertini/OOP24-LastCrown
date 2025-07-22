@@ -57,10 +57,11 @@ public final class IdleHandler implements StateHandler {
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
             final int deltaTime) {
-                System.out.println("sono il personaggio in idle" + character.getId().type());
+                //System.out.println("sono il personaggio in idle" + character.getId().type());
         if (character != null) {
             // se sei ranged allora vai in stop
             if (character.getId().type() == CardType.RANGED) {
+                System.out.println("sto guardando da idle");
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                 return CharacterState.STOPPED;
             } else {
@@ -88,6 +89,7 @@ public final class IdleHandler implements StateHandler {
                         return CharacterState.FOLLOWING;
 
                     } else if (resolver.hasOpponentBossPartner(character.getId().number())) {
+                        System.out.println("ssto guardando da idle");
                         queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                         return CharacterState.STOPPED;
                     }
@@ -118,22 +120,3 @@ public final class IdleHandler implements StateHandler {
         return CharacterState.IDLE;
     }
 }
-
-
-
-                        /*
-                         * else if (!matchController.isPlayerEngaged(character.getId().number())) {
-                         *
-                         * // System.out.println("sono il personaggio che sono in idle prima di
-                         * // scanForFollowEvents" + character.getId().type());
-                         * final List<CollisionEvent> events = scanner.scanForFollowEvents();
-                         * if (!events.isEmpty()) {
-                         * for (CollisionEvent event : events) {
-                         * if (event.getCollidable1().getCardidentifier().number() ==
-                         * character.getId().number()) {
-                         * System.out.println("Evento trovato da soldato e notifico" + event);
-                         * matchController.notifyCollisionObservers(event);
-                         * }
-                         * }
-                         * }
-                         */

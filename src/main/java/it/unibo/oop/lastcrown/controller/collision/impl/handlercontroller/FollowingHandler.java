@@ -47,7 +47,6 @@ public final class FollowingHandler implements StateHandler {
 
             boolean follow= matchController.isEngagedWithDead(characterId);
             final Optional<MovementResult> movementOpt = resolver.updateMovementFor(characterId, deltaTime);
-            System.out.println("ti blocchi qui2?");
             //se il movimento è presente e il bro non è morto
             System.out.println(movementOpt.isPresent());
             if (movementOpt.isPresent()) {
@@ -56,7 +55,7 @@ public final class FollowingHandler implements StateHandler {
                 character.showNextFrameAndMove(mov);
                 matchController.updateCharacterPosition(character, mov.x(), mov.y());
                 if (!movementOpt.get().active()) {
-                    System.out.println("sono un meleee e questo è l'ultimo mio avviso"+ character.getId().type());
+                    System.out.println("non penso venga da following");
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
                 }

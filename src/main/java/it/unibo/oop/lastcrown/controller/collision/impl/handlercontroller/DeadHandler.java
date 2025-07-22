@@ -35,6 +35,7 @@ public final class DeadHandler implements StateHandler {
 
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue, final int deltaTime) {
+        System.out.println("sto morendo" + character.getId().type());
         final int frame = character.getDeathAnimationSize();
         character.setNextAnimation(Keyword.DEATH);
         while (i < frame) {
