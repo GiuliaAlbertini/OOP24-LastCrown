@@ -91,7 +91,7 @@ public final class CardGridPanel extends JPanel {
                           final Set<CardIdentifier> cardsOwned) {
         removeAll();
         for (final CardIdentifier card : cards) {
-            final boolean useGrey = cardsOwned.contains(card);
+            final boolean useGrey = !cardsOwned.contains(card);
             final IconPanel iconPanel = new IconPanel(card, useGrey);
             iconPanel.setPreferredSize(new Dimension(gridCellSide, gridCellSide));
             iconPanel.addMouseListener(new MouseAdapter() {
