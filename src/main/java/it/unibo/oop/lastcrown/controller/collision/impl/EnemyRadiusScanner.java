@@ -1,3 +1,4 @@
+
 package it.unibo.oop.lastcrown.controller.collision.impl;
 
 import java.util.ArrayList;
@@ -122,9 +123,14 @@ public final class EnemyRadiusScanner {
         // se il mio player incontra il boss
         if (enemy instanceof BossController) {
             synchronized (enemy) {
+                System.out.println("ma entro almeno in radius per verificare la boss");
                 boolean inBossFight = resolver.hasOpponentBossPartner(player.getId().number());
+                System.out.println(inBossFight);
                 if (!inBossFight) {
+                    System.out.println("entro per cacciare l'evento boss");
                     createCollisionEvent(events, player, enemy);
+                    System.out.println(events);
+
                 }
             }
 
@@ -159,11 +165,14 @@ public final class EnemyRadiusScanner {
             // se il player è ranged
             if (playerCol.getCardidentifier().type() == CardType.RANGED) {
 
-                System.out.println("RANGED" +
+
+                final EventType eventType = (enemy instanceof BossController)
+                        ? EventType.BOSS
+                        : EventType.RANGED;
+
+                        System.out.println("[DEBUG] Intercettato da ranged " + (enemy instanceof BossController ? "Boss" : "Nemico") +
                         "! Player ID: " + player.getId().number() +
                         " -> Target ID: " + enemy.getId().number());
-                final EventType eventType = EventType.RANGED;
-
                 events.add(new CollisionEventImpl(eventType, playerCol, enemyCol));
             } else {
                 final EventType eventType = (enemy instanceof BossController)

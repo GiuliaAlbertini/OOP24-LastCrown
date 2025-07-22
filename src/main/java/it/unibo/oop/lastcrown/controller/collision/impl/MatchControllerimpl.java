@@ -77,29 +77,29 @@ public final class MatchControllerimpl implements MatchController {
     public void onAddCharacterButtonPressed() {
         final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
 
-        final PlayableCharacter Char1 = new PlayableCharacterImpl("Warrior", CardType.MELEE, 20, 25, 100, 2, 100, 0.8,100);
-        final PlayableCharacter Char2 = new PlayableCharacterImpl("Knight",CardType.MELEE, 20, 22, 100, 2, 100, 0.8,100);
+        //final PlayableCharacter Char1 = new PlayableCharacterImpl("Warrior", CardType.MELEE, 20, 25, 100, 2, 100, 0.8,100);
+        //final PlayableCharacter Char2 = new PlayableCharacterImpl("Knight",CardType.MELEE, 20, 22, 100, 2, 100, 0.8,100);
 
-        final PlayableCharacter ranged = new PlayableCharacterImpl("Archer3",CardType.RANGED, 20, 95, 100, 2, 100, 0.8,100);
+        final PlayableCharacter ranged = new PlayableCharacterImpl("Archer3",CardType.RANGED, 20, 30, 100, 2, 100, 0.8,100);
 
-        final Enemy pipistrello = new EnemyImpl("Bat", 1, CardType.ENEMY, 3, 100, 0.8);
-        final Enemy nemico2 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 3, 200, 0.8);
-        final Enemy nemico3 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 3, 200, 0.8);
+        //final Enemy pipistrello = new EnemyImpl("Bat", 1, CardType.ENEMY, 3, 100, 0.8);
+        //final Enemy nemico2 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 3, 200, 0.8);
+        //final Enemy nemico3 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 3, 200, 0.8);
 
         // final Hero eroe = new HeroImpl("Valandor", new Requirement("Bosses", 80), 20,300, Optional.of(new PassiveEffect("health", 45)),3, 3, 4,8, 400);
         // spawnAndRegisterCharacter(generateUniqueCharacterId(), eroe, obs, 100, 200);
 
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), Char1, obs, 100, 300); /* bro sotto */
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), Char2, obs, 70, 200);
+        //spawnAndRegisterCharacter(generateUniqueCharacterId(), Char1, obs, 100, 300); /* bro sotto */
+        //spawnAndRegisterCharacter(generateUniqueCharacterId(), Char2, obs, 75, 200); /*CASISTICHE 75-97-180 */
         spawnAndRegisterCharacter(generateUniqueCharacterId(), ranged, obs, 220, 110);
 
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), pipistrello, obs, 450, 100);
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico2, obs, 200, 400);
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico3, obs, 700, 180);
+        //spawnAndRegisterCharacter(generateUniqueCharacterId(), pipistrello, obs, 450, 100);
+        //spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico2, obs, 200, 400);
+        //spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico3, obs, 700, 180);
 
         // BOSS-FIGHT ==
-        //final Enemy boss = new EnemyImpl("Cthulu", 1, CardType.BOSS, 33, 300, 0.2);
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), boss, obs, 700, 200);
+        final Enemy boss = new EnemyImpl("Cthulu", 1, CardType.BOSS, 33, 300, 0.2);
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), boss, obs, 400, 200);
 
     }
 
