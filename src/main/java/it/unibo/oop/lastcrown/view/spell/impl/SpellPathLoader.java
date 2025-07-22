@@ -10,6 +10,7 @@ import java.util.List;
  */
 public final class SpellPathLoader {
     private static final String SEP = System.getProperty("file.separator");
+    private static final String OOP = "OOP24-LastCrown";
     private static final String ICON = "icon";
     private static final String ICON_GREY = "icon_grey";
 
@@ -50,16 +51,8 @@ public final class SpellPathLoader {
         return getGenericSpellPath(spellName, ICON_GREY);
     }
 
-    /**
-     * @return the spell border path 
-     */
-    public static synchronized String loadSpellBorder() {
-        return "src" + SEP + "main" + SEP + "resources" + SEP + "pngs" 
-        + SEP + "spell" + SEP + "spell_border";
-    }
-
     private static String getGenericSpellPath(final String spellName, final String keyWord) {
-        return "src" + SEP + "main" + SEP + "resources" + SEP + "pngs"
+        return OOP + SEP + "src" + SEP + "main" + SEP + "resources" + SEP + "pngs"
         + SEP + "spell" + SEP + spellName + SEP + keyWord + ".png";
     }
 
