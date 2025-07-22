@@ -40,34 +40,39 @@ public final class FollowingHandler implements StateHandler {
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
             final int deltaTime) {
-        System.out.println("sono in following" + character.getId().type());
-        if (character instanceof PlayableCharacterController) {
-            final int characterId = character.getId().number();
+        if (!(character instanceof PlayableCharacterController)) {
 
+            queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
+            return CharacterState.IDLE;
+        }
 
-            boolean follow= matchController.isEngagedWithDead(characterId);
-            final Optional<MovementResult> movementOpt = resolver.updateMovementFor(characterId, deltaTime);
-            System.out.println("ti blocchi qui2?");
-            //se il movimento è presente e il bro non è morto
-            System.out.println(movementOpt.isPresent());
-            if (movementOpt.isPresent()) {
-                final MovementResult movement = movementOpt.get();
-                final Movement mov = movement.delta();
-                character.showNextFrameAndMove(mov);
-                matchController.updateCharacterPosition(character, mov.x(), mov.y());
-                if (!movementOpt.get().active()) {
-                    System.out.println("sono un meleee e questo è l'ultimo mio avviso"+ character.getId().type());
-                    queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-                    return CharacterState.STOPPED;
-                }
-            }/*else{
-                queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
-                return CharacterState.IDLE;
-            }*/
+        final int characterId = character.getId().number();
+
+        if (matchController.isEngagedWithDead(characterId) || matchController.isBossFightPartnerDead(characterId)) {
+            queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+            return CharacterState.STOPPED;
+        }
+
+        final Optional<MovementResult> movementOpt = resolver.updateMovementFor(characterId, deltaTime);
+
+        if (movementOpt.isPresent()) {
+            final MovementResult movement = movementOpt.get();
+            final Movement mov = movement.delta();
+
+            character.showNextFrameAndMove(mov);
+            matchController.updateCharacterPosition(character, mov.x(), mov.y());
+
+            if (!movement.active()) {
+                queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+                return CharacterState.STOPPED;
+            }
+        } else {
+
+            queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
+            return CharacterState.IDLE;
         }
 
         queue.enqueue(this.eventFactory.createEvent(CharacterState.FOLLOWING));
         return CharacterState.FOLLOWING;
     }
-
 }

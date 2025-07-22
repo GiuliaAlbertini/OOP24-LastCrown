@@ -24,50 +24,70 @@ import it.unibo.oop.lastcrown.model.collision.impl.CollisionEventImpl;
 /**
  * Scans the radius of playable characters to detect nearby enemy characters.
  * If an enemy is detected within a player's radius, a FOLLOW_ENEMY collision
- * event is generated.
+ * event is generated (or BOSS/RANGED specific events).
  */
-
-// scanner di tutta la mappa da ogni giocatore. mi dice anche da un player che
-// non è in collisione se un'altro lo è nel caso
 public final class EnemyRadiusScanner {
     private final Map<GenericCharacterController, HitboxController> hitboxControllers;
     private final MatchController matchController;
     private final CollisionResolver resolver;
 
     public EnemyRadiusScanner(final Map<GenericCharacterController, HitboxController> hitboxControllers,
-            MatchController matchController, CollisionResolver resolver) {
+                              final MatchController matchController, final CollisionResolver resolver) {
         this.hitboxControllers = hitboxControllers;
         this.matchController = matchController;
         this.resolver = resolver;
     }
 
+    /**
+     * Scans for a follow event for a specific playable character.
+     * This method is designed to find the closest valid enemy target.
+     *
+     * @param player The playable character controller to scan for.
+     * @return An Optional containing a CollisionEvent if a target is found, otherwise empty.
+     */
     public Optional<CollisionEvent> scanForFollowEventForPlayer(final PlayableCharacterController player) {
-    final HitboxController playerHitboxController = hitboxControllers.get(player);
-    if (playerHitboxController == null) {
-        return Optional.empty();
+        final HitboxController playerHitboxController = hitboxControllers.get(player);
+        if (playerHitboxController == null || playerHitboxController.getRadius() == null) {
+            return Optional.empty();
+        }
+
+        final Map<GenericCharacterController, HitboxController> currentHitboxStates = new HashMap<>(hitboxControllers);
+        final List<Hitbox> enemyHitboxes = getAllEnemyHitboxes(currentHitboxStates);
+        final Map<Hitbox, GenericCharacterController> hitboxToEnemyMap = mapHitboxesToEnemies(currentHitboxStates);
+
+        if (!playerHitboxController.getRadius().hasEnemyInRadius(enemyHitboxes)) {
+            return Optional.empty();
+        }
+
+        final Optional<Hitbox> closestEnemyOpt = playerHitboxController.getRadius().getClosestEnemyInRadius(enemyHitboxes);
+        if (closestEnemyOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        final Hitbox closestEnemyHitbox = closestEnemyOpt.get();
+        final GenericCharacterController enemy = hitboxToEnemyMap.get(closestEnemyHitbox);
+
+        if (enemy == null) {
+            return Optional.empty();
+        }
+        final List<CollisionEvent> events = new ArrayList<>();
+        determineAndCreateCollisionEvent(events, player, enemy);
+
+        return events.isEmpty() ? Optional.empty() : Optional.of(events.get(0));
     }
 
-    final Map<GenericCharacterController, HitboxController> localCopy = new HashMap<>(hitboxControllers);
-    final List<Hitbox> enemyHitboxes = getAllEnemyHitboxes(localCopy);
-    final Map<Hitbox, GenericCharacterController> hitboxToEnemy = mapHitboxesToEnemies(localCopy);
 
-    final List<CollisionEvent> events = new ArrayList<>();
-    addEventIfEnemyInRadius(events, player, playerHitboxController, enemyHitboxes, hitboxToEnemy);
-
-    if (events.isEmpty()) {
-        return Optional.empty();
-    }
-
-    return Optional.of(events.get(0)); // di solito è uno solo
-}
-
-
+    /**
+     * Gathers all enemy and boss hitboxes from the current game state.
+     *
+     * @param map The map of character controllers to their hitbox controllers.
+     * @return A list of hitboxes belonging to enemies and bosses.
+     */
     private List<Hitbox> getAllEnemyHitboxes(Map<GenericCharacterController, HitboxController> map) {
         final List<Hitbox> enemyHitboxes = new ArrayList<>();
         for (final var entry : map.entrySet()) {
             final CardType type = entry.getKey().getId().type();
             final var character = entry.getKey();
-
             if ((type == CardType.ENEMY && character instanceof EnemyController)
                     || (type == CardType.BOSS && character instanceof BossController)) {
                 enemyHitboxes.add(entry.getValue().getHitbox());
@@ -76,6 +96,12 @@ public final class EnemyRadiusScanner {
         return enemyHitboxes;
     }
 
+    /**
+     * Creates a map from hitbox to its corresponding generic character controller for enemies and bosses.
+     *
+     * @param map The map of character controllers to their hitbox controllers.
+     * @return A map where keys are hitboxes and values are generic character controllers of enemies/bosses.
+     */
     private Map<Hitbox, GenericCharacterController> mapHitboxesToEnemies(
             Map<GenericCharacterController, HitboxController> map) {
         final Map<Hitbox, GenericCharacterController> result = new HashMap<>();
@@ -92,93 +118,71 @@ public final class EnemyRadiusScanner {
         return result;
     }
 
-    // metodo chiamato solo dal player
-    private void addEventIfEnemyInRadius(
+    /**
+     * Determines the appropriate collision event type and creates it, adding it to the list of events.
+     * This method handles the logic for different character types (RANGED, MELEE) encountering enemies (normal, BOSS).
+     *
+     * @param events The list to which the created CollisionEvent will be added.
+     * @param player The playable character (initiator of the scan).
+     * @param enemy The enemy character detected.
+     */
+    private void determineAndCreateCollisionEvent(
             final List<CollisionEvent> events,
             final PlayableCharacterController player,
-            final HitboxController playerHitboxController,
-            final List<Hitbox> enemyHitboxes,
-            final Map<Hitbox, GenericCharacterController> hitboxToEnemy) {
+            final GenericCharacterController enemy) {
 
-        if (playerHitboxController.getRadius() == null) {
-            return;
-        }
+        final int playerId = player.getId().number();
+        final int enemyId = enemy.getId().number();
 
-        if (!playerHitboxController.getRadius().hasEnemyInRadius(enemyHitboxes)) {
-            return;
-        }
-
-        Optional<Hitbox> closestEnemyOpt = playerHitboxController.getRadius().getClosestEnemyInRadius(enemyHitboxes);
-        if (closestEnemyOpt.isEmpty()) {
-            return;
-        }
-
-        Hitbox closestEnemyHitbox = closestEnemyOpt.get();
-        GenericCharacterController enemy = hitboxToEnemy.get(closestEnemyHitbox);
-        if (enemy == null) {
-            return;
-        }
-
-        // se il mio player incontra il boss
-        if (enemy instanceof BossController) {
-            synchronized (enemy) {
-                boolean inBossFight = resolver.hasOpponentBossPartner(player.getId().number());
-                if (!inBossFight) {
-                    createCollisionEvent(events, player, enemy);
+        if (enemy instanceof BossController boss) {
+            // Un player (sia MELEE che RANGED) che rileva un Boss.
+            // La logica di "boss fight" è gestita dal CollisionResolver,
+            // che terrà traccia di tutti i partecipanti.
+            synchronized (boss) {
+                boolean alreadyInBossFight = resolver.hasOpponentBossPartner(playerId);
+                if (!alreadyInBossFight) {
+                    createAndAddEvent(events, player, boss, EventType.BOSS);
                 }
             }
-
-            // createCollisionEvent(events, player, enemy);
-        } else if (enemy instanceof EnemyController) {
-            boolean isInRangedFight = resolver.hasOpponentRangedPartner(player.getId().number());
-            if (player.getId().type() == CardType.RANGED && !isInRangedFight) {
-                createCollisionEvent(events, player, enemy);
-            } else if (!enemy.isInCombat() && matchController.isPlayerIdle(player) && !matchController.isEnemyDead(enemy.getId().number())) {
-                synchronized (enemy) {
-                    boolean engaged = matchController.engageEnemy(enemy.getId().number(), player.getId().number());
-                    if (engaged) {
-                        createCollisionEvent(events, player, enemy);
+        } else if (enemy instanceof EnemyController regularEnemy) {
+            if (player.getId().type() == CardType.RANGED) {
+                boolean isInRangedFight = resolver.hasOpponentRangedPartner(playerId);
+                if (!isInRangedFight) {
+                    createAndAddEvent(events, player, regularEnemy, EventType.RANGED);
+                }
+            } else {
+                if (!regularEnemy.isInCombat() && matchController.isPlayerIdle(player) && !matchController.isEnemyDead(enemyId)) {
+                    synchronized (regularEnemy) {
+                        boolean engaged = matchController.engageEnemy(enemyId, playerId);
+                        if (engaged) {
+                            createAndAddEvent(events, player, regularEnemy, EventType.ENEMY);
+                        }
                     }
                 }
             }
         }
-
     }
 
-    private void createCollisionEvent(
+    /**
+     * Helper method to create and add a CollisionEvent to the list.
+     * @param events The list of events.
+     * @param player The player collidable.
+     * @param enemy The enemy collidable.
+     * @param eventType The type of event.
+     */
+    private void createAndAddEvent(
             final List<CollisionEvent> events,
             final PlayableCharacterController player,
-            final GenericCharacterController enemy) {
+            final GenericCharacterController enemy,
+            final EventType eventType) {
+
         final HitboxController playerHitboxController = hitboxControllers.get(player);
         final HitboxController enemyHitboxController = hitboxControllers.get(enemy);
 
         if (playerHitboxController != null && enemyHitboxController != null) {
             final Collidable playerCol = new CollidableImpl(playerHitboxController.getHitbox(), player.getId());
             final Collidable enemyCol = new CollidableImpl(enemyHitboxController.getHitbox(), enemy.getId());
-
-            // se il player è ranged
-            if (playerCol.getCardidentifier().type() == CardType.RANGED) {
-
-                System.out.println("RANGED" +
-                        "! Player ID: " + player.getId().number() +
-                        " -> Target ID: " + enemy.getId().number());
-                final EventType eventType = EventType.RANGED;
-
-                events.add(new CollisionEventImpl(eventType, playerCol, enemyCol));
-            } else {
-                final EventType eventType = (enemy instanceof BossController)
-                        ? EventType.BOSS
-                        : EventType.ENEMY;
-
-                System.out.println("[DEBUG] Intercettato " + (enemy instanceof BossController ? "Boss" : "Nemico") +
-                        "! Player ID: " + player.getId().number() +
-                        " -> Target ID: " + enemy.getId().number());
-
-                events.add(new CollisionEventImpl(eventType, playerCol, enemyCol));
-            }
-
+            events.add(new CollisionEventImpl(eventType, playerCol, enemyCol));
         }
     }
-
-
 }
