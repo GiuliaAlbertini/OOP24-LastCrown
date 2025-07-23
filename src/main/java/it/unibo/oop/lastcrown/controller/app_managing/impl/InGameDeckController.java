@@ -13,9 +13,7 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.model.spell.api.Spell;
 import it.unibo.oop.lastcrown.model.user.api.CompleteCollection;
-import it.unibo.oop.lastcrown.model.user.api.Deck;
 import it.unibo.oop.lastcrown.model.user.impl.CompleteCollectionImpl;
-import it.unibo.oop.lastcrown.model.user.impl.DeckImpl;
 
 /**
  * Controller to handle the deck during a match.
@@ -26,7 +24,7 @@ public final class InGameDeckController {
     private final Map<CardIdentifier, Integer> copiesRegister;
     private Set<CardIdentifier> availables;
     private final List<CardIdentifier> queue = new ArrayList<>();
-    private Deck tempDeck;
+    private Set<CardIdentifier> deck;
 
     /**
      * Initializes the deck to use, the cards availables and their copies.
@@ -34,7 +32,7 @@ public final class InGameDeckController {
      * @param original the deck to start with
      */
     private InGameDeckController(final Set<CardIdentifier> original) {
-        this.tempDeck = new DeckImpl(original);
+        this.deck = original;
         this.copiesRegister = resetCopiesRegister(original);
         this.availables = updateAvailables();
         initializeQueue();
@@ -86,14 +84,8 @@ public final class InGameDeckController {
      * 
      * @param id the card used
      */
-    public void useCopy(final CardIdentifier id) {
-        if (!copiesRegister.containsKey(id)) {
-            throw new NoSuchElementException("Card not in deck: " + id);
-        }
+    private void useCopy(final CardIdentifier id) {
         final int remaining = copiesRegister.get(id);
-        if (remaining <= 0) {
-            throw new NoSuchElementException("No copies left for card: " + id);
-        }
         copiesRegister.put(id, remaining - 1);
         queue.remove(id);
         if (remaining - 1 > 0) {
@@ -143,10 +135,10 @@ public final class InGameDeckController {
     /**
      * Updates the temporary deck.
      * 
-     * @param tempDeck the new deck
+     * @param newDeck the new deck
      */
-    public void setTempDeck(final Set<CardIdentifier> tempDeck) {
-        this.tempDeck = new DeckImpl(tempDeck);
+    public void setDeck(final Set<CardIdentifier> newDeck) {
+        this.deck = newDeck;
         this.availables = updateAvailables();
         initializeQueue();
     }
@@ -160,7 +152,7 @@ public final class InGameDeckController {
     }
 
     private Set<CardIdentifier> updateAvailables() {
-        return this.tempDeck.getDeck().stream()
+        return this.deck.stream()
             .filter(id -> {
                 switch (id.type()) {
                     case MELEE:
