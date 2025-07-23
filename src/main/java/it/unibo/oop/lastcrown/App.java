@@ -1,6 +1,6 @@
 package it.unibo.oop.lastcrown;
 
-import it.unibo.oop.lastcrown.controller.collision.impl.MainControllerExampleImpl;
+import it.unibo.oop.lastcrown.controller.app_managing.impl.MainControllerImpl;
 
 /**
  * The entry point for the LastCrown application.
@@ -18,6 +18,6 @@ public final class App {
      * @param args command-line arguments (not used)
      */
     public static void main(final String[] args) {
-        new MainControllerExampleImpl();
+        new MainControllerImpl();
     }
 }
