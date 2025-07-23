@@ -20,7 +20,6 @@ import javax.swing.Timer;
 import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.controller.app_managing.impl.InGameDeckController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
-import it.unibo.oop.lastcrown.model.card.CardType;
 
 /**
  * A JPanel that contains an energyBar and a panel with 4 card-buttons.
@@ -37,13 +36,13 @@ public final class DeckZone extends JPanel {
     private static final int TIME_RECHARGE_SINGLE_ENERGY = 1000;
     private int currentEnergy = 0;
     private final Timer rechargeTimer;
-    private final InGameDeckController inGameDeckController;
+    private InGameDeckController inGameDeckController;
     private final ActionListener buttonListener;
     private final MouseListener mouseListener;
 
     private JPanel energyBarPanel;
     private final JPanel cardPanel;
-    private CardType lastClicked;
+    private CardIdentifier lastClicked;
     private final int deckZoneWidth;
     private final int deckZoneHeight;
 
@@ -77,7 +76,7 @@ public final class DeckZone extends JPanel {
         this.buttonListener = e -> {
             final var button = (JButton) e.getSource();
             final CardIdentifier id = (CardIdentifier) button.getClientProperty(KEY_PROPERTY);
-            lastClicked = id.type();
+            lastClicked = id;
             mainContr.notifyButtonPressed(id);
         };
 
@@ -140,7 +139,7 @@ public final class DeckZone extends JPanel {
     /**
      * @return the CardType of the last clicked button
     */
-    public CardType getLastClicked() {
+    public CardIdentifier getLastClicked() {
         return this.lastClicked;
     }
 
@@ -168,15 +167,15 @@ public final class DeckZone extends JPanel {
      * @param id the id of the used card
      * @return a boolean indicating if a card has bee used or not
      */
-    public boolean playCard(final CardIdentifier id) {
-        final int cost = inGameDeckController.getEnergyToPlay(id);
+    public boolean playCard() {
+        final int cost = inGameDeckController.getEnergyToPlay(this.lastClicked);
         if (currentEnergy >= cost) {
             currentEnergy -= cost;
             updateEnergyBar(currentEnergy);
             if (!rechargeTimer.isRunning()) {
                 rechargeTimer.start();
             }
-            inGameDeckController.useCopy(id);
+            inGameDeckController.playCard(this.lastClicked);
             updateCardButtons(this.buttonListener, this.mouseListener);
             return true;
         }
@@ -184,7 +183,7 @@ public final class DeckZone extends JPanel {
     }
 
     public void updateInGameDeck(Set<CardIdentifier> newDeck) {
-        this.inGameDeckController.resetCopiesRegister(newDeck);
-        this.inGameDeckController.setTempDeck(newDeck);
+        this.inGameDeckController = InGameDeckController.create(newDeck);
+        this.updateCardButtons(buttonListener, mouseListener);      
     }
 }
