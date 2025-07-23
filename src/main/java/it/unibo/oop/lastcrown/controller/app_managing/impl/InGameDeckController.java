@@ -10,8 +10,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
-import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
+import it.unibo.oop.lastcrown.model.spell.api.Spell;
 import it.unibo.oop.lastcrown.model.user.api.CompleteCollection;
 import it.unibo.oop.lastcrown.model.user.api.Deck;
 import it.unibo.oop.lastcrown.model.user.impl.CompleteCollectionImpl;
@@ -51,27 +51,39 @@ public final class InGameDeckController {
     }
 
     /**
-     * Construct the copies register.
+     * Construct the copies register mapping each card to its total copies per match.
      * 
      * @param original the cards to put in the register
      * @return the new register
      */
     public Map<CardIdentifier, Integer> resetCopiesRegister(final Set<CardIdentifier> original) {
         return original.stream()
-            .collect(Collectors.toMap(
+            .collect(Collectors.<CardIdentifier, CardIdentifier, Integer>toMap(
                 Function.identity(),
-                id -> getCharacterFromCardID(id)
-                          .map(PlayableCharacter::getCopiesPerMatch)
-                          .orElseThrow(() ->
-                              new NoSuchElementException("Card not in collection: " + id)
-                          )
+                id -> {
+                    // use a switch expression to guarantee an int result
+                    int copies = switch (id.type()) {
+                        case MELEE, RANGED -> getCharacterFromCardID(id)
+                                              .map(PlayableCharacter::getCopiesPerMatch)
+                                              .orElseThrow(() ->
+                                                  new NoSuchElementException("Character not in collection: " + id)
+                                              );
+                        case SPELL -> getSpellFromCardID(id)
+                                              .map(Spell::getCopiesPerMatch)
+                                              .orElseThrow(() ->
+                                                  new NoSuchElementException("Spell not in collection: " + id)
+                                              );
+                        default -> 1;
+                    };
+                    return Integer.valueOf(copies);
+                }
             ));
     }
 
     /**
      * Updates the copies of a card using one.
      * If the card's copies are finished it removes the card from the availables list,
-     * otherwise it just decrease the copies and put in the end of the queue.
+     * otherwise it just decreases the copies and re-queues the card.
      * 
      * @param id the card used
      */
@@ -80,6 +92,9 @@ public final class InGameDeckController {
             throw new NoSuchElementException("Card not in deck: " + id);
         }
         final int remaining = copiesRegister.get(id);
+        if (remaining <= 0) {
+            throw new NoSuchElementException("No copies left for card: " + id);
+        }
         copiesRegister.put(id, remaining - 1);
         queue.remove(id);
         if (remaining - 1 > 0) {
@@ -90,9 +105,9 @@ public final class InGameDeckController {
     }
 
     /**
-     * Getter for the availables cards.
+     * Getter for the next available cards in queue.
      * 
-     * @return the list of cards available
+     * @return the list of cards available to send
      */
     public List<CardIdentifier> getNextAvailableCards() {
         final int end = Math.min(queue.size(), MAX_CARD_TO_SEND);
@@ -106,11 +121,25 @@ public final class InGameDeckController {
      * @return the requested energy
      */
     public int getEnergyToPlay(final CardIdentifier id) {
-        return getCharacterFromCardID(id)
-                   .map(PlayableCharacter::getEnergyToPlay)
-                   .orElseThrow(() ->
-                       new NoSuchElementException("Card not in collection: " + id)
-                   );
+        switch (id.type()) {
+            case MELEE:
+            case RANGED:
+                return getCharacterFromCardID(id)
+                           .map(PlayableCharacter::getEnergyToPlay)
+                           .orElseThrow(() ->
+                               new NoSuchElementException("Character not in collection: " + id)
+                           );
+            case SPELL:
+                return getSpellFromCardID(id)
+                           .map(Spell::getEnergyToPlay)
+                           .orElseThrow(() ->
+                               new NoSuchElementException("Spell not in collection: " + id)
+                           );
+            case HERO:
+            default:
+                // Hero cards require no energy
+                return 0;
+        }
     }
 
     /**
@@ -128,11 +157,23 @@ public final class InGameDeckController {
         return COMPLETE_COLLECTION.getPlayableCharacter(ci);
     }
 
+    private Optional<Spell> getSpellFromCardID(final CardIdentifier ci) {
+        return COMPLETE_COLLECTION.getSpell(ci);
+    }
+
     private Set<CardIdentifier> updateAvailables() {
         return this.tempDeck.getDeck().stream()
-            .filter(id -> getCharacterFromCardID(id)
-                          .map(pc -> pc.getType() != CardType.HERO)
-                          .orElse(false))
+            .filter(id -> {
+                switch (id.type()) {
+                    case MELEE:
+                    case RANGED:
+                    case SPELL:
+                        // Only non-hero cards are playable
+                        return true;
+                    default:
+                        return false;
+                }
+            })
             .collect(Collectors.toSet());
     }
 
@@ -142,10 +183,9 @@ public final class InGameDeckController {
     }
 
     /**
-     * Method to start the usage of a card.
+     * Method to play a card (consume a copy).
      * 
      * @param id the card to use
-     * @return
      */
     public void playCard(final CardIdentifier id) {
         this.useCopy(id);
