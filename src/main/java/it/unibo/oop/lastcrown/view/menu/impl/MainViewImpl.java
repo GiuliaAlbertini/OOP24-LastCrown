@@ -165,6 +165,7 @@ public class MainViewImpl extends JFrame implements MainView {
                     final Dialog dialog = new Dialog(title, message, true);
                     dialog.setLocationRelativeTo((JComponent) this.shopView);
                     dialog.setVisible(true);
+                    return ;
                 } else {
                     this.shopView.notifyHidden();
                     this.gameController.notifyShopToMatch();
