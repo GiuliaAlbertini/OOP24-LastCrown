@@ -22,9 +22,9 @@ public interface SceneManager {
     void closeApplication();
 
     /**
-     * Update the user's collection used by the DeckController.
+     * Notify the users who use the user's collection that it changed.
      * 
      * @param newSet the new collection to use
      */
-    void updateDeckController(Set<CardIdentifier> newSet);
+    void updateUserCollectionUsers(Set<CardIdentifier> newSet);
 }

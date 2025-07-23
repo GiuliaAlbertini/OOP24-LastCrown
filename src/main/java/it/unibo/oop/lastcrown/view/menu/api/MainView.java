@@ -27,5 +27,5 @@ public interface MainView {
      * 
      * @param newSet the updated collection to show
      */
-    void updateDeckView(Set<CardIdentifier> newSet);
+    void updateUserCollectionUsers(Set<CardIdentifier> newSet);
 }

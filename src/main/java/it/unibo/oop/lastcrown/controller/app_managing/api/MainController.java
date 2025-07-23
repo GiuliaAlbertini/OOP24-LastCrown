@@ -17,11 +17,11 @@ public interface MainController {
     void closeAll();
 
     /**
-     * Notify the classes that uses the deck to update it with the new set.
+     * Notify the classes that uses the user's collection to update it with the new set.
      * 
      * @param newSet the new set to use
      */
-    void updateDeckUsers(Set<CardIdentifier> newSet);
+    void updateUserColletionUsers(Set<CardIdentifier> newSet);
 
     /**
      * Sets the necessary aspects to go in the Menu section.
