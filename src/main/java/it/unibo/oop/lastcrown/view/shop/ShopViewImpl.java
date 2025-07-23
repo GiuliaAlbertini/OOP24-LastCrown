@@ -26,6 +26,7 @@ import it.unibo.oop.lastcrown.view.menu.api.MainView;
  * The main Window of the shop.
  */
 public final class ShopViewImpl extends JPanel implements ShopView, ContainerObserver {
+    private static final int COINS_TO_ESCAPE = 100;
     private static final long serialVersionUID = 1L;
     private static final int ESCAPE_TAX = 100;
     private static final String NAME = "SHOP";
@@ -112,6 +113,7 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
     final Dialog dialog = new Dialog(title, message, true);
     final JButton escape = new JButton("ESCAPE");
     escape.addActionListener(act -> {
+        this.accManager.removeCoins(COINS_TO_ESCAPE);
         dialog.dispose();
         this.mainView.changePanel(NAME, "MENU");
     });
