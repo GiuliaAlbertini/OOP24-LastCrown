@@ -208,8 +208,12 @@ public class MainViewImpl extends JFrame implements MainView {
     @Override
     public final void updateUserCollectionUsers(final Set<CardIdentifier> newSet) {
         updateDeckController(newSet);
+        this.mainPanel.remove(this.deckView.getPanel());
         this.deckView = DeckView.create(this.sceneManager, this.deckController);
+        this.mainPanel.add(this.deckView.getPanel(), this.deckView.getSceneName());
+        this.mainPanel.remove(this.collectionView.getPanel());
         this.collectionView = CollectionView.create(this.sceneManager, this.collectionController, newSet);
+        this.mainPanel.add(this.collectionView.getPanel(), this.collectionView.getSceneName());
     }
 
     private void updateDeckController(final Set<CardIdentifier> newSet) {
