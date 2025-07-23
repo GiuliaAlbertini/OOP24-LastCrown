@@ -39,7 +39,7 @@ public final class IconPanel extends JPanel {
      */
     public IconPanel(final CardIdentifier card, final boolean useGrey) {
         super(new BorderLayout());
-        setOpaque(false);
+        this.setBackground(Color.ORANGE);
         final Border innerBorder = BorderFactory.createLineBorder(new Color(30, 144, 255), 2);
         final Border middleBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.GRAY, Color.DARK_GRAY);
         final Border outerBorder = BorderFactory.createMatteBorder(3, 3, 3, 3, new Color(245, 245, 245));
