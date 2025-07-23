@@ -21,10 +21,11 @@ import it.unibo.oop.lastcrown.model.user.impl.CompleteCollectionImpl;
 public final class InGameDeckController {
     private static final int MAX_CARD_TO_SEND = 3;
     private static final CompleteCollection COMPLETE_COLLECTION = new CompleteCollectionImpl();
+
     private final Map<CardIdentifier, Integer> copiesRegister;
-    private Set<CardIdentifier> availables;
+    private final Set<CardIdentifier> availables;
     private final List<CardIdentifier> queue = new ArrayList<>();
-    private Set<CardIdentifier> deck;
+    private final Set<CardIdentifier> deck;
 
     /**
      * Initializes the deck to use, the cards availables and their copies.
@@ -59,7 +60,7 @@ public final class InGameDeckController {
             .collect(Collectors.<CardIdentifier, CardIdentifier, Integer>toMap(
                 Function.identity(),
                 id -> {
-                    int copies = switch (id.type()) {
+                    return switch (id.type()) {
                         case MELEE, RANGED -> getCharacterFromCardID(id)
                                               .map(PlayableCharacter::getCopiesPerMatch)
                                               .orElseThrow(() ->
@@ -72,27 +73,8 @@ public final class InGameDeckController {
                                               );
                         default -> 1;
                     };
-                    return Integer.valueOf(copies);
                 }
             ));
-    }
-
-    /**
-     * Updates the copies of a card using one.
-     * If the card's copies are finished it removes the card from the availables list,
-     * otherwise it just decreases the copies and re-queues the card.
-     * 
-     * @param id the card used
-     */
-    private void useCopy(final CardIdentifier id) {
-        final int remaining = copiesRegister.get(id);
-        copiesRegister.put(id, remaining - 1);
-        queue.remove(id);
-        if (remaining - 1 > 0) {
-            queue.add(id);
-        } else {
-            availables.remove(id);
-        }
     }
 
     /**
@@ -133,14 +115,30 @@ public final class InGameDeckController {
     }
 
     /**
-     * Updates the temporary deck.
+     * Method to play a card (consume a copy).
      * 
-     * @param newDeck the new deck
+     * @param id the card to use
      */
-    public void setDeck(final Set<CardIdentifier> newDeck) {
-        this.deck = newDeck;
-        this.availables = updateAvailables();
-        initializeQueue();
+    public void playCard(final CardIdentifier id) {
+        this.useCopy(id);
+    }
+
+    /**
+     * Updates the copies of a card using one.
+     * If the card's copies are finished it removes the card from the availables list,
+     * otherwise it just decreases the copies and re-queues the card.
+     * 
+     * @param id the card used
+     */
+    private void useCopy(final CardIdentifier id) {
+        final int remaining = copiesRegister.get(id);
+        copiesRegister.put(id, remaining - 1);
+        queue.remove(id);
+        if (remaining - 1 > 0) {
+            queue.add(id);
+        } else {
+            availables.remove(id);
+        }
     }
 
     private Optional<PlayableCharacter> getCharacterFromCardID(final CardIdentifier ci) {
@@ -169,14 +167,5 @@ public final class InGameDeckController {
     private void initializeQueue() {
         queue.clear();
         queue.addAll(availables);
-    }
-
-    /**
-     * Method to play a card (consume a copy).
-     * 
-     * @param id the card to use
-     */
-    public void playCard(final CardIdentifier id) {
-        this.useCopy(id);
     }
 }
