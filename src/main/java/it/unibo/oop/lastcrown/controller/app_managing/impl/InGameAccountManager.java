@@ -44,12 +44,8 @@ public final class InGameAccountManager {
      */
     private static Account createAccountCopy(final Account source) {
         final Account copy = new AccountImpl(source.getUsername());
-        final int coins = source.getCoins();
-        if (coins > 0) {
-            copy.addCoins(coins);
-        } else if (coins < 0) {
-            copy.removeCoins(-coins);
-        }
+        copy.removeCoins(copy.getCoins());
+        copy.addCoins(source.getCoins());
         for (int i = 0; i < source.getBossesDefeated(); i++) {
             copy.increaseBossesDefeated();
         }
