@@ -57,6 +57,7 @@ public class AccountControllerImpl implements AccountController {
 
     private static Account defensiveCopy(final Account src) {
         final Account copy = new AccountImpl(src.getUsername());
+        copy.removeCoins(copy.getCoins());
         copy.addCoins(src.getCoins());
         copy.addPlaytime(src.getPlaytime());
 
