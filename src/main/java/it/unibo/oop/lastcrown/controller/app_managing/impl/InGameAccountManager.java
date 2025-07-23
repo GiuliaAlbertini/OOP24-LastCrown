@@ -89,6 +89,47 @@ public final class InGameAccountManager {
     }
 
     /**
+     * Adds coins to the managed account.
+     *
+     * @param amount the number of coins to add
+     */
+    public void addCoins(final int amount) {
+        this.account.addCoins(amount);
+    }
+
+    /**
+     * Removes coins from the managed account.
+     *
+     * @param amount the number of coins to remove
+     */
+    public void removeCoins(final int amount) {
+        this.account.removeCoins(amount);
+    }
+
+    /**
+     * Records the defeat of a boss for the managed account.
+     */
+    public void recordBossDefeat() {
+        this.account.increaseBossesDefeated();
+    }
+
+    /**
+     * Records the playing of a game for the managed account.
+     */
+    public void recordGamePlayed() {
+        this.account.increasePlayedGames();
+    }
+
+    /**
+     * Adds playtime to the managed account.
+     *
+     * @param hours the amount of playtime to add, in hours
+     */
+    public void addPlaytime(final double hours) {
+        this.account.addPlaytime(hours);
+    }
+
+    /**
      * Returns a safe copy of the managed account.
      *
      * @return a copy of the current state of the managed account
