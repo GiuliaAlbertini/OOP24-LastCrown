@@ -8,18 +8,26 @@ import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.awt.event.MouseEvent;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.controller.app_managing.impl.InGameDeckController;
+import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
+import it.unibo.oop.lastcrown.controller.user.impl.CollectionControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
 
 /**
  * A JPanel that contains an energyBar and a panel with 4 card-buttons.
@@ -32,6 +40,7 @@ public final class DeckZone extends JPanel {
     private static final int GREEN = 120;
     private static final int BLUE = 175;
     private static final String KEY_PROPERTY = "info";
+    private static final int FALLBACK_SIDE = 200;
 
     private static final int MAX_ENERGY = SECTIONS;
     private static final int TIME_RECHARGE_SINGLE_ENERGY = 1000;
@@ -113,14 +122,32 @@ public final class DeckZone extends JPanel {
         cardPanel.removeAll();
         final List<CardIdentifier> nextCards = inGameDeckController.getNextAvailableCards();
         for (final CardIdentifier id : nextCards) {
-            final JButton jb = new JButton(id.toString());
+            final JButton jb = new JButton();
             jb.putClientProperty(KEY_PROPERTY, id);
             jb.addActionListener(act);
             jb.addMouseListener(ml);
             cardPanel.add(jb);
+            addIconToBtn(id, jb);
         }
         cardPanel.revalidate();
         cardPanel.repaint();
+    }
+
+    private void addIconToBtn(final CardIdentifier id, final JButton jb) {
+        final CollectionController collContr = new CollectionControllerImpl();
+        final String name = collContr.getCardName(id)
+            .orElseThrow(() -> new IllegalArgumentException(
+                "No name found for card " + id
+            ));
+        final String iconPath = CharacterPathLoader.loadIconPath(id.type().get(), name);
+        BufferedImage img;
+        try {
+            img = ImageIO.read(new File(iconPath));
+        } catch (final IOException e) {
+            img = new BufferedImage(FALLBACK_SIDE, FALLBACK_SIDE, BufferedImage.TYPE_INT_ARGB);
+        }
+        final ImageIcon icon = new ImageIcon(img);
+        jb.setIcon(icon);
     }
 
     /**
