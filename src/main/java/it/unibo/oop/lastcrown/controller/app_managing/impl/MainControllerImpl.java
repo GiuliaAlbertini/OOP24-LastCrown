@@ -3,6 +3,8 @@ package it.unibo.oop.lastcrown.controller.app_managing.impl;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.swing.JComponent;
+
 import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
 import it.unibo.oop.lastcrown.controller.GameControllerExample;
@@ -56,6 +58,30 @@ public class MainControllerImpl implements MainController {
             }
             @Override
             public void notifyClicked(final int x, final int y) {
+            }
+            @Override
+            public void notifyPause() {
+            }
+            @Override
+            public void notifyPauseEnd() {
+            }
+            @Override
+            public JComponent getWallHealthBar() {
+               return new JComponent() {
+                
+               };
+            }
+            @Override
+            public JComponent getEventWriter() {
+                return new JComponent() {
+                    
+                };
+            }
+            @Override
+            public JComponent getCoinsWriter() {
+                return new JComponent() {
+                    
+                };
             }
         };
         //= new GameController(hero, boss, playableChars, enemies, spellsMap, 1400, 800);
