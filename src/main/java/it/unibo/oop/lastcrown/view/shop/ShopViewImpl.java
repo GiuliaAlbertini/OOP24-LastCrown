@@ -12,10 +12,12 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import it.unibo.oop.lastcrown.controller.app_managing.impl.InGameAccountManager;
 import it.unibo.oop.lastcrown.controller.shop.impl.ShopCardsSelectionControllerImpl;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
+import it.unibo.oop.lastcrown.model.user.api.Account;
 import it.unibo.oop.lastcrown.view.Dialog;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
@@ -39,6 +41,8 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
     private final MainView mainView;
     private final ShopContent shopContent;
     private final List<TraderPanel> traders;
+    private final transient InGameAccountManager accManager;
+    private transient Optional<CardSelectionView> selection = Optional.empty();
 
     /**
      * @param mainView the main view interface
@@ -46,11 +50,13 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
      * @param userColl the observer of the hero action in the shop
      * @param width the width of this JFrame
      * @param height the height of this JFrame
+     * @param account the account used to create the InGameAccountManager
      */
     public ShopViewImpl(final MainView mainView, final CollectionController collContr,
-     final List<CardIdentifier> userColl, final int width, final int height) {
+     final List<CardIdentifier> userColl, final int width, final int height, final Account account) {
         this.mainView = mainView;
         this.collContr = collContr;
+        this.accManager = InGameAccountManager.create(account);
         this.userCollDefensiveCopy = Collections.unmodifiableList(new ArrayList<>(userColl));
         this.userColl = Collections.unmodifiableList(new ArrayList<>(userColl));
         this.traders = new ArrayList<>();
@@ -137,8 +143,8 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
 
     @Override
     public void notifyInteraction(final int id, final CardType cardType) {
-        final var selection = new CardSelectionView(this.width, this.height, 
-        id, cardType, new ShopCardsSelectionControllerImpl(collContr, userColl), this);
+        this.selection = Optional.of(new CardSelectionView(this.width, this.height, 
+        id, cardType, new ShopCardsSelectionControllerImpl(collContr, userColl), this));
         selection.setLocation(this.getLocation());
         selection.setVisible(true);
     }
@@ -146,8 +152,20 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
     @Override
     public void notifyEndInteraction(final Optional<CardIdentifier> cardIdentifier, final int id) {
         if (cardIdentifier.isPresent()) {
-            //this.userColl.addCard(cardIdentifier.get());
-            this.traders.get(id).startApprovalSequence();
+            final CardIdentifier ci = cardIdentifier.get();
+            if (accManager.isBuyable(ci)) {
+                this.accManager.addCard(ci);
+                //TO DO: avvertire il maincontroller di aggiornare gli utilizzatori della collezione
+                this.selection.get().dispose();
+                this.traders.get(id).startApprovalSequence();
+            } else {
+                this.traders.get(id).startCloseSequence();
+                final String title = "OPS...";
+                final String message = "You don't have enough coins to buy this card";
+                final Dialog dialog = new Dialog(title, message, true);
+                dialog.setLocationRelativeTo(this.selection.get());
+                dialog.setVisible(true);
+            }
         } else {
             this.traders.get(id).startCloseSequence();
         }
