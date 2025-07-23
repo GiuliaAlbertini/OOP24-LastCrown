@@ -126,6 +126,11 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
     }
 
     @Override
+    public void notifyDeck() {
+        this.mainView.changePanel(NAME, "DECK");
+    }
+
+    @Override
     public void notifyMatch() {
         final String title = "To the Match...";
         final String message = "Do you really want to start a new match? You will not be able"
