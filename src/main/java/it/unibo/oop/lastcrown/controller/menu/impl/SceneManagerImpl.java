@@ -64,7 +64,7 @@ public class SceneManagerImpl implements SceneManager {
     }
 
     @Override
-    public final void updateDeckController(final Set<CardIdentifier> newSet) {
-        this.mainView.updateDeckView(newSet);
+    public final void updateUserCollectionUsers(final Set<CardIdentifier> newSet) {
+        this.mainView.updateUserCollectionUsers(newSet);
     }
 }

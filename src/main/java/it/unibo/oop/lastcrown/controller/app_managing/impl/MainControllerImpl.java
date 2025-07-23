@@ -71,8 +71,8 @@ public class MainControllerImpl implements MainController {
     }
 
     @Override
-    public final void updateDeckUsers(final Set<CardIdentifier> newSet) {
-        this.sceneManager.get().updateDeckController(newSet);
+    public final void updateUserColletionUsers(final Set<CardIdentifier> newSet) {
+        this.sceneManager.get().updateUserCollectionUsers(newSet);
     }
 
     @Override
