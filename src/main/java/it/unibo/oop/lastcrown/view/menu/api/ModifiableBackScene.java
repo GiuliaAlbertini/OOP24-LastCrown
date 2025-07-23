@@ -3,7 +3,7 @@ package it.unibo.oop.lastcrown.view.menu.api;
 /**
  * An extension of Scene interface.
  */
-public interface CollectionScene extends Scene {
+public interface ModifiableBackScene extends Scene {
 
     /**
      * Sets the back destination of the static back button.
