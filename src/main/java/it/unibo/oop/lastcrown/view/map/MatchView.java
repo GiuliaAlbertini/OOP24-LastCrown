@@ -2,9 +2,11 @@ package it.unibo.oop.lastcrown.view.map;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.util.Set;
 
 import javax.swing.JComponent;
 
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.menu.api.Scene;
 
 /**
@@ -62,4 +64,6 @@ public interface MatchView extends Scene {
      * @return the upper left corner coordinates of the wall
      */
     Point getWallCoordinates();
+
+    void updateInGameDeck(Set<CardIdentifier> newDeck);
 }

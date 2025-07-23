@@ -3,6 +3,7 @@ package it.unibo.oop.lastcrown.view.map;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JButton;
@@ -11,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import it.unibo.oop.lastcrown.controller.GameControllerExample;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.Dialog;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
@@ -32,11 +34,11 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
      * @param height the height of the map
      */
     public MatchViewImpl(final GameControllerExample gameContr, final MainView mainView,
-     final int width, final int height) {
+     final int width, final int height, final Set<CardIdentifier> deck) {
         this.mainView = mainView;
         this.newComponents = new ConcurrentHashMap<>();
         this.mainPanel = new MatchPanel(this, gameContr, gameContr.getWallHealthBar(),
-        gameContr.getEventWriter(), gameContr.getCoinsWriter(), width, height);
+        gameContr.getEventWriter(), gameContr.getCoinsWriter(), width, height, deck);
         this.add(mainPanel);
         mainPanel.setBounds(0, 0, width, height);
         this.setSize(new Dimension(width, height));
@@ -148,4 +150,9 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     public Point getWallCoordinates() {
         return this.mainPanel.getWallCoordinates();
     }
+
+    @Override
+    public void updateInGameDeck(final Set<CardIdentifier> newDeck) {
+        this.mainPanel.updateInGameDeck(newDeck);
+    } 
 }
