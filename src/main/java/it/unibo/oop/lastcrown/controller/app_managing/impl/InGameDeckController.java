@@ -61,7 +61,6 @@ public final class InGameDeckController {
             .collect(Collectors.<CardIdentifier, CardIdentifier, Integer>toMap(
                 Function.identity(),
                 id -> {
-                    // use a switch expression to guarantee an int result
                     int copies = switch (id.type()) {
                         case MELEE, RANGED -> getCharacterFromCardID(id)
                                               .map(PlayableCharacter::getCopiesPerMatch)
@@ -137,7 +136,6 @@ public final class InGameDeckController {
                            );
             case HERO:
             default:
-                // Hero cards require no energy
                 return 0;
         }
     }
@@ -168,7 +166,6 @@ public final class InGameDeckController {
                     case MELEE:
                     case RANGED:
                     case SPELL:
-                        // Only non-hero cards are playable
                         return true;
                     default:
                         return false;
