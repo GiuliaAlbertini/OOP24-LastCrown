@@ -118,8 +118,8 @@ public final class InGameDeckController {
      * 
      * @param tempDeck the new deck
      */
-    public void setTempDeck(final Deck tempDeck) {
-        this.tempDeck = new DeckImpl(tempDeck.getDeck());
+    public void setTempDeck(final Set<CardIdentifier> tempDeck) {
+        this.tempDeck = new DeckImpl(tempDeck);
         this.availables = updateAvailables();
         initializeQueue();
     }
