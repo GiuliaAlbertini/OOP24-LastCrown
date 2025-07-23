@@ -9,8 +9,10 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Set;
 
 import it.unibo.oop.lastcrown.controller.GameControllerExample;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 
@@ -52,7 +54,7 @@ public final class MatchPanel extends JPanel {
      */
     public MatchPanel(final MatchExitObserver obs, final GameControllerExample gameContr,
      final JComponent wallHealthBar, final JComponent eventWriter, final JComponent coinsWriter,
-     final int frameWidth, final int frameHeight) {
+     final int frameWidth, final int frameHeight, final Set<CardIdentifier> deck) {
         this.gameContr = gameContr;
         this.frameWidth = frameWidth;
         this.frameHeight = frameHeight;
@@ -95,7 +97,7 @@ public final class MatchPanel extends JPanel {
             }
         };
         initializePanel();
-        setupZone(obs, wallHealthBar, eventWriter, coinsWriter);
+        setupZone(obs, wallHealthBar, eventWriter, coinsWriter, deck);
     }
     /**
      * Initialize the main panel layout and properties.
@@ -114,12 +116,11 @@ public final class MatchPanel extends JPanel {
      * @param coinsWriter the coins writer graphic component
      */
     private void setupZone(final MatchExitObserver obs, final JComponent wallHealthBar,
-     final JComponent eventWriter, final JComponent coinsWriter) {
+     final JComponent eventWriter, final JComponent coinsWriter, final Set<CardIdentifier> deck) {
         this.panelsHeight = this.frameHeight - this.utilityZoneHeight;
         this.setOpaque(false);
-
         this.posZone = new PositioningZone(this.posZoneWidth, panelsHeight);
-        this.cardZone = new DeckZone(gameContr, posZone, deckZoneWidth, panelsHeight, energyBarWidth);
+        this.cardZone = new DeckZone(gameContr, posZone, deckZoneWidth, panelsHeight, energyBarWidth, deck);
         cardZone.setBounds(0, 0, this.deckZoneWidth, panelsHeight);
         this.add(cardZone);
 
@@ -180,5 +181,8 @@ public final class MatchPanel extends JPanel {
      */
     public Point getWallCoordinates() {
         return new Point(this.deckZoneWidth + this.posZoneWidth, 0);
+    }
+    public void updateInGameDeck(Set<CardIdentifier> newDeck) {
+        this.cardZone.updateInGameDeck(newDeck);
     }
 }
