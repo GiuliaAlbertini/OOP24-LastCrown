@@ -50,4 +50,11 @@ public interface CompleteCollection {
      * @return an {@link Optional} of the requested {@link Spell} if it is found, an empty Optional otherwise
      */
     Optional<Spell> getSpell(CardIdentifier cardIdentifier);
+    
+    /**
+     * Return the cost of a card.
+     * @param id the card to check
+     * @return the cost
+     */
+    int getCost(CardIdentifier id);
 }
