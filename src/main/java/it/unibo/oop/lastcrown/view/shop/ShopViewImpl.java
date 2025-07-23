@@ -145,8 +145,8 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
     public void notifyInteraction(final int id, final CardType cardType) {
         this.selection = Optional.of(new CardSelectionView(this.width, this.height, 
         id, cardType, new ShopCardsSelectionControllerImpl(collContr, userColl), this));
-        selection.setLocation(this.getLocation());
-        selection.setVisible(true);
+        selection.get().setLocation(this.getLocation());
+        selection.get().setVisible(true);
     }
 
     @Override
