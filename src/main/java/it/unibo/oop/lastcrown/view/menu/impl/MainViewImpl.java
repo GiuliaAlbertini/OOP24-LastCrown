@@ -33,6 +33,11 @@ import it.unibo.oop.lastcrown.view.shop.ShopViewImpl;
  * View that uses a {@link CardLayout} to handle the different scenes.
  */
 public class MainViewImpl extends JFrame implements MainView {
+    private static final String COLLECTION = "COLLECTION";
+    private static final String MENU = "MENU";
+    private static final String MATCH = "MATCH";
+    private static final String DECK = "DECK";
+    private static final String SHOP = "SHOP";
     private static final long serialVersionUID = 1L;
     private static final double RESIZE_FACTOR = 1.0;
     private static final Dimension SCREENSIZE = Toolkit.getDefaultToolkit().getScreenSize();
@@ -77,7 +82,7 @@ public class MainViewImpl extends JFrame implements MainView {
         this.sceneManager = sceneManager;
         this.mainController = mainController;
         this.accountController = accountController;
-        this.deckController = deckContr;
+        this.deckController = new DeckControllerImpl(Set.copyOf(deckContr.getAvailableCards()));
         this.collectionController = collectionController;
         this.gameController = gameContr;
         this.mainPanel.setOpaque(false);
@@ -143,51 +148,51 @@ public class MainViewImpl extends JFrame implements MainView {
 
     @Override
     public final void changePanel(final String sceneCaller, final String sceneDestination) {
-        if ("DECK".equals(sceneCaller)) {
+        if (DECK.equals(sceneCaller)) {
             this.matchView.updateInGameDeck(this.deckController.getDeck());
         }
         switch (sceneDestination) {
-            case "SHOP" -> {
+            case SHOP -> {
                 this.shopView.notifyVisible();
-                if ("DECK".equals(sceneCaller)) {
+                if (DECK.equals(sceneCaller)) {
                     this.matchView.updateInGameDeck(this.deckController.getDeck());
                 }
                 if (!AudioEngine.getActualSoundTrack().equals(SoundTrack.SHOP)) {
                     AudioEngine.playSoundTrack(SoundTrack.SHOP);
                 }
             }
-            case "MATCH" -> {
+            case MATCH -> {
                 if (this.deckController.getDeck().isEmpty()) {
                     final String title = "WAIT!!!";
                     final String message = "You didn't create a deck yet!";
                     final Dialog dialog = new Dialog(title, message, true);
                     dialog.setLocationRelativeTo((JComponent) this.shopView);
                     dialog.setVisible(true);
-                    return ;
+                    return;
                 } else {
                     this.shopView.notifyHidden();
                     this.gameController.notifyShopToMatch();
                     AudioEngine.playSoundTrack(SoundTrack.BATTLE);
                 }
             }
-            case "MENU" -> {
+            case MENU -> {
                 if (!AudioEngine.getActualSoundTrack().equals(SoundTrack.MENU)) {
                     AudioEngine.playSoundTrack(SoundTrack.MENU);
                 }
             }
-            case "COLLECTION" -> {
-                if ("SHOP".equals(sceneCaller)) {
-                    this.collectionView.setBackDestination("SHOP"); 
+            case COLLECTION -> {
+                if (SHOP.equals(sceneCaller)) {
+                    this.collectionView.setBackDestination(SHOP); 
                 } else {
-                    this.collectionView.setBackDestination("MENU");
+                    this.collectionView.setBackDestination(MENU);
                 }
                 AudioEngine.playSoundTrack(SoundTrack.COLLECTION);
             }
-            case "DECK" -> {
-                if ("SHOP".equals(sceneCaller)) {
-                    this.deckView.setBackDestination("SHOP");
+            case DECK -> {
+                if (SHOP.equals(sceneCaller)) {
+                    this.deckView.setBackDestination(SHOP);
                 } else {
-                    this.deckView.setBackDestination("MENU");
+                    this.deckView.setBackDestination(MENU);
                 }
             }
             default -> { }
