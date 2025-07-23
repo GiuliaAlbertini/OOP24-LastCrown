@@ -51,6 +51,7 @@ public final class MatchPanel extends JPanel {
      * @param coinsWriter the coins writer graphic component
      * @param frameWidth the width of the map
      * @param frameHeight the height of the map
+     * @param deck the deck to use
      */
     public MatchPanel(final MatchExitObserver obs, final GameControllerExample gameContr,
      final JComponent wallHealthBar, final JComponent eventWriter, final JComponent coinsWriter,
@@ -117,6 +118,7 @@ public final class MatchPanel extends JPanel {
      * @param wallHealthBar the graphic component of the wall health
      * @param eventWriter the event writer graphic component
      * @param coinsWriter the coins writer graphic component
+     * @param deck the deck to use
      */
     private void setupZone(final MatchExitObserver obs, final JComponent wallHealthBar,
      final JComponent eventWriter, final JComponent coinsWriter, final Set<CardIdentifier> deck) {
@@ -185,7 +187,11 @@ public final class MatchPanel extends JPanel {
     public Point getWallCoordinates() {
         return new Point(this.deckZoneWidth + this.posZoneWidth, 0);
     }
-    public void updateInGameDeck(Set<CardIdentifier> newDeck) {
+    /**
+     * Notify the cardzone about the new deck
+     * @param newDeck the new deck to use
+     */
+    public void updateInGameDeck(final Set<CardIdentifier> newDeck) {
         this.cardZone.updateInGameDeck(newDeck);
     }
 }
