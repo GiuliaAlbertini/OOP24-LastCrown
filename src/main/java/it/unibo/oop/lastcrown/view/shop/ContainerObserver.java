@@ -20,6 +20,11 @@ public interface ContainerObserver {
      */
     void notifyCollection();
 
+     /**
+     * Notifies that the player wants to check their actual deck.
+     */
+    void notifyDeck();
+
     /**
      * Notifues that the player wants to start a new Match.
      */
