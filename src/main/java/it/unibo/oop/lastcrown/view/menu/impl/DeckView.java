@@ -28,11 +28,12 @@ import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.DeckController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
+import it.unibo.oop.lastcrown.view.menu.api.ModifiableBackScene;
 
 /**
  * View to handle the user's deck.
  */
-public final class DeckView extends AbstractScene {
+public final class DeckView extends AbstractScene implements ModifiableBackScene {
     private static final int ADVISE_LABEL_FONT_SIZE = 26;
     private static final long serialVersionUID = 1L;
     private static final int SELECT_BTN_FONT_SIZE = 24;
@@ -63,6 +64,7 @@ public final class DeckView extends AbstractScene {
     private final JPanel filterBar;
     private final CardGridPanel cardsGridPanel;
     private final JPanel rightContainer;
+    private final BackButton back;
 
     private int detailWidth;
     private int deckHeight;
@@ -123,7 +125,7 @@ public final class DeckView extends AbstractScene {
         setLayout(new BorderLayout());
         add(mainContainer, BorderLayout.CENTER);
 
-        final JButton back = BackButton.create(PANEL_NAME, "MENU", this.sceneManager);
+        this.back = BackButton.create(PANEL_NAME, "MENU", this.sceneManager);
         final JPanel south = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         south.add(back);
         add(south, BorderLayout.SOUTH);
@@ -284,5 +286,10 @@ public final class DeckView extends AbstractScene {
         }
         final double scale = (double) width / BASE_SCREEN_WIDTH;
         return (int) (base * scale);
+    }
+
+    @Override
+    public void setBackDestination(String destination) {
+        this.back.setBackViewName(destination);
     }
 }
