@@ -8,7 +8,7 @@ import it.unibo.oop.lastcrown.model.user.api.UserCollection;
  * Implementation of {@Account}.
  */
 public class AccountImpl implements Account {
-    private static final int INITIAL_COINS = 300;
+    private static final int INITIAL_COINS = 500;
     private final String username;
     private int coins;
     private int bossesDefeated;
