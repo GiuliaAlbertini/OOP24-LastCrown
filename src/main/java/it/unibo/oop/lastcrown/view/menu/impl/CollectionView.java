@@ -22,12 +22,12 @@ import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
-import it.unibo.oop.lastcrown.view.menu.api.CollectionScene;
+import it.unibo.oop.lastcrown.view.menu.api.ModifiableBackScene;
 
 /**
  * View that shows the complete collection.
  */
-public final class CollectionView extends AbstractScene implements CollectionScene {
+public final class CollectionView extends AbstractScene implements ModifiableBackScene {
     private static final int BTN_FONT_SIZE = 20;
     private static final long serialVersionUID = 1L;
     private static final int FILTER_BAR_HGAP = 8;
