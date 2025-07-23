@@ -23,7 +23,7 @@ public class AccountImpl implements Account {
      */
     public AccountImpl(final String username) {
         this.username = username;
-        this.coins = 0;
+        this.coins = 300;
         this.bossesDefeated = 0;
         this.playedGames = 0;
         this.playtime = 0.0;
