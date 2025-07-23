@@ -80,7 +80,6 @@ public class MainViewImpl extends JFrame implements MainView {
         this.deckController = deckContr;
         this.collectionController = collectionController;
         this.gameController = gameContr;
-        final DeckController deckController = new DeckControllerImpl(Set.copyOf(deckContr.getAvailableCards()));
         this.mainPanel.setOpaque(false);
 
         this.menuView = MenuView.create(this.sceneManager, this.mainController);
@@ -91,7 +90,6 @@ public class MainViewImpl extends JFrame implements MainView {
         this.shopView = new ShopViewImpl(this, collectionController,
          deckContr.getAvailableCards(), WIDTH, HEIGHT, accountController.getAccount());
         this.matchView = new MatchViewImpl(gameContr, this, WIDTH, HEIGHT, this.deckController.getDeck());
-
         //HERE MISSING SHOP VIEW AND MATCH VIEW TO THE MAIN CONTROLLER
         //gameContr.newShopView(this.shopView);
         //gameContr.newMatchView(this.matchView);
