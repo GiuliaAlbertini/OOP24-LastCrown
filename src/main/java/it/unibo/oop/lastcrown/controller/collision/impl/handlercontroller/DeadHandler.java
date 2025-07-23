@@ -11,29 +11,46 @@ import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 
 /**
- * StateHandler implementation that manages the "dead" state of a character.
+ * StateHandler implementation that manages the "DEAD" state of a character.
  *
- * This handler sets the death animation for the character and processes
- * one animation frame per call, performing cleanup when the animation
- * completes.
+ * This handler triggers the character's death animation frame-by-frame and, once
+ * the animation ends, performs cleanup operations such as removing the character
+ * from the match and clearing relevant collision data.
  */
 public final class DeadHandler implements StateHandler {
+
     private final MatchController match;
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;
     private int currentFrameIndex;
 
+    /**
+     * @param matchController the match controller used to manage character engagement and removal
+     * @param eventFactory the factory used to create character state events
+     * @param resolver the collision resolver for clearing collision data
+     */
     public DeadHandler(final MatchController matchController, final EventFactory eventFactory,
-            final CollisionResolver resolver) {
+                       final CollisionResolver resolver) {
         this.match = matchController;
         this.eventFactory = eventFactory;
         this.resolver = resolver;
         this.currentFrameIndex = 0;
     }
 
+    /**
+     * Handles the logic associated with a character in the "DEAD" state.
+     * If the death animation has not yet finished, the method shows the next
+     * animation frame. Once the animation is complete, the character is removed
+     * from the game, and all related collision data is cleared.
+     *
+     * @param character the character controller
+     * @param queue the event queue used to enqueue new state transitions
+     * @param deltaTime the time passed since the last frame (not used in this implementation)
+     * @return CharacterState DEA indicating that the character remains in the DEAD state
+     */
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
-            final int deltaTime) {
+                                 final int deltaTime) {
         if (character == null) {
             return CharacterState.DEAD;
         }
@@ -58,6 +75,7 @@ public final class DeadHandler implements StateHandler {
             this.currentFrameIndex = 0;
             return CharacterState.DEAD;
         }
+
         queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
         return CharacterState.DEAD;
     }

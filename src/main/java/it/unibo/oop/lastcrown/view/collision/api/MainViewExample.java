@@ -3,7 +3,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.controller.collision.impl.GameState;
-import it.unibo.oop.lastcrown.view.collision.api.GamePanel;
 
 /**
  * Represents the main view of the application, responsible for managing

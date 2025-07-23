@@ -56,11 +56,4 @@ public interface Vect2D {
      * @return the y component of the vector
      */
     double y();
-
-    /**
-     * @return a string representation of the vector
-     */
-    String toString();
 }
-
-

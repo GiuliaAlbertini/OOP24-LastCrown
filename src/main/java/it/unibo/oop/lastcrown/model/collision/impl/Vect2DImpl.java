@@ -57,9 +57,4 @@ public final class Vect2DImpl implements Vect2D {
     public double y() {
         return y;
     }
-
-    @Override
-    public String toString() {
-        return "Vect2d(" + x + ", " + y + ")";
-    }
 }

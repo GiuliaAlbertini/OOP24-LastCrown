@@ -1,6 +1,9 @@
 package it.unibo.oop.lastcrown.view.collision.impl;
 
-import java.awt.*; // Importa tutti i tipi di awt
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
@@ -16,47 +19,33 @@ import it.unibo.oop.lastcrown.view.collision.api.GamePanel;
  * and now also the main game map.
  */
 public final class GamePanelImpl implements GamePanel {
-    private final JPanel panel; // Il JPanel interno che GamePanelImpl wrappa
-    private static final int BUTTON_X = 10;
-    private static final int BUTTON_Y = 50;
     private static final int BUTTON_WIDTH = 200;
     private static final int BUTTON_HEIGHT = 30;
+    private final JPanel panel;
     private final JButton addCharacterBtn = new JButton("Aggiungi personaggio");
-    //private final SidePanel sidePanel;
-    //private final MapPanelImpl mapPanel;
 
+    /**
+     * Constructs the main game panel implementation.
+     * Initializes the layout, sets up the background and button panel,
+     * and prepares the panel to receive character components during gameplay.
+     * Also configures the "Add Character" button for interaction.
+     */
     public GamePanelImpl() {
-
         panel = new JPanel(new BorderLayout());
         panel.setName(GameState.GAME.toString());
         panel.setBackground(Color.LIGHT_GRAY);
         resize(panel);
         panel.setFocusable(true);
 
-        //this.sidePanel = new SidePanelImpl(panel.getWidth(), panel.getHeight(), 200);
-        //mapPanel = new MapPanelImpl(panel.getWidth(), panel.getHeight(), 500);
-
         final JPanel buttonPanel = new JPanel();
-        buttonPanel.setOpaque(false); // o true se vuoi sfondo
+        buttonPanel.setOpaque(false);
         buttonPanel.add(addCharacterBtn);
-        addCharacterBtn.setPreferredSize(new Dimension(200, 50));
+        addCharacterBtn.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
         addCharacterBtn.setFocusPainted(false);
 
         panel.add(buttonPanel, BorderLayout.EAST);
-        //panel.add((Component) sidePanel, BorderLayout.WEST);
-        //panel.add((Component) mapPanel, BorderLayout.CENTER);
-
     }
 
-    /*
-    public SidePanel getSidePanel() {
-        return sidePanel;
-    }
-
-    public MapPanelImpl getMapPanel() {
-        return mapPanel;
-    }
-    */
     @Override
     public JPanel getPanel() {
         return panel;

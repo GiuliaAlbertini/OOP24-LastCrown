@@ -4,26 +4,37 @@ import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.Point2D;
 import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
 
+/**
+ * Handles the logic for making a character follow an enemy using a quadratic Bezier curve.
+ * The movement is smooth and progressively updates based on delta time.
+ */
 public final class HandleFollowEnemy {
     private final Collidable character;
     private final Collidable enemy;
     private final double speed = 20.0;
     //private final double baseCurveIntensity = 2;
-    private double t = 0.0;
+    private double t;
     private final boolean stopped; //false
     private boolean active; //false
-    private final Point2D previousPosition;
     private Point2D lastDelta = new Point2DImpl(0, 0);
+    private final double bezierStep = 0.01;
+
     //private static final double FIXED_CURVE_HEIGHT = 50.0; // altezza fissa per la curva
 
-
+    /**
+     * Constructs a new handler to make the first collidable follow the second.
+     *
+     * @param event the collision event containing the character and the enemy
+     */
     public HandleFollowEnemy(final CollisionEvent event) {
         this.stopped = false;
         this.character = event.getCollidable1();
         this.enemy = event.getCollidable2();
-        this.previousPosition = character.getHitbox().getPosition();
     }
 
+    /**
+     * Starts the following behavior if it hasn't already started and is not stopped.
+     */
     public void startFollowing() {
         if (!active && !stopped) {
             this.active = true;
@@ -31,6 +42,12 @@ public final class HandleFollowEnemy {
         }
     }
 
+    /**
+     * Updates the character's position based on Bezier curve progression.
+     *
+     * @param deltaMs time passed since last update in milliseconds
+     * @return true if the movement continues, false if the movement ends
+     */
     public boolean update(final long deltaMs) {
         if (active && !stopped) {
             final Point2D p0 = character.getHitbox().getPosition();
@@ -50,15 +67,13 @@ public final class HandleFollowEnemy {
 
             character.getHitbox().setPosition(newPos);
 
-            if (t >= 1.0 || character.getHitbox().checkCollision(enemy.getHitbox())) {
-                return false;
-            } else {
-                return true;
-            }
+            return !(t >= 1.0 || character.getHitbox().checkCollision(enemy.getHitbox()));
+
         } else {
             return false;
         }
     }
+
 
     private Point2D quadraticBezier(final Point2D p0, final Point2D p1, final Point2D p2, final double t) {
         final double oneMinusT = 1 - t;
@@ -89,7 +104,7 @@ public final class HandleFollowEnemy {
     private double estimateBezierLength(final Point2D p0, final Point2D p1, final Point2D p2) {
         double length = 0.0;
         Point2D prev = p0;
-        for (double t = 0.01; t <= 1.0; t += 0.01) {
+        for (double t = bezierStep; t <= 1.0; t += bezierStep) {
             final Point2D current = quadraticBezier(p0, p1, p2, t);
             length += distance(prev, current);
             prev = current;
@@ -101,23 +116,47 @@ public final class HandleFollowEnemy {
         return Math.hypot(a.x() - b.x(), a.y() - b.y());
     }
 
+    /**
+     * Returns the current position of the character.
+     *
+     * @return current character position
+     */
     public Point2D getCurrentPosition() {
         return character.getHitbox().getPosition();
     }
 
+    /**
+     * Returns the character that is following.
+     *
+     * @return the character collidable
+     */
     public Collidable getCharacter() {
         return character;
     }
 
+    /**
+     * Returns the enemy being followed.
+     *
+     * @return the enemy collidable
+     */
     public Collidable getEnemy() {
         return enemy;
     }
 
-
+    /**
+     * Returns whether the following has been stopped.
+     *
+     * @return false by default (not dynamically stoppable yet)
+     */
     public boolean isStopped() {
         return stopped;
     }
 
+    /**
+     * Returns the last computed movement delta.
+     *
+     * @return the last movement delta vector
+     */
     public Point2D getDelta() {
         return lastDelta;
     }

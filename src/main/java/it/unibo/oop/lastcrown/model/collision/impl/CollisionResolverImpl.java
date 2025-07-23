@@ -148,6 +148,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
         rangedEngagements.clear();
     }
 
+    @Override
     public void clearAllBossFightPairs() {
         bossFightPairs.clear();
     }

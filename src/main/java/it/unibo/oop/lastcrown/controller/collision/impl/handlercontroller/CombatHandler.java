@@ -23,11 +23,18 @@ import it.unibo.oop.lastcrown.view.characters.Keyword;
  * resolves collisions, and transitions the character to the appropriate state.
  */
 public final class CombatHandler implements StateHandler {
+    private int opponentId;
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;
     private final MatchController match;
-    int opponentId;
 
+    /**
+     * Constructs a CombatHandler to manage combat behavior and transitions for characters.
+     *
+     * @param eventFactory the factory used to create character state events
+     * @param resolver the collision resolver that provides opponent matching and engagement info
+     * @param match the match controller that manages character engagement and lookup
+     */
     public CombatHandler(final EventFactory eventFactory,
             final CollisionResolver resolver,
             final MatchController match) {
@@ -103,10 +110,10 @@ public final class CombatHandler implements StateHandler {
         return CharacterState.COMBAT;
     }
 
-    private void setupCombat(GenericCharacterController character, GenericCharacterController opponent) {
+    private void setupCombat(final GenericCharacterController character, final GenericCharacterController opponent) {
         if (character.getId().type() == CardType.BOSS && character instanceof BossController boss) {
-            List<Integer> personaggi = resolver.getAllCharacterIdsInBossFight();
-            boss.setOpponents(getCharactersFromIds(personaggi));
+            final List<Integer> characters  = resolver.getAllCharacterIdsInBossFight();
+            boss.setOpponents(getCharactersFromIds(characters));
         } else {
             character.setOpponent(opponent);
         }
@@ -123,5 +130,4 @@ public final class CombatHandler implements StateHandler {
         }
         return characters;
     }
-
 }

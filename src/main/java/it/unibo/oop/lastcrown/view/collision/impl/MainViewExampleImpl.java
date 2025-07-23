@@ -25,12 +25,6 @@ public final class MainViewExampleImpl extends JFrame implements MainViewExample
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 600;
 
-    // Constants for button position and size
-    private static final int BUTTON_X = 10;
-    private static final int BUTTON_Y = 50;
-    private static final int BUTTON_WIDTH = 200;
-    private static final int BUTTON_HEIGHT = 30;
-
     private final CardLayout cardLayout;
     private final JPanel mainPanel;
     private GamePanel gamePanel; // la classe wrapper

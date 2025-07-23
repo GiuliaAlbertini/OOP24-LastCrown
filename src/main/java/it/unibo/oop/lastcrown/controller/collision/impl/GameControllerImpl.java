@@ -8,8 +8,8 @@ import it.unibo.oop.lastcrown.view.collision.api.MainViewExample;
  * Manages the main game loop and handles starting and stopping the game.
  */
 public final class GameControllerImpl implements GameController {
-    private MainControllerExample controller;
-    private MainViewExample view;
+    private final MainControllerExample controller;
+    private final MainViewExample view;
     private Thread gameLoop;
 
     /**

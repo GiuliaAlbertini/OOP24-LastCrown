@@ -31,8 +31,17 @@ public final class EnemyRadiusScanner {
     private final MatchController matchController;
     private final CollisionResolver resolver;
 
+    /**
+     * Scans the radius of playable characters to detect nearby enemy characters.
+     * If an enemy is detected within a player's radius, a FOLLOW_ENEMY collision
+     * event is generated (or BOSS/RANGED specific events).
+     *
+     * @param hitboxControllers the map linking character controllers to their hitbox controllers
+     * @param matchController the controller managing character interactions in the match
+     * @param resolver the collision resolver used to determine proximity and relationships
+     */
     public EnemyRadiusScanner(final Map<GenericCharacterController, HitboxController> hitboxControllers,
-                              final MatchController matchController, final CollisionResolver resolver) {
+            final MatchController matchController, final CollisionResolver resolver) {
         this.hitboxControllers = hitboxControllers;
         this.matchController = matchController;
         this.resolver = resolver;
@@ -43,7 +52,8 @@ public final class EnemyRadiusScanner {
      * This method is designed to find the closest valid enemy target.
      *
      * @param player The playable character controller to scan for.
-     * @return An Optional containing a CollisionEvent if a target is found, otherwise empty.
+     * @return An Optional containing a CollisionEvent if a target is found,
+     *         otherwise empty.
      */
     public Optional<CollisionEvent> scanForFollowEventForPlayer(final PlayableCharacterController player) {
         final HitboxController playerHitboxController = hitboxControllers.get(player);
@@ -59,7 +69,8 @@ public final class EnemyRadiusScanner {
             return Optional.empty();
         }
 
-        final Optional<Hitbox> closestEnemyOpt = playerHitboxController.getRadius().getClosestEnemyInRadius(enemyHitboxes);
+        final Optional<Hitbox> closestEnemyOpt = playerHitboxController.getRadius()
+                .getClosestEnemyInRadius(enemyHitboxes);
         if (closestEnemyOpt.isEmpty()) {
             return Optional.empty();
         }
@@ -76,14 +87,13 @@ public final class EnemyRadiusScanner {
         return events.isEmpty() ? Optional.empty() : Optional.of(events.get(0));
     }
 
-
     /**
      * Gathers all enemy and boss hitboxes from the current game state.
      *
      * @param map The map of character controllers to their hitbox controllers.
      * @return A list of hitboxes belonging to enemies and bosses.
      */
-    private List<Hitbox> getAllEnemyHitboxes(Map<GenericCharacterController, HitboxController> map) {
+    private List<Hitbox> getAllEnemyHitboxes(final Map<GenericCharacterController, HitboxController> map) {
         final List<Hitbox> enemyHitboxes = new ArrayList<>();
         for (final var entry : map.entrySet()) {
             final CardType type = entry.getKey().getId().type();
@@ -97,13 +107,15 @@ public final class EnemyRadiusScanner {
     }
 
     /**
-     * Creates a map from hitbox to its corresponding generic character controller for enemies and bosses.
+     * Creates a map from hitbox to its corresponding generic character controller
+     * for enemies and bosses.
      *
      * @param map The map of character controllers to their hitbox controllers.
-     * @return A map where keys are hitboxes and values are generic character controllers of enemies/bosses.
+     * @return A map where keys are hitboxes and values are generic character
+     *         controllers of enemies/bosses.
      */
     private Map<Hitbox, GenericCharacterController> mapHitboxesToEnemies(
-            Map<GenericCharacterController, HitboxController> map) {
+            final Map<GenericCharacterController, HitboxController> map) {
         final Map<Hitbox, GenericCharacterController> result = new HashMap<>();
         for (final var entry : map.entrySet()) {
             final CardType type = entry.getKey().getId().type();
@@ -119,12 +131,14 @@ public final class EnemyRadiusScanner {
     }
 
     /**
-     * Determines the appropriate collision event type and creates it, adding it to the list of events.
-     * This method handles the logic for different character types (RANGED, MELEE) encountering enemies (normal, BOSS).
+     * Determines the appropriate collision event type and creates it, adding it to
+     * the list of events.
+     * This method handles the logic for different character types (RANGED, MELEE)
+     * encountering enemies (normal, BOSS).
      *
      * @param events The list to which the created CollisionEvent will be added.
      * @param player The playable character (initiator of the scan).
-     * @param enemy The enemy character detected.
+     * @param enemy  The enemy character detected.
      */
     private void determineAndCreateCollisionEvent(
             final List<CollisionEvent> events,
@@ -139,21 +153,22 @@ public final class EnemyRadiusScanner {
             // La logica di "boss fight" è gestita dal CollisionResolver,
             // che terrà traccia di tutti i partecipanti.
             synchronized (boss) {
-                boolean alreadyInBossFight = resolver.hasOpponentBossPartner(playerId);
+                final boolean alreadyInBossFight = resolver.hasOpponentBossPartner(playerId);
                 if (!alreadyInBossFight) {
                     createAndAddEvent(events, player, boss, EventType.BOSS);
                 }
             }
         } else if (enemy instanceof EnemyController regularEnemy) {
             if (player.getId().type() == CardType.RANGED) {
-                boolean isInRangedFight = resolver.hasOpponentRangedPartner(playerId);
+                final boolean isInRangedFight = resolver.hasOpponentRangedPartner(playerId);
                 if (!isInRangedFight) {
                     createAndAddEvent(events, player, regularEnemy, EventType.RANGED);
                 }
             } else {
-                if (!regularEnemy.isInCombat() && matchController.isPlayerIdle(player) && !matchController.isEnemyDead(enemyId)) {
+                if (!regularEnemy.isInCombat() && matchController.isPlayerIdle(player)
+                        && !matchController.isEnemyDead(enemyId)) {
                     synchronized (regularEnemy) {
-                        boolean engaged = matchController.engageEnemy(enemyId, playerId);
+                        final boolean engaged = matchController.engageEnemy(enemyId, playerId);
                         if (engaged) {
                             createAndAddEvent(events, player, regularEnemy, EventType.ENEMY);
                         }
@@ -165,9 +180,10 @@ public final class EnemyRadiusScanner {
 
     /**
      * Helper method to create and add a CollisionEvent to the list.
-     * @param events The list of events.
-     * @param player The player collidable.
-     * @param enemy The enemy collidable.
+     *
+     * @param events    The list of events.
+     * @param player    The player collidable.
+     * @param enemy     The enemy collidable.
      * @param eventType The type of event.
      */
     private void createAndAddEvent(

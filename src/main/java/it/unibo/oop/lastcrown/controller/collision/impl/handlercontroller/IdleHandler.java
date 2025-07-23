@@ -1,6 +1,5 @@
 package it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller;
 
-
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
@@ -22,13 +21,14 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
  * or to STOPPED if a collision is detected (for enemies).
  */
 public final class IdleHandler implements StateHandler {
+    private static final int PLAYER_SPEED = 2;
+    private static final int ENEMY_SPEED = -2;
     private final MatchController matchController;
     private final EnemyRadiusScanner scanner;
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;
 
-    private static final int PLAYER_SPEED = 2;
-    private static final int ENEMY_SPEED = -2;
+
 
     /**
      * Constructs an IdleHandler with the required dependencies.

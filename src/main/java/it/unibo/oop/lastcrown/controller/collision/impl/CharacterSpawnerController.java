@@ -35,7 +35,8 @@ import it.unibo.oop.lastcrown.view.collision.impl.RadiusPanelImpl;
 /**
  * Controller responsible for spawning and initializing characters in the game.
  * Handles both playable and enemy characters by creating their controllers,
- * graphical components, hitboxes, and optional radius panels, then adds them to the GamePanel.
+ * graphical components, hitboxes, and optional radius panels, then adds them to
+ * the GamePanel.
  */
 public final class CharacterSpawnerController {
 
@@ -52,7 +53,8 @@ public final class CharacterSpawnerController {
     /**
      * Constructs a CharacterSpawnerController with the given game panel.
      *
-     * @param gamePanel the main game panel where characters and related components will be added
+     * @param gamePanel the main game panel where characters and related components
+     *                  will be added
      */
     public CharacterSpawnerController(final GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -62,39 +64,51 @@ public final class CharacterSpawnerController {
      * Spawns a playable character, attaches its animation panel,
      * and sets up graphical and collision-related components.
      *
-     * @param id unique identifier for the character
+     * @param id             unique identifier for the character
      * @param characterModel the model representing the playable character
-     * @param observer observer for character death events
-     * @param x initial x-position on the panel
-     * @param y initial y-position on the panel
+     * @param observer       observer for character death events
+     * @param x              initial x-position on the panel
+     * @param y              initial y-position on the panel
      * @return a SpawnedCharacter containing the character's controller and hitbox
      */
     public SpawnedCharacter spawnPlayableCharacter(final int id, final PlayableCharacter characterModel,
             final CharacterDeathObserver observer, final int x, final int y) {
-        final PlayableCharacterController controller =
-            PlCharControllerFactory.createPlCharController(observer, id, characterModel);
+        final PlayableCharacterController controller = PlCharControllerFactory.createPlCharController(observer, id,
+                characterModel);
         controller.attachCharacterAnimationPanel(CHARACTER_WIDTH, CHARACTER_HEIGHT);
         return setupCharacter(controller, characterModel.getType().name().toLowerCase(Locale.ROOT),
-                              characterModel.getName(), x, y, true, CHARACTER_WIDTH,CHARACTER_HEIGHT);
+                characterModel.getName(), x, y, true, CHARACTER_WIDTH, CHARACTER_HEIGHT);
     }
 
+    /**
+     * Spawns a hero character, attaches its animation panel,
+     * and sets up graphical and collision-related components.
+     *
+     * @param id             unique identifier for the hero character
+     * @param characterModel the model representing the hero character
+     * @param observer       observer for character death events
+     * @param x              initial x-position on the game panel
+     * @param y              initial y-position on the game panel
+     * @return a SpawnedCharacter containing the hero's controller and hitbox
+     *         controller
+     */
     public SpawnedCharacter spawnHeroCharacter(final int id, final Hero characterModel,
             final CharacterDeathObserver observer, final int x, final int y) {
         final HeroController controller = new HeroControllerImpl(observer, id, characterModel);
         controller.attachCharacterAnimationPanel(CHARACTER_WIDTH, CHARACTER_HEIGHT);
-        return setupCharacter(controller, characterModel.getName().toLowerCase(Locale.ROOT),
-                              characterModel.getName(), x, y, false, CHARACTER_WIDTH,CHARACTER_HEIGHT);
+        return setupCharacter(controller, characterModel.getName().toLowerCase(Locale.ROOT), characterModel.getName(),
+                x, y, false, CHARACTER_WIDTH, CHARACTER_HEIGHT);
     }
 
     /**
      * Spawns an enemy character, attaches its animation panel,
      * and sets up graphical and collision-related components.
      *
-     * @param id unique identifier for the enemy
+     * @param id         unique identifier for the enemy
      * @param enemyModel the model representing the enemy
-     * @param observer observer for character death events
-     * @param x initial x-position on the panel
-     * @param y initial y-position on the panel
+     * @param observer   observer for character death events
+     * @param x          initial x-position on the panel
+     * @param y          initial y-position on the panel
      * @return a SpawnedCharacter containing the enemy's controller and hitbox
      */
     public SpawnedCharacter spawnEnemyCharacter(final int id, final Enemy enemyModel,
@@ -102,19 +116,30 @@ public final class CharacterSpawnerController {
         final EnemyController controller = EnemyControllerFactory.createEnemyController(observer, id, enemyModel);
         controller.attachCharacterAnimationPanel(CHARACTER_WIDTH, CHARACTER_HEIGHT);
         return setupCharacter(controller, enemyModel.getEnemyType().name().toLowerCase(Locale.ROOT),
-                              enemyModel.getName(), x, y, false, CHARACTER_WIDTH,CHARACTER_HEIGHT);
+                enemyModel.getName(), x, y, false, CHARACTER_WIDTH, CHARACTER_HEIGHT);
     }
 
+    /**
+     * Spawns a boss character, attaches its animation panel,
+     * and sets up graphical and collision-related components.
+     *
+     * @param id         unique identifier for the boss character
+     * @param enemyModel the model representing the boss enemy
+     * @param observer   observer to notify when the boss dies
+     * @param x          initial X position of the boss on the game panel
+     * @param y          initial Y position of the boss on the game panel
+     * @return a SpawnedCharacter containing both the boss's controller and its hitbox controller
+     */
     public SpawnedCharacter spawnBossCharacter(final int id, final Enemy enemyModel,
             final CharacterDeathObserver observer, final int x, final int y) {
         final BossController controller = new BossControllerImpl(observer, id, enemyModel);
         controller.attachCharacterAnimationPanel(BOSS_WIDTH, BOSS_HEIGHT);
         return setupCharacter(controller, "enemy", enemyModel.getName(), x, y, false, BOSS_WIDTH, BOSS_HEIGHT);
-        //per il momento metto typefolder enemy perchè altrimenti non viene
+        // per il momento metto typefolder enemy perchè altrimenti non viene
     }
 
     private SpawnedCharacter setupCharacter(final GenericCharacterController controller, final String typeFolder,
-            final String name, final int x, final int y, final boolean isPlayable, int width, int height) {
+            final String name, final int x, final int y, final boolean isPlayable, final int width, final int height) {
 
         final JComponent charComp = controller.getGraphicalComponent();
         charComp.setLocation(x, y);
@@ -126,7 +151,6 @@ public final class CharacterSpawnerController {
 
         final String path = CharacterPathLoader.loadHitboxPath(typeFolder, name);
         final BufferedImage image = ImageLoader.getImage(path, width, height);
-        System.out.println(path);
         final HitboxMaskBounds bounds = new HitboxMaskBounds(hitbox, charComp, hitboxPanel);
         bounds.calculateHitboxCenter(image);
 
