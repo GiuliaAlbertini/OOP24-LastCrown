@@ -1,4 +1,5 @@
 package it.unibo.oop.lastcrown.controller.collision.impl;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,7 +13,7 @@ public final class Gameloop extends Thread {
     private static final Logger LOGGER = Logger.getLogger(Gameloop.class.getName());
     private static final long PERIOD = 64;
     private final MainControllerExample controller;
-    private boolean running;
+    private boolean running; //NOPMD suppressed as it is a false positive due to multithreading.
 
     /**
      * Constructs a new game loop instance with the specified main controller.
@@ -51,8 +52,8 @@ public final class Gameloop extends Thread {
             try {
                 sleep(PERIOD - dt);
             } catch (final InterruptedException ex) {
-                 Thread.currentThread().interrupt();
-                 LOGGER.log(Level.WARNING, "Thread interrotto durante l'attesa", ex);
+                currentThread().interrupt(); // senza 'Thread.' davanti
+                LOGGER.log(Level.WARNING, "Thread interrotto durante l'attesa", ex);
             }
         }
     }

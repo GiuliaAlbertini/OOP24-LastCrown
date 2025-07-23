@@ -11,13 +11,13 @@ import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
 public final class HandleFollowEnemy {
     private final Collidable character;
     private final Collidable enemy;
-    private final double speed = 20.0;
+    private static final double SPEED = 20.0;
     //private final double baseCurveIntensity = 2;
     private double t;
     private final boolean stopped; //false
     private boolean active; //false
     private Point2D lastDelta = new Point2DImpl(0, 0);
-    private final double bezierStep = 0.01;
+    private static final double BEZIERSTEP = 0.01;
 
     //private static final double FIXED_CURVE_HEIGHT = 50.0; // altezza fissa per la curva
 
@@ -55,7 +55,7 @@ public final class HandleFollowEnemy {
             final Point2D p1 = computeControlPoint(p0, p2);
 
             final double totalDistance = estimateBezierLength(p0, p1, p2);
-            final double distanceToTravel = (deltaMs / 1000.0) * speed;
+            final double distanceToTravel = deltaMs / 1000.0 * SPEED;
             t = Math.min(1.0, t + (distanceToTravel / totalDistance));
 
             final Point2D newPos = quadraticBezier(p0, p1, p2, t);
@@ -104,7 +104,7 @@ public final class HandleFollowEnemy {
     private double estimateBezierLength(final Point2D p0, final Point2D p1, final Point2D p2) {
         double length = 0.0;
         Point2D prev = p0;
-        for (double t = bezierStep; t <= 1.0; t += bezierStep) {
+        for (double t = BEZIERSTEP; t <= 1.0; t += BEZIERSTEP) {
             final Point2D current = quadraticBezier(p0, p1, p2, t);
             length += distance(prev, current);
             prev = current;

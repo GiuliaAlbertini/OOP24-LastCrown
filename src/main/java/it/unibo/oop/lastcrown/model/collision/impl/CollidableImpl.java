@@ -12,8 +12,8 @@ import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
  * Each Collidable is identified by a CardIdentifier.
  */
 public final class CollidableImpl implements Collidable {
-    private Hitbox hitbox;
-    private CardIdentifier cardIdentifier;
+    private final Hitbox hitbox;
+    private final CardIdentifier cardIdentifier;
 
     /**
      * Creates a new CollidableImpl with the given hitbox and identifier.

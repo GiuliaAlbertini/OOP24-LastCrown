@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap; // Importa per thread-safety se necessario
+import java.util.logging.Logger;
 
-import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.model.collision.api.Point2D;
@@ -22,20 +22,14 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
  * as well as engagements for ranged characters and boss fights.
  */
 public final class CollisionResolverImpl implements CollisionResolver {
+    private static final Logger LOGGER = Logger.getLogger(CollisionResolverImpl.class.getName());
+
     private final Map<Integer, HandleFollowEnemy> activeFollowMovements = new HashMap<>();
     private final Map<Integer, Integer> completedMeleeEngagements = new HashMap<>();
-    private final MatchController matchController;
 
     private final Set<Pair<Integer, Integer>> bossFightPairs = ConcurrentHashMap.newKeySet();
     private final Set<Pair<Integer, Integer>> rangedEngagements = ConcurrentHashMap.newKeySet();
 
-    /**
-     * Constructs a CollisionResolverImpl with the necessary controller.
-     * @param controller The MatchController for interactions.
-     */
-    public CollisionResolverImpl(final MatchController controller) {
-        this.matchController = controller;
-    }
 
     @Override
     public void notify(final CollisionEvent event) {
@@ -43,17 +37,17 @@ public final class CollisionResolverImpl implements CollisionResolver {
             case ENEMY -> handleMeleeEngagement(event);
             case BOSS -> handleBossEngagement(event);
             case RANGED -> handleRangedEngagement(event);
-            // default -> logger.warn("Evento collisione non gestito: {}", event.getType());
+            default -> LOGGER.warning("Unhandled collision event type: " + event.getType());
         }
     }
 
     /**
      * Handles ENEMY type collision events (Melee player engaging a regular enemy).
+     *
      * @param event The collision event.
      */
     private void handleMeleeEngagement(final CollisionEvent event) {
         final int characterId = event.getCollidable1().getCardidentifier().number();
-        final int enemyId = event.getCollidable2().getCardidentifier().number();
 
         final HandleFollowEnemy movement = new HandleFollowEnemy(event);
         movement.startFollowing();
@@ -62,6 +56,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
 
     /**
      * Handles BOSS type collision events (any player engaging a boss).
+     *
      * @param event The collision event.
      */
     private void handleBossEngagement(final CollisionEvent event) {
@@ -71,7 +66,9 @@ public final class CollisionResolverImpl implements CollisionResolver {
     }
 
     /**
-     * Handles RANGED type collision events (Ranged player engaging a regular enemy).
+     * Handles RANGED type collision events (Ranged player engaging a regular
+     * enemy).
+     *
      * @param event The collision event.
      */
     public void handleRangedEngagement(final CollisionEvent event) {
@@ -167,10 +164,10 @@ public final class CollisionResolverImpl implements CollisionResolver {
                 completedMeleeEngagements.put(movement.getEnemy().getCardidentifier().number(), characterId);
             }
             return Optional.of(new MovementResult(
-                movement.getCharacter(),
-                movement.getCurrentPosition(),
-                movementDelta,
-                stillMoving));
+                    movement.getCharacter(),
+                    movement.getCurrentPosition(),
+                    movementDelta,
+                    stillMoving));
         }
         return Optional.empty();
     }

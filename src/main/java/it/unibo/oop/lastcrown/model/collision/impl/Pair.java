@@ -8,10 +8,10 @@ import java.util.Objects;
  * @param <E1> the type of the first element
  * @param <E2> the type of the second element
  */
-public final class Pair<E1, E2> {
+public final class Pair<T, U> {
 
-    private final E1 e1;
-    private final E2 e2;
+    private final T e1;
+    private final U e2;
 
     /**
      * Constructs a new Pair with the specified elements.
@@ -19,7 +19,7 @@ public final class Pair<E1, E2> {
      * @param x the first element
      * @param y the second element
      */
-    public Pair(final E1 x, final E2 y) {
+    public Pair(final T x, final U y) {
         super();
         this.e1 = x;
         this.e2 = y;
@@ -30,7 +30,7 @@ public final class Pair<E1, E2> {
      *
      * @return the first element
      */
-    public E1 get1() {
+    public T get1() {
         return e1;
     }
 
@@ -39,7 +39,7 @@ public final class Pair<E1, E2> {
      *
      * @return the second element
      */
-    public E2 get2() {
+    public U get2() {
         return e2;
     }
 

@@ -80,7 +80,7 @@ public final class GamePanelImpl implements GamePanel {
 
     private void resize(final JPanel panel) {
         var dim = Toolkit.getDefaultToolkit().getScreenSize();
-        dim = new Dimension((int) (dim.getWidth()), (int) (dim.getHeight()));
+        dim = new Dimension((int) dim.getWidth(), (int) dim.getHeight());
         panel.setSize(dim);
     }
 }

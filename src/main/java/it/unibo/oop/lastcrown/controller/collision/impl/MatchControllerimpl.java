@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
@@ -41,6 +42,8 @@ import it.unibo.oop.lastcrown.view.collision.api.MainViewExample;
  */
 public final class MatchControllerimpl implements MatchController {
     // private final MainController controller;
+    private static final Logger LOGGER = Logger.getLogger(MatchControllerimpl.class.getName());
+
     private final Map<Integer, CharacterFSM> playerFSMs = new HashMap<>();
     private final Map<Integer, GenericCharacterController> charactersController = new HashMap<>();
     private final Map<GenericCharacterController, HitboxController> hitboxControllers = new HashMap<>();
@@ -53,8 +56,15 @@ public final class MatchControllerimpl implements MatchController {
     private int nextId = 1;
     private final GamePanel gamePanel;
     private final MainViewExample view;
-    //private final Requirement require = new Requirement("hero", 2);
-    //private final Optional<PassiveEffect> optionalEffect = Optional.of(new PassiveEffect("none", 0));
+    private static final int POSX_CHARACTER = 100;
+    private static final int POSY_CHARACTER = 300;
+
+    private static final int POSX_ENEMY = 200;
+    private static final int POSY_ENEMY = 400;
+
+    // private final Requirement require = new Requirement("hero", 2);
+    // private final Optional<PassiveEffect> optionalEffect = Optional.of(new
+    // PassiveEffect("none", 0));
 
     /**
      * Constructs a MatchControllerimpl and initializes its dependencies.
@@ -67,7 +77,7 @@ public final class MatchControllerimpl implements MatchController {
         this.gamePanel = controller.getMainView().getGamePanel();
         this.spawner = new CharacterSpawnerController(gamePanel);
         this.view.getGamePanel().setAddCharacterListener(e -> onAddCharacterButtonPressed());
-        this.collisionResolver = new CollisionResolverImpl(this);
+        this.collisionResolver = new CollisionResolverImpl();
         this.collisionManager.addObserver(collisionResolver);
         this.radiusScanner = new EnemyRadiusScanner(hitboxControllers, this, collisionResolver);
     }
@@ -75,8 +85,8 @@ public final class MatchControllerimpl implements MatchController {
     /**
      * Registers a character and its hitbox controller in the match.
      *
-     * @param n the character ID
-     * @param controller the character controller
+     * @param n                the character ID
+     * @param controller       the character controller
      * @param hitboxController the hitbox controller for the character
      */
     @Override
@@ -87,48 +97,57 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     /**
-     * Called when the "add character" button is pressed. Spawns and registers characters
+     * Called when the "add character" button is pressed. Spawns and registers
+     * characters
      * including melee, ranged, and boss types.
      */
     @Override
     public void onAddCharacterButtonPressed() {
-        final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
+        final CharacterDeathObserver obs = id -> LOGGER.info("Morto: " + id);
 
-        //final PlayableCharacter char1 = new PlayableCharacterImpl("Warrior", CardType.MELEE, 20, 5, 100, 2, 100, 0.8,100);
-        //final PlayableCharacter char2 = new PlayableCharacterImpl("Knight",CardType.MELEE, 20, 2, 100, 2, 100, 0.8,100);
-        final PlayableCharacter ranged = new PlayableCharacterImpl("Archer3", CardType.RANGED, 20, 20, 100, 2, 100, 0.8, 100);
+        final PlayableCharacter char1 = new PlayableCharacterImpl("Warrior", CardType.MELEE, 20, 5, 100, 2, 100, 0.8,
+                100);
 
-        final Enemy pipistrello = new EnemyImpl("Bat", 1, CardType.ENEMY, 23, 100, 0.8);
-        //final Enemy nemico2 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 23, 200, 0.8);
-        //final Enemy nemico3 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 23, 200, 0.8);
+        final Enemy nemico2 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 23, 200, 0.8);
 
-        // final Hero eroe = new HeroImpl("Valandor", new Requirement("Bosses", 80), 20,300,
+        /*
+          final PlayableCharacter char2 = new PlayableCharacterImpl("Knight",CardType.MELEE, 20, 2, 100, 2, 100, 0.8,100);
+          final PlayableCharacter ranged = new PlayableCharacterImpl("Archer3", CardType.RANGED, 20, 20, 100, 2, 100, 0.8, 100);
+          final Enemy pipistrello = new EnemyImpl("Bat", 1, CardType.ENEMY, 23, 100, 0.8);
+          final Enemy nemico3 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 23, 200, 0.8);
+         */
+        // final Hero eroe = new HeroImpl("Valandor", new Requirement("Bosses", 80),
+        // 20,300,
         // Optional.of(new PassiveEffect("health", 45)),3, 3, 4,8, 400);
         // spawnAndRegisterCharacter(generateUniqueCharacterId(), eroe, obs, 100, 200);
 
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), char1, obs, 100, 300);
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), char2, obs, 50, 200);// /*CASISTICHE 75-97-180 */
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), ranged, obs, 220, 110);
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), char1, obs, POSX_CHARACTER, POSY_CHARACTER);
+        /*
+          spawnAndRegisterCharacter(generateUniqueCharacterId(), char2, obs, 50,200);
+          spawnAndRegisterCharacter(generateUniqueCharacterId(), ranged, obs, 220,110);
+          //CASISTICHE 75-97-180
 
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), pipistrello, obs, 450,100);
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico2, obs, 200, 400);
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico3, obs, 700,180);
+          spawnAndRegisterCharacter(generateUniqueCharacterId(), pipistrello, obs, 450,100);
 
+         spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico3, obs,700,180);
+         */
+        spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico2, obs, POSX_ENEMY, POSY_ENEMY);
         // BOSS-FIGHT ==
-        //final Enemy boss = new EnemyImpl("Cthulu", 1, CardType.BOSS, 33, 100, 0.2);
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), boss, obs, 400, 200);
+        // final Enemy boss = new EnemyImpl("Cthulu", 1, CardType.BOSS, 33, 100, 0.2);
+        // spawnAndRegisterCharacter(generateUniqueCharacterId(), boss, obs, 400, 200);
 
     }
 
     /**
      * Spawns and registers a character, adding it to the controller and FSM system.
      *
-     * @param id the unique character ID
-     * @param model the character model (PlayableCharacter, Hero, or Enemy)
+     * @param id       the unique character ID
+     * @param model    the character model (PlayableCharacter, Hero, or Enemy)
      * @param observer an observer for character death
-     * @param x the spawn x-coordinate
-     * @param y the spawn y-coordinate
+     * @param x        the spawn x-coordinate
+     * @param y        the spawn y-coordinate
      */
+
     private void spawnAndRegisterCharacter(final int id, final Object model, final CharacterDeathObserver observer,
             final int x, final int y) {
         final SpawnedCharacter spawned = spawnCharacter(id, model, observer, x, y);
@@ -144,11 +163,11 @@ public final class MatchControllerimpl implements MatchController {
     /**
      * Spawns a character and returns its wrapped representation.
      *
-     * @param id the unique ID for the character
-     * @param model the character instance
+     * @param id       the unique ID for the character
+     * @param model    the character instance
      * @param observer observer for character death
-     * @param x spawn x-coordinate
-     * @param y spawn y-coordinate
+     * @param x        spawn x-coordinate
+     * @param y        spawn y-coordinate
      * @return the spawned character wrapper
      */
     public SpawnedCharacter spawnCharacter(final int id, final Object model, final CharacterDeathObserver observer,
@@ -173,8 +192,8 @@ public final class MatchControllerimpl implements MatchController {
      * Updates the position of a character and its hitbox based on the delta values.
      *
      * @param controller the character controller
-     * @param dx horizontal movement
-     * @param dy vertical movement
+     * @param dx         horizontal movement
+     * @param dy         vertical movement
      */
     @Override
     public void updateCharacterPosition(final GenericCharacterController controller, final int dx, final int dy) {
@@ -208,8 +227,7 @@ public final class MatchControllerimpl implements MatchController {
         collisionManager.notify(event);
     }
 
-
-     /**
+    /**
      * Updates the internal FSMs for all characters with the time delta.
      *
      * @param deltaTime the time since last update in milliseconds
@@ -277,11 +295,9 @@ public final class MatchControllerimpl implements MatchController {
         }
     }
 
-
     private int generateUniqueCharacterId() {
         return nextId++;
     }
-
 
     private boolean updateEnemyState(final int enemyId, final int playerId, final boolean engage) {
         final Object lock = enemyLocks.computeIfAbsent(enemyId, k -> new Object());
@@ -294,7 +310,6 @@ public final class MatchControllerimpl implements MatchController {
                 }
                 engagedEnemies.add(new EnemyEngagement(enemyId, playerId));
                 setEnemyInCombat(enemyId, true);
-                System.out.println(engagedEnemies);
                 return true;
 
             } else {
@@ -411,6 +426,7 @@ public final class MatchControllerimpl implements MatchController {
 
     /**
      * Checks if a character is engaged with a dead counterpart.
+     *
      * @param characterId the character ID
      * @return true if the opponent is dead
      */
@@ -420,10 +436,7 @@ public final class MatchControllerimpl implements MatchController {
             final int enemy = getEngagedCounterpart(characterId);
             if (enemy != -1) {
                 final GenericCharacterController enemycontroller = getCharacterControllerById(enemy).get();
-                if (enemycontroller.isDead()) {
-                    return true;
-                }
-                return false;
+                return enemycontroller.isDead();
             }
             return false;
         } else {
@@ -431,10 +444,7 @@ public final class MatchControllerimpl implements MatchController {
                 final int character = getEngagedCounterpart(characterId);
                 if (character != -1) {
                     final GenericCharacterController charactercontroller = getCharacterControllerById(character).get();
-                    if (charactercontroller.isDead()) {
-                        return true;
-                    }
-                    return false;
+                    return charactercontroller.isDead();
                 }
             }
             return false;
@@ -447,6 +457,7 @@ public final class MatchControllerimpl implements MatchController {
      * @param characterId the character's ID
      * @return opponent's ID or -1 if not engaged
      */
+    @Override
     public int getEngagedCounterpart(final int characterId) {
         for (final EnemyEngagement engagement : engagedEnemies) {
             if (engagement.playerId() == characterId) {
@@ -464,13 +475,11 @@ public final class MatchControllerimpl implements MatchController {
      * @param player the player controller
      * @return true if idle
      */
+
     @Override
     public boolean isPlayerIdle(final PlayableCharacterController player) {
         final CharacterFSM fsm = this.playerFSMs.get(player.getId().number());
-        if (fsm != null) {
-            return fsm.getCurrentState() == CharacterState.IDLE;
-        }
-        return false;
+        return fsm != null && fsm.getCurrentState() == CharacterState.IDLE;
     }
 
     /**
@@ -518,10 +527,8 @@ public final class MatchControllerimpl implements MatchController {
     @Override
     public boolean isEnemyDead(final int enemyId) {
         final GenericCharacterController controller = charactersController.get(enemyId);
-        if (controller instanceof EnemyController enemyController) {
-            if (enemyController.getId().type() != CardType.BOSS) {
-                return controller.isDead();
-            }
+        if (controller instanceof EnemyController enemyController && enemyController.getId().type() != CardType.BOSS) {
+            return controller.isDead();
         }
         return false;
     }

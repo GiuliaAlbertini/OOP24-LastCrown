@@ -8,8 +8,8 @@ import it.unibo.oop.lastcrown.view.collision.api.MainViewExample;
  * Delegates control to the appropriate controller based on the current GameState
  */
 public final class GamePhaseControllerImpl implements GamePhaseController {
-    private MainControllerExample controller;
-    private MainViewExample view;
+    private final MainControllerExample controller;
+    private final MainViewExample view;
     private GameState currenState;
 
     /**

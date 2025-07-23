@@ -12,7 +12,7 @@ import it.unibo.oop.lastcrown.model.collision.api.CollisionObserver;
  * Only active observers are notified of CollisionEvent.
  */
 public final class CollisionManagerImpl implements CollisionManager {
-    private Map<CollisionObserver, Boolean> map = new HashMap<>();
+    private final Map<CollisionObserver, Boolean> map = new HashMap<>();
 
     @Override
     public void addObserver(final CollisionObserver observer) {

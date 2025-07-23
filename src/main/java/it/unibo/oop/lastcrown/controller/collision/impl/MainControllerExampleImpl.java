@@ -23,7 +23,7 @@ public final class MainControllerExampleImpl implements MainControllerExample {
      * Automatically starts a new game upon creation.
      */
     public MainControllerExampleImpl() {
-        this.view = new MainViewExampleImpl(this);
+        this.view = new MainViewExampleImpl();
         this.match = new MatchControllerimpl(this);
         this.game = new GameControllerImpl(this);
         this.flow = new GamePhaseControllerImpl(this);

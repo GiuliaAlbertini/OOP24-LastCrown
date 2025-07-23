@@ -1,6 +1,5 @@
 package it.unibo.oop.lastcrown.view.collision.impl;
 
-import it.unibo.oop.lastcrown.controller.collision.api.MainControllerExample;
 import it.unibo.oop.lastcrown.controller.collision.impl.GameState;
 import it.unibo.oop.lastcrown.view.collision.api.GamePanel;
 import it.unibo.oop.lastcrown.view.collision.api.MainViewExample;
@@ -36,7 +35,7 @@ public final class MainViewExampleImpl extends JFrame implements MainViewExample
      *
      * @param controller the main controller to link with the view (currently not used directly here)
      */
-    public MainViewExampleImpl(final MainControllerExample controller) {
+    public MainViewExampleImpl() {
         this.cardLayout = new CardLayout();
         this.mainPanel = new JPanel(cardLayout); // IMPORTANTE: Assegna il CardLayout al mainPanel
 
