@@ -155,7 +155,7 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
             final CardIdentifier ci = cardIdentifier.get();
             if (accManager.isBuyable(ci)) {
                 this.accManager.addCard(ci);
-                //TO DO: avvertire il maincontroller di aggiornare gli utilizzatori della collezione
+                this.mainView.updateUserCollectionUsers(this.accManager.getUserCollection());
                 this.selection.get().dispose();
                 this.traders.get(id).startApprovalSequence();
             } else {
