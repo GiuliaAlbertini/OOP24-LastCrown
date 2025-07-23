@@ -15,13 +15,13 @@ import it.unibo.oop.lastcrown.model.user.impl.CompleteCollectionImpl;
 
 public final class CardPanel extends JPanel {
     private static final long serialVersionUID = 1L;
-    private static final Color BG_COLOR      = new Color(60, 10, 10);
-    private static final Color HEADER_COLOR  = new Color(120, 30, 30);
-    private static final Color LABEL_FG      = Color.WHITE;
+    private static final Color BG_COLOR = new Color(60, 10, 10);
+    private static final Color HEADER_COLOR = new Color(120, 30, 30);
+    private static final Color LABEL_FG = Color.WHITE;
     private static final int LABEL_FONT_SIZE = 28;
     private static final int BASE_SCREEN_WIDTH = 1920;
-    private static final String FONT_NAME      = "SansSerif";
-    private static final int SCREEN_WIDTH      = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
+    private static final String FONT_NAME = "SansSerif";
+    private static final int SCREEN_WIDTH = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
 
     private CardPanel(final CardIdentifier card) {
         super(new BorderLayout());
