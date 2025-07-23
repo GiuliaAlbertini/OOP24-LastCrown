@@ -115,6 +115,7 @@ public class MainViewImpl extends JFrame implements MainView {
         this.setResizable(false);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+        this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
 
     /**
