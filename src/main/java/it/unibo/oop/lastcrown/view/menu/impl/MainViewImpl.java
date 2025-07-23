@@ -49,7 +49,7 @@ public class MainViewImpl extends JFrame implements MainView {
     private final Scene creditView;
     private final Scene statsView;
     private Scene deckView;
-    private final CollectionScene collectionView;
+    private CollectionScene collectionView;
     private final ShopView shopView;
     private final MatchView matchView;
 
@@ -85,7 +85,7 @@ public class MainViewImpl extends JFrame implements MainView {
         this.deckView = DeckView.create(this.sceneManager, deckController);
         this.collectionView = CollectionView.create(this.sceneManager, this.collectionController, getOwnedCards());
         this.shopView = new ShopViewImpl(this, collectionController,
-         deckContr.getAvailableCards(), WIDTH, HEIGHT);
+         deckContr.getAvailableCards(), WIDTH, HEIGHT, accountController.getAccount());
         this.matchView = new MatchViewImpl(gameContr, this, WIDTH, HEIGHT);
 
         //HERE MISSING SHOP VIEW AND MATCH VIEW TO THE MAIN CONTROLLER
@@ -175,8 +175,9 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     @Override
-    public final void updateDeckView(final Set<CardIdentifier> newSet) {
+    public final void updateUserCollectionUsers(final Set<CardIdentifier> newSet) {
         this.deckView = DeckView.create(this.sceneManager, new DeckControllerImpl(newSet));
+        this.collectionView = CollectionView.create(this.sceneManager, this.collectionController, newSet);
     }
 
     private void setUpPanels() {
