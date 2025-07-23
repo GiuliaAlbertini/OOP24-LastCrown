@@ -289,7 +289,7 @@ public final class DeckView extends AbstractScene implements ModifiableBackScene
     }
 
     @Override
-    public void setBackDestination(String destination) {
+    public void setBackDestination(final String destination) {
         this.back.setBackViewName(destination);
     }
 }
