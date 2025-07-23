@@ -68,19 +68,16 @@ public class MainControllerImpl implements MainController {
             @Override
             public JComponent getWallHealthBar() {
                return new JComponent() {
-                
                };
             }
             @Override
             public JComponent getEventWriter() {
                 return new JComponent() {
-                    
                 };
             }
             @Override
             public JComponent getCoinsWriter() {
                 return new JComponent() {
-                    
                 };
             }
         };
