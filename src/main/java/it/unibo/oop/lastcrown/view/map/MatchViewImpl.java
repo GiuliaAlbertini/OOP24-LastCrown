@@ -32,6 +32,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
      * @param mainView the main view interface of the application
      * @param width the width of the map
      * @param height the height of the map
+     * @param deck the set to use as a deck
      */
     public MatchViewImpl(final GameControllerExample gameContr, final MainView mainView,
      final int width, final int height, final Set<CardIdentifier> deck) {
