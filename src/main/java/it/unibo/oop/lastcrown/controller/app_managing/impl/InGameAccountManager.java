@@ -145,4 +145,8 @@ public final class InGameAccountManager {
     private Integer getCardCost(final CardIdentifier id) {
         return COMPLETE_COLLECTION.getCost(id);
     }
+
+    public boolean canEscape(final int coinsToEscape) {
+        return this.account.getCoins() > coinsToEscape;
+    }
 }
