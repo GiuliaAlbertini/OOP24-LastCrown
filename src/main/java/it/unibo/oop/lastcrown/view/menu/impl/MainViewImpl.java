@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.Set;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -19,9 +20,10 @@ import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.controller.user.api.DeckController;
 import it.unibo.oop.lastcrown.controller.user.impl.DeckControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.view.Dialog;
 import it.unibo.oop.lastcrown.view.map.MatchView;
 import it.unibo.oop.lastcrown.view.map.MatchViewImpl;
-import it.unibo.oop.lastcrown.view.menu.api.CollectionScene;
+import it.unibo.oop.lastcrown.view.menu.api.ModifiableBackScene;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
 import it.unibo.oop.lastcrown.view.menu.api.Scene;
 import it.unibo.oop.lastcrown.view.shop.ShopView;
@@ -43,13 +45,14 @@ public class MainViewImpl extends JFrame implements MainView {
     private final transient SceneManager sceneManager;
     private final transient MainController mainController;
     private final transient AccountController accountController;
+    private transient DeckController deckController;
     private final transient CollectionController collectionController;
     private final transient GameControllerExample gameController;
     private final Scene menuView;
     private final Scene creditView;
     private final Scene statsView;
-    private Scene deckView;
-    private CollectionScene collectionView;
+    private ModifiableBackScene deckView;
+    private ModifiableBackScene collectionView;
     private final ShopView shopView;
     private final MatchView matchView;
 
@@ -74,6 +77,7 @@ public class MainViewImpl extends JFrame implements MainView {
         this.sceneManager = sceneManager;
         this.mainController = mainController;
         this.accountController = accountController;
+        this.deckController = deckContr;
         this.collectionController = collectionController;
         this.gameController = gameContr;
         final DeckController deckController = new DeckControllerImpl(Set.copyOf(deckContr.getAvailableCards()));
@@ -86,7 +90,7 @@ public class MainViewImpl extends JFrame implements MainView {
         this.collectionView = CollectionView.create(this.sceneManager, this.collectionController, getOwnedCards());
         this.shopView = new ShopViewImpl(this, collectionController,
          deckContr.getAvailableCards(), WIDTH, HEIGHT, accountController.getAccount());
-        this.matchView = new MatchViewImpl(gameContr, this, WIDTH, HEIGHT);
+        this.matchView = new MatchViewImpl(gameContr, this, WIDTH, HEIGHT, this.deckController.getDeck());
 
         //HERE MISSING SHOP VIEW AND MATCH VIEW TO THE MAIN CONTROLLER
         //gameContr.newShopView(this.shopView);
@@ -141,15 +145,31 @@ public class MainViewImpl extends JFrame implements MainView {
 
     @Override
     public final void changePanel(final String sceneCaller, final String sceneDestination) {
+        if ("DECK".equals(sceneCaller)) {
+            this.matchView.updateInGameDeck(this.deckController.getDeck());
+        }
         switch (sceneDestination) {
             case "SHOP" -> {
                 this.shopView.notifyVisible();
-                AudioEngine.playSoundTrack(SoundTrack.SHOP);
+                if ("DECK".equals(sceneCaller)) {
+                    this.matchView.updateInGameDeck(this.deckController.getDeck());
+                }
+                if (!AudioEngine.getActualSoundTrack().equals(SoundTrack.SHOP)) {
+                    AudioEngine.playSoundTrack(SoundTrack.SHOP);
+                }
             }
             case "MATCH" -> {
-                this.shopView.notifyHidden();
-                this.gameController.notifyShopToMatch();
-                AudioEngine.playSoundTrack(SoundTrack.BATTLE);
+                if (this.deckController.getDeck().isEmpty()) {
+                    final String title = "WAIT!!!";
+                    final String message = "You didn't create a deck yet!";
+                    final Dialog dialog = new Dialog(title, message, true);
+                    dialog.setLocationRelativeTo((JComponent) this.shopView);
+                    dialog.setVisible(true);
+                } else {
+                    this.shopView.notifyHidden();
+                    this.gameController.notifyShopToMatch();
+                    AudioEngine.playSoundTrack(SoundTrack.BATTLE);
+                }
             }
             case "MENU" -> {
                 if (!AudioEngine.getActualSoundTrack().equals(SoundTrack.MENU)) {
@@ -164,6 +184,13 @@ public class MainViewImpl extends JFrame implements MainView {
                 }
                 AudioEngine.playSoundTrack(SoundTrack.COLLECTION);
             }
+            case "DECK" -> {
+                if ("SHOP".equals(sceneCaller)) {
+                    this.deckView.setBackDestination("SHOP");
+                } else {
+                    this.deckView.setBackDestination("MENU");
+                }
+            }
             default -> { }
         }
         this.layout.show(this.mainPanel, sceneDestination);
@@ -176,8 +203,16 @@ public class MainViewImpl extends JFrame implements MainView {
 
     @Override
     public final void updateUserCollectionUsers(final Set<CardIdentifier> newSet) {
-        this.deckView = DeckView.create(this.sceneManager, new DeckControllerImpl(newSet));
+        updateDeckController(newSet);
+        this.deckView = DeckView.create(this.sceneManager, this.deckController);
         this.collectionView = CollectionView.create(this.sceneManager, this.collectionController, newSet);
+    }
+
+    private void updateDeckController(final Set<CardIdentifier> newSet) {
+        final Set<CardIdentifier> currentDeck = this.deckController.getDeck();
+        final DeckController newDeckContr = new DeckControllerImpl(newSet);
+        currentDeck.stream().forEach(newDeckContr::addCard);
+        this.deckController = newDeckContr;
     }
 
     private void setUpPanels() {
