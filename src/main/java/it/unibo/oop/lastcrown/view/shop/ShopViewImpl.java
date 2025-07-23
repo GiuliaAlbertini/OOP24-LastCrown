@@ -113,9 +113,18 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
     final Dialog dialog = new Dialog(title, message, true);
     final JButton escape = new JButton("ESCAPE");
     escape.addActionListener(act -> {
-        this.accManager.removeCoins(COINS_TO_ESCAPE);
-        dialog.dispose();
-        this.mainView.changePanel(NAME, "MENU");
+        if (this.accManager.canEscape(COINS_TO_ESCAPE)) {
+            this.accManager.removeCoins(COINS_TO_ESCAPE);
+            dialog.dispose();
+            this.mainView.changePanel(NAME, "MENU");
+        } else {
+            dialog.dispose();
+            final String titleEsc = "(MUAHAHAH)";
+            final String messageEsc = "THERE IS NO ESCAPE...\n\n(You need more money)";
+            final Dialog dialogEsc = new Dialog(titleEsc, messageEsc, true);
+            dialogEsc.setLocationRelativeTo(this);
+            dialogEsc.setVisible(true);
+        }
     });
     dialog.addButton(escape);
     dialog.setLocationRelativeTo(this);
