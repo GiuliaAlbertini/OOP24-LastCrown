@@ -166,6 +166,9 @@ public class MainViewImpl extends JFrame implements MainView {
                 if (SceneName.DECK.equals(sceneCaller)) {
                     this.matchView.updateInGameDeck(this.deckController.getDeck());
                 }
+                if (SceneName.MATCH.equals(sceneCaller)) {
+                    this.matchView.clearNewGraphicsComponent();
+                }
                 if (!AudioEngine.getActualSoundTrack().equals(SoundTrack.SHOP)) {
                     AudioEngine.playSoundTrack(SoundTrack.SHOP);
                 }
