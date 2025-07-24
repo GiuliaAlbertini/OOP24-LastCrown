@@ -34,9 +34,9 @@ public interface Account {
     void increaseBossesDefeated();
 
     /**
-     * Increases the amount of games played by the user by one.
+     * Increases the amount of matches played by the user by one.
      */
-    void increasePlayedGames();
+    void increasePlayedMatches();
 
     /**
      * Compute the amount of average bosses defeated in a match.
@@ -67,11 +67,11 @@ public interface Account {
     int getBossesDefeated();
 
     /**
-     * Provides the number of games played.
+     * Provides the number of matches played.
      * 
-     * @return the number of games
+     * @return the number of matches
      */
-    int getPlayedGames();
+    int getPlayedMatches();
 
     /**
      * Provides the time spent in the game by the user.

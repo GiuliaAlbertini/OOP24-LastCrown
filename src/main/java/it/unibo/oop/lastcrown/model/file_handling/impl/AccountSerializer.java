@@ -35,7 +35,7 @@ public class AccountSerializer implements Serializer<Account> {
             account.getUsername(),
             String.valueOf(account.getCoins()),
             String.valueOf(account.getBossesDefeated()),
-            String.valueOf(account.getPlayedGames()),
+            String.valueOf(account.getPlayedMatches()),
             String.valueOf(account.getPlaytime())
         ));
     }

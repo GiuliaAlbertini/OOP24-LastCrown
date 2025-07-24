@@ -64,8 +64,8 @@ public class AccountControllerImpl implements AccountController {
         IntStream.range(0, src.getBossesDefeated())
                  .forEach(i -> copy.increaseBossesDefeated());
 
-        IntStream.range(0, src.getPlayedGames())
-                 .forEach(i -> copy.increasePlayedGames());
+        IntStream.range(0, src.getPlayedMatches())
+                 .forEach(i -> copy.increasePlayedMatches());
 
         src.getUserCollection()
            .getCollection()

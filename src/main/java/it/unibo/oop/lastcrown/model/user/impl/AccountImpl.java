@@ -12,7 +12,7 @@ public class AccountImpl implements Account {
     private final String username;
     private int coins;
     private int bossesDefeated;
-    private int playedGames;
+    private int playedMatches;
     private double playtime;
     private final UserCollection userCollection;
 
@@ -26,7 +26,7 @@ public class AccountImpl implements Account {
         this.username = username;
         this.coins = INITIAL_COINS;
         this.bossesDefeated = 0;
-        this.playedGames = 0;
+        this.playedMatches = 0;
         this.playtime = 0.0;
         this.userCollection = new UserCollectionImpl();
     }
@@ -47,13 +47,13 @@ public class AccountImpl implements Account {
     }
 
     @Override
-    public final void increasePlayedGames() {
-        this.playedGames++;
+    public final void increasePlayedMatches() {
+        this.playedMatches++;
     }
 
     @Override
     public final double computeBossesPerMatch() {
-        return (double) this.playedGames / (this.bossesDefeated == 0 ? 1 : this.bossesDefeated);
+        return (double) this.playedMatches / (this.bossesDefeated == 0 ? 1 : this.bossesDefeated);
     }
 
     @Override
@@ -77,8 +77,8 @@ public class AccountImpl implements Account {
     }
 
     @Override
-    public final int getPlayedGames() {
-        return this.playedGames;
+    public final int getPlayedMatches() {
+        return this.playedMatches;
     }
 
     @Override
