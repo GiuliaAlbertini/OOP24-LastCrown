@@ -3,6 +3,7 @@ package it.unibo.oop.lastcrown.controller.menu.api;
 import java.util.Set;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.user.api.Account;
 import it.unibo.oop.lastcrown.view.SceneName;
 
 /**
@@ -28,4 +29,11 @@ public interface SceneManager {
      * @param newSet the new collection to use
      */
     void updateUserCollectionUsers(Set<CardIdentifier> newSet);
+
+    /**
+     * Notify the main view that the given account is changed.
+     * 
+     * @param account the new version of the account
+     */
+    void updateAccountUsers(Account account);
 }
