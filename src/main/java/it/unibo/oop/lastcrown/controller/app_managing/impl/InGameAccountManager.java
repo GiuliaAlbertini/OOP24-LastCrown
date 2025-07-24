@@ -138,15 +138,20 @@ public final class InGameAccountManager {
         return createAccountCopy(this.account);
     }
 
+    /**
+     * Checks if the user has enough coins to escape.
+     * @param coinsToEscape the amount of coins requested to escape
+     * @return {@code True} if the user is able to escape, {@code False} otherwise
+     */
+    public boolean canEscape(final int coinsToEscape) {
+        return this.account.getCoins() > coinsToEscape;
+    }
+
     private int substractCoinsAndCost(final CardIdentifier id) {
         return this.account.getCoins() - getCardCost(id);
     }
 
     private Integer getCardCost(final CardIdentifier id) {
         return COMPLETE_COLLECTION.getCost(id);
-    }
-
-    public boolean canEscape(final int coinsToEscape) {
-        return this.account.getCoins() > coinsToEscape;
     }
 }
