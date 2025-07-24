@@ -4,38 +4,38 @@ package it.unibo.oop.lastcrown.view;
  * Enumeration useful to mantain all the scene names.
  */
 public enum SceneName {
-    /*
-     * The Menu scene
+    /**
+     * The Menu scene.
      */
     MENU("MENU"),
 
-    /*
-     * The Deck scene
+    /**
+     * The Deck scene.
      */
     DECK("DECK"),
 
-    /*
-     * The Shop scene
+    /**
+     * The Shop scene.
      */
     SHOP("SHOP"),
 
-    /*
-     * The Collection scene
+    /**
+     * The Collection scene.
      */
     COLLECTION("COLLECTION"),
 
-    /*
-     * The Stats scene
+    /**
+     * The Stats scene.
      */
     STATS("STATS"),
 
-    /*
-     * The Match scene
+    /**
+     * The Match scene.
      */
     MATCH("MATCH"),
 
-    /*
-     * The Credits scene
+    /**
+     * The Credits scene.
      */
     CREDITS("CREDITS");
 
