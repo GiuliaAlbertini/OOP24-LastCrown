@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.view.map;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Map;
@@ -40,10 +41,10 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         this.newComponents = new ConcurrentHashMap<>();
         this.mainPanel = new MatchPanel(this, gameContr, gameContr.getWallHealthBar(),
         gameContr.getEventWriter(), gameContr.getCoinsWriter(), width, height, deck);
-        this.add(mainPanel);
+        this.setPreferredSize(new Dimension(width, height));
+        this.setLayout(new BorderLayout());
+        this.add(mainPanel, BorderLayout.CENTER);
         mainPanel.setBounds(0, 0, width, height);
-        this.setSize(new Dimension(width, height));
-        this.setLayout(null);
     }
 
     @Override
