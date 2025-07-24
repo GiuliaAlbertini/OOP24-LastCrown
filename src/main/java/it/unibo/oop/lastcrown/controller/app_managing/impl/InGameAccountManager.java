@@ -49,8 +49,8 @@ public final class InGameAccountManager {
         for (int i = 0; i < source.getBossesDefeated(); i++) {
             copy.increaseBossesDefeated();
         }
-        for (int i = 0; i < source.getPlayedGames(); i++) {
-            copy.increasePlayedGames();
+        for (int i = 0; i < source.getPlayedMatches(); i++) {
+            copy.increasePlayedMatches();
         }
         copy.addPlaytime(source.getPlaytime());
         final UserCollection col = source.getUserCollection();
@@ -107,44 +107,35 @@ public final class InGameAccountManager {
     }
 
     /**
-     * Records the defeat of a boss for the managed account.
-     */
-    public void recordBossDefeat() {
-        this.account.increaseBossesDefeated();
-    }
-
-    /**
-     * Records the playing of a game for the managed account.
-     */
-    public void recordGamePlayed() {
-        this.account.increasePlayedGames();
-    }
-
-    /**
-     * Adds playtime to the managed account.
-     *
-     * @param hours the amount of playtime to add, in hours
-     */
-    public void addPlaytime(final double hours) {
-        this.account.addPlaytime(hours);
-    }
-
-    /**
      * Returns a safe copy of the managed account.
      *
      * @return a copy of the current state of the managed account
      */
-    public Account getManagedAccount() {
+    public Account getAccount() {
         return createAccountCopy(this.account);
     }
 
     /**
+     * Returns a safe copy of the managed account.
+     * @param amount the coins earned during the last match
+     * @param bossDefeated flag that is true if a boss has been defeated
+     */
+    public void updateAccount(final int amount, final boolean bossDefeated) {
+        this.account.addCoins(amount);
+        if (bossDefeated) {
+            this.account.increaseBossesDefeated();
+        }
+        this.account.increasePlayedMatches();
+    }
+
+    /**
      * Checks if the user has enough coins to escape.
+     * 
      * @param coinsToEscape the amount of coins requested to escape
      * @return {@code True} if the user is able to escape, {@code False} otherwise
      */
     public boolean canEscape(final int coinsToEscape) {
-        return this.account.getCoins() > coinsToEscape;
+        return this.account.getCoins() >= coinsToEscape;
     }
 
     private int substractCoinsAndCost(final CardIdentifier id) {
