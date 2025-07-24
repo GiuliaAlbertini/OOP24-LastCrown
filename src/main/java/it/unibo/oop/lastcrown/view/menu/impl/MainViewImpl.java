@@ -21,8 +21,10 @@ import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.AccountController;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.controller.user.api.DeckController;
+import it.unibo.oop.lastcrown.controller.user.impl.AccountControllerImpl;
 import it.unibo.oop.lastcrown.controller.user.impl.DeckControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.user.api.Account;
 import it.unibo.oop.lastcrown.view.Dialog;
 import it.unibo.oop.lastcrown.view.SceneName;
 import it.unibo.oop.lastcrown.view.map.MatchView;
@@ -48,13 +50,13 @@ public class MainViewImpl extends JFrame implements MainView {
     private final JPanel mainPanel = new JPanel(this.layout);
     private final transient SceneManager sceneManager;
     private final transient MainController mainController;
-    private final transient AccountController accountController;
+    private transient AccountController accountController;
     private transient DeckController deckController;
     private final transient CollectionController collectionController;
     private final transient GameControllerExample gameController;
     private final Scene menuView;
     private final Scene creditView;
-    private final Scene statsView;
+    private Scene statsView;
     private ModifiableBackScene deckView;
     private ModifiableBackScene collectionView;
     private final ShopView shopView;
@@ -117,7 +119,7 @@ public class MainViewImpl extends JFrame implements MainView {
         this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.addComponentListener(new ComponentAdapter() {
             @Override
-                public void componentMoved(ComponentEvent e) {
+                public void componentMoved(final ComponentEvent e) {
                     SwingUtilities.invokeLater(() -> {
                         revalidate();
                         repaint();
@@ -157,15 +159,9 @@ public class MainViewImpl extends JFrame implements MainView {
 
     @Override
     public final void changePanel(final SceneName sceneCaller, final SceneName sceneDestination) {
-        if (SceneName.DECK.equals(sceneCaller)) {
-            this.matchView.updateInGameDeck(this.deckController.getDeck());
-        }
         switch (sceneDestination) {
             case SHOP -> {
                 this.shopView.notifyVisible();
-                if (SceneName.DECK.equals(sceneCaller)) {
-                    this.matchView.updateInGameDeck(this.deckController.getDeck());
-                }
                 if (SceneName.MATCH.equals(sceneCaller)) {
                     this.matchView.clearNewGraphicsComponent();
                 }
@@ -182,12 +178,16 @@ public class MainViewImpl extends JFrame implements MainView {
                     dialog.setVisible(true);
                     return;
                 } else {
+                    this.matchView.updateInGameDeck(this.deckController.getDeck());
                     this.shopView.notifyHidden();
                     this.gameController.notifyShopToMatch();
                     AudioEngine.playSoundTrack(SoundTrack.BATTLE);
                 }
             }
             case MENU -> {
+                if (SceneName.SHOP.equals(sceneCaller) || SceneName.MATCH.equals(sceneCaller)) {
+                    this.mainController.updateAccount(this.shopView.getManagedAccount());
+                }
                 if (!AudioEngine.getActualSoundTrack().equals(SoundTrack.MENU)) {
                     AudioEngine.playSoundTrack(SoundTrack.MENU);
                 }
@@ -210,6 +210,11 @@ public class MainViewImpl extends JFrame implements MainView {
             default -> { }
         }
         this.layout.show(this.mainPanel, sceneDestination.get());
+    }
+
+    @Override
+    public final void updateAccount(final int amount, final boolean bossDefeated) {
+        this.shopView.notifyUpdateAccount(amount, bossDefeated);
     }
 
     @Override
@@ -243,5 +248,14 @@ public class MainViewImpl extends JFrame implements MainView {
         this.mainPanel.add(this.collectionView.getPanel(), this.collectionView.getSceneName().get());
         this.mainPanel.add(this.shopView.getPanel(), this.shopView.getSceneName().get());
         this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName().get());
+    }
+
+    @Override
+    public final void updateAccountUsers(final Account account) {
+        this.accountController = new AccountControllerImpl(account.getUsername());
+        this.mainPanel.remove(this.statsView.getPanel());
+        this.statsView = StatsView.create(this.sceneManager, this.accountController);
+        this.mainPanel.add(this.statsView.getPanel(), this.statsView.getSceneName().get());
+        updateUserCollectionUsers(account.getUserCollection().getCollection());
     }
 }

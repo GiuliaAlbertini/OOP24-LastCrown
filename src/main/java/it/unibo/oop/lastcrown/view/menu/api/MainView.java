@@ -3,6 +3,7 @@ package it.unibo.oop.lastcrown.view.menu.api;
 import java.util.Set;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.user.api.Account;
 import it.unibo.oop.lastcrown.view.SceneName;
 
 /**
@@ -29,4 +30,19 @@ public interface MainView {
      * @param newSet the updated collection to show
      */
     void updateUserCollectionUsers(Set<CardIdentifier> newSet);
+
+    /**
+     * Update the users of the given account.
+     * 
+     * @param account the new version of the account
+     */
+    void updateAccountUsers(Account account);
+
+    /**
+     * Notify the ShopView that the account needs changes.
+     * 
+     * @param amount the coins to add
+     * @param bossDefeated flag that is true if a boss has been defeated
+     */
+    void updateAccount(int amount, boolean bossDefeated);
 }
