@@ -35,4 +35,11 @@ public interface MainController {
      * @return an optional containing the account
      */
     Optional<Account> getAccount();
+
+    /**
+     * Updates the account in the file.
+     * 
+     * @param account the new version of the account
+     */
+    void updateAccount(Account account);
 }
