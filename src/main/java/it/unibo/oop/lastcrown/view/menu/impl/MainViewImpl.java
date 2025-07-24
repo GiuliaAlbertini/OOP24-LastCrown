@@ -157,15 +157,9 @@ public class MainViewImpl extends JFrame implements MainView {
 
     @Override
     public final void changePanel(final SceneName sceneCaller, final SceneName sceneDestination) {
-        if (SceneName.DECK.equals(sceneCaller)) {
-            this.matchView.updateInGameDeck(this.deckController.getDeck());
-        }
         switch (sceneDestination) {
             case SHOP -> {
                 this.shopView.notifyVisible();
-                if (SceneName.DECK.equals(sceneCaller)) {
-                    this.matchView.updateInGameDeck(this.deckController.getDeck());
-                }
                 if (SceneName.MATCH.equals(sceneCaller)) {
                     this.matchView.clearNewGraphicsComponent();
                 }
@@ -182,6 +176,7 @@ public class MainViewImpl extends JFrame implements MainView {
                     dialog.setVisible(true);
                     return;
                 } else {
+                    this.matchView.updateInGameDeck(this.deckController.getDeck());
                     this.shopView.notifyHidden();
                     this.gameController.notifyShopToMatch();
                     AudioEngine.playSoundTrack(SoundTrack.BATTLE);
