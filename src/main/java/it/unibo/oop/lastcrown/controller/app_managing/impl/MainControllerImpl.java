@@ -36,6 +36,7 @@ public class MainControllerImpl implements MainController {
     private Optional<SceneManager> sceneManager;
     private Optional<AccountController> accountController = Optional.empty();
     private final LoginView loginView;
+    private long sessionTimer;
 
     /**
      * Constructor for a new {@link MainControllerImpl}.
@@ -45,6 +46,7 @@ public class MainControllerImpl implements MainController {
         this.loginView = LoginViewImpl.create(this);
         this.loginView.setVisibility(true);
         AudioEngine.playSoundTrack(SoundTrack.MENU);
+        this.sessionTimer = System.currentTimeMillis();
     }
 
     @Override
@@ -98,6 +100,7 @@ public class MainControllerImpl implements MainController {
                 gameController
                 ));
         this.closeLoginView();
+        this.sessionTimer = System.currentTimeMillis();
     }
 
     @Override
@@ -107,7 +110,16 @@ public class MainControllerImpl implements MainController {
 
     @Override
     public final void closeAll() {
+        final double minutes = computeMinutesPassed();
+        final Account newAcc = this.getAccount().get();
+        newAcc.addPlaytime(minutes);
+        writeAccountOnFile(newAcc);
         this.sceneManager.get().closeApplication();
+    }
+
+    private double computeMinutesPassed() {
+        final long elapsedMillis = System.currentTimeMillis() - this.sessionTimer;
+        return elapsedMillis / 60000.0;
     }
 
     @Override
@@ -117,9 +129,15 @@ public class MainControllerImpl implements MainController {
 
     @Override
     public final void updateAccount(final Account account) {
+        account.addPlaytime(computeMinutesPassed());
+        this.sessionTimer = System.currentTimeMillis();
+        writeAccountOnFile(account);
+        this.sceneManager.get().updateAccountUsers(account);
+    }
+
+    private void writeAccountOnFile(final Account account) {
         final FileHandler<Account> fileHandler = new FileHandlerImpl<>(new AccountParser(), new AccountSerializer(), PATH);
         fileHandler.writeToFile(account.getUsername(), account);
-        this.sceneManager.get().updateAccountUsers(account);
     }
 
     private Set<CardIdentifier> getUserCollection(final Optional<AccountController> accountController) {
