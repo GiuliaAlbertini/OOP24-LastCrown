@@ -142,6 +142,11 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
     }
 
     @Override
+    public void notifyUpdateAccount(final int amount, final boolean bossDefeated) {
+        this.accManager.updateAccount(amount, bossDefeated);
+    }
+
+    @Override
     public void notifyMatch() {
         final String title = "To the Match...";
         final String message = "Do you really want to start a new match? You will not be able"
@@ -195,5 +200,10 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
     @Override
     public JPanel getPanel() {
         return this;
+    }
+
+    @Override
+    public Account getManagedAccount() {
+       return this.accManager.getAccount();
     }
 }
