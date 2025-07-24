@@ -1,5 +1,8 @@
 package it.unibo.oop.lastcrown.view;
 
+/**
+ * Enumeration useful to mantain all the scene names.
+ */
 public enum SceneName {
     /*
      * The Menu scene
