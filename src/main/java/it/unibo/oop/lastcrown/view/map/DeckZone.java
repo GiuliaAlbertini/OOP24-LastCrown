@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.List;
 import java.util.Set;
 import java.awt.event.MouseEvent;
@@ -44,8 +46,10 @@ public final class DeckZone extends JPanel {
     private int currentEnergy;
     private final Timer rechargeTimer;
     private transient InGameDeckController inGameDeckController;
-    private final ActionListener buttonListener;
-    private final MouseListener mouseListener;
+    private transient ActionListener buttonListener;
+    private transient MouseListener mouseListener;
+    private final transient ActionListener buttonListenerDefensiveCopy;
+    private final transient MouseListener mouseListenerDefensiveCopy;
 
     private JPanel energyBarPanel;
     private final JPanel cardPanel;
@@ -89,7 +93,7 @@ public final class DeckZone extends JPanel {
             lastClicked = id;
             mainContr.notifyButtonPressed(id);
         };
-
+        this.buttonListenerDefensiveCopy = buttonListener;
         this.mouseListener = new MouseAdapter() {
             @Override
             public void mouseEntered(final MouseEvent e) {
@@ -104,6 +108,7 @@ public final class DeckZone extends JPanel {
                 pos.stopHighLight(id.type());
             }
         };
+        this.mouseListenerDefensiveCopy = mouseListener;
         this.cardPanel = new JPanel(new GridLayout(3, 1, 0, VERTICAL_GAP_BTNS));
         this.cardPanel.setPreferredSize(new Dimension(deckZoneWidth - energyBarWidth, deckZoneHeight));
         this.cardPanel.setBounds(energyBarWidth, 0, deckZoneWidth - energyBarWidth, deckZoneHeight);
@@ -215,5 +220,11 @@ public final class DeckZone extends JPanel {
     public void updateInGameDeck(final Set<CardIdentifier> newDeck) {
         this.inGameDeckController = InGameDeckController.create(newDeck);
         this.updateCardButtons(buttonListener, mouseListener);
+    }
+
+    private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        this.buttonListener = this.buttonListenerDefensiveCopy;
+        this.mouseListener = this.mouseListenerDefensiveCopy;
     }
 }
