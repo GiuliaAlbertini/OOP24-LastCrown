@@ -71,11 +71,11 @@ public final class MatchPanel extends JPanel {
             @Override
             public void mouseClicked(final MouseEvent e) {
                 final Point pointInPosZone = SwingUtilities.convertPoint(overLayPanel, e.getPoint(), posZone);
-                final CardType cardType = cardZone.getLastClicked().type();
-                if (cardType == null) {
+                final CardIdentifier cardId = cardZone.getLastClicked();
+                if (cardId == null) {
                     return;
                 }
-                switch (cardType) {
+                switch (cardId.type()) {
                     case CardType.MELEE -> {
                         if (posZone.isValidClick(CardType.MELEE, pointInPosZone)) {
                             final int x = deckZoneWidth + posZoneWidth * 3 / 4;
