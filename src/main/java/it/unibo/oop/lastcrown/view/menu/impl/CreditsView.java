@@ -17,15 +17,14 @@ import javax.swing.border.EmptyBorder;
 import it.unibo.oop.lastcrown.controller.file_handling.api.CreditsController;
 import it.unibo.oop.lastcrown.controller.file_handling.impl.CreditsControllerImpl;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
+import it.unibo.oop.lastcrown.view.SceneName;
 
 /**
  * Simple view that shows the list of credits.
  */
 public final class CreditsView extends AbstractScene {
-    private static final String BACK_VIEW = "MENU";
     private static final long serialVersionUID = 1L;
     private static final int VERTICAL_SPACING = 20;
-    private static final String PANEL_NAME = "CREDITS";
     private static final String FONT_NAME_DIALOG_INPUT = "DialogInput";
     private static final Font LABEL_FONT = getResponsiveFont(new Font(FONT_NAME_DIALOG_INPUT, Font.BOLD, 30));
     private static final Color LABEL_COLOR = new Color(100, 215, 0);
@@ -65,7 +64,7 @@ public final class CreditsView extends AbstractScene {
         final JScrollPane scrollPane = new HideableScrollPane(creditsPanel);
         add(scrollPane, BorderLayout.CENTER);
 
-        final JButton backButton = BackButton.create(PANEL_NAME, BACK_VIEW, sceneManager);
+        final JButton backButton = BackButton.create(SceneName.CREDITS, SceneName.MENU, sceneManager);
         final JPanel southPanel = new JPanel();
         southPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         southPanel.add(backButton);
@@ -89,8 +88,8 @@ public final class CreditsView extends AbstractScene {
     }
 
     @Override
-    public String getSceneName() {
-        return PANEL_NAME;
+    public SceneName getSceneName() {
+        return SceneName.CREDITS;
     }
 
     @Override

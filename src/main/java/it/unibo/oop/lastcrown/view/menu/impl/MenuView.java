@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
+import it.unibo.oop.lastcrown.view.SceneName;
 
 /**
  * MenuView represents the menu scene of the application.
@@ -27,11 +28,9 @@ public final class MenuView extends AbstractScene {
     private static final String NAME_STATS = "STATS";
     private static final String NAME_CREDITS = "CREDITS";
     private static final String NAME_EXIT = "EXIT";
-    private static final String NAME_SHOP = "SHOP";
     private static final long serialVersionUID = 1L;
     private static final double SPACING_FACTOR = 0.05;
     private static final double WEIGHT_Y = 0.9;
-    private static final String PANEL_NAME = "MENU";
     private static final Color BTN_FG_COLOR = new Color(15, 35, 65);
     private static final Font BTN_FONT = getResponsiveFont(new Font("DialogInput", Font.BOLD, 30));
     private static final Color BTN_BG_COLOR = new Color(255, 215, 0);
@@ -121,19 +120,19 @@ public final class MenuView extends AbstractScene {
         final JButton sourceBtn = (JButton) e.getSource();
         switch (sourceBtn.getText()) {
             case NAME_PLAY:
-                this.sceneManager.switchScene(PANEL_NAME, NAME_SHOP);
+                this.sceneManager.switchScene(SceneName.MENU, SceneName.SHOP);
                 break;
             case NAME_DECK:
-                this.sceneManager.switchScene(PANEL_NAME, NAME_DECK);
+                this.sceneManager.switchScene(SceneName.MENU, SceneName.DECK);
                 break;
             case NAME_COLLECTION:
-                this.sceneManager.switchScene(PANEL_NAME, NAME_COLLECTION);
+                this.sceneManager.switchScene(SceneName.MENU, SceneName.COLLECTION);
                 break;
             case NAME_STATS:
-                this.sceneManager.switchScene(PANEL_NAME, NAME_STATS);
+                this.sceneManager.switchScene(SceneName.MENU, SceneName.STATS);
                 break;
             case NAME_CREDITS:
-                this.sceneManager.switchScene(PANEL_NAME, NAME_CREDITS);
+                this.sceneManager.switchScene(SceneName.MENU, SceneName.CREDITS);
                 break;
             case NAME_EXIT:
                 final int option = JOptionPane.showConfirmDialog(
@@ -163,8 +162,8 @@ public final class MenuView extends AbstractScene {
     }
 
     @Override
-    public String getSceneName() {
-        return PANEL_NAME;
+    public SceneName getSceneName() {
+        return SceneName.MENU;
     }
 
     @Override

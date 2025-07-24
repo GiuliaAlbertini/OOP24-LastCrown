@@ -3,6 +3,7 @@ package it.unibo.oop.lastcrown.view.menu.api;
 import java.util.Set;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.view.SceneName;
 
 /**
  * Defines the main view of the application.
@@ -15,7 +16,7 @@ public interface MainView {
      * @param sceneCaller the name of the calling scene.
      * @param sceneDestination the name of the scene to be displayed,
      */
-    void changePanel(String sceneCaller, String sceneDestination);
+    void changePanel(SceneName sceneCaller, SceneName sceneDestination);
 
     /**
      * Calls the close of the application.

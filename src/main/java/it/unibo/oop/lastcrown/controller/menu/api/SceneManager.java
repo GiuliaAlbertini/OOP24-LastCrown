@@ -3,6 +3,7 @@ package it.unibo.oop.lastcrown.controller.menu.api;
 import java.util.Set;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.view.SceneName;
 
 /**
  * Provides methods to handle the visualization of differents scenes.
@@ -14,7 +15,7 @@ public interface SceneManager {
      * @param caller the caller of the switch
      * @param destination the name of the scene to change the current one with
      */
-    void switchScene(String caller, String destination);
+    void switchScene(SceneName caller, SceneName destination);
 
     /**
      * Closes the whole application.

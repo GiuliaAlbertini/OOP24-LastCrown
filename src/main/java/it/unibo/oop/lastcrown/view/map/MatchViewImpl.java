@@ -14,6 +14,7 @@ import javax.swing.SwingUtilities;
 import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.Dialog;
+import it.unibo.oop.lastcrown.view.SceneName;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
 
@@ -22,7 +23,6 @@ import it.unibo.oop.lastcrown.view.menu.api.MainView;
  */
 public final class MatchViewImpl extends JPanel implements MatchView, MatchExitObserver {
     private static final long serialVersionUID = 1L;
-    private static final String NAME = "MATCH";
     private final transient MainView mainView;
     private final MatchPanel mainPanel;
     private final Map<Integer, JComponent> newComponents;
@@ -54,7 +54,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         final JButton ok = new JButton("OK");
         ok.addActionListener(act -> {
            defeat.dispose();
-           this.mainView.changePanel(NAME, "MENU");
+           this.mainView.changePanel(SceneName.MATCH, SceneName.MENU);
         }); 
         defeat.addButton(ok);
         defeat.setLocationRelativeTo(this);
@@ -69,7 +69,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         final JButton ok = new JButton("OK");
         ok.addActionListener(act -> {
             victory.dispose();
-            this.mainView.changePanel(NAME, "SHOP");
+            this.mainView.changePanel(SceneName.MATCH, SceneName.SHOP);
             //gameContr.notifyMatchToShop(false);
         });
         victory.addButton(ok);
@@ -123,8 +123,8 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     }
 
     @Override
-    public String getSceneName() {
-        return NAME;
+    public SceneName getSceneName() {
+        return SceneName.MATCH;
     }
 
     @Override
@@ -134,7 +134,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
     @Override
     public void notifyExitToMenu() {
-        this.mainView.changePanel(NAME, "MENU");
+        this.mainView.changePanel(SceneName.MATCH, SceneName.MENU);
     }
 
     @Override

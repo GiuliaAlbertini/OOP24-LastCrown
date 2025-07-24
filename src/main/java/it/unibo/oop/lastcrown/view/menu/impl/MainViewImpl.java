@@ -21,6 +21,7 @@ import it.unibo.oop.lastcrown.controller.user.api.DeckController;
 import it.unibo.oop.lastcrown.controller.user.impl.DeckControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.Dialog;
+import it.unibo.oop.lastcrown.view.SceneName;
 import it.unibo.oop.lastcrown.view.map.MatchView;
 import it.unibo.oop.lastcrown.view.map.MatchViewImpl;
 import it.unibo.oop.lastcrown.view.menu.api.ModifiableBackScene;
@@ -33,11 +34,6 @@ import it.unibo.oop.lastcrown.view.shop.ShopViewImpl;
  * View that uses a {@link CardLayout} to handle the different scenes.
  */
 public class MainViewImpl extends JFrame implements MainView {
-    private static final String COLLECTION = "COLLECTION";
-    private static final String MENU = "MENU";
-    private static final String MATCH = "MATCH";
-    private static final String DECK = "DECK";
-    private static final String SHOP = "SHOP";
     private static final long serialVersionUID = 1L;
     private static final double RESIZE_FACTOR = 1.0;
     private static final Dimension SCREENSIZE = Toolkit.getDefaultToolkit().getScreenSize();
@@ -100,7 +96,7 @@ public class MainViewImpl extends JFrame implements MainView {
         //gameContr.newMatchView(this.matchView);
 
         setUpPanels();
-        this.layout.show(this.mainPanel, menuView.getSceneName());
+        this.layout.show(this.mainPanel, menuView.getSceneName().get());
     }
 
     private Set<CardIdentifier> getOwnedCards() {
@@ -148,14 +144,14 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     @Override
-    public final void changePanel(final String sceneCaller, final String sceneDestination) {
-        if (DECK.equals(sceneCaller)) {
+    public final void changePanel(final SceneName sceneCaller, final SceneName sceneDestination) {
+        if (SceneName.DECK.equals(sceneCaller)) {
             this.matchView.updateInGameDeck(this.deckController.getDeck());
         }
         switch (sceneDestination) {
             case SHOP -> {
                 this.shopView.notifyVisible();
-                if (DECK.equals(sceneCaller)) {
+                if (SceneName.DECK.equals(sceneCaller)) {
                     this.matchView.updateInGameDeck(this.deckController.getDeck());
                 }
                 if (!AudioEngine.getActualSoundTrack().equals(SoundTrack.SHOP)) {
@@ -182,23 +178,23 @@ public class MainViewImpl extends JFrame implements MainView {
                 }
             }
             case COLLECTION -> {
-                if (SHOP.equals(sceneCaller)) {
-                    this.collectionView.setBackDestination(SHOP); 
+                if (SceneName.SHOP.equals(sceneCaller)) {
+                    this.collectionView.setBackDestination(SceneName.SHOP); 
                 } else {
-                    this.collectionView.setBackDestination(MENU);
+                    this.collectionView.setBackDestination(SceneName.MENU);
                 }
                 AudioEngine.playSoundTrack(SoundTrack.COLLECTION);
             }
             case DECK -> {
-                if (SHOP.equals(sceneCaller)) {
-                    this.deckView.setBackDestination(SHOP);
+                if (SceneName.SHOP.equals(sceneCaller)) {
+                    this.deckView.setBackDestination(SceneName.SHOP);
                 } else {
-                    this.deckView.setBackDestination(MENU);
+                    this.deckView.setBackDestination(SceneName.MENU);
                 }
             }
             default -> { }
         }
-        this.layout.show(this.mainPanel, sceneDestination);
+        this.layout.show(this.mainPanel, sceneDestination.get());
     }
 
     @Override
@@ -211,10 +207,10 @@ public class MainViewImpl extends JFrame implements MainView {
         updateDeckController(newSet);
         this.mainPanel.remove(this.deckView.getPanel());
         this.deckView = DeckView.create(this.sceneManager, this.deckController);
-        this.mainPanel.add(this.deckView.getPanel(), this.deckView.getSceneName());
+        this.mainPanel.add(this.deckView.getPanel(), this.deckView.getSceneName().get());
         this.mainPanel.remove(this.collectionView.getPanel());
         this.collectionView = CollectionView.create(this.sceneManager, this.collectionController, newSet);
-        this.mainPanel.add(this.collectionView.getPanel(), this.collectionView.getSceneName());
+        this.mainPanel.add(this.collectionView.getPanel(), this.collectionView.getSceneName().get());
     }
 
     private void updateDeckController(final Set<CardIdentifier> newSet) {
@@ -225,12 +221,12 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     private void setUpPanels() {
-        this.mainPanel.add(this.menuView.getPanel(),   this.menuView.getSceneName());
-        this.mainPanel.add(this.creditView.getPanel(), this.creditView.getSceneName());
-        this.mainPanel.add(this.statsView.getPanel(), this.statsView.getSceneName());
-        this.mainPanel.add(this.deckView.getPanel(), this.deckView.getSceneName());
-        this.mainPanel.add(this.collectionView.getPanel(), this.collectionView.getSceneName());
-        this.mainPanel.add(this.shopView.getPanel(), this.shopView.getSceneName());
-        this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName());
+        this.mainPanel.add(this.menuView.getPanel(),   this.menuView.getSceneName().get());
+        this.mainPanel.add(this.creditView.getPanel(), this.creditView.getSceneName().get());
+        this.mainPanel.add(this.statsView.getPanel(), this.statsView.getSceneName().get());
+        this.mainPanel.add(this.deckView.getPanel(), this.deckView.getSceneName().get());
+        this.mainPanel.add(this.collectionView.getPanel(), this.collectionView.getSceneName().get());
+        this.mainPanel.add(this.shopView.getPanel(), this.shopView.getSceneName().get());
+        this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName().get());
     }
 }

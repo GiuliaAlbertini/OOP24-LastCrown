@@ -2,6 +2,8 @@ package it.unibo.oop.lastcrown.view.menu.api;
 
 import javax.swing.JPanel;
 
+import it.unibo.oop.lastcrown.view.SceneName;
+
 /**
  * Represents a visual scene in the application.
  * <p>
@@ -15,7 +17,7 @@ public interface Scene {
      *
      * @return the scene name
      */
-    String getSceneName();
+    SceneName getSceneName();
 
     /**
      * Returns the JPanel associated with the scene.
