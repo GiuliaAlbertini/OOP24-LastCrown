@@ -4,11 +4,14 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
@@ -112,6 +115,15 @@ public class MainViewImpl extends JFrame implements MainView {
         this.setLocationRelativeTo(null);
         this.setVisible(true);
         this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+                public void componentMoved(ComponentEvent e) {
+                    SwingUtilities.invokeLater(() -> {
+                        revalidate();
+                        repaint();
+                    });
+                }
+        });
     }
 
     /**
