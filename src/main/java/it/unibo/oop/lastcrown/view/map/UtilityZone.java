@@ -1,12 +1,16 @@
 package it.unibo.oop.lastcrown.view.map;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.view.Dialog;
@@ -17,6 +21,9 @@ import it.unibo.oop.lastcrown.view.Dialog;
 public final class UtilityZone extends JPanel {
     private static final long serialVersionUID = 1L;
     private static final int WIDTH_DIVISOR = 20;
+    private final List<JComponent> components;
+    private final Dialog pauseDialog;
+    private final Dialog instructionDialog;
     /**
      * @param obs the container exit observer
      * @param gameContr the game controller interface
@@ -28,35 +35,50 @@ public final class UtilityZone extends JPanel {
      */
     public UtilityZone(final MatchExitObserver obs, final GameControllerExample gameContr, final int width, final int height,
      final JComponent wallHealthBar, final JComponent eventWriter, final JComponent coinsWriter) {
-        final FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.CENTER);
-        this.setLayout(flowLayout);
+        this.components = new ArrayList<>();
+        this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         this.setPreferredSize(new Dimension(width, height));
+        this.setMaximumSize(this.getPreferredSize());
+
+        eventWriter.setPreferredSize(new Dimension(width / 4, height));
+        eventWriter.setMaximumSize(eventWriter.getPreferredSize());
+        eventWriter.setBackground(Color.CYAN);
+        this.components.addLast(eventWriter);
+
         final JLabel label = new JLabel("Wall Health");
-        label.setPreferredSize(new Dimension(width / WIDTH_DIVISOR, height / 3));
-        this.add(eventWriter);
-        this.add(coinsWriter);
-        this.add(label);
-        this.add(wallHealthBar);
+        label.setPreferredSize(new Dimension(width / WIDTH_DIVISOR, height));
+        label.setMaximumSize(label.getPreferredSize());
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setVerticalAlignment(SwingConstants.CENTER);
+        this.components.addLast(label);
+
+        wallHealthBar.setMaximumSize(wallHealthBar.getPreferredSize());
+        this.components.addLast(wallHealthBar);
+
+        coinsWriter.setPreferredSize(new Dimension(width / WIDTH_DIVISOR, height));
+        coinsWriter.setMaximumSize(coinsWriter.getPreferredSize());;
+        coinsWriter.setBackground(Color.ORANGE);
+        this.components.addLast(coinsWriter);
 
         final String title = "Pausing...";
         final String message = "Select an option: \n"
         + "CLOSE: close the pause menu\n"
         + "EXIT: exit the match and return to the menu\n"
         + "INSTRUCTIONS: check the instructions";
-        final Dialog pauseDialog = new Dialog(title, message, false);
-        pauseDialog.setLocationRelativeTo(this);
+        this.pauseDialog = new Dialog(title, message, false);
+        this.pauseDialog.setLocationRelativeTo(this);
 
         final String insTitle = "Instructions";
         final String insMessage = "Select a card from your deck to the left\n"
         + "And play it in the highlighted zone\n"
         + "Choose carefully your moves in order to be prepared "
         + "when the BOSS comes";
+        this.instructionDialog = new Dialog(insTitle, insMessage, true);
+        this.instructionDialog.setLocationRelativeTo(this);
+
         final JButton instructions = new JButton("INSTRUCTIONS");
         instructions.addActionListener(act -> {
-            final Dialog instructionsDialog = new Dialog(insTitle, insMessage, true);
-            instructionsDialog.setVisible(true);
-            instructionsDialog.setLocationRelativeTo(pauseDialog);
+            instructionDialog.setVisible(true);
         });
 
         final JButton exit = new JButton("EXIT");
@@ -80,10 +102,15 @@ public final class UtilityZone extends JPanel {
             gameContr.notifyPause();
             pauseDialog.setVisible(true);
         });
-
-        this.add(pause);
         pause.setPreferredSize(new Dimension(width / WIDTH_DIVISOR, height));
-        pause.setBounds(width - width / WIDTH_DIVISOR, 0, pause.getPreferredSize().width,
-         pause.getPreferredSize().height);
+        pause.setMaximumSize(pause.getPreferredSize());
+        this.components.addLast(pause);
+
+        for (final var component : this.components) {
+            final JPanel wrapper = new JPanel(new BorderLayout());
+            wrapper.add(component, BorderLayout.CENTER);
+            wrapper.setOpaque(false);
+            this.add(wrapper);
+        } 
     }
 }
