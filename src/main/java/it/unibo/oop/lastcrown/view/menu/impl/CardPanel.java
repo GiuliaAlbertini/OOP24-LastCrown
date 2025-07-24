@@ -86,6 +86,7 @@ public final class CardPanel extends JPanel {
                 info.add(createLabel("Melee slots: " + h.getMeleeCards()));
                 info.add(createLabel("Ranged slots: " + h.getRangedCards()));
                 info.add(createLabel("Spell slots: " + h.getSpellCards()));
+                info.add(createLabel("Cost: " + h.getRequirement().amount()));
             });
             case MELEE,
                  RANGED -> cc.getPlayableCharacter(card).ifPresent(pc -> {
