@@ -51,7 +51,7 @@ public final class StatsView extends AbstractScene {
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         statsPanel.add(createStatPanel("Bosses Defeated",    String.valueOf(account.getBossesDefeated())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        statsPanel.add(createStatPanel("Games Played",       String.valueOf(account.getPlayedGames())));
+        statsPanel.add(createStatPanel("Games Played",       String.valueOf(account.getPlayedMatches())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         statsPanel.add(createStatPanel("Total Playtime",     String.format("%.2f", account.getPlaytime())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
