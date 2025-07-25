@@ -14,6 +14,7 @@ import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
 import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
+import it.unibo.oop.lastcrown.controller.app_managing.api.MatchStartObserver;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.AccountController;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
@@ -52,14 +53,14 @@ public class MainViewImpl extends JFrame implements MainView {
     private final transient AccountController accountController;
     private transient DeckController deckController;
     private final transient CollectionController collectionController;
-    private final transient GameControllerExample gameController;
+    private final transient MatchStartObserver gameController;
     private final Scene menuView;
     private final Scene creditView;
     private final Scene statsView;
     private ModifiableBackScene deckView;
     private ModifiableBackScene collectionView;
     private final ShopView shopView;
-    private final MatchView matchView;
+    private MatchView matchView;
 
     /**
      * Constructs the main application window, initializes each scene,
@@ -77,7 +78,7 @@ public class MainViewImpl extends JFrame implements MainView {
                         final AccountController accountController,
                         final CollectionController collectionController,
                         final DeckController deckContr,
-                        final GameControllerExample gameContr
+                        final MatchStartObserver gameContr
             ) {
         this.sceneManager = sceneManager;
         this.mainController = mainController;
@@ -92,9 +93,10 @@ public class MainViewImpl extends JFrame implements MainView {
         this.statsView = StatsView.create(this.sceneManager, this.accountController);
         this.deckView = DeckView.create(this.sceneManager, deckController);
         this.collectionView = CollectionView.create(this.sceneManager, this.collectionController, getOwnedCards());
-        this.shopView = new ShopViewImpl(this, collectionController,
-         deckContr.getAvailableCards(), WIDTH, HEIGHT, accountController.getAccount());
-        this.matchView = new MatchViewImpl(gameContr, this, WIDTH, HEIGHT, this.deckController.getDeck());
+        this.shopView = new ShopViewImpl(this, collectionController, deckContr.getAvailableCards(), WIDTH, HEIGHT, accountController.getAccount());
+
+
+
         //HERE MISSING SHOP VIEW AND MATCH VIEW TO THE MAIN CONTROLLER
         //gameContr.newShopView(this.shopView);
         //gameContr.newMatchView(this.matchView);
@@ -120,7 +122,7 @@ public class MainViewImpl extends JFrame implements MainView {
 
     /**
      * Factory method to create an istance of {@link MainView}.
-     * 
+     *
      * @param sceneManager the {@link SceneManager} to use
      * @param mainController the {@link MainController} to use
      * @param accountController the {@link AccountController} to use
@@ -129,12 +131,12 @@ public class MainViewImpl extends JFrame implements MainView {
      * @param gameController the {@link GameControllerExample} to use
      * @return an initialized istance of {@link MainViewImpl}
      */
-    public static MainView create(final SceneManager sceneManager, 
-                                  final MainController mainController, 
+    public static MainView create(final SceneManager sceneManager,
+                                  final MainController mainController,
                                   final AccountController accountController,
                                   final CollectionController collectionController,
                                   final DeckController deckController,
-                                  final GameControllerExample gameController) {
+                                  final MatchStartObserver gameController) {
         final MainViewImpl view = new MainViewImpl(
             sceneManager,
             mainController,
@@ -171,8 +173,12 @@ public class MainViewImpl extends JFrame implements MainView {
                     dialog.setVisible(true);
                     return;
                 } else {
+                    //flag per farlo partire una sola volta
                     this.shopView.notifyHidden();
-                    this.gameController.notifyShopToMatch();
+                    this.gameController.onMatchStart();
+                    this.matchView = new MatchViewImpl(this.gameController.getMatchControllerReference(), this, WIDTH, HEIGHT, this.deckController.getDeck());
+                    this.gameController.getMatchControllerReference().notifyShopToMatch();
+                    this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName());
                     AudioEngine.playSoundTrack(SoundTrack.BATTLE);
                 }
             }
@@ -183,7 +189,7 @@ public class MainViewImpl extends JFrame implements MainView {
             }
             case COLLECTION -> {
                 if (SHOP.equals(sceneCaller)) {
-                    this.collectionView.setBackDestination(SHOP); 
+                    this.collectionView.setBackDestination(SHOP);
                 } else {
                     this.collectionView.setBackDestination(MENU);
                 }
@@ -231,6 +237,18 @@ public class MainViewImpl extends JFrame implements MainView {
         this.mainPanel.add(this.deckView.getPanel(), this.deckView.getSceneName());
         this.mainPanel.add(this.collectionView.getPanel(), this.collectionView.getSceneName());
         this.mainPanel.add(this.shopView.getPanel(), this.shopView.getSceneName());
-        this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName());
+
     }
+
+
+    // @Override
+    // public MatchView getMatchView() {
+    //     return this.matchView;
+    // }
+
+    // @Override
+    // public GamePanel getGamePanel() {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'getGamePanel'");
+    // }
 }
