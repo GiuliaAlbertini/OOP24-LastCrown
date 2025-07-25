@@ -11,7 +11,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import it.unibo.oop.lastcrown.controller.GameControllerExample;
+import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.Dialog;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
@@ -34,7 +34,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
      * @param height the height of the map
      * @param deck the set to use as a deck
      */
-    public MatchViewImpl(final GameControllerExample gameContr, final MainView mainView,
+    public MatchViewImpl(final MatchController gameContr, final MainView mainView,
      final int width, final int height, final Set<CardIdentifier> deck) {
         this.mainView = mainView;
         this.newComponents = new ConcurrentHashMap<>();
@@ -55,7 +55,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         ok.addActionListener(act -> {
            defeat.dispose();
            this.mainView.changePanel(NAME, "MENU");
-        }); 
+        });
         defeat.addButton(ok);
         defeat.setLocationRelativeTo(this);
         defeat.setVisible(true);
@@ -94,7 +94,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         final int panelsHeight = this.getHeight() - (int) (this.getHeight() * DimensionResolver.UTILITYZONE.height());
         final int cornerWidth = cardZoneWidth + posZoneWidth / 2;
         final int cornerHeight = panelsHeight / 4;
-        heroGraphics.setBounds(cornerWidth, cornerHeight, 
+        heroGraphics.setBounds(cornerWidth, cornerHeight,
          heroGraphics.getPreferredSize().width, heroGraphics.getPreferredSize().height);
         this.mainPanel.add(heroGraphics);
         this.mainPanel.setComponentZOrder(heroGraphics, 1);
@@ -155,5 +155,5 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     @Override
     public void updateInGameDeck(final Set<CardIdentifier> newDeck) {
         this.mainPanel.updateInGameDeck(newDeck);
-    } 
+    }
 }

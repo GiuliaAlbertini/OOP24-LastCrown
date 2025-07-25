@@ -3,6 +3,8 @@ package it.unibo.oop.lastcrown.controller.collision.api;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.swing.JComponent;
+
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.impl.EnemyEngagement;
@@ -29,7 +31,7 @@ public interface MatchController {
      * Called when the "Add Character" button is pressed in the UI.
      * This method should handle the logic to initiate character addition.
      */
-    void onAddCharacterButtonPressed();
+    //void onAddCharacterButtonPressed();
 
     /**
      * Updates the match model.
@@ -94,4 +96,18 @@ public interface MatchController {
     boolean isBossFightPartnerDead(final int id);
     boolean isEnemyDead(int enemyId);
     boolean isRangedFightPartnerDead(final int id);
+
+	void notifyClicked(int x, int y);
+
+	void notifyButtonPressed(CardIdentifier id);
+
+	void notifyPauseEnd();
+
+    JComponent getWallHealthBar();
+
+	JComponent getCoinsWriter();
+
+	JComponent getEventWriter();
+
+    void notifyShopToMatch();
 }
