@@ -3,12 +3,11 @@ package it.unibo.oop.lastcrown.controller.app_managing.impl;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
-import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
+import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.menu.impl.SceneManagerImpl;
 import it.unibo.oop.lastcrown.controller.user.api.AccountController;
@@ -21,6 +20,7 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.user.api.Account;
 import it.unibo.oop.lastcrown.view.menu.api.LoginView;
 import it.unibo.oop.lastcrown.view.menu.impl.LoginViewImpl;
+import it.unibo.oop.lastcrown.controller.app_managing.api.MatchStartObserver;
 
 /**
  * Implementation of {@link MainController}.
@@ -29,6 +29,7 @@ public class MainControllerImpl implements MainController {
     private Optional<SceneManager> sceneManager;
     private Optional<AccountController> accountController = Optional.empty();
     private final LoginView loginView;
+    private final MatchStartObserver gameController;
 
     /**
      * Constructor for a new {@link MainControllerImpl}.
@@ -37,6 +38,7 @@ public class MainControllerImpl implements MainController {
         this.sceneManager = Optional.empty();
         this.loginView = LoginViewImpl.create(this);
         this.loginView.setVisibility(true);
+        this.gameController= new MatchStartObserverImpl(this);
         AudioEngine.playSoundTrack(SoundTrack.MENU);
     }
 
@@ -47,40 +49,7 @@ public class MainControllerImpl implements MainController {
         final CollectionController collectionController = new CollectionControllerImpl();
         final DeckController deckController = new DeckControllerImpl(getUserCollection(accountController));
 
-        //HERE MISSING GAME CONTROLLER INITIALIZATION
 
-        final GameControllerExample gameController = new GameControllerExample() {
-            @Override
-            public void notifyShopToMatch() {
-            }
-            @Override
-            public void notifyButtonPressed(final CardIdentifier id) {
-            }
-            @Override
-            public void notifyClicked(final int x, final int y) {
-            }
-            @Override
-            public void notifyPause() {
-            }
-            @Override
-            public void notifyPauseEnd() {
-            }
-            @Override
-            public JComponent getWallHealthBar() {
-               return new JComponent() {
-               };
-            }
-            @Override
-            public JComponent getEventWriter() {
-                return new JComponent() {
-                };
-            }
-            @Override
-            public JComponent getCoinsWriter() {
-                return new JComponent() {
-                };
-            }
-        };
         //= new GameController(hero, boss, playableChars, enemies, spellsMap, 1400, 800);
         this.sceneManager = Optional.of(
             new SceneManagerImpl(
@@ -114,5 +83,9 @@ public class MainControllerImpl implements MainController {
 
     private void closeLoginView() {
         this.loginView.setVisibility(false);
+    }
+
+    public MatchController getMatchController(){
+        return this.gameController.getMatchControllerReference();
     }
 }
