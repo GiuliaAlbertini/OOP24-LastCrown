@@ -21,7 +21,6 @@ import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.AccountController;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.controller.user.api.DeckController;
-import it.unibo.oop.lastcrown.controller.user.impl.AccountControllerImpl;
 import it.unibo.oop.lastcrown.controller.user.impl.DeckControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.user.api.Account;
@@ -252,7 +251,7 @@ public class MainViewImpl extends JFrame implements MainView {
 
     @Override
     public final void updateAccountUsers(final Account account) {
-        this.accountController = new AccountControllerImpl(account.getUsername());
+        this.accountController.setAccount(account);
         this.mainPanel.remove(this.statsView.getPanel());
         this.statsView = StatsView.create(this.sceneManager, this.accountController);
         this.mainPanel.add(this.statsView.getPanel(), this.statsView.getSceneName().get());
