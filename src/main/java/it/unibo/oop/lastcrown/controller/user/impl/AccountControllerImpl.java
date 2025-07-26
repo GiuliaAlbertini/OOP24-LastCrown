@@ -17,10 +17,10 @@ import it.unibo.oop.lastcrown.model.user.impl.AccountImpl;
  */
 public class AccountControllerImpl implements AccountController {
     private static final String SEP = File.separator;
-    private static final String PATH = getPath();
+    private static final String ACCOUNT_PATH = getAccountPath();
 
     private final FileHandler<Account> fileHandler;
-    private final Account account;
+    private Account account;
 
     /**
      * Constructs an {@code AccountControllerImpl} and initializes the account file handler.
@@ -28,8 +28,17 @@ public class AccountControllerImpl implements AccountController {
      * @param username the username of related to the account to use
      */
     public AccountControllerImpl(final String username) {
-        this.fileHandler = new FileHandlerImpl<>(new AccountParser(), new AccountSerializer(), PATH);
-        this.account = loadOrCreateAccount(username);
+        this.fileHandler = new FileHandlerImpl<>(
+            new AccountParser(),
+            new AccountSerializer(),
+            ACCOUNT_PATH
+        );
+        this.setAccount(loadOrCreateAccount(username));
+    }
+
+    @Override
+    public final void setAccount(final Account account) {
+        this.account = defensiveCopy(account);
     }
 
     @Override
@@ -47,24 +56,23 @@ public class AccountControllerImpl implements AccountController {
             });
     }
 
-    private static String getPath() {
-        return "OOP24-LastCrown" + SEP
-             + "src" + SEP
-             + "main" + SEP
-             + "resources" + SEP
-             + "accounts";
+    private static String getAccountPath() {
+        return System.getProperty("user.home")
+                + SEP + ".lastcrown"
+                + SEP + "accounts";
     }
 
     private static Account defensiveCopy(final Account src) {
         final Account copy = new AccountImpl(src.getUsername());
+        copy.removeCoins(copy.getCoins());
         copy.addCoins(src.getCoins());
         copy.addPlaytime(src.getPlaytime());
 
         IntStream.range(0, src.getBossesDefeated())
                  .forEach(i -> copy.increaseBossesDefeated());
 
-        IntStream.range(0, src.getPlayedGames())
-                 .forEach(i -> copy.increasePlayedGames());
+        IntStream.range(0, src.getPlayedMatches())
+                 .forEach(i -> copy.increasePlayedMatches());
 
         src.getUserCollection()
            .getCollection()

@@ -3,7 +3,7 @@ package it.unibo.oop.lastcrown.view;
 /**
  * An interface that models a generic AnimationPanel.
  */
-public interface AnimationPanel {
+public interface AnimationPanel extends ReadOnlyAnimationPanel {
 
     /**
      * @return the horizontal position of the top left corner of this animation panel

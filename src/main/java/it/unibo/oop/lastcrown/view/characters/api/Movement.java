@@ -7,3 +7,4 @@ package it.unibo.oop.lastcrown.view.characters.api;
  */
 public record Movement(int x, int y) {
 }
+

@@ -9,13 +9,14 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.file_handling.api.Parser;
 import it.unibo.oop.lastcrown.model.user.api.Account;
-import it.unibo.oop.lastcrown.model.user.api.UserCollection;
 import it.unibo.oop.lastcrown.model.user.impl.AccountImpl;
 
 /**
  * Parser for an object {@link Account}.
  */
 public class AccountParser implements Parser<Account> {
+    private static final String REGEX_CARDS_SEP = ",";
+    private static final String REGEX_CARDS_END = ";";
     private static final int EXPECTED_FIELDS = 6;
 
     @Override
@@ -38,14 +39,14 @@ public class AccountParser implements Parser<Account> {
         final String cardsLine = it.next();
 
         final AccountImpl account = new AccountImpl(username);
+        account.removeCoins(account.getCoins());
         account.addCoins(coins);
         IntStream.range(0, bosses).forEach(i -> account.increaseBossesDefeated());
-        IntStream.range(0, games).forEach(i -> account.increasePlayedGames());
+        IntStream.range(0, games).forEach(i -> account.increasePlayedMatches());
         account.addPlaytime(playtime);
 
-        final UserCollection collection = account.getUserCollection();
         parseCards(cardsLine)
-            .forEach(collection::addCard);
+            .forEach(account::addCard);
 
         return account;
     }
@@ -74,13 +75,13 @@ public class AccountParser implements Parser<Account> {
         if (line == null || line.isBlank()) {
             return List.of();
         }
-        return Arrays.stream(line.split(","))
+        return Arrays.stream(line.split(REGEX_CARDS_END))
                      .map(this::toCardIdentifier)
                      .collect(Collectors.toList());
     }
 
     private CardIdentifier toCardIdentifier(final String token) {
-        final String[] parts = token.split(";", 2);
+        final String[] parts = token.split(REGEX_CARDS_SEP, 2);
         if (parts.length != 2) {
             throw new IllegalArgumentException("Invalid card token: '" + token + "'");
         }

@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.view.characters.impl;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -16,7 +17,10 @@ import it.unibo.oop.lastcrown.view.characters.api.CharacterAnimationPanel;
 final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnimationPanel {
     private static final long serialVersionUID = 1L;
     private static final int BAR_HEIGHT_DIVISOR = 5;
+    private static final double BAR_HEIGHT_MUL = 0.05;
     private static final double BAR_WIDTH_RESIZE = 0.75;
+    private int panelWidth;
+    private int panelHeight;
     private String charType;
     private CharacterHealthBar healthBar;
     private transient BufferedImage currentImage;
@@ -41,8 +45,11 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
     private void init(final int width, final int height, final String charType, final Color color) {
         this.setLayout(null);
         this.charType = charType;
-        this.healthBar = CharacterHealthBar.create(width, height, color);
-        this.setSize(width, height);
+        this.panelWidth = width;
+        this.panelHeight = height;
+        final int barWidth = (int) (panelWidth * BAR_WIDTH_RESIZE);
+        this.healthBar = CharacterHealthBar.create(barWidth, (int) (height * BAR_HEIGHT_MUL), color);
+        this.setPreferredSize(new Dimension(width, height));
         this.add(this.healthBar);
         this.setOpaque(false);
         this.setHealthBarAlignment();
@@ -56,14 +63,16 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
 
     @Override
     public void setHealthBarAlignment() {
+        final int barWidth = (int) (panelWidth * BAR_WIDTH_RESIZE);
+        final int barHeight = this.healthBar.getPreferredSize().height;
+        final int barY = panelHeight / BAR_HEIGHT_DIVISOR;
+        final int barX;
         if (CardType.ENEMY.get().equals(this.charType) || CardType.BOSS.get().equals(this.charType)) {
-            this.healthBar.setBounds((int) (this.getWidth() * (1 - BAR_WIDTH_RESIZE)),
-             this.getHeight() / BAR_HEIGHT_DIVISOR,
-            (int) (this.getWidth() * BAR_WIDTH_RESIZE), this.healthBar.getHeight());
+            barX = panelWidth - barWidth;
         } else {
-            this.healthBar.setBounds(0, this.getHeight() / BAR_HEIGHT_DIVISOR,
-            (int) (this.getWidth() * BAR_WIDTH_RESIZE), this.healthBar.getHeight());
+            barX = 0;
         }
+        this.healthBar.setBounds(barX, barY, barWidth, barHeight);
         this.healthBar.setVisible(true);
     }
 
@@ -80,9 +89,16 @@ final class CharacterAnimationPanelImpl extends JPanel implements CharacterAnima
     }
 
     @Override
-    public void paint(final Graphics g) {
-        super.paint(g);
-        g.drawImage(currentImage, 0, 0, this);
+        public Dimension getPreferredSize() {
+        return new Dimension(this.panelWidth, this.panelHeight);
+    }
+
+    @Override
+    protected void paintChildren(final Graphics g) {
+        super.paintChildren(g);
+        if (currentImage != null) {
+            g.drawImage(currentImage, 0, 0, this);
+        }
     }
 
     @Override

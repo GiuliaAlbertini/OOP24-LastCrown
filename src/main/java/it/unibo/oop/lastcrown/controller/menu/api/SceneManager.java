@@ -1,0 +1,41 @@
+package it.unibo.oop.lastcrown.controller.menu.api;
+
+import java.util.Set;
+
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.user.api.Account;
+import it.unibo.oop.lastcrown.view.SceneName;
+import it.unibo.oop.lastcrown.view.menu.api.MainView;
+
+/**
+ * Provides methods to handle the visualization of differents scenes.
+ */
+public interface SceneManager {
+    /**
+     * Switch to the scene indicated by the name passed as parameter.
+     * 
+     * @param caller the caller of the switch
+     * @param destination the name of the scene to change the current one with
+     */
+    void switchScene(SceneName caller, SceneName destination);
+
+    /**
+     * Notify the users who use the user's collection that it changed.
+     * 
+     * @param newSet the new collection to use
+     */
+    void updateUserCollectionUsers(Set<CardIdentifier> newSet);
+
+    /**
+     * Notify the main view that the given account is changed.
+     * 
+     * @param account the new version of the account
+     */
+    void updateAccountUsers(Account account);
+
+    /**
+     * Getter for the main view.
+     * @return the main view
+     */
+    MainView getMainView();
+}

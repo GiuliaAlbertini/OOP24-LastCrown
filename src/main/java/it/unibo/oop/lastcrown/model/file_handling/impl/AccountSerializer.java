@@ -14,6 +14,9 @@ import it.unibo.oop.lastcrown.model.user.api.Account;
  */
 public class AccountSerializer implements Serializer<Account> {
 
+    private static final String REGEX_CARDS_MIDDLE = ",";
+    private static final String REGEX_CARDS_END = ";";
+
     @Override
     public final List<String> serialize(final Account account) {
         validateAccount(account);
@@ -35,7 +38,7 @@ public class AccountSerializer implements Serializer<Account> {
             account.getUsername(),
             String.valueOf(account.getCoins()),
             String.valueOf(account.getBossesDefeated()),
-            String.valueOf(account.getPlayedGames()),
+            String.valueOf(account.getPlayedMatches()),
             String.valueOf(account.getPlaytime())
         ));
     }
@@ -46,10 +49,10 @@ public class AccountSerializer implements Serializer<Account> {
         }
         return cards.stream()
             .map(this::formatCard)
-            .collect(Collectors.joining(","));
+            .collect(Collectors.joining(REGEX_CARDS_END));
     }
 
     private String formatCard(final CardIdentifier ci) {
-        return ci.number() + ";" + ci.type();
+        return ci.number() + REGEX_CARDS_MIDDLE + ci.type();
     }
 }

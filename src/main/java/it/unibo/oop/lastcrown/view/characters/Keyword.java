@@ -51,9 +51,19 @@ public enum Keyword {
     JUMPDOWN("jumpDown"),
 
     /**
-     * jump forward animation (designed for playable characters).
+     * Open animation. Designed for shop traders.
      */
-    JUMPFORWARD("jumpForward");
+    OPEN("open"),
+
+    /**
+     * Close animation. Designed for shop traders.
+     */
+    CLOSE("close"),
+
+    /**
+     * Approval animation. Designed for shop traders.
+     */
+    APPROVAL("approval");
 
     private final String value;
 

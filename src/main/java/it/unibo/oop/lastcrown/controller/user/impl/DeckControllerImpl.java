@@ -29,7 +29,7 @@ public class DeckControllerImpl implements DeckController {
     /**
      * Construct a new {@code DeckContorllerImpl}.
      * It initialize the collection to use and the deck.
-     * 
+     *
      * @param userCollection the collection to use
      */
     public DeckControllerImpl(final Set<CardIdentifier> userCollection) {
@@ -71,5 +71,10 @@ public class DeckControllerImpl implements DeckController {
             .filter(card -> card.type().equals(type))
             .sorted(Comparator.comparing(card -> card.number()))
             .collect(Collectors.toUnmodifiableList());
+    }
+
+    @Override
+    public final CardIdentifier getHero() {
+        return this.deck.getHero();
     }
 }

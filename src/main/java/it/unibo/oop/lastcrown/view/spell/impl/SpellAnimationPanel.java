@@ -6,12 +6,11 @@ import java.awt.Image;
 import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.view.AnimationPanel;
-import it.unibo.oop.lastcrown.view.ReadOnlyAnimationPanel;
 
 /**
  * The panel linked to a specific spell.
  */
-final class SpellAnimationPanel extends JComponent implements AnimationPanel, ReadOnlyAnimationPanel {
+final class SpellAnimationPanel extends JComponent implements AnimationPanel {
     private static final long serialVersionUID = 1L;
     private transient Image currentImage;
 
