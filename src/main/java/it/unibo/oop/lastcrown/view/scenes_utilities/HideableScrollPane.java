@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.view.menu.impl;
+package it.unibo.oop.lastcrown.view.scenes_utilities;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

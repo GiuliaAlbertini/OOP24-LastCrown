@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.view.menu.impl;
+package it.unibo.oop.lastcrown.view.scenes_utilities;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -23,8 +23,8 @@ public final class BackButton extends JButton {
     private static final int SCREEN_WIDTH = (int) SCREENSIZE.getWidth();
     private static final int SCREEN_HEIGHT = (int) SCREENSIZE.getHeight();
 
-    private static final Color BTN_FG_COLOR = new Color(15, 35, 65);
-    private static final Color BTN_BG_COLOR = new Color(255, 215, 0);
+    private static final Color BTN_BG_COLOR = new Color(70, 130, 180);
+    private static final Color BTN_FG_COLOR = Color.WHITE;
     private static final Font BTN_FONT = getResponsiveFont(new Font("DialogInput", Font.BOLD, 20));
 
     private static final int BTN_HEIGHT = (int) (SCREEN_HEIGHT * 0.05);

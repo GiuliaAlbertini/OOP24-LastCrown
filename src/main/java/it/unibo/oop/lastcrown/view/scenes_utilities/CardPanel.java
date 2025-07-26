@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.view.menu.impl;
+package it.unibo.oop.lastcrown.view.scenes_utilities;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.characters.api.Hero;
@@ -21,37 +22,41 @@ import it.unibo.oop.lastcrown.model.user.impl.CompleteCollectionImpl;
  */
 public final class CardPanel extends JPanel {
     private static final long serialVersionUID = 1L;
-    private static final Color BG_COLOR = new Color(60, 10, 10);
-    private static final Color HEADER_COLOR = new Color(120, 30, 30);
+    private static final Color BG_COLOR = new Color(40, 20, 40);
+    private static final Color HEADER_COLOR = new Color(88, 35, 100);
     private static final Color LABEL_FG = Color.WHITE;
-    private static final int LABEL_FONT_SIZE = 28;
+    private static final int LABEL_FONT_SIZE = 26;
     private static final int BASE_SCREEN_WIDTH = 1920;
     private static final String FONT_NAME = "SansSerif";
     private static final int SCREEN_WIDTH = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
+
+    private final Border defaultBorder = BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(new Color(130, 100, 180), 2, true),
+        BorderFactory.createEmptyBorder(8, 8, 8, 8)
+    );
 
     private CardPanel(final CardIdentifier card) {
         super(new BorderLayout());
         setOpaque(true);
         setBackground(BG_COLOR);
-        setBorder(BorderFactory.createBevelBorder(0));
+        setBorder(defaultBorder);
 
         final CompleteCollection cc = new CompleteCollectionImpl();
         final String titleText = switch (card.type()) {
             case HERO -> cc.getHero(card).map(Hero::getName).orElse(card.number() + " (Hero)");
-            case MELEE,
-                 RANGED -> cc.getPlayableCharacter(card).map(PlayableCharacter::getName).orElse(card.number() + " (Character)");
+            case MELEE, RANGED -> cc.getPlayableCharacter(card).map(PlayableCharacter::getName).orElse(card.number() + " (Character)");
             case SPELL -> cc.getSpell(card).map(Spell::getName).orElse(card.number() + " (Spell)");
             default -> card.number() + " (Unknown)";
         };
 
-        final JLabel title = createLabel(titleText);
+        final JLabel title = createLabel(titleText, LABEL_FONT_SIZE + 2);
         title.setHorizontalAlignment(JLabel.CENTER);
         title.setOpaque(true);
         title.setBackground(HEADER_COLOR);
         title.setForeground(LABEL_FG);
         add(title, BorderLayout.NORTH);
 
-        final IconPanel iconPanel = new IconPanel(card, false);
+        final IconPanel iconPanel = new IconPanel(card, false, false);
         final JPanel iconContainer = new JPanel(new BorderLayout());
         iconContainer.setOpaque(true);
         iconContainer.setBackground(BG_COLOR);
@@ -88,8 +93,7 @@ public final class CardPanel extends JPanel {
                 info.add(createLabel("Spell slots: " + h.getSpellCards()));
                 info.add(createLabel("Cost: " + h.getRequirement().amount()));
             });
-            case MELEE,
-                 RANGED -> cc.getPlayableCharacter(card).ifPresent(pc -> {
+            case MELEE, RANGED -> cc.getPlayableCharacter(card).ifPresent(pc -> {
                 info.add(createLabel("Range: " + pc.getActionRange()));
                 info.add(createLabel("Attack: " + pc.getAttackValue()));
                 info.add(createLabel("Health: " + pc.getHealthValue()));
@@ -108,8 +112,12 @@ public final class CardPanel extends JPanel {
     }
 
     private JLabel createLabel(final String text) {
+        return createLabel(text, LABEL_FONT_SIZE);
+    }
+
+    private JLabel createLabel(final String text, final int size) {
         final JLabel lbl = new JLabel(text);
-        lbl.setFont(responsiveFont(Font.BOLD, LABEL_FONT_SIZE));
+        lbl.setFont(responsiveFont(Font.BOLD, size));
         lbl.setOpaque(true);
         lbl.setBackground(BG_COLOR);
         lbl.setForeground(LABEL_FG);
