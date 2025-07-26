@@ -161,14 +161,15 @@ public class CompleteCollectionImpl implements CompleteCollection {
     }
 
     private static String getPath() {
-        return "OOP24-LastCrown"
-        + File.separator
-        + "src"
-        + File.separator
-        + "main"
-        + File.separator
-        + "resources"
-        + File.separator
-        + "entities";
+        final var resource = CompleteCollectionImpl.class
+            .getClassLoader()
+            .getResource("entities");
+
+        if (resource == null) {
+            throw new IllegalStateException("Resource path 'entities' not found.");
+        }
+
+        return new File(resource.getPath()).getAbsolutePath();
     }
+
 }
