@@ -3,6 +3,8 @@ package it.unibo.oop.lastcrown.view.menu.impl;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -27,44 +29,55 @@ import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
  */
 public final class IconPanel extends JPanel {
     private static final long serialVersionUID = 1L;
-    private static final int FALLBACK_SIDE = 200;
+    private static final int WIDTH_FALLBACK = 200;
+    private static final int HEIGHT_FALLBACK = 300;
 
     private final transient BufferedImage originalIcon;
+    private final Border defaultBorder = BorderFactory.createCompoundBorder(
+        BorderFactory.createMatteBorder(3, 3, 3, 3, new Color(245, 245, 245)),
+        BorderFactory.createCompoundBorder(
+            BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.GRAY, Color.DARK_GRAY),
+            BorderFactory.createLineBorder(new Color(30, 144, 255), 2)
+        )
+    );
+    private final Border hoverBorder = BorderFactory.createLineBorder(new Color(255, 215, 0), 3, true);
 
-    /**
-     * Build an IconPanel for the given card identifier.
-     *
-     * @param card the CardIdentifier of the card to display
-     * @param useGrey if true, load the “icon_grey” variant; otherwise load the normal “icon”
-     */
-    public IconPanel(final CardIdentifier card, final boolean useGrey) {
+    public IconPanel(final CardIdentifier card, final boolean useGrey, final boolean hoverEffect) {
         super(new BorderLayout());
-        this.setBackground(Color.ORANGE);
-        final Border innerBorder = BorderFactory.createLineBorder(new Color(30, 144, 255), 2);
-        final Border middleBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.GRAY, Color.DARK_GRAY);
-        final Border outerBorder = BorderFactory.createMatteBorder(3, 3, 3, 3, new Color(245, 245, 245));
-        final Border compoundBorder = BorderFactory.createCompoundBorder(
-                outerBorder,
-                BorderFactory.createCompoundBorder(middleBorder, innerBorder)
-        );
-        setBorder(compoundBorder);
+        setBackground(new Color(40, 40, 40));
+        setBorder(defaultBorder);
 
         final CollectionController collContr = new CollectionControllerImpl();
         final String name = collContr.getCardName(card)
-            .orElseThrow(() -> new IllegalArgumentException(
-                "No name found for card " + card
-            ));
+            .orElseThrow(() -> new IllegalArgumentException("No name found for card " + card));
 
         final String iconPath = useGrey
             ? CharacterPathLoader.loadGreyIconPath(card.type().get(), name)
             : CharacterPathLoader.loadIconPath(card.type().get(), name);
+
         BufferedImage img;
         try {
             img = ImageIO.read(new File(iconPath));
         } catch (final IOException e) {
-            img = new BufferedImage(FALLBACK_SIDE, FALLBACK_SIDE, BufferedImage.TYPE_INT_ARGB);
+            img = new BufferedImage(WIDTH_FALLBACK, HEIGHT_FALLBACK, BufferedImage.TYPE_INT_ARGB);
         }
         this.originalIcon = img;
+
+        if (hoverEffect) {
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(final MouseEvent e) {
+                    setBorder(hoverBorder);
+                    repaint();
+                }
+
+                @Override
+                public void mouseExited(final MouseEvent e) {
+                    setBorder(defaultBorder);
+                    repaint();
+                }
+            });
+        }
     }
 
     @Override
@@ -82,11 +95,7 @@ public final class IconPanel extends JPanel {
         final int drawHeight = (int) (imgHeight * scale);
 
         final List<BufferedImage> toBeResized = new ArrayList<>(Arrays.asList(originalIcon));
-        final List<BufferedImage> resized = ImageLoader.resizeFrames(
-            toBeResized,
-            drawWidth,
-            drawHeight
-        );
+        final List<BufferedImage> resized = ImageLoader.resizeFrames(toBeResized, drawWidth, drawHeight);
         final BufferedImage toDrawImage = resized.get(0);
 
         final int x = (availableWidth - drawWidth) / 2;
