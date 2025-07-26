@@ -21,22 +21,25 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.DeckController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.SceneName;
-import it.unibo.oop.lastcrown.view.menu.api.ModifiableBackScene;
+import it.unibo.oop.lastcrown.view.menu.api.DeckViewInterface;
 
 /**
  * View to handle the user's deck.
  */
-public final class DeckView extends AbstractScene implements ModifiableBackScene {
-    private static final int ADVISE_LABEL_FONT_SIZE = 26;
+public final class DeckView extends AbstractScene implements DeckViewInterface {
     private static final long serialVersionUID = 1L;
+    private static final int ADVISE_LABEL_FONT_SIZE = 26;
     private static final int SELECT_BTN_FONT_SIZE = 24;
     private static final int WRAPPER_VERTICAL_STRUT = 10;
     private static final int BTN_FONT_SIZE = 20;
@@ -46,14 +49,14 @@ public final class DeckView extends AbstractScene implements ModifiableBackScene
     private static final int BASE_MIN_CELL_SIDE = 200;
     private static final int BASE_GRID_HGAP = 10;
     private static final int BASE_GRID_VGAP = 10;
-    private static final CardType[] TYPES = {
-        CardType.HERO, CardType.MELEE, CardType.RANGED, CardType.SPELL,
-    };
     private static final int BASE_SCREEN_WIDTH = 1920;
     private static final String FONT_NAME = "SansSerif";
     private static final int SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
-    private static final int MIN_DECK_BASE = 50;
-    private static final int MAX_DECK_BASE = 150;
+    private static final int MIN_DECK_BASE = 300;
+    private static final int MAX_DECK_BASE = 350;
+    private static final CardType[] TYPES = {
+        CardType.HERO, CardType.MELEE, CardType.RANGED, CardType.SPELL,
+    };
 
     private final transient DeckController deckController;
     private final transient SceneManager sceneManager;
@@ -230,6 +233,37 @@ public final class DeckView extends AbstractScene implements ModifiableBackScene
 
         deckRowPanel.revalidate();
         deckRowPanel.repaint();
+    }
+
+    @Override
+    public final void showRules() {
+        final Set<CardIdentifier> deck = deckController.getDeck();
+        if (deck.isEmpty()) {
+            final String title = "HOW TO BUILD A DECK";
+            final String message = """
+                To start building a deck you need to choose a hero first.\n
+                Once you choose a HERO you can add other cards by clicking them in the panel \
+                in the bottom right and clicking the select button that appears on the detail \
+                panel located on the left.\n
+                The limit of cards per type is determined by the hero.\n
+                To remove a card from the deck you can just click the card from the deck panel in the upper right.\n
+                An hero can't be removed. In order to change the hero you need to select the new hero you want and \
+                it will be automatically switched.
+                """;
+            JTextArea ta = new JTextArea(message);
+            ta.setWrapStyleWord(true);
+            ta.setLineWrap(true);
+            ta.setEditable(false);
+            JScrollPane scroll = new JScrollPane(ta);
+            scroll.setPreferredSize(new Dimension(500, 300));  // dimensioni a piacere
+
+            JOptionPane.showMessageDialog(
+                SwingUtilities.getWindowAncestor(this),
+                scroll,
+                title,
+                JOptionPane.INFORMATION_MESSAGE
+        );
+        }
     }
 
     private void refreshAvailableCardsGrid(final Optional<CardType> type) {
