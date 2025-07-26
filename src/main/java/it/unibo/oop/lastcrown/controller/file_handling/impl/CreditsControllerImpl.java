@@ -8,14 +8,13 @@ import it.unibo.oop.lastcrown.controller.file_handling.api.CreditsController;
 import it.unibo.oop.lastcrown.model.file_handling.api.ReadOnlyFileHandler;
 import it.unibo.oop.lastcrown.model.file_handling.impl.CreditsParser;
 import it.unibo.oop.lastcrown.model.file_handling.impl.ReadOnlyFileHandlerImpl;
-import it.unibo.oop.lastcrown.model.user.impl.CompleteCollectionImpl;
 
 /**
  * Implementation of {@link CreditsController} for retrieving credits data.
  */
 public class CreditsControllerImpl implements CreditsController {
 
-    private static final String FILE_NAME = "credits";
+    private static final String CREDITS = "credits";
 
     private static final String PATH = getPath();
 
@@ -30,18 +29,19 @@ public class CreditsControllerImpl implements CreditsController {
 
     @Override
     public final List<String> getCreditsList() {
-        final Optional<List<String>> result = this.creditsFileHandler.readFromFile(FILE_NAME);
+        final Optional<List<String>> result = this.creditsFileHandler.readFromFile(CREDITS);
         return result.orElseThrow(() -> new IllegalStateException("Credits file not found or is empty"));
     }
 
     private static String getPath() {
-        final var resource = CompleteCollectionImpl.class
-            .getClassLoader()
-            .getResource(FILE_NAME);
-
-        if (resource == null) {
-            throw new IllegalStateException("Resource path '" + FILE_NAME + "' not found.");
-        }
-        return new File(resource.getPath()).getAbsolutePath();
+        return "OOP24-LastCrown"
+        + File.separator
+        + "src"
+        + File.separator
+        + "main"
+        + File.separator
+        + "resources"
+        + File.separator
+        + CREDITS;
     }
 }
