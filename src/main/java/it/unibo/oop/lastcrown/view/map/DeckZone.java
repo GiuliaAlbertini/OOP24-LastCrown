@@ -4,7 +4,9 @@ package it.unibo.oop.lastcrown.view.map;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseListener;
@@ -18,7 +20,9 @@ import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 import it.unibo.oop.lastcrown.controller.GameControllerExample;
@@ -36,10 +40,9 @@ public final class DeckZone extends JPanel {
     private static final int VERTICAL_GAP_BTNS = 5;
     private static final long serialVersionUID = 1L;
     private static final int SECTIONS = 10;
-    private static final int RED = 27;
-    private static final int GREEN = 120;
-    private static final int BLUE = 175;
+    private static final Color BG = new Color(27, 120, 175);
     private static final String KEY_PROPERTY = "info";
+    private static final Font LABEL_FONT = new Font("Monospaced",Font.BOLD, 16);
 
     private static final int MAX_ENERGY = SECTIONS;
     private static final int TIME_RECHARGE_SINGLE_ENERGY = 1000;
@@ -52,7 +55,7 @@ public final class DeckZone extends JPanel {
     private final transient MouseListener mouseListenerDefensiveCopy;
 
     private JPanel energyBarPanel;
-    private final JPanel cardPanel;
+    private final JPanel btnsPanel;
     private transient CardIdentifier lastClicked;
     private final int deckZoneWidth;
     private final int deckZoneHeight;
@@ -74,7 +77,7 @@ public final class DeckZone extends JPanel {
         this.inGameDeckController = InGameDeckController.create(deck);
         this.setLayout(null);
         this.setupEnergyBar(this, energyBarWidth);
-        this.setBackground(new Color(RED, GREEN, BLUE));
+        this.setBackground(BG);
         this.setPreferredSize(new Dimension(this.deckZoneWidth, deckZoneHeight));
 
         this.rechargeTimer = new Timer(TIME_RECHARGE_SINGLE_ENERGY, e -> {
@@ -109,10 +112,10 @@ public final class DeckZone extends JPanel {
             }
         };
         this.mouseListenerDefensiveCopy = mouseListener;
-        this.cardPanel = new JPanel(new GridLayout(3, 1, 0, VERTICAL_GAP_BTNS));
-        this.cardPanel.setPreferredSize(new Dimension(deckZoneWidth - energyBarWidth, deckZoneHeight));
-        this.cardPanel.setBounds(energyBarWidth, 0, deckZoneWidth - energyBarWidth, deckZoneHeight);
-        this.add(cardPanel);
+        this.btnsPanel = new JPanel(new GridLayout(3, 1, 0, VERTICAL_GAP_BTNS));
+        this.btnsPanel.setPreferredSize(new Dimension(deckZoneWidth - energyBarWidth, deckZoneHeight));
+        this.btnsPanel.setBounds(energyBarWidth, 0, deckZoneWidth - energyBarWidth, deckZoneHeight);
+        this.add(btnsPanel);
 
         updateCardButtons(buttonListener, mouseListener);
     }
@@ -123,18 +126,55 @@ public final class DeckZone extends JPanel {
      * @param ml the MouseListener
      */
     public void updateCardButtons(final ActionListener act, final MouseListener ml) {
-        cardPanel.removeAll();
+        this.btnsPanel.removeAll();
         final List<CardIdentifier> nextCards = inGameDeckController.getNextAvailableCards();
         for (final CardIdentifier id : nextCards) {
-            final JButton jb = new JButton();
-            jb.putClientProperty(KEY_PROPERTY, id);
-            jb.addActionListener(act);
-            jb.addMouseListener(ml);
-            cardPanel.add(jb);
-            addIconToBtn(id, jb);
+            final JPanel singleCardPanel = initSingleCardPanel(act, ml, id);
+            this.btnsPanel.add(singleCardPanel);
         }
-        cardPanel.revalidate();
-        cardPanel.repaint();
+        this.btnsPanel.revalidate();
+        this.btnsPanel.repaint();
+    }
+
+    private JPanel initSingleCardPanel(final ActionListener act, final MouseListener ml, final CardIdentifier id) {
+        final JPanel singleCardPanel = new JPanel(new BorderLayout());
+        singleCardPanel.setPreferredSize(new Dimension(
+            this.deckZoneWidth - this.energyZoneWidth,
+            (this.deckZoneHeight - 2 * VERTICAL_GAP_BTNS)
+        ));
+        final JButton jb = initButton(act, ml, id);
+        switch (id.type()) {
+            case MELEE:
+                jb.setBackground(Color.ORANGE);
+                singleCardPanel.setBackground(Color.ORANGE);
+                break;
+            case RANGED:
+                jb.setBackground(Color.GREEN);
+                singleCardPanel.setBackground(Color.GREEN);
+                break;
+            default:
+                jb.setBackground(Color.CYAN);
+                singleCardPanel.setBackground(Color.CYAN);
+                break;
+        }
+        singleCardPanel.add(jb, BorderLayout.CENTER);
+        final String energyText = "Energy Cost: " + String.valueOf(this.inGameDeckController.getEnergyToPlay(id));
+        final JLabel energyLabel = new JLabel(energyText, SwingConstants.CENTER);
+        energyLabel.setFont(LABEL_FONT);
+        singleCardPanel.add(energyLabel, BorderLayout.SOUTH);
+        return singleCardPanel;
+    }
+
+    private JButton initButton(final ActionListener act, final MouseListener ml, final CardIdentifier id) {
+        final JButton jb = new JButton();
+        jb.putClientProperty(KEY_PROPERTY, id);
+        jb.addActionListener(act);
+        jb.addMouseListener(ml);
+        jb.setBorder(BorderFactory.createEmptyBorder());
+        jb.setFocusPainted(false);
+        jb.setMargin(new Insets(0, 0, 0, 0));
+        addIconToBtn(id, jb);
+        return jb;
     }
 
     private void addIconToBtn(final CardIdentifier id, final JButton jb) {
