@@ -45,7 +45,7 @@ public class MainViewImpl extends JFrame implements MainView {
     private static final Dimension SCREENSIZE = Toolkit.getDefaultToolkit().getScreenSize();
     private static final int WIDTH = (int) (SCREENSIZE.getWidth() * RESIZE_FACTOR);
     private static final int HEIGHT = (int) (SCREENSIZE.getHeight() * RESIZE_FACTOR);
-    private static final Color BG_COLOR = new Color(21, 76, 121);
+    private static final Color BG_COLOR = new Color(30, 60, 90);
 
     private final CardLayout layout = new CardLayout();
     private final JPanel mainPanel = new JPanel(this.layout);
@@ -238,7 +238,11 @@ public class MainViewImpl extends JFrame implements MainView {
     private void updateDeckController(final Set<CardIdentifier> newSet) {
         final Set<CardIdentifier> currentDeck = this.deckController.getDeck();
         final DeckController newDeckContr = new DeckControllerImpl(newSet);
-        currentDeck.stream().forEach(newDeckContr::addCard);
+        final CardIdentifier hero = this.deckController.getHero();
+        newDeckContr.addCard(hero);
+        currentDeck.stream()
+               .filter(ci -> !ci.equals(hero))
+               .forEach(newDeckContr::addCard);
         this.deckController = newDeckContr;
     }
 
@@ -258,5 +262,15 @@ public class MainViewImpl extends JFrame implements MainView {
         this.statsView = StatsView.create(this.sceneManager, this.accountController);
         this.mainPanel.add(this.statsView.getPanel(), this.statsView.getSceneName().get());
         updateUserCollectionUsers(account.getUserCollection().getCollection());
+    }
+
+    @Override
+    public final MainView getFrame() {
+        return this;
+    }
+
+    @Override
+    public final void close() {
+        this.dispose();
     }
 }
