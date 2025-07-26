@@ -34,5 +34,6 @@ public interface MatchStartObserver {
      * @return the current MatchController instance, or null if not initialized
      */
     MatchController getMatchControllerReference();
-    void newMatchView(final MatchView matchView);
+
+    void getMatchView(final MatchView matchView);
 }
