@@ -74,7 +74,7 @@ public class DeckControllerImpl implements DeckController {
     }
 
     @Override
-    public CardIdentifier getHero() {
+    public final CardIdentifier getHero() {
         return this.deck.getHero();
     }
 }

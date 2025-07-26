@@ -47,5 +47,9 @@ public interface DeckController {
      */
     List<CardIdentifier> getAvailableCardsByType(CardType type);
 
+    /**
+     * Getter for the current hero in the deck.
+     * @return the {@link CardIdentifier} of the requested hero
+     */
     CardIdentifier getHero();
 }
