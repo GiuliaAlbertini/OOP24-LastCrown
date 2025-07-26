@@ -67,20 +67,19 @@ public class MainViewImpl extends JFrame implements MainView {
      * Constructs the main application window, initializes each scene,
      * and defaults to the menu scene.
      *
-     * @param sceneManager the {@link SceneManager} to use
-     * @param mainController the {@link MainController} to use
-     * @param accountController the {@link AccountController} to use
+     * @param sceneManager         the {@link SceneManager} to use
+     * @param mainController       the {@link MainController} to use
+     * @param accountController    the {@link AccountController} to use
      * @param collectionController the {@link CollectionController} to use
-     * @param deckContr the {@link DeckController} to use
-     * @param gameContr the {@link GameControllerExample} to use
+     * @param deckContr            the {@link DeckController} to use
+     * @param gameContr            the {@link GameControllerExample} to use
      */
     public MainViewImpl(final SceneManager sceneManager,
-                        final MainController mainController,
-                        final AccountController accountController,
-                        final CollectionController collectionController,
-                        final DeckController deckContr,
-                        final MatchStartObserver gameContr
-            ) {
+            final MainController mainController,
+            final AccountController accountController,
+            final CollectionController collectionController,
+            final DeckController deckContr,
+            final MatchStartObserver gameContr) {
         this.sceneManager = sceneManager;
         this.mainController = mainController;
         this.accountController = accountController;
@@ -94,11 +93,10 @@ public class MainViewImpl extends JFrame implements MainView {
         this.statsView = StatsView.create(this.sceneManager, this.accountController);
         this.deckView = DeckView.create(this.sceneManager, deckController);
         this.collectionView = CollectionView.create(this.sceneManager, this.collectionController, getOwnedCards());
-        this.shopView = new ShopViewImpl(this, collectionController,
-        deckContr.getAvailableCards(), WIDTH, HEIGHT, accountController.getAccount());
-        //HERE MISSING SHOP VIEW AND MATCH VIEW TO THE MAIN CONTROLLER
-        //gameContr.newShopView(this.shopView);
-        //gameContr.newMatchView(this.matchView);
+        this.shopView = new ShopViewImpl(this, collectionController, deckContr.getAvailableCards(), WIDTH, HEIGHT, accountController.getAccount());
+        // HERE MISSING SHOP VIEW AND MATCH VIEW TO THE MAIN CONTROLLER
+        // gameContr.newShopView(this.shopView);
+        // gameContr.newMatchView(this.matchView);
 
         setUpPanels();
         this.layout.show(this.mainPanel, menuView.getSceneName().get());
@@ -119,40 +117,39 @@ public class MainViewImpl extends JFrame implements MainView {
         this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.addComponentListener(new ComponentAdapter() {
             @Override
-                public void componentMoved(final ComponentEvent e) {
-                    SwingUtilities.invokeLater(() -> {
-                        revalidate();
-                        repaint();
-                    });
-                }
+            public void componentMoved(final ComponentEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    revalidate();
+                    repaint();
+                });
+            }
         });
     }
 
     /**
      * Factory method to create an istance of {@link MainView}.
      *
-     * @param sceneManager the {@link SceneManager} to use
-     * @param mainController the {@link MainController} to use
-     * @param accountController the {@link AccountController} to use
+     * @param sceneManager         the {@link SceneManager} to use
+     * @param mainController       the {@link MainController} to use
+     * @param accountController    the {@link AccountController} to use
      * @param collectionController the {@link CollectionController} to use
-     * @param deckController the {@link DeckController} to use
-     * @param gameController the {@link GameControllerExample} to use
+     * @param deckController       the {@link DeckController} to use
+     * @param gameController       the {@link GameControllerExample} to use
      * @return an initialized istance of {@link MainViewImpl}
      */
     public static MainView create(final SceneManager sceneManager,
-                                  final MainController mainController,
-                                  final AccountController accountController,
-                                  final CollectionController collectionController,
-                                  final DeckController deckController,
-                                  final MatchStartObserver gameController) {
+            final MainController mainController,
+            final AccountController accountController,
+            final CollectionController collectionController,
+            final DeckController deckController,
+            final MatchStartObserver gameController) {
         final MainViewImpl view = new MainViewImpl(
-            sceneManager,
-            mainController,
-            accountController,
-            collectionController,
-            deckController,
-            gameController
-        );
+                sceneManager,
+                mainController,
+                accountController,
+                collectionController,
+                deckController,
+                gameController);
         view.init();
         return view;
     }
@@ -179,12 +176,13 @@ public class MainViewImpl extends JFrame implements MainView {
                     return;
                 } else {
                     //flag per farlo partire una sola volta
-                    this.matchView.updateInGameDeck(this.deckController.getDeck());
                     this.shopView.notifyHidden();
-                    this.gameController.onMatchStart();
-                    this.matchView = new MatchViewImpl(this.gameController.getMatchControllerReference(), this, WIDTH, HEIGHT, this.deckController.getDeck());
-                    this.gameController.getMatchControllerReference().notifyShopToMatch();
-                    this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName());
+                    this.gameController.onMatchStart(WIDTH, HEIGHT, this.deckController.getHero(), this.collectionController);
+                    this.matchView = new MatchViewImpl(this.gameController.getMatchControllerReference(), this,
+                    WIDTH, HEIGHT, this.deckController.getDeck());
+
+                    this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName().get());
+                    this.matchView.updateInGameDeck(this.deckController.getDeck());
                     AudioEngine.playSoundTrack(SoundTrack.BATTLE);
                 }
             }
@@ -197,8 +195,6 @@ public class MainViewImpl extends JFrame implements MainView {
                 }
             }
             case COLLECTION -> {
-                if (SHOP.equals(sceneCaller)) {
-                    this.collectionView.setBackDestination(SHOP);
                 if (SceneName.SHOP.equals(sceneCaller)) {
                     this.collectionView.setBackDestination(SceneName.SHOP);
                 } else {
@@ -216,6 +212,7 @@ public class MainViewImpl extends JFrame implements MainView {
             default -> { }
         }
         this.layout.show(this.mainPanel, sceneDestination.get());
+
     }
 
     @Override
@@ -247,7 +244,7 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     private void setUpPanels() {
-        this.mainPanel.add(this.menuView.getPanel(),   this.menuView.getSceneName().get());
+        this.mainPanel.add(this.menuView.getPanel(), this.menuView.getSceneName().get());
         this.mainPanel.add(this.creditView.getPanel(), this.creditView.getSceneName().get());
         this.mainPanel.add(this.statsView.getPanel(), this.statsView.getSceneName().get());
         this.mainPanel.add(this.deckView.getPanel(), this.deckView.getSceneName().get());
