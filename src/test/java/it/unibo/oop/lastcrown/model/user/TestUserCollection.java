@@ -2,37 +2,46 @@ package it.unibo.oop.lastcrown.model.user;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach; import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import it.unibo.oop.lastcrown.model.card.CardIdentifier; import it.unibo.oop.lastcrown.model.card.CardType; import it.unibo.oop.lastcrown.model.user.api.UserCollectionListener; import it.unibo.oop.lastcrown.model.user.impl.UserCollectionImpl;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardType;
+import it.unibo.oop.lastcrown.model.user.api.UserCollection;
+import it.unibo.oop.lastcrown.model.user.impl.UserCollectionImpl;
 
-final class TestUserCollection { 
-    private UserCollectionImpl collection;
+final class TestUserCollection {
+
+    private UserCollection userCollection;
+
     @BeforeEach
     void setUp() {
-        collection = new UserCollectionImpl();
+        userCollection = new UserCollectionImpl();
     }
 
     @Test
-    void testGetCollectionUnmodifiable() {
-        var cols = collection.getCollection();
-        assertThrows(UnsupportedOperationException.class, () -> cols.add(new CardIdentifier(10, CardType.SPELL)));
+    void testInitialCollectionIsNotEmpty() {
+        final Set<CardIdentifier> collection = userCollection.getCollection();
+        assertNotNull(collection, "La collezione non dovrebbe essere null");
+        assertFalse(collection.isEmpty(), "La collezione iniziale dovrebbe contenere carte a costo zero");
     }
 
     @Test
-    void testAddCardAndListenerNotification() {
-        AtomicReference<CardIdentifier> notified = new AtomicReference<>();
-        collection.addListener(new UserCollectionListener() {
-            @Override
-            public void onCardAdded(CardIdentifier card) {
-                notified.set(card);
-            }
-        });
-        CardIdentifier card = new CardIdentifier(42, CardType.SPELL);
-        collection.addCard(card);
-        assertTrue(collection.getCollection().contains(card));
-        assertEquals(card, notified.get());
+    void testAddCardToCollection() {
+        final CardIdentifier newCard = new CardIdentifier(99, CardType.SPELL);
+        assertFalse(userCollection.getCollection().contains(newCard), "La carta non dovrebbe essere già presente");
+        
+        userCollection.addCard(newCard);
+        
+        assertTrue(userCollection.getCollection().contains(newCard), "La carta dovrebbe essere stata aggiunta");
+    }
+
+    @Test
+    void testCollectionIsUnmodifiable() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            userCollection.getCollection().add(new CardIdentifier(100, CardType.HERO));
+        }, "La collezione restituita dovrebbe essere immutabile");
     }
 }
