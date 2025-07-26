@@ -40,4 +40,15 @@ public interface MainView {
      * @param bossDefeated flag that is true if a boss has been defeated
      */
     void updateAccount(int amount, boolean bossDefeated);
+
+    /**
+     * Getter this view.
+     * @return the frame
+     */
+    MainView getFrame();
+
+    /**
+     * Close the view.
+     */
+    void close();
 }
