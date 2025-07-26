@@ -32,10 +32,11 @@ import it.unibo.oop.lastcrown.view.menu.impl.LoginViewImpl;
  */
 public class MainControllerImpl implements MainController {
     private static final String SEP = File.separator;
-    private static final String PATH = getAccountPath();
+    private static final String ACCOUNT_PATH = getAccountPath();
     private Optional<SceneManager> sceneManager;
     private Optional<AccountController> accountController = Optional.empty();
     private final LoginView loginView;
+
     private long sessionTimer;
 
     /**
@@ -51,6 +52,7 @@ public class MainControllerImpl implements MainController {
 
     @Override
     public final void goOverLogin(final String username) {
+        checkDirExistence();
         this.accountController = Optional.of(
            new AccountControllerImpl(username));
         final CollectionController collectionController = new CollectionControllerImpl();
@@ -105,6 +107,11 @@ public class MainControllerImpl implements MainController {
 
     @Override
     public final void updateUserColletionUsers(final Set<CardIdentifier> newSet) {
+        this.accountController.ifPresent(mainCtrl -> {
+            final Account a = mainCtrl.getAccount();
+            newSet.forEach(a::addCard);
+            mainCtrl.setAccount(a);
+        });
         this.sceneManager.get().updateUserCollectionUsers(newSet);
     }
 
@@ -115,11 +122,6 @@ public class MainControllerImpl implements MainController {
         newAcc.addPlaytime(minutes);
         writeAccountOnFile(newAcc);
         this.sceneManager.get().closeApplication();
-    }
-
-    private double computeMinutesPassed() {
-        final long elapsedMillis = System.currentTimeMillis() - this.sessionTimer;
-        return elapsedMillis / 60000.0;
     }
 
     @Override
@@ -135,8 +137,34 @@ public class MainControllerImpl implements MainController {
         this.sceneManager.get().updateAccountUsers(account);
     }
 
+    private void checkDirExistence() {
+        final File dir = new File(ACCOUNT_PATH);
+        if (!dir.exists()) {
+            if (!dir.mkdirs()) {
+                throw new IllegalStateException(
+                    "Impossibile creare la cartella per gli account: " + dir.getAbsolutePath()
+                );
+            }
+        }
+    }
+
+    private static String getAccountPath() {
+        return System.getProperty("user.home")
+            + SEP + ".lastcrown"
+            + SEP + "accounts";
+    }
+
+    private double computeMinutesPassed() {
+        final long elapsedMillis = System.currentTimeMillis() - this.sessionTimer;
+        return elapsedMillis / 60000.0;
+    }
+
     private void writeAccountOnFile(final Account account) {
-        final FileHandler<Account> fileHandler = new FileHandlerImpl<>(new AccountParser(), new AccountSerializer(), PATH);
+        final FileHandler<Account> fileHandler = new FileHandlerImpl<>(
+            new AccountParser(),
+            new AccountSerializer(),
+            ACCOUNT_PATH
+        );
         fileHandler.writeToFile(account.getUsername(), account);
     }
 
@@ -146,13 +174,5 @@ public class MainControllerImpl implements MainController {
 
     private void closeLoginView() {
         this.loginView.setVisibility(false);
-    }
-
-    private static String getAccountPath() {
-        return "OOP24-LastCrown" + SEP
-             + "src" + SEP
-             + "main" + SEP
-             + "resources" + SEP
-             + "accounts";
     }
 }
