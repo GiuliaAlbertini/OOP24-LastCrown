@@ -40,16 +40,16 @@ public interface MainController {
     Optional<Account> getAccount();
 
     /**
-     * Returns the current {@link MatchController} instance.
-     *
-     * @return the active MatchController
-     */
-    MatchController getMatchController();
-
-    /*
      * Updates the account in the file.
      *
      * @param account the new version of the account
      */
     void updateAccount(Account account);
+
+    /**
+     * Returns the current {@link MatchController} instance.
+     *
+     * @return the active MatchController
+     */
+    MatchController getMatchController();
 }

@@ -90,6 +90,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
     @Override
     public synchronized void addHeroGraphics(final JComponent heroGraphics) {
+        System.out.println("CIAO");
         final int cardZoneWidth = (int) (this.getWidth() * DimensionResolver.DECKZONE.width());
         final int posZoneWidth = (int) (this.getWidth() * DimensionResolver.POSITIONINGZONE.width());
         final int panelsHeight = this.getHeight() - (int) (this.getHeight() * DimensionResolver.UTILITYZONE.height());
@@ -100,6 +101,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         this.mainPanel.add(heroGraphics);
         this.mainPanel.setComponentZOrder(heroGraphics, 1);
         this.mainPanel.repaint();
+        System.out.println(this.getComponentCount());
     }
 
     @Override
@@ -138,6 +140,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         this.mainView.changePanel(SceneName.MATCH, SceneName.MENU);
     }
 
+    //zona truppe (confine)
     @Override
     public int getTrupsZoneLimit() {
         return this.mainPanel.getTrupsZoneLimit();
@@ -145,12 +148,12 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
     @Override
     public Dimension getWallSize() {
-        return this.mainPanel.getWallSize();
+        return this.mainPanel.getWallSize(); //dimension
     }
 
     @Override
     public Point getWallCoordinates() {
-        return this.mainPanel.getWallCoordinates();
+        return this.mainPanel.getWallCoordinates(); //Point2D
     }
 
     @Override

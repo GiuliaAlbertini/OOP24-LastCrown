@@ -11,6 +11,7 @@ import it.unibo.oop.lastcrown.controller.collision.impl.EnemyEngagement;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
+import it.unibo.oop.lastcrown.view.map.MatchView;
 
 /**
  * Interface representing the controller of a match.
@@ -97,11 +98,11 @@ public interface MatchController {
     boolean isEnemyDead(int enemyId);
     boolean isRangedFightPartnerDead(final int id);
 
-	void notifyClicked(int x, int y);
+	 void notifyClicked(int x, int y);
 
-	void notifyButtonPressed(CardIdentifier id);
+	 void notifyButtonPressed(CardIdentifier id);
 
-	void notifyPauseEnd();
+	 void notifyPauseEnd();
 
     JComponent getWallHealthBar();
 
@@ -109,5 +110,6 @@ public interface MatchController {
 
 	JComponent getEventWriter();
 
-    void notifyShopToMatch();
+    void newMatchView(final MatchView matchView);
+    // void notifyShopToMatch();
 }
