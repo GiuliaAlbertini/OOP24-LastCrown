@@ -9,7 +9,6 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.file_handling.api.Parser;
 import it.unibo.oop.lastcrown.model.user.api.Account;
-import it.unibo.oop.lastcrown.model.user.api.UserCollection;
 import it.unibo.oop.lastcrown.model.user.impl.AccountImpl;
 
 /**
@@ -44,9 +43,8 @@ public class AccountParser implements Parser<Account> {
         IntStream.range(0, games).forEach(i -> account.increasePlayedMatches());
         account.addPlaytime(playtime);
 
-        final UserCollection collection = account.getUserCollection();
         parseCards(cardsLine)
-            .forEach(collection::addCard);
+            .forEach(account::addCard);
 
         return account;
     }
