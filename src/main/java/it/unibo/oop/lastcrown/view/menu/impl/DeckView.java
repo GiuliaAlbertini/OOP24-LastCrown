@@ -166,7 +166,7 @@ public final class DeckView extends AbstractScene implements DeckViewInterface {
             final String title = "HOW TO BUILD A DECK";
             final String message = """
                 To start building a deck you need to choose a hero first.\n
-                Once you choose a HERO you can add other cards by clicking them in the panel \
+                Once you choose a hero you can add other cards by clicking them in the panel \
                 in the bottom right and clicking the select button that appears on the detail \
                 panel located on the left.\n
                 The limit of cards per type is determined by the hero.\n
