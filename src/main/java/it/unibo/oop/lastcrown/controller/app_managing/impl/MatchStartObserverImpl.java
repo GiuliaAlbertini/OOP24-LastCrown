@@ -53,7 +53,7 @@ public class MatchStartObserverImpl implements MatchStartObserver {
         return this.matchController;
     }
 
-    public void newMatchView(final MatchView matchView){
+    public void getMatchView(final MatchView matchView){
         this.matchController.newMatchView(matchView);
     }
 }

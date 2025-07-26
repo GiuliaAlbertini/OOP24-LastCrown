@@ -90,18 +90,15 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
     @Override
     public synchronized void addHeroGraphics(final JComponent heroGraphics) {
-        System.out.println("CIAO");
-        final int cardZoneWidth = (int) (this.getWidth() * DimensionResolver.DECKZONE.width());
-        final int posZoneWidth = (int) (this.getWidth() * DimensionResolver.POSITIONINGZONE.width());
-        final int panelsHeight = this.getHeight() - (int) (this.getHeight() * DimensionResolver.UTILITYZONE.height());
+        final int cardZoneWidth = (int) (this.getPreferredSize().width * DimensionResolver.DECKZONE.width());
+        final int posZoneWidth = (int) (this.getPreferredSize().width * DimensionResolver.POSITIONINGZONE.width());
+        final int panelsHeight = this.getPreferredSize().height - (int) (this.getPreferredSize().height * DimensionResolver.UTILITYZONE.height());
         final int cornerWidth = cardZoneWidth + posZoneWidth / 2;
         final int cornerHeight = panelsHeight / 4;
-        heroGraphics.setBounds(cornerWidth, cornerHeight,
-         heroGraphics.getPreferredSize().width, heroGraphics.getPreferredSize().height);
+        heroGraphics.setBounds(cornerWidth, cornerHeight,heroGraphics.getPreferredSize().width, heroGraphics.getPreferredSize().height);
         this.mainPanel.add(heroGraphics);
-        this.mainPanel.setComponentZOrder(heroGraphics, 1);
-        this.mainPanel.repaint();
-        System.out.println(this.getComponentCount());
+        this.mainPanel.setComponentZOrder(heroGraphics, 0);
+        //this.mainPanel.repaint();
     }
 
     @Override

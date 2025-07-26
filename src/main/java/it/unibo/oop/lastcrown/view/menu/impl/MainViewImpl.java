@@ -178,12 +178,14 @@ public class MainViewImpl extends JFrame implements MainView {
                 } else {
                     //flag per farlo partire una sola volta
                     this.shopView.notifyHidden();
+                    //fai partire il matchController
                     this.gameController.onMatchStart(WIDTH, HEIGHT, this.deckController.getHero(), this.collectionController);
+                    //fai partire la matchview
                     this.matchView = new MatchViewImpl(this.gameController.getMatchControllerReference(), this,
                     WIDTH, HEIGHT, this.deckController.getDeck());
-
                     this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName().get());
                     this.matchView.updateInGameDeck(this.deckController.getDeck());
+                    this.gameController.getMatchView(matchView);
                     AudioEngine.playSoundTrack(SoundTrack.BATTLE);
                 }
             }
