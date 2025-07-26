@@ -17,7 +17,7 @@ import it.unibo.oop.lastcrown.model.user.impl.AccountImpl;
  */
 public class AccountControllerImpl implements AccountController {
     private static final String SEP = File.separator;
-    private final String ACCOUNT_PATH = getAccountPath();
+    private static final String ACCOUNT_PATH = getAccountPath();
 
     private final FileHandler<Account> fileHandler;
     private Account account;
@@ -37,7 +37,7 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
-    public final void setAccount(Account account) {
+    public final void setAccount(final Account account) {
         this.account = defensiveCopy(account);
     }
 
