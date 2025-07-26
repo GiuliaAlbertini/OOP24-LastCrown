@@ -13,4 +13,11 @@ public interface AccountController {
      * @return the account controlled by the controller
      */
     Account getAccount();
+
+    /**
+     * Setter for the account.
+     * 
+     * @param account the new account
+     */
+    void setAccount(Account account);
 }
