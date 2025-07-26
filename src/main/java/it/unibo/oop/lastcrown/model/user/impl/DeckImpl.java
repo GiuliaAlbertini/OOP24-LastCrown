@@ -24,7 +24,7 @@ public class DeckImpl implements Deck, UserCollectionListener {
 
     /**
      * Constuct a new {@code DeckImpl}.
-     * 
+     *
      * @param userCollection the collection of the user
      */
     public DeckImpl(final Set<CardIdentifier> userCollection) {
@@ -33,7 +33,7 @@ public class DeckImpl implements Deck, UserCollectionListener {
 
     /**
      * Creates a new instance of {@link Deck}, initializing the first hero of the deck.
-     * 
+     *
      * @param userCollection the set of {@link CardIdentifier} of the user
      * @return the deck created
      */
@@ -165,5 +165,10 @@ public class DeckImpl implements Deck, UserCollectionListener {
             default:
                 return 0;
         }
+    }
+
+    @Override
+    public CardIdentifier getHero() {
+        return this.heroId;
     }
 }
