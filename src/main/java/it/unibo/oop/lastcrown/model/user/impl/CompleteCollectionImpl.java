@@ -41,7 +41,7 @@ public class CompleteCollectionImpl implements CompleteCollection {
 
     /**
      * Constructor for an object of {@code CompleteCollectionImpl}.
-     * It initializes the maps relative to heroes, plyable characters and spells, 
+     * It initializes the maps relative to heroes, plyable characters and spells,
      * then creates a List with all the {@link CardIdentifier} in the maps ordered
      * by their ID number.
      */
@@ -98,8 +98,9 @@ public class CompleteCollectionImpl implements CompleteCollection {
     }
 
     @Override
-    public final List<CardIdentifier> getCompleteCollection() {
-        return Collections.unmodifiableList(this.completeCollection);
+    public final CompleteCollection getCompleteCollection() {
+        final var defensiveCopy = this;
+        return defensiveCopy;
     }
 
     @Override
@@ -152,6 +153,11 @@ public class CompleteCollectionImpl implements CompleteCollection {
                .map(this::sortedByNumber)
                .flatMap(List::stream)
                .toList();
+    }
+
+    @Override
+   public final List<CardIdentifier> getCompleteCollectionAsSet() {
+       return Collections.unmodifiableList(this.completeCollection);
     }
 
     private static String getPath() {
