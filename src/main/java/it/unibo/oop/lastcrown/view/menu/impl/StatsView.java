@@ -32,8 +32,9 @@ public final class StatsView extends AbstractScene {
     private static final String FONT_NAME = "DialogInput";
     private static final Font INFO_FONT  = getResponsiveFont(new Font(FONT_NAME, Font.PLAIN, 50));
     private static final Font VALUE_FONT = getResponsiveFont(new Font(FONT_NAME, Font.BOLD, 45));
-    private static final Color STAT_COLOR      = new Color(100, 215, 0);
-    private static final Color CARD_BACKGROUND = new Color(30, 30, 30);
+    private static final Color CARD_BACKGROUND = new Color(33, 37, 43);
+    private static final Color STAT_COLOR      = new Color(135, 206, 250);
+    private static final Color VALUE_COLOR     = new Color(245, 245, 245);
 
     private StatsView(final SceneManager sceneManager, final AccountController accountController) {
         this.setLayout(new BorderLayout());
@@ -105,7 +106,7 @@ public final class StatsView extends AbstractScene {
 
         final JLabel valueLabel = new JLabel(value);
         valueLabel.setFont(VALUE_FONT);
-        valueLabel.setForeground(Color.WHITE);
+        valueLabel.setForeground(VALUE_COLOR);
 
         panel.add(nameLabel);
         panel.add(valueLabel);
