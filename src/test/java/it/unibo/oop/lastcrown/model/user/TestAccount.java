@@ -5,13 +5,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import it.unibo.oop.lastcrown.controller.user.api.AccountController;
+import it.unibo.oop.lastcrown.controller.user.impl.AccountControllerImpl;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.user.impl.AccountImpl;
 
-final class AccountImplTest {
+final class TestAccount {
     private AccountImpl account;
 
     @BeforeEach
     void setUp() {
+        AccountController contr = new AccountControllerImpl("m");
         account = new AccountImpl("testUser");
     }
 
