@@ -31,9 +31,9 @@ public final class MenuView extends AbstractScene {
     private static final long serialVersionUID = 1L;
     private static final double SPACING_FACTOR = 0.05;
     private static final double WEIGHT_Y = 0.9;
-    private static final Color BTN_FG_COLOR = new Color(15, 35, 65);
+    private static final Color BTN_BG_COLOR = new Color(70, 130, 180);
+    private static final Color BTN_FG_COLOR = Color.WHITE;
     private static final Font BTN_FONT = getResponsiveFont(new Font("DialogInput", Font.BOLD, 30));
-    private static final Color BTN_BG_COLOR = new Color(255, 215, 0);
     private static final int BTN_HEIGHT = (int) (SCREEN_HEIGHT * 0.075);
     private static final int BTN_WIDTH = (int) (SCREEN_WIDTH * 0.2);
 
@@ -158,8 +158,25 @@ public final class MenuView extends AbstractScene {
         btn.setFont(BTN_FONT);
         btn.setForeground(BTN_FG_COLOR);
         btn.setBorder(BorderFactory.createBevelBorder(0));
+        btn.setFocusPainted(false);
+
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn.setBackground(BTN_BG_COLOR.brighter());
+                btn.setForeground(new Color(220, 220, 220));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btn.setBackground(BTN_BG_COLOR);
+                btn.setForeground(BTN_FG_COLOR);
+            }
+        });
+
         return btn;
     }
+
 
     @Override
     public SceneName getSceneName() {
