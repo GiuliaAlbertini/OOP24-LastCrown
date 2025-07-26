@@ -9,13 +9,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.List;
 import java.util.Set;
 import java.awt.event.MouseEvent;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -27,6 +26,7 @@ import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.controller.user.impl.CollectionControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
 
 /**
@@ -40,21 +40,23 @@ public final class DeckZone extends JPanel {
     private static final int GREEN = 120;
     private static final int BLUE = 175;
     private static final String KEY_PROPERTY = "info";
-    private static final int FALLBACK_SIDE = 200;
 
     private static final int MAX_ENERGY = SECTIONS;
     private static final int TIME_RECHARGE_SINGLE_ENERGY = 1000;
     private int currentEnergy;
     private final Timer rechargeTimer;
     private transient InGameDeckController inGameDeckController;
-    private final ActionListener buttonListener;
-    private final MouseListener mouseListener;
+    private transient ActionListener buttonListener;
+    private transient MouseListener mouseListener;
+    private final transient ActionListener buttonListenerDefensiveCopy;
+    private final transient MouseListener mouseListenerDefensiveCopy;
 
     private JPanel energyBarPanel;
     private final JPanel cardPanel;
     private transient CardIdentifier lastClicked;
     private final int deckZoneWidth;
     private final int deckZoneHeight;
+    private final int energyZoneWidth;
 
     /**
      * @param mainContr main controller
@@ -68,6 +70,7 @@ public final class DeckZone extends JPanel {
      final int deckZoneWidth, final int deckZoneHeight, final int energyBarWidth, final Set<CardIdentifier> deck) {
         this.deckZoneWidth = deckZoneWidth;
         this.deckZoneHeight = deckZoneHeight;
+        this.energyZoneWidth = energyBarWidth;
         this.inGameDeckController = InGameDeckController.create(deck);
         this.setLayout(null);
         this.setupEnergyBar(this, energyBarWidth);
@@ -90,7 +93,7 @@ public final class DeckZone extends JPanel {
             lastClicked = id;
             mainContr.notifyButtonPressed(id);
         };
-
+        this.buttonListenerDefensiveCopy = buttonListener;
         this.mouseListener = new MouseAdapter() {
             @Override
             public void mouseEntered(final MouseEvent e) {
@@ -105,6 +108,7 @@ public final class DeckZone extends JPanel {
                 pos.stopHighLight(id.type());
             }
         };
+        this.mouseListenerDefensiveCopy = mouseListener;
         this.cardPanel = new JPanel(new GridLayout(3, 1, 0, VERTICAL_GAP_BTNS));
         this.cardPanel.setPreferredSize(new Dimension(deckZoneWidth - energyBarWidth, deckZoneHeight));
         this.cardPanel.setBounds(energyBarWidth, 0, deckZoneWidth - energyBarWidth, deckZoneHeight);
@@ -134,18 +138,14 @@ public final class DeckZone extends JPanel {
     }
 
     private void addIconToBtn(final CardIdentifier id, final JButton jb) {
+        final int jbWidth = this.deckZoneWidth - this.energyZoneWidth;
         final CollectionController collContr = new CollectionControllerImpl();
         final String name = collContr.getCardName(id)
             .orElseThrow(() -> new IllegalArgumentException(
                 "No name found for card " + id
             ));
         final String iconPath = CharacterPathLoader.loadIconPath(id.type().get(), name);
-        BufferedImage img;
-        try {
-            img = ImageIO.read(new File(iconPath));
-        } catch (final IOException e) {
-            img = new BufferedImage(FALLBACK_SIDE, FALLBACK_SIDE, BufferedImage.TYPE_INT_ARGB);
-        }
+        final BufferedImage img = ImageLoader.getImage(iconPath, jbWidth, jbWidth);
         final ImageIcon icon = new ImageIcon(img);
         jb.setIcon(icon);
     }
@@ -220,5 +220,11 @@ public final class DeckZone extends JPanel {
     public void updateInGameDeck(final Set<CardIdentifier> newDeck) {
         this.inGameDeckController = InGameDeckController.create(newDeck);
         this.updateCardButtons(buttonListener, mouseListener);
+    }
+
+    private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        this.buttonListener = this.buttonListenerDefensiveCopy;
+        this.mouseListener = this.mouseListenerDefensiveCopy;
     }
 }

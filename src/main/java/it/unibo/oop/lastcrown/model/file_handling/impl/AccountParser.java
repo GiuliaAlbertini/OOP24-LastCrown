@@ -41,7 +41,7 @@ public class AccountParser implements Parser<Account> {
         account.removeCoins(account.getCoins());
         account.addCoins(coins);
         IntStream.range(0, bosses).forEach(i -> account.increaseBossesDefeated());
-        IntStream.range(0, games).forEach(i -> account.increasePlayedGames());
+        IntStream.range(0, games).forEach(i -> account.increasePlayedMatches());
         account.addPlaytime(playtime);
 
         final UserCollection collection = account.getUserCollection();

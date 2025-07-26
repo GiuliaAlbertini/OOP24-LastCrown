@@ -22,6 +22,7 @@ import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
+import it.unibo.oop.lastcrown.view.SceneName;
 import it.unibo.oop.lastcrown.view.menu.api.ModifiableBackScene;
 
 /**
@@ -31,7 +32,6 @@ public final class CollectionView extends AbstractScene implements ModifiableBac
     private static final int BTN_FONT_SIZE = 20;
     private static final long serialVersionUID = 1L;
     private static final int FILTER_BAR_HGAP = 8;
-    private static final String PANEL_NAME = "COLLECTION";
     private static final double DETAIL_RATIO = 0.30;
     private static final int FILTER_BUTTON_HEIGHT = 36;
     private static final int MIN_CELL_SIDE = 200;
@@ -89,7 +89,7 @@ public final class CollectionView extends AbstractScene implements ModifiableBac
         setLayout(new BorderLayout());
         add(mainContainer, BorderLayout.CENTER);
 
-        this.backButton = BackButton.create(PANEL_NAME, "MENU", this.sceneManager);
+        this.backButton = BackButton.create(SceneName.COLLECTION, SceneName.MENU, this.sceneManager);
         final var south = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         south.add(backButton);
         add(south, BorderLayout.SOUTH);
@@ -132,8 +132,8 @@ public final class CollectionView extends AbstractScene implements ModifiableBac
     }
 
     @Override
-    public String getSceneName() {
-        return PANEL_NAME;
+    public SceneName getSceneName() {
+        return SceneName.COLLECTION;
     }
 
     @Override
@@ -142,7 +142,7 @@ public final class CollectionView extends AbstractScene implements ModifiableBac
     }
 
     @Override
-    public void setBackDestination(final String destination) {
+    public void setBackDestination(final SceneName destination) {
         this.backButton.setBackViewName(destination);
     }
 

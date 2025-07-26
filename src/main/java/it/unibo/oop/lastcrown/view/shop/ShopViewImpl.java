@@ -19,6 +19,7 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.user.api.Account;
 import it.unibo.oop.lastcrown.view.Dialog;
+import it.unibo.oop.lastcrown.view.SceneName;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
 
@@ -29,7 +30,6 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
     private static final int COINS_TO_ESCAPE = 100;
     private static final long serialVersionUID = 1L;
     private static final int ESCAPE_TAX = 100;
-    private static final String NAME = "SHOP";
     private static final String TRADER1 = "trader1";
     private static final String TRADER2 = "trader2"; 
     private static final String TRADER3 = "trader3";
@@ -116,7 +116,7 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
         if (this.accManager.canEscape(COINS_TO_ESCAPE)) {
             this.accManager.removeCoins(COINS_TO_ESCAPE);
             dialog.dispose();
-            this.mainView.changePanel(NAME, "MENU");
+            this.mainView.changePanel(SceneName.SHOP, SceneName.MENU);
         } else {
             dialog.dispose();
             final String titleEsc = "(MUAHAHAH)";
@@ -133,12 +133,17 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
 
     @Override
     public void notifyCollection() {
-        this.mainView.changePanel(NAME, "COLLECTION");
+        this.mainView.changePanel(SceneName.SHOP, SceneName.COLLECTION);
     }
 
     @Override
     public void notifyDeck() {
-        this.mainView.changePanel(NAME, "DECK");
+        this.mainView.changePanel(SceneName.SHOP, SceneName.DECK);
+    }
+
+    @Override
+    public void notifyUpdateAccount(final int amount, final boolean bossDefeated) {
+        this.accManager.updateAccount(amount, bossDefeated);
     }
 
     @Override
@@ -150,7 +155,7 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
         final JButton match = new JButton("MATCH");
         match.addActionListener(act -> {
             dialog.dispose();
-            this.mainView.changePanel(NAME, "MATCH");
+            this.mainView.changePanel(SceneName.SHOP, SceneName.MATCH);
         });
         dialog.addButton(match);
         dialog.setLocationRelativeTo(this);
@@ -188,12 +193,17 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
     }
 
     @Override
-    public String getSceneName() {
-        return NAME;
+    public SceneName getSceneName() {
+        return SceneName.SHOP;
     }
 
     @Override
     public JPanel getPanel() {
         return this;
+    }
+
+    @Override
+    public Account getManagedAccount() {
+       return this.accManager.getAccount();
     }
 }

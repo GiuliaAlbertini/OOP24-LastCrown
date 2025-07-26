@@ -12,6 +12,8 @@ import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.controller.user.api.DeckController;
 import it.unibo.oop.lastcrown.controller.user.impl.DeckControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.user.api.Account;
+import it.unibo.oop.lastcrown.view.SceneName;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
 import it.unibo.oop.lastcrown.view.menu.impl.MainViewImpl;
 
@@ -56,7 +58,7 @@ public class SceneManagerImpl implements SceneManager {
     }
 
     @Override
-    public final void switchScene(final String caller, final String destination) {
+    public final void switchScene(final SceneName caller, final SceneName destination) {
         this.mainView.changePanel(caller, destination);
     }
 
@@ -68,5 +70,10 @@ public class SceneManagerImpl implements SceneManager {
     @Override
     public final void updateUserCollectionUsers(final Set<CardIdentifier> newSet) {
         this.mainView.updateUserCollectionUsers(newSet);
+    }
+
+    @Override
+    public final void updateAccountUsers(final Account account) {
+        this.mainView.updateAccountUsers(account);
     }
 }

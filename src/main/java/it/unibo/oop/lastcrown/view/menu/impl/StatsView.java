@@ -16,6 +16,7 @@ import javax.swing.border.EmptyBorder;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.AccountController;
 import it.unibo.oop.lastcrown.model.user.api.Account;
+import it.unibo.oop.lastcrown.view.SceneName;
 
 /**
  * The {@code StatsView} class represents the statistics scene of the application.
@@ -28,7 +29,6 @@ public final class StatsView extends AbstractScene {
     private static final int BORDER_TOP = 15;
     private static final long serialVersionUID = 1L;
     private static final int VERTICAL_SPACING = 20;
-    private static final String PANEL_NAME = "STATS";
     private static final String FONT_NAME = "DialogInput";
     private static final Font INFO_FONT  = getResponsiveFont(new Font(FONT_NAME, Font.PLAIN, 50));
     private static final Font VALUE_FONT = getResponsiveFont(new Font(FONT_NAME, Font.BOLD, 45));
@@ -51,9 +51,9 @@ public final class StatsView extends AbstractScene {
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         statsPanel.add(createStatPanel("Bosses Defeated",    String.valueOf(account.getBossesDefeated())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        statsPanel.add(createStatPanel("Games Played",       String.valueOf(account.getPlayedGames())));
+        statsPanel.add(createStatPanel("Games Played",       String.valueOf(account.getPlayedMatches())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        statsPanel.add(createStatPanel("Total Playtime",     String.format("%.2f", account.getPlaytime())));
+        statsPanel.add(createStatPanel("Total Playtime (in minutes)",     String.format("%.2f", account.getPlaytime())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         statsPanel.add(createStatPanel("Bosses/Match Ratio", String.format("%.2f", account.computeBossesPerMatch())));
 
@@ -65,7 +65,7 @@ public final class StatsView extends AbstractScene {
         gbc.anchor  = GridBagConstraints.CENTER;
         centerPanel.add(statsPanel, gbc);
 
-        final BackButton backButton = BackButton.create(PANEL_NAME, "MENU", sceneManager);
+        final BackButton backButton = BackButton.create(SceneName.STATS, SceneName.MENU, sceneManager);
         final JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         southPanel.setOpaque(false);
         southPanel.add(backButton);
@@ -113,8 +113,8 @@ public final class StatsView extends AbstractScene {
     }
 
     @Override
-    public String getSceneName() {
-        return PANEL_NAME;
+    public SceneName getSceneName() {
+        return SceneName.STATS;
     }
 
     @Override

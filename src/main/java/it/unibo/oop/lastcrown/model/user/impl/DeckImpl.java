@@ -81,18 +81,14 @@ public class DeckImpl implements Deck, UserCollectionListener {
         }
         final Hero hero = completeCollection.getHero(heroId).orElse(null);
         if (hero == null) {
-            LOG.severe("Hero details missing for " + heroId);
+            LOG.warning("Hero details missing for " + heroId);
             return;
         }
         if (!withinLimit(type, hero)) {
             LOG.warning("Cannot add " + type.get() + " " + card + ": limit is " + limitFor(type, hero));
             return;
         }
-        if (this.deck.add(card)) {
-            LOG.info("Added " + card + " to deck");
-        } else {
-            LOG.info("Card " + card + " already present in deck");
-        }
+        this.deck.add(card);
     }
 
     @Override
@@ -101,9 +97,7 @@ public class DeckImpl implements Deck, UserCollectionListener {
             LOG.warning("Cannot remove the selected hero directly, add another hero to switch");
             return;
         }
-        if (this.deck.remove(card)) {
-            LOG.info("Removed card " + card + " from deck");
-        } else {
+        if (!this.deck.remove(card)) {
             LOG.warning("Cannot remove " + card + ": not in deck");
         }
     }
@@ -141,7 +135,6 @@ public class DeckImpl implements Deck, UserCollectionListener {
             });
             heroId = newHero;
             this.deck.add(newHero);
-            LOG.info("Switched hero to " + newHero);
         }
     }
 

@@ -10,6 +10,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
+import it.unibo.oop.lastcrown.view.SceneName;
 
 /**
  * A non-extendable button that navigates back to a specified view.
@@ -29,8 +30,8 @@ public final class BackButton extends JButton {
     private static final int BTN_HEIGHT = (int) (SCREEN_HEIGHT * 0.05);
     private static final int BTN_WIDTH  = (int) (SCREEN_WIDTH  * 0.1);
 
-    private final String caller;
-    private String backViewName;
+    private final SceneName caller;
+    private SceneName backViewName;
     private final transient SceneManager sceneManager;
 
     /**
@@ -40,7 +41,7 @@ public final class BackButton extends JButton {
      * @param backView the target view identifier
      * @param sceneManager the scene manager to use
      */
-    private BackButton(final String caller, final String backView, final SceneManager sceneManager) {
+    private BackButton(final SceneName caller, final SceneName backView, final SceneManager sceneManager) {
         super("BACK");
         this.caller = caller;
         this.backViewName = backView;
@@ -55,7 +56,7 @@ public final class BackButton extends JButton {
      * @param sceneManager the scene manager to use
      * @return the created BackButton
      */
-    public static BackButton create(final String caller, final String backView, final SceneManager sceneManager) {
+    public static BackButton create(final SceneName caller, final SceneName backView, final SceneManager sceneManager) {
         final BackButton button = new BackButton(caller, backView, sceneManager);
         button.init(new Dimension(BTN_WIDTH, BTN_HEIGHT));
         return button;
@@ -84,7 +85,7 @@ public final class BackButton extends JButton {
      * Stes the back-action view.
      * @param backViewName the name of the view that will be displayed after the back action
      */
-    public void setBackViewName(final String backViewName) {
+    public void setBackViewName(final SceneName backViewName) {
         this.backViewName = backViewName;
     }
 }

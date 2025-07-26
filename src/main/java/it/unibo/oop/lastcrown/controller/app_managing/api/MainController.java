@@ -45,4 +45,11 @@ public interface MainController {
      * @return the active MatchController
      */
     MatchController getMatchController();
+
+    /*
+     * Updates the account in the file.
+     *
+     * @param account the new version of the account
+     */
+    void updateAccount(Account account);
 }

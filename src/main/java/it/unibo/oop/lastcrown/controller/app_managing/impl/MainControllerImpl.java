@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.controller.app_managing.impl;
 
+import java.io.File;
 import java.util.Optional;
 import java.util.Set;
 
@@ -17,6 +18,10 @@ import it.unibo.oop.lastcrown.controller.user.impl.AccountControllerImpl;
 import it.unibo.oop.lastcrown.controller.user.impl.CollectionControllerImpl;
 import it.unibo.oop.lastcrown.controller.user.impl.DeckControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.file_handling.api.FileHandler;
+import it.unibo.oop.lastcrown.model.file_handling.impl.AccountParser;
+import it.unibo.oop.lastcrown.model.file_handling.impl.AccountSerializer;
+import it.unibo.oop.lastcrown.model.file_handling.impl.FileHandlerImpl;
 import it.unibo.oop.lastcrown.model.user.api.Account;
 import it.unibo.oop.lastcrown.view.menu.api.LoginView;
 import it.unibo.oop.lastcrown.view.menu.impl.LoginViewImpl;
@@ -26,10 +31,13 @@ import it.unibo.oop.lastcrown.controller.app_managing.api.MatchStartObserver;
  * Implementation of {@link MainController}.
  */
 public class MainControllerImpl implements MainController {
+    private static final String SEP = File.separator;
+    private static final String PATH = getAccountPath();
     private Optional<SceneManager> sceneManager;
     private Optional<AccountController> accountController = Optional.empty();
     private final LoginView loginView;
     private final MatchStartObserver gameController;
+    private long sessionTimer;
 
     /**
      * Constructor for a new {@link MainControllerImpl}.
@@ -40,6 +48,7 @@ public class MainControllerImpl implements MainController {
         this.loginView.setVisibility(true);
         this.gameController= new MatchStartObserverImpl(this);
         AudioEngine.playSoundTrack(SoundTrack.MENU);
+        this.sessionTimer = System.currentTimeMillis();
     }
 
     @Override
@@ -60,6 +69,7 @@ public class MainControllerImpl implements MainController {
                 gameController
                 ));
         this.closeLoginView();
+        this.sessionTimer = System.currentTimeMillis();
     }
 
     @Override
@@ -69,12 +79,34 @@ public class MainControllerImpl implements MainController {
 
     @Override
     public final void closeAll() {
+        final double minutes = computeMinutesPassed();
+        final Account newAcc = this.getAccount().get();
+        newAcc.addPlaytime(minutes);
+        writeAccountOnFile(newAcc);
         this.sceneManager.get().closeApplication();
+    }
+
+    private double computeMinutesPassed() {
+        final long elapsedMillis = System.currentTimeMillis() - this.sessionTimer;
+        return elapsedMillis / 60000.0;
     }
 
     @Override
     public final Optional<Account> getAccount() {
         return this.accountController.map(AccountController::getAccount);
+    }
+
+    @Override
+    public final void updateAccount(final Account account) {
+        account.addPlaytime(computeMinutesPassed());
+        this.sessionTimer = System.currentTimeMillis();
+        writeAccountOnFile(account);
+        this.sceneManager.get().updateAccountUsers(account);
+    }
+
+    private void writeAccountOnFile(final Account account) {
+        final FileHandler<Account> fileHandler = new FileHandlerImpl<>(new AccountParser(), new AccountSerializer(), PATH);
+        fileHandler.writeToFile(account.getUsername(), account);
     }
 
     private Set<CardIdentifier> getUserCollection(final Optional<AccountController> accountController) {
@@ -87,5 +119,13 @@ public class MainControllerImpl implements MainController {
 
     public MatchController getMatchController(){
         return this.gameController.getMatchControllerReference();
+    }
+
+    private static String getAccountPath() {
+        return "OOP24-LastCrown" + SEP
+             + "src" + SEP
+             + "main" + SEP
+             + "resources" + SEP
+             + "accounts";
     }
 }
