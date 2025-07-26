@@ -20,6 +20,7 @@ public class DeckImpl implements Deck, UserCollectionListener {
     private final Set<CardIdentifier> userCollection;
     private final CompleteCollectionImpl completeCollection = new CompleteCollectionImpl();
     private final Set<CardIdentifier> deck = new HashSet<>();
+
     private CardIdentifier heroId;
 
     /**
@@ -29,18 +30,6 @@ public class DeckImpl implements Deck, UserCollectionListener {
      */
     public DeckImpl(final Set<CardIdentifier> userCollection) {
         this.userCollection = Collections.unmodifiableSet(userCollection);
-    }
-
-    /**
-     * Creates a new instance of {@link Deck}, initializing the first hero of the deck.
-     *
-     * @param userCollection the set of {@link CardIdentifier} of the user
-     * @return the deck created
-     */
-    public static Deck createDeck(final Set<CardIdentifier> userCollection) {
-        final Deck deck = new DeckImpl(userCollection);
-        deck.initHero();
-        return deck;
     }
 
     @Override
@@ -107,6 +96,23 @@ public class DeckImpl implements Deck, UserCollectionListener {
         this.userCollection.add(card);
     }
 
+    @Override
+    public final CardIdentifier getHero() {
+        return this.heroId;
+    }
+
+    /**
+     * Creates a new instance of {@link Deck}, initializing the first hero of the deck.
+     *
+     * @param userCollection the set of {@link CardIdentifier} of the user
+     * @return the deck created
+     */
+    public static Deck createDeck(final Set<CardIdentifier> userCollection) {
+        final Deck deck = new DeckImpl(userCollection);
+        deck.initHero();
+        return deck;
+    }
+
     private CardIdentifier findFirstHero() {
         return this.userCollection.stream()
             .filter(c -> {
@@ -165,10 +171,5 @@ public class DeckImpl implements Deck, UserCollectionListener {
             default:
                 return 0;
         }
-    }
-
-    @Override
-    public CardIdentifier getHero() {
-        return this.heroId;
     }
 }
