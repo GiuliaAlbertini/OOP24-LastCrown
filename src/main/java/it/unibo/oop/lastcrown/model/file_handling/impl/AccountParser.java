@@ -15,6 +15,8 @@ import it.unibo.oop.lastcrown.model.user.impl.AccountImpl;
  * Parser for an object {@link Account}.
  */
 public class AccountParser implements Parser<Account> {
+    private static final String REGEX_CARDS_SEP = ",";
+    private static final String REGEX_CARDS_END = ";";
     private static final int EXPECTED_FIELDS = 6;
 
     @Override
@@ -73,13 +75,13 @@ public class AccountParser implements Parser<Account> {
         if (line == null || line.isBlank()) {
             return List.of();
         }
-        return Arrays.stream(line.split(","))
+        return Arrays.stream(line.split(REGEX_CARDS_END))
                      .map(this::toCardIdentifier)
                      .collect(Collectors.toList());
     }
 
     private CardIdentifier toCardIdentifier(final String token) {
-        final String[] parts = token.split(";", 2);
+        final String[] parts = token.split(REGEX_CARDS_SEP, 2);
         if (parts.length != 2) {
             throw new IllegalArgumentException("Invalid card token: '" + token + "'");
         }
