@@ -9,12 +9,11 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Hero;
 import it.unibo.oop.lastcrown.model.user.api.Deck;
-import it.unibo.oop.lastcrown.model.user.api.UserCollectionListener;
 
 /**
  * Implementation of a {@link Deck}.
  */
-public class DeckImpl implements Deck, UserCollectionListener {
+public class DeckImpl implements Deck {
     private static final Logger LOG = Logger.getLogger(DeckImpl.class.getName());
 
     private final Set<CardIdentifier> userCollection;
@@ -89,11 +88,6 @@ public class DeckImpl implements Deck, UserCollectionListener {
         if (!this.deck.remove(card)) {
             LOG.warning("Cannot remove " + card + ": not in deck");
         }
-    }
-
-    @Override
-    public final void onCardAdded(final CardIdentifier card) {
-        this.userCollection.add(card);
     }
 
     @Override
