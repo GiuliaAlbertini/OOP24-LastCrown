@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
+import it.unibo.oop.lastcrown.controller.user.api.AccountController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.user.api.Account;
 
@@ -52,4 +53,10 @@ public interface MainController {
      * @return the active MatchController
      */
     MatchController getMatchController();
+
+    /**
+     * Getter for the account controller.
+     * @return a defensive copy of the account controller
+     */
+    AccountController getAccountController();
 }

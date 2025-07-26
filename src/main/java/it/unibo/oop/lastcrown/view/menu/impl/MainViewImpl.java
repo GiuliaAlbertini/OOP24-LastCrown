@@ -30,6 +30,7 @@ import it.unibo.oop.lastcrown.view.SceneName;
 import it.unibo.oop.lastcrown.view.map.MatchView;
 import it.unibo.oop.lastcrown.view.map.MatchViewImpl;
 import it.unibo.oop.lastcrown.view.menu.api.ModifiableBackScene;
+import it.unibo.oop.lastcrown.view.menu.api.DeckViewInterface;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
 import it.unibo.oop.lastcrown.view.menu.api.Scene;
 import it.unibo.oop.lastcrown.view.shop.ShopView;
@@ -50,14 +51,14 @@ public class MainViewImpl extends JFrame implements MainView {
     private final JPanel mainPanel = new JPanel(this.layout);
     private final transient SceneManager sceneManager;
     private final transient MainController mainController;
-    private transient AccountController accountController;
+    private final transient AccountController accountController;
     private transient DeckController deckController;
     private final transient CollectionController collectionController;
     private final transient MatchStartObserver gameController;
     private final Scene menuView;
     private final Scene creditView;
     private Scene statsView;
-    private ModifiableBackScene deckView;
+    private DeckViewInterface deckView;
     private ModifiableBackScene collectionView;
     private final ShopView shopView;
     private MatchView matchView;
@@ -81,7 +82,7 @@ public class MainViewImpl extends JFrame implements MainView {
             final MatchStartObserver gameContr) {
         this.sceneManager = sceneManager;
         this.mainController = mainController;
-        this.accountController = accountController;
+        this.accountController = mainController.getAccountController();
         this.deckController = new DeckControllerImpl(Set.copyOf(deckContr.getAvailableCards()));
         this.collectionController = collectionController;
         this.gameController = gameContr;
@@ -92,7 +93,8 @@ public class MainViewImpl extends JFrame implements MainView {
         this.statsView = StatsView.create(this.sceneManager, this.accountController);
         this.deckView = DeckView.create(this.sceneManager, deckController);
         this.collectionView = CollectionView.create(this.sceneManager, this.collectionController, getOwnedCards());
-        this.shopView = new ShopViewImpl(this, collectionController, deckContr.getAvailableCards(), WIDTH, HEIGHT, accountController.getAccount());
+        this.shopView = new ShopViewImpl(this, collectionController, 
+            deckContr.getAvailableCards(), WIDTH, HEIGHT, accountController.getAccount());
         // HERE MISSING SHOP VIEW AND MATCH VIEW TO THE MAIN CONTROLLER
         // gameContr.newShopView(this.shopView);
         // gameContr.newMatchView(this.matchView);
@@ -213,17 +215,15 @@ public class MainViewImpl extends JFrame implements MainView {
             default -> { }
         }
         this.layout.show(this.mainPanel, sceneDestination.get());
+        if (SceneName.DECK.equals(sceneDestination)) {
+            this.deckView.showRules();
+        }
 
     }
 
     @Override
     public final void updateAccount(final int amount, final boolean bossDefeated) {
         this.shopView.notifyUpdateAccount(amount, bossDefeated);
-    }
-
-    @Override
-    public final void closeApplication() {
-        this.dispose();
     }
 
     @Override

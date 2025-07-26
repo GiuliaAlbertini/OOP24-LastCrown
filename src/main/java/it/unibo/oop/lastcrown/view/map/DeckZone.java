@@ -42,7 +42,7 @@ public final class DeckZone extends JPanel {
     private static final int SECTIONS = 10;
     private static final Color BG = new Color(27, 120, 175);
     private static final String KEY_PROPERTY = "info";
-    private static final Font LABEL_FONT = new Font("Monospaced",Font.BOLD, 16);
+    private static final Font LABEL_FONT = new Font("Monospaced", Font.BOLD, 16);
 
     private static final int MAX_ENERGY = SECTIONS;
     private static final int TIME_RECHARGE_SINGLE_ENERGY = 1000;
@@ -140,7 +140,7 @@ public final class DeckZone extends JPanel {
         final JPanel singleCardPanel = new JPanel(new BorderLayout());
         singleCardPanel.setPreferredSize(new Dimension(
             this.deckZoneWidth - this.energyZoneWidth,
-            (this.deckZoneHeight - 2 * VERTICAL_GAP_BTNS)
+            this.deckZoneHeight - 2 * VERTICAL_GAP_BTNS
         ));
         final JButton jb = initButton(act, ml, id);
         switch (id.type()) {
@@ -158,7 +158,7 @@ public final class DeckZone extends JPanel {
                 break;
         }
         singleCardPanel.add(jb, BorderLayout.CENTER);
-        final String energyText = "Energy Cost: " + String.valueOf(this.inGameDeckController.getEnergyToPlay(id));
+        final String energyText = "Energy Cost: " + this.inGameDeckController.getEnergyToPlay(id);
         final JLabel energyLabel = new JLabel(energyText, SwingConstants.CENTER);
         energyLabel.setFont(LABEL_FONT);
         singleCardPanel.add(energyLabel, BorderLayout.SOUTH);

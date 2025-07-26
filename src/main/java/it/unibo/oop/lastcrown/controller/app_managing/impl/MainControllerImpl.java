@@ -31,6 +31,7 @@ import it.unibo.oop.lastcrown.controller.app_managing.api.MatchStartObserver;
  * Implementation of {@link MainController}.
  */
 public class MainControllerImpl implements MainController {
+    private static final double TO_MINUTES_FACTOR = 60000.0;
     private static final String SEP = File.separator;
     private static final String ACCOUNT_PATH = getAccountPath();
     private Optional<SceneManager> sceneManager;
@@ -89,7 +90,13 @@ public class MainControllerImpl implements MainController {
         final Account newAcc = this.getAccount().get();
         newAcc.addPlaytime(minutes);
         writeAccountOnFile(newAcc);
-        this.sceneManager.get().closeApplication();
+        System.exit(0);
+    }
+
+    @Override
+    public final AccountController getAccountController() {
+        final var defensiveCopy = this.accountController.get();
+        return defensiveCopy;
     }
 
     @Override
@@ -107,12 +114,10 @@ public class MainControllerImpl implements MainController {
 
     private void checkDirExistence() {
         final File dir = new File(ACCOUNT_PATH);
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
-                throw new IllegalStateException(
-                    "Impossibile creare la cartella per gli account: " + dir.getAbsolutePath()
-                );
-            }
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new IllegalStateException(
+                "Impossible to create the folder for the accounts: " + dir.getAbsolutePath()
+            );
         }
     }
 
@@ -124,7 +129,7 @@ public class MainControllerImpl implements MainController {
 
     private double computeMinutesPassed() {
         final long elapsedMillis = System.currentTimeMillis() - this.sessionTimer;
-        return elapsedMillis / 60000.0;
+        return elapsedMillis / TO_MINUTES_FACTOR;
     }
 
     private void writeAccountOnFile(final Account account) {

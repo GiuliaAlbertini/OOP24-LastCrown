@@ -34,5 +34,9 @@ public interface Deck {
      */
     void initHero();
 
+    /**
+     * Getter for the current hero.
+     * @return the {@link CardIdentifier} of the requested hero
+     */
     CardIdentifier getHero();
 }
