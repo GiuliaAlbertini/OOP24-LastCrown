@@ -4,10 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach; import org.junit.jupiter.api.Test;
 
+import it.unibo.oop.lastcrown.controller.user.api.UsernameController;
 import it.unibo.oop.lastcrown.controller.user.impl.UsernameControllerImpl;
 
 final class TestUsernameController { 
-    private UsernameControllerImpl controller;
+    private UsernameController controller;
     @BeforeEach
     void setUp() {
         controller = new UsernameControllerImpl();
