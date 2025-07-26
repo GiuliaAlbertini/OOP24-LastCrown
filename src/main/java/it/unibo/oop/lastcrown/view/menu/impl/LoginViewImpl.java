@@ -134,6 +134,7 @@ public final class LoginViewImpl extends JFrame implements LoginView {
             (int) (SCREEN_HEIGHT * FIELD_HEIGHT_RATIO)));
         field.setFont(FIELD_FONT);
         field.getDocument().addDocumentListener(new DocumentListenerImpl(field));
+        field.addActionListener(sendActionListener());
         return field;
     }
 
