@@ -90,7 +90,13 @@ public class MainControllerImpl implements MainController {
         final Account newAcc = this.getAccount().get();
         newAcc.addPlaytime(minutes);
         writeAccountOnFile(newAcc);
-        this.sceneManager.get().closeApplication();
+        System.exit(0);
+    }
+
+    @Override
+    public final AccountController getAccountController() {
+        final var defensiveCopy = this.accountController.get();
+        return defensiveCopy;
     }
 
     @Override
