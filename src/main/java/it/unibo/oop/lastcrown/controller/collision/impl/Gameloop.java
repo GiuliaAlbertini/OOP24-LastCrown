@@ -2,7 +2,8 @@ package it.unibo.oop.lastcrown.controller.collision.impl;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.unibo.oop.lastcrown.controller.collision.api.MainControllerExample;
+import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
+
 
 /**
  * Game loop thread that updates the match controller at a fixed interval.
@@ -11,7 +12,7 @@ import it.unibo.oop.lastcrown.controller.collision.api.MainControllerExample;
 public final class Gameloop extends Thread {
     private static final Logger LOGGER = Logger.getLogger(Gameloop.class.getName());
     private static final long PERIOD = 64;
-    private final MainControllerExample controller;
+    private final MainController controller;
     private boolean running;
 
     /**
@@ -19,7 +20,7 @@ public final class Gameloop extends Thread {
      *
      * @param controller the main controller that provides access to game logic
      */
-    public Gameloop(final MainControllerExample controller) {
+    public Gameloop(final MainController controller) {
         this.controller = controller;
         this.running = false;
     }
@@ -33,6 +34,7 @@ public final class Gameloop extends Thread {
         this.running = true;
         long lastTime = System.currentTimeMillis();
         while (this.running) {
+            System.out.println("sono partito");
             final long current = System.currentTimeMillis();
             this.controller.getMatchController().update((int) (current - lastTime));
             waitForNextFrame(current);

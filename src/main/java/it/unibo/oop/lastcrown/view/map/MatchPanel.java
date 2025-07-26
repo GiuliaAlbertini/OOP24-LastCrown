@@ -11,7 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Set;
 
-import it.unibo.oop.lastcrown.controller.GameControllerExample;
+import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
@@ -27,7 +27,7 @@ public final class MatchPanel extends JPanel {
     private static final int ENEMIES_RED = 210;
     private static final int ENEMIES_GREEN = 135;
     private static final int ENEMIES_BLUE = 130;
-    private final transient GameControllerExample gameContr;
+    private final transient MatchController gameContr;
     private JPanel overLayPanel;
     private PositioningZone posZone;
     private DeckZone cardZone;
@@ -53,7 +53,7 @@ public final class MatchPanel extends JPanel {
      * @param frameHeight the height of the map
      * @param deck the deck to use
      */
-    public MatchPanel(final MatchExitObserver obs, final GameControllerExample gameContr,
+    public MatchPanel(final MatchExitObserver obs, final MatchController gameContr,
      final JComponent wallHealthBar, final JComponent eventWriter, final JComponent coinsWriter,
      final int frameWidth, final int frameHeight, final Set<CardIdentifier> deck) {
         this.gameContr = gameContr;

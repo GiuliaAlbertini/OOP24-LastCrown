@@ -1,5 +1,9 @@
 package it.unibo.oop.lastcrown.controller.collision.impl;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,15 +13,23 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JComponent;
+import javax.swing.JTextArea;
 
+import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
+import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
+import it.unibo.oop.lastcrown.controller.characters.api.Wall;
+import it.unibo.oop.lastcrown.controller.characters.impl.hero.HeroControllerFactory;
+import it.unibo.oop.lastcrown.controller.characters.impl.wall.WallFactory;
+import it.unibo.oop.lastcrown.controller.characters.impl.wall.WallImpl;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
-import it.unibo.oop.lastcrown.controller.collision.api.MainControllerExample;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
+import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.model.characters.api.GenericCharacter;
@@ -32,8 +44,13 @@ import it.unibo.oop.lastcrown.model.collision.api.CollisionManager;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.model.collision.impl.CollisionManagerImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.CollisionResolverImpl;
+import it.unibo.oop.lastcrown.model.user.api.CompleteCollection;
+import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.collision.api.GamePanel;
-import it.unibo.oop.lastcrown.view.collision.api.MainViewExample;
+import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
+import it.unibo.oop.lastcrown.view.map.MatchView;
+import it.unibo.oop.lastcrown.view.map.MatchViewImpl;
+import it.unibo.oop.lastcrown.view.menu.api.MainView;
 
 public final class MatchControllerimpl implements MatchController {
     // private final MainController controller;
@@ -45,24 +62,71 @@ public final class MatchControllerimpl implements MatchController {
     private final Map<Integer, Object> enemyLocks = new HashMap<>();
     private final CollisionManager collisionManager = new CollisionManagerImpl();
     private final CollisionResolver collisionResolver;
-    private final CharacterSpawnerController spawner;
-    private final EnemyRadiusScanner radiusScanner;
     private int nextId = 1;
-    private final GamePanel gamePanel;
-    private final MainViewExample view;
+    private MatchView matchView;
+    private final Wall wall;
+    private final JTextArea eventWriter;
+    private final JTextArea coinsWriter;
+    private int coins;
+    private final CompleteCollection collection;
+    private final HeroController heroController;
+
+    //set di carte passate che l'utente gioca -> crea il complete collection e con i getter prendi le carte
+
+    // private final CharacterSpawnerController spawner
+    private final EnemyRadiusScanner radiusScanner;
+    // private final MatchView view;
+    // private final MainView mainview;
     Requirement require = new Requirement("hero", 2);
     Optional<PassiveEffect> optionalEffect = Optional.of(new PassiveEffect("none", 0));
 
-    public MatchControllerimpl(final MainControllerExample controller) {
-        // this.controller = controller;
-        this.view = controller.getMainView();
-        this.gamePanel = controller.getMainView().getGamePanel();
-        this.spawner = new CharacterSpawnerController(gamePanel);
-        this.view.getGamePanel().setAddCharacterListener(e -> onAddCharacterButtonPressed());
+    public MatchControllerimpl(final MainController controller,
+                                final int frameWidth,
+                                final int frameHeight,
+                                CardIdentifier heroId,
+                                CollectionController collectionController) {
+
+        //quando clicco nella zona -> mi viene passato l'id e instanzio il personaggio dal suo cardidentifier
+        //collectionController permette di ottenere tutti i personaggi dal cardidentifier
+        final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
+
+        this.collection = collectionController.getCompleteCollection();
+        final Hero hero = this.collection.getHero(heroId).get();
+        this.heroController = HeroControllerFactory.createHeroController(obs, generateUniqueCharacterId(), hero);
+        heroController.attachCharacterAnimationPanel((int) (frameWidth * DimensionResolver.HERO.width()), (int) (frameHeight * DimensionResolver.HERO.height()));
+
+        wall = WallFactory.createWall(hero.getWallAttack(), hero.getWallHealth(), 10, frameWidth / 2, (int) (frameHeight * DimensionResolver.UTILITYZONE.height()));
+
+        final Font font = new Font("Calibri", Font.CENTER_BASELINE, 20);
+        this.eventWriter = new JTextArea();
+        this.eventWriter.setEditable(false);
+        this.eventWriter.setFocusable(false);
+        this.eventWriter.setFont(font);
+        this.coinsWriter = new JTextArea();
+        this.coinsWriter.setEditable(false);
+        this.coinsWriter.setFocusable(false);
+        this.coinsWriter.setFont(font);
+        this.coinsWriter.setText(this.coins + "coins");
+        /*
+         * this.mainview= controller.getMainView();
+         * this.controller = controller;
+         * this.view = view.getMatchView();
+         */
+        // this.gamePanel = controller.getMainView().getGamePanel();
+        // this.spawner = new CharacterSpawnerController(gamePanel);
+        // this.view.getGamePanel().setAddCharacterListener(e ->
+        // onAddCharacterButtonPressed());
         this.collisionResolver = new CollisionResolverImpl(this);
         this.collisionManager.addObserver(collisionResolver);
         this.radiusScanner = new EnemyRadiusScanner(hitboxControllers, this, collisionResolver);
 
+    }
+
+    public void newMatchView(final MatchView matchView) {
+        this.matchView = matchView;
+        this.matchView.addHeroGraphics(this.heroController.getGraphicalComponent());
+        this.heroController.setNextAnimation(Keyword.STOP);
+        this.heroController.showNextFrame();
     }
 
     @Override
@@ -72,67 +136,82 @@ public final class MatchControllerimpl implements MatchController {
         hitboxControllers.put(controller, hitboxController);
     }
 
-    @Override
-    public void onAddCharacterButtonPressed() {
-        final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
+    // @Override
+    // public void onAddCharacterButtonPressed() {
+    // final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
 
-        final PlayableCharacter Char1 = new PlayableCharacterImpl("Warrior", CardType.MELEE, 20, 5, 100, 2, 100, 0.8,100);
-        final PlayableCharacter Char2 = new PlayableCharacterImpl("Knight",CardType.MELEE, 20, 2, 100, 2, 100, 0.8,100);
+    // final PlayableCharacter Char1 = new PlayableCharacterImpl("Warrior",
+    // CardType.MELEE, 20, 5, 100, 2, 100, 0.8,100);
+    // final PlayableCharacter Char2 = new
+    // PlayableCharacterImpl("Knight",CardType.MELEE, 20, 2, 100, 2, 100, 0.8,100);
 
-        final PlayableCharacter ranged = new PlayableCharacterImpl("Archer3", CardType.RANGED, 20, 20, 100, 2, 100, 0.8, 100);
+    // final PlayableCharacter ranged = new PlayableCharacterImpl("Archer3",
+    // CardType.RANGED, 20, 20, 100, 2, 100, 0.8, 100);
 
-        //final Enemy pipistrello = new EnemyImpl("Bat", 1, CardType.ENEMY, 23, 100, 0.8);
-        //final Enemy nemico2 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 23, 200, 0.8);
-        //final Enemy nemico3 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 23, 200, 0.8);
+    // //final Enemy pipistrello = new EnemyImpl("Bat", 1, CardType.ENEMY, 23, 100,
+    // 0.8);
+    // //final Enemy nemico2 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 23, 200,
+    // 0.8);
+    // //final Enemy nemico3 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 23, 200,
+    // 0.8);
 
-        // final Hero eroe = new HeroImpl("Valandor", new Requirement("Bosses", 80), 20,300, Optional.of(new PassiveEffect("health", 45)),3, 3, 4,8, 400);
-        // spawnAndRegisterCharacter(generateUniqueCharacterId(), eroe, obs, 100, 200);
+    // // final Hero eroe = new HeroImpl("Valandor", new Requirement("Bosses", 80),
+    // 20,300, Optional.of(new PassiveEffect("health", 45)),3, 3, 4,8, 400);
+    // // spawnAndRegisterCharacter(generateUniqueCharacterId(), eroe, obs, 100,
+    // 200);
 
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), Char1, obs, 100, 300);
-        // /* bro sotto */
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), Char2, obs, 50, 200);
-        // /*CASISTICHE 75-97-180 */
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), ranged, obs, 220, 110);
+    // spawnAndRegisterCharacter(generateUniqueCharacterId(), Char1, obs, 100, 300);
+    // // /* bro sotto */
+    // spawnAndRegisterCharacter(generateUniqueCharacterId(), Char2, obs, 50, 200);
+    // // /*CASISTICHE 75-97-180 */
+    // spawnAndRegisterCharacter(generateUniqueCharacterId(), ranged, obs, 220,
+    // 110);
 
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), pipistrello, obs, 450,100);
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico2, obs, 200, 400);
-        //spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico3, obs, 700,180);
+    // //spawnAndRegisterCharacter(generateUniqueCharacterId(), pipistrello, obs,
+    // 450,100);
+    // //spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico2, obs, 200,
+    // 400);
+    // //spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico3, obs,
+    // 700,180);
 
-        // BOSS-FIGHT ==
-        final Enemy boss = new EnemyImpl("Cthulu", 1, CardType.BOSS, 33, 100, 0.2);
-        spawnAndRegisterCharacter(generateUniqueCharacterId(), boss, obs, 400, 200);
+    // // BOSS-FIGHT ==
+    // final Enemy boss = new EnemyImpl("Cthulu", 1, CardType.BOSS, 33, 100, 0.2);
+    // spawnAndRegisterCharacter(generateUniqueCharacterId(), boss, obs, 400, 200);
 
-    }
+    // }
 
-    private void spawnAndRegisterCharacter(final int id, final Object model, final CharacterDeathObserver observer,
-            final int x, final int y) {
-        final SpawnedCharacter spawned = spawnCharacter(id, model, observer, x, y);
+    // private void spawnAndRegisterCharacter(final int id, final Object model,
+    //         final CharacterDeathObserver observer,
+    //         final int x, final int y) {
+    //     final SpawnedCharacter spawned = spawnCharacter(id, model, observer, x, y);
 
-        addCharacter(id, spawned.controller(), spawned.hitboxController());
-        if (model instanceof GenericCharacter) {
+    //     addCharacter(id, spawned.controller(), spawned.hitboxController());
+    //     if (model instanceof GenericCharacter) {
 
-            final GenericCharacterController playerController = spawned.controller();
-            playerFSMs.put(id, new CharacterFSM(playerController, this, radiusScanner, this.collisionResolver));
-        }
-    }
+    //         final GenericCharacterController playerController = spawned.controller();
+    //         playerFSMs.put(id, new CharacterFSM(playerController, this, radiusScanner,
+    //                 this.collisionResolver));
+    //     }
+    // }
 
-    public SpawnedCharacter spawnCharacter(final int id, final Object model, final CharacterDeathObserver observer,
-            final int x, final int y) {
-        if (model instanceof PlayableCharacter pc) {
-            return spawner.spawnPlayableCharacter(id, pc, observer, x, y);
-        } else if (model instanceof Hero hero) {
-            return spawner.spawnHeroCharacter(id, hero, observer, x, y);
+    // public SpawnedCharacter spawnCharacter(final int id, final Object model,
+    //         final CharacterDeathObserver observer,
+    //         final int x, final int y) {
+    //     if (model instanceof PlayableCharacter pc) {
+    //         return spawner.spawnPlayableCharacter(id, pc, observer, x, y);
+    //     } else if (model instanceof Hero hero) {
+    //         return spawner.spawnHeroCharacter(id, hero, observer, x, y);
 
-        } else if (model instanceof Enemy enemy) {
-            if (enemy.getEnemyType() == CardType.BOSS) {
-                return spawner.spawnBossCharacter(id, enemy, observer, x, y);
-            } else {
-                return spawner.spawnEnemyCharacter(id, enemy, observer, x, y);
-            }
+    //     } else if (model instanceof Enemy enemy) {
+    //         if (enemy.getEnemyType() == CardType.BOSS) {
+    //             return spawner.spawnBossCharacter(id, enemy, observer, x, y);
+    //         } else {
+    //             return spawner.spawnEnemyCharacter(id, enemy, observer, x, y);
+    //         }
 
-        }
-        throw new IllegalArgumentException("Model type non supportato");
-    }
+    //     }
+    //     throw new IllegalArgumentException("Model type non supportato");
+    // }
 
     @Override
     public void updateCharacterPosition(final GenericCharacterController controller, final int dx, final int dy) {
@@ -204,11 +283,11 @@ public final class MatchControllerimpl implements MatchController {
             hitbox.removeFromPanel();
         }
 
-        final JComponent component = controller.getGraphicalComponent();
-        if (component != null) {
-            gamePanel.removeCharacterComponent(component);
-            gamePanel.repaintGamePanel();
-        }
+        // final JComponent component = controller.getGraphicalComponent();
+        // if (component != null) {
+        // gamePanel.removeCharacterComponent(component);
+        // gamePanel.repaintGamePanel();
+        // }
     }
 
     private int generateUniqueCharacterId() {
@@ -403,5 +482,35 @@ public final class MatchControllerimpl implements MatchController {
             }
         }
         return false;
+    }
+
+    @Override
+    public void notifyClicked(int x, int y) {
+        this.eventWriter.setText("Click received");
+    }
+
+    @Override
+    public void notifyButtonPressed(CardIdentifier id) {
+
+    }
+
+    @Override
+    public void notifyPauseEnd() {
+
+    }
+
+    @Override
+    public JComponent getWallHealthBar() {
+        return this.wall.getHealthBarComponent();
+    }
+
+    @Override
+    public JComponent getCoinsWriter() {
+        return this.coinsWriter;
+    }
+
+    @Override
+    public JComponent getEventWriter() {
+        return this.eventWriter;
     }
 }

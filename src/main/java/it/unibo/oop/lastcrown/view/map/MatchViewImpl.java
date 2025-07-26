@@ -12,7 +12,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import it.unibo.oop.lastcrown.controller.GameControllerExample;
+import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.Dialog;
 import it.unibo.oop.lastcrown.view.SceneName;
@@ -35,7 +35,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
      * @param height the height of the map
      * @param deck the set to use as a deck
      */
-    public MatchViewImpl(final GameControllerExample gameContr, final MainView mainView,
+    public MatchViewImpl(final MatchController gameContr, final MainView mainView,
      final int width, final int height, final Set<CardIdentifier> deck) {
         this.mainView = mainView;
         this.newComponents = new ConcurrentHashMap<>();
@@ -56,7 +56,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         ok.addActionListener(act -> {
            defeat.dispose();
            this.mainView.changePanel(SceneName.MATCH, SceneName.MENU);
-        }); 
+        });
         defeat.addButton(ok);
         defeat.setLocationRelativeTo(this);
         defeat.setVisible(true);
@@ -90,16 +90,18 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
     @Override
     public synchronized void addHeroGraphics(final JComponent heroGraphics) {
+        System.out.println("CIAO");
         final int cardZoneWidth = (int) (this.getWidth() * DimensionResolver.DECKZONE.width());
         final int posZoneWidth = (int) (this.getWidth() * DimensionResolver.POSITIONINGZONE.width());
         final int panelsHeight = this.getHeight() - (int) (this.getHeight() * DimensionResolver.UTILITYZONE.height());
         final int cornerWidth = cardZoneWidth + posZoneWidth / 2;
         final int cornerHeight = panelsHeight / 4;
-        heroGraphics.setBounds(cornerWidth, cornerHeight, 
+        heroGraphics.setBounds(cornerWidth, cornerHeight,
          heroGraphics.getPreferredSize().width, heroGraphics.getPreferredSize().height);
         this.mainPanel.add(heroGraphics);
         this.mainPanel.setComponentZOrder(heroGraphics, 1);
         this.mainPanel.repaint();
+        System.out.println(this.getComponentCount());
     }
 
     @Override
@@ -138,6 +140,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         this.mainView.changePanel(SceneName.MATCH, SceneName.MENU);
     }
 
+    //zona truppe (confine)
     @Override
     public int getTrupsZoneLimit() {
         return this.mainPanel.getTrupsZoneLimit();
@@ -145,16 +148,16 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
     @Override
     public Dimension getWallSize() {
-        return this.mainPanel.getWallSize();
+        return this.mainPanel.getWallSize(); //dimension
     }
 
     @Override
     public Point getWallCoordinates() {
-        return this.mainPanel.getWallCoordinates();
+        return this.mainPanel.getWallCoordinates(); //Point2D
     }
 
     @Override
     public void updateInGameDeck(final Set<CardIdentifier> newDeck) {
         this.mainPanel.updateInGameDeck(newDeck);
-    } 
+    }
 }

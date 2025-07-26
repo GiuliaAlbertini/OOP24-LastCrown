@@ -34,7 +34,7 @@ public class ShopCardsSelectionControllerImpl implements ShopCardsSelectionContr
 
     @Override
     public final List<CardIdentifier> getRandomCardsByType(final CardType type) {
-        final List<CardIdentifier> candidates = collectionController.getCompleteCollection().stream()
+        final List<CardIdentifier> candidates = collectionController.getCompleteCollection().getCompleteCollectionAsSet().stream()
             .filter(card -> matchesTypeGroup(card.type(), type))
             .filter(card -> !userCollection.contains(card))
             .collect(Collectors.toList());

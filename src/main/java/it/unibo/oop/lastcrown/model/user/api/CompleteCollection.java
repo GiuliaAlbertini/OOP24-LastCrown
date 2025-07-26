@@ -15,21 +15,21 @@ import it.unibo.oop.lastcrown.model.spell.api.Spell;
 public interface CompleteCollection {
     /**
      * Provides all the {@link CardIdentifier} in the collection.
-     * 
+     *
      * @return a list with all the {@link CardIdentifier}
      */
-    List<CardIdentifier> getCompleteCollection();
+    CompleteCollection getCompleteCollection();
 
     /**
      * Provides the {@link CardIdentifier} of all the cards that have a cost equals to zero.
-     * 
+     *
      * @return a set with all the requested {@link CardIdentifier}
      */
     Set<CardIdentifier> getZeroCostCards();
 
     /**
      * Provides a {@link Hero} relative to a given {@link CardIdentifier}.
-     * 
+     *
      * @param cardIdentifier the {@link CardIdentifier} to use
      * @return an {@link Optional} of the requested {@link Hero} if it is found, an empty Optional otherwise
      */
@@ -37,7 +37,7 @@ public interface CompleteCollection {
 
     /**
      * Provides a {@link PlayableCharacter} relative to a given {@link CardIdentifier}.
-     * 
+     *
      * @param cardIdentifier the {@link CardIdentifier} to use
      * @return an {@link Optional} of the requested {@link PlayableCharacter} if it is found, an empty Optional otherwise
      */
@@ -45,7 +45,7 @@ public interface CompleteCollection {
 
     /**
      * Provides a {@link Spell} relative to a given {@link CardIdentifier}.
-     * 
+     *
      * @param cardIdentifier the {@link CardIdentifier} to use
      * @return an {@link Optional} of the requested {@link Spell} if it is found, an empty Optional otherwise
      */
@@ -57,4 +57,6 @@ public interface CompleteCollection {
      * @return the cost
      */
     int getCost(CardIdentifier id);
+
+    List<CardIdentifier> getCompleteCollectionAsSet();
 }

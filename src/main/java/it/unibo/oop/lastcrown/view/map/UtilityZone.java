@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import it.unibo.oop.lastcrown.controller.GameControllerExample;
+import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.view.Dialog;
 
 /**
@@ -33,7 +33,7 @@ public final class UtilityZone extends JPanel {
      * @param eventWriter the graphic component that containes the event messages
      * @param coinsWriter the graphic component that contains the number of coins
      */
-    public UtilityZone(final MatchExitObserver obs, final GameControllerExample gameContr, final int width, final int height,
+    public UtilityZone(final MatchExitObserver obs, final MatchController gameContr, final int width, final int height,
      final JComponent wallHealthBar, final JComponent eventWriter, final JComponent coinsWriter) {
         this.components = new ArrayList<>();
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -99,7 +99,7 @@ public final class UtilityZone extends JPanel {
 
         final JButton pause = new JButton("PAUSE");
         pause.addActionListener(act -> {
-            gameContr.notifyPause();
+            gameContr.notifyPauseEnd();
             pauseDialog.setVisible(true);
         });
         pause.setPreferredSize(new Dimension(width / WIDTH_DIVISOR, height));

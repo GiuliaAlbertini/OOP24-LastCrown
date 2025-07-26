@@ -117,7 +117,7 @@ public final class CollectionView extends AbstractScene implements ModifiableBac
 
     /**
      * Factory method to create a new CollectionView.
-     * 
+     *
      * @param sceneManager the {@link SceneManager} to use
      * @param collectionController the {@link CollectionController} to use
      * @param cardsOwned the set of cards in the user's collection
@@ -153,7 +153,7 @@ public final class CollectionView extends AbstractScene implements ModifiableBac
         currentFilter = type;
         final List<CardIdentifier> list = type.isPresent()
             ? collectionController.getCollectionByType(type.get())
-            : collectionController.getCompleteCollection();
+            : collectionController.getCompleteCollection().getCompleteCollectionAsSet();
         cardsGridPanel.loadCards(Collections.unmodifiableList(list), this::showDetail, cardsOwned);
     }
 
@@ -165,7 +165,7 @@ public final class CollectionView extends AbstractScene implements ModifiableBac
         final var wrapper = new JPanel(new GridBagLayout());
         wrapper.setOpaque(false);
         final var gbc = new GridBagConstraints();
-        gbc.gridx = 0; 
+        gbc.gridx = 0;
         gbc.gridy = 0;
         wrapper.add(big, gbc);
 

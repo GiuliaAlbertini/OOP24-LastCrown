@@ -25,8 +25,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
-import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.controller.app_managing.impl.InGameDeckController;
+import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.controller.user.impl.CollectionControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
@@ -69,7 +69,7 @@ public final class DeckZone extends JPanel {
      * @param energyBarWidth energy bar width
      * @param deck the deck
      */
-    public DeckZone(final GameControllerExample mainContr, final PositioningZone pos, 
+    public DeckZone(final MatchController mainContr, final PositioningZone pos,
      final int deckZoneWidth, final int deckZoneHeight, final int energyBarWidth, final Set<CardIdentifier> deck) {
         this.deckZoneWidth = deckZoneWidth;
         this.deckZoneHeight = deckZoneHeight;
@@ -235,7 +235,7 @@ public final class DeckZone extends JPanel {
 
     /**
      * Updates the energy bar and notify the InGameController of the card used.
-     * 
+     *
      * @return a boolean indicating if a card has bee used or not
      */
     public boolean playCard() {
