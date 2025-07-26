@@ -19,6 +19,7 @@ import it.unibo.oop.lastcrown.model.file_handling.api.ReadOnlyFileHandler;
 import it.unibo.oop.lastcrown.model.file_handling.impl.EnemiesParser;
 import it.unibo.oop.lastcrown.model.file_handling.impl.ReadOnlyFileHandlerImpl;
 import it.unibo.oop.lastcrown.model.spell.api.Spell;
+import it.unibo.oop.lastcrown.model.user.api.CompleteCollection;
 import it.unibo.oop.lastcrown.model.user.impl.CompleteCollectionImpl;
 
 /**
@@ -49,8 +50,8 @@ public class CollectionControllerImpl implements CollectionController {
     }
 
     @Override
-    public final List<CardIdentifier> getCompleteCollection() {
-        return Collections.unmodifiableList(COMPLETE_COLLECTION.getCompleteCollection());
+    public final CompleteCollection getCompleteCollection() {
+        return COMPLETE_COLLECTION.getCompleteCollection();
     }
 
     @Override
@@ -60,7 +61,7 @@ public class CollectionControllerImpl implements CollectionController {
 
     @Override
     public final List<CardIdentifier> getCollectionByType(final CardType type) {
-        return getCompleteCollection().stream()
+        return getCompleteCollection().getCompleteCollectionAsSet().stream()
             .filter(card -> card.type().equals(type))
             .collect(Collectors.toList());
     }
