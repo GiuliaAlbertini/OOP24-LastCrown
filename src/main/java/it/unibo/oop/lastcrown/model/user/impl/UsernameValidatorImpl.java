@@ -15,7 +15,7 @@ import it.unibo.oop.lastcrown.model.user.api.UsernameValidator;
 public class UsernameValidatorImpl implements UsernameValidator {
     private static final String SEP = File.separator;
     private static final Pattern VALID_USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]+$");
-    private static final String PATH = getPath();
+    private static final String PATH = getAcccountPath();
     private final FileHandlerImpl<Account> fileHandler;
 
     /**
@@ -37,11 +37,9 @@ public class UsernameValidatorImpl implements UsernameValidator {
         return this.fileHandler.readFromFile(username).isEmpty();
     }
 
-    private static String getPath() {
-        return "OOP24-LastCrown"
-             + SEP + "src"
-             + SEP + "main"
-             + SEP + "resources"
-             + SEP + "accounts";
+    private static String getAcccountPath() {
+        return System.getProperty("user.home")
+                + SEP + ".lastcrown"
+                + SEP + "accounts";
     }
 }

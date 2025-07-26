@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,10 +37,11 @@ public class CompleteCollectionImpl implements CompleteCollection {
     private final Optional<Map<CardIdentifier, PlayableCharacter>> playableCharacters;
     private final Optional<Map<CardIdentifier, Spell>> spells;
     private final List<CardIdentifier> completeCollection;
+    private final Map<CardIdentifier, Integer> costMap;
 
     /**
      * Constructor for an object of {@code CompleteCollectionImpl}.
-     * It initializes the maps relative to heroes, plyable characters and spells, 
+     * It initializes the maps relative to heroes, plyable characters and spells,
      * then creates a List with all the {@link CardIdentifier} in the maps ordered
      * by their ID number.
      */
@@ -54,11 +56,51 @@ public class CompleteCollectionImpl implements CompleteCollection {
         this.playableCharacters = pcReader.readFromFile(PLAYABLE_CHARACTER);
         this.spells = spellsReader.readFromFile(SPELLS);
         this.completeCollection = createCompleteCollection();
+        final Map<CardIdentifier, Integer> heroCosts = heroes
+            .orElse(Map.of())
+            .entrySet().stream()
+            .collect(Collectors.toMap(
+                Entry::getKey,
+                e -> e.getValue().getRequirement().amount()
+            ));
+
+        final Map<CardIdentifier, Integer> pcCosts = playableCharacters
+            .orElse(Map.of())
+            .entrySet().stream()
+            .collect(Collectors.toMap(
+                Entry::getKey,
+                e -> e.getValue().getCost()
+            ));
+
+        final Map<CardIdentifier, Integer> spellCosts = spells
+            .orElse(Map.of())
+            .entrySet().stream()
+            .collect(Collectors.toMap(
+                Entry::getKey,
+                e -> e.getValue().getCost()
+            ));
+
+        this.costMap = Stream.of(heroCosts, pcCosts, spellCosts)
+            .flatMap(map -> map.entrySet().stream())
+            .collect(Collectors.toMap(
+                Entry::getKey,
+                Entry::getValue
+            ));
     }
 
     @Override
-    public final List<CardIdentifier> getCompleteCollection() {
-        return Collections.unmodifiableList(this.completeCollection);
+    public final int getCost(final CardIdentifier id) {
+        final Integer cost = this.costMap.get(id);
+        if (cost == null) {
+            throw new NoSuchElementException("Card not in complete collection: " + id);
+        }
+        return cost;
+    }
+
+    @Override
+    public final CompleteCollection getCompleteCollection() {
+        final var defensiveCopy = this;
+        return defensiveCopy;
     }
 
     @Override
@@ -111,6 +153,11 @@ public class CompleteCollectionImpl implements CompleteCollection {
                .map(this::sortedByNumber)
                .flatMap(List::stream)
                .toList();
+    }
+
+    @Override
+   public final List<CardIdentifier> getCompleteCollectionAsSet() {
+       return Collections.unmodifiableList(this.completeCollection);
     }
 
     private static String getPath() {

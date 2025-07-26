@@ -20,27 +20,16 @@ public class DeckImpl implements Deck, UserCollectionListener {
     private final Set<CardIdentifier> userCollection;
     private final CompleteCollectionImpl completeCollection = new CompleteCollectionImpl();
     private final Set<CardIdentifier> deck = new HashSet<>();
+
     private CardIdentifier heroId;
 
     /**
      * Constuct a new {@code DeckImpl}.
-     * 
+     *
      * @param userCollection the collection of the user
      */
     public DeckImpl(final Set<CardIdentifier> userCollection) {
         this.userCollection = Collections.unmodifiableSet(userCollection);
-    }
-
-    /**
-     * Creates a new instance of {@link Deck}, initializing the first hero of the deck.
-     * 
-     * @param userCollection the set of {@link CardIdentifier} of the user
-     * @return the deck created
-     */
-    public static Deck createDeck(final Set<CardIdentifier> userCollection) {
-        final Deck deck = new DeckImpl(userCollection);
-        deck.initHero();
-        return deck;
     }
 
     @Override
@@ -81,18 +70,14 @@ public class DeckImpl implements Deck, UserCollectionListener {
         }
         final Hero hero = completeCollection.getHero(heroId).orElse(null);
         if (hero == null) {
-            LOG.severe("Hero details missing for " + heroId);
+            LOG.warning("Hero details missing for " + heroId);
             return;
         }
         if (!withinLimit(type, hero)) {
             LOG.warning("Cannot add " + type.get() + " " + card + ": limit is " + limitFor(type, hero));
             return;
         }
-        if (this.deck.add(card)) {
-            LOG.info("Added " + card + " to deck");
-        } else {
-            LOG.info("Card " + card + " already present in deck");
-        }
+        this.deck.add(card);
     }
 
     @Override
@@ -101,9 +86,7 @@ public class DeckImpl implements Deck, UserCollectionListener {
             LOG.warning("Cannot remove the selected hero directly, add another hero to switch");
             return;
         }
-        if (this.deck.remove(card)) {
-            LOG.info("Removed card " + card + " from deck");
-        } else {
+        if (!this.deck.remove(card)) {
             LOG.warning("Cannot remove " + card + ": not in deck");
         }
     }
@@ -111,6 +94,23 @@ public class DeckImpl implements Deck, UserCollectionListener {
     @Override
     public final void onCardAdded(final CardIdentifier card) {
         this.userCollection.add(card);
+    }
+
+    @Override
+    public final CardIdentifier getHero() {
+        return this.heroId;
+    }
+
+    /**
+     * Creates a new instance of {@link Deck}, initializing the first hero of the deck.
+     *
+     * @param userCollection the set of {@link CardIdentifier} of the user
+     * @return the deck created
+     */
+    public static Deck createDeck(final Set<CardIdentifier> userCollection) {
+        final Deck deck = new DeckImpl(userCollection);
+        deck.initHero();
+        return deck;
     }
 
     private CardIdentifier findFirstHero() {
@@ -141,7 +141,6 @@ public class DeckImpl implements Deck, UserCollectionListener {
             });
             heroId = newHero;
             this.deck.add(newHero);
-            LOG.info("Switched hero to " + newHero);
         }
     }
 

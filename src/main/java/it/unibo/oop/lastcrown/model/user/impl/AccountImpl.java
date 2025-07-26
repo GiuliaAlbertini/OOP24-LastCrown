@@ -8,10 +8,11 @@ import it.unibo.oop.lastcrown.model.user.api.UserCollection;
  * Implementation of {@Account}.
  */
 public class AccountImpl implements Account {
+    private static final int INITIAL_COINS = 500;
     private final String username;
     private int coins;
     private int bossesDefeated;
-    private int playedGames;
+    private int playedMatches;
     private double playtime;
     private final UserCollection userCollection;
 
@@ -23,9 +24,9 @@ public class AccountImpl implements Account {
      */
     public AccountImpl(final String username) {
         this.username = username;
-        this.coins = 0;
+        this.coins = INITIAL_COINS;
         this.bossesDefeated = 0;
-        this.playedGames = 0;
+        this.playedMatches = 0;
         this.playtime = 0.0;
         this.userCollection = new UserCollectionImpl();
     }
@@ -46,13 +47,13 @@ public class AccountImpl implements Account {
     }
 
     @Override
-    public final void increasePlayedGames() {
-        this.playedGames++;
+    public final void increasePlayedMatches() {
+        this.playedMatches++;
     }
 
     @Override
     public final double computeBossesPerMatch() {
-        return (double) this.playedGames / (this.bossesDefeated == 0 ? 1 : this.bossesDefeated);
+        return (double) this.playedMatches / (this.bossesDefeated == 0 ? 1 : this.bossesDefeated);
     }
 
     @Override
@@ -76,8 +77,8 @@ public class AccountImpl implements Account {
     }
 
     @Override
-    public final int getPlayedGames() {
-        return this.playedGames;
+    public final int getPlayedMatches() {
+        return this.playedMatches;
     }
 
     @Override
