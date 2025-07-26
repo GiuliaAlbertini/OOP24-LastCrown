@@ -19,11 +19,6 @@ public interface SceneManager {
     void switchScene(SceneName caller, SceneName destination);
 
     /**
-     * Closes the whole application.
-     */
-    void closeApplication();
-
-    /**
      * Notify the users who use the user's collection that it changed.
      * 
      * @param newSet the new collection to use

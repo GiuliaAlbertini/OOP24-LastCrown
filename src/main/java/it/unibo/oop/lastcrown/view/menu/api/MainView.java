@@ -20,11 +20,6 @@ public interface MainView {
     void changePanel(SceneName sceneCaller, SceneName sceneDestination);
 
     /**
-     * Calls the close of the application.
-     */
-    void closeApplication();
-
-    /**
      * Update the DeckView in use.
      * 
      * @param newSet the updated collection to show
