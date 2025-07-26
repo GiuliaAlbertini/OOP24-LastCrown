@@ -26,6 +26,7 @@ import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.user.api.UsernameController;
 import it.unibo.oop.lastcrown.controller.user.impl.UsernameControllerImpl;
 import it.unibo.oop.lastcrown.view.menu.api.LoginView;
+import it.unibo.oop.lastcrown.view.scenes_utilities.DocumentListenerImpl;
 
 /**
  * View that represents the login scene of the application.

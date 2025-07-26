@@ -18,6 +18,8 @@ import it.unibo.oop.lastcrown.controller.file_handling.api.CreditsController;
 import it.unibo.oop.lastcrown.controller.file_handling.impl.CreditsControllerImpl;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.view.SceneName;
+import it.unibo.oop.lastcrown.view.scenes_utilities.BackButton;
+import it.unibo.oop.lastcrown.view.scenes_utilities.HideableScrollPane;
 
 /**
  * Simple view that shows the list of credits.

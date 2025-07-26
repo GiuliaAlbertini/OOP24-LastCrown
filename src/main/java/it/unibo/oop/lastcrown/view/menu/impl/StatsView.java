@@ -17,6 +17,7 @@ import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.AccountController;
 import it.unibo.oop.lastcrown.model.user.api.Account;
 import it.unibo.oop.lastcrown.view.SceneName;
+import it.unibo.oop.lastcrown.view.scenes_utilities.BackButton;
 
 /**
  * The {@code StatsView} class represents the statistics scene of the application.
