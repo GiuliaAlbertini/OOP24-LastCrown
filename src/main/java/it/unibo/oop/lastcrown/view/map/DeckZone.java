@@ -79,6 +79,7 @@ public final class DeckZone extends JPanel {
         this.setupEnergyBar(this, energyBarWidth);
         this.setBackground(BG);
         this.setPreferredSize(new Dimension(this.deckZoneWidth, deckZoneHeight));
+        this.currentEnergy = MAX_ENERGY;
 
         this.rechargeTimer = new Timer(TIME_RECHARGE_SINGLE_ENERGY, e -> {
             if (currentEnergy < MAX_ENERGY) {
