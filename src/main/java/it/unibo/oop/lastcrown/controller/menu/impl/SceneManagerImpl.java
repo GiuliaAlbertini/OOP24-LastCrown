@@ -56,6 +56,14 @@ public class SceneManagerImpl implements SceneManager {
 
     @Override
     public final void switchScene(final SceneName caller, final SceneName destination) {
+        switch (destination) {
+            case SHOP       -> this.mainView.onShop(caller);
+            case MATCH      -> this.mainView.onMatch(caller);
+            case MENU       -> this.mainView.onMenu(caller);
+            case COLLECTION -> this.mainView.onCollection(caller);
+            case DECK       -> this.mainView.onDeck(caller);
+            default         -> { }
+        }
         this.mainView.changePanel(caller, destination);
     }
 
