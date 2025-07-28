@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import it.unibo.oop.lastcrown.controller.shop.impl.ShopCardsSelectionControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
-import it.unibo.oop.lastcrown.view.menu.impl.CardPanel;
+import it.unibo.oop.lastcrown.view.scenes_utilities.CardPanel;
 
 /**
  * Panel displaying a dynamic selection of cards side by side,

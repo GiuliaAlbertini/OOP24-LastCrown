@@ -18,6 +18,8 @@ import it.unibo.oop.lastcrown.controller.file_handling.api.CreditsController;
 import it.unibo.oop.lastcrown.controller.file_handling.impl.CreditsControllerImpl;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.view.SceneName;
+import it.unibo.oop.lastcrown.view.scenes_utilities.BackButton;
+import it.unibo.oop.lastcrown.view.scenes_utilities.HideableScrollPane;
 
 /**
  * Simple view that shows the list of credits.
@@ -27,7 +29,7 @@ public final class CreditsView extends AbstractScene {
     private static final int VERTICAL_SPACING = 20;
     private static final String FONT_NAME_DIALOG_INPUT = "DialogInput";
     private static final Font LABEL_FONT = getResponsiveFont(new Font(FONT_NAME_DIALOG_INPUT, Font.BOLD, 30));
-    private static final Color LABEL_COLOR = new Color(100, 215, 0);
+    private static final Color LABEL_COLOR = new Color(144, 238, 144);
 
     private final transient CreditsController creditsController = new CreditsControllerImpl();
     private final transient SceneManager sceneManager;

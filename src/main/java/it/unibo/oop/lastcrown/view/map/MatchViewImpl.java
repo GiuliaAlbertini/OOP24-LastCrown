@@ -12,12 +12,11 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
+import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.Dialog;
 import it.unibo.oop.lastcrown.view.SceneName;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
-import it.unibo.oop.lastcrown.view.menu.api.MainView;
-
 
 /**
  * the JFrame that contains the match map. Provides methods to add further
@@ -25,22 +24,21 @@ import it.unibo.oop.lastcrown.view.menu.api.MainView;
  */
 public final class MatchViewImpl extends JPanel implements MatchView, MatchExitObserver {
     private static final long serialVersionUID = 1L;
-    private final transient MainView mainView;
     private final MatchPanel mainPanel;
     MatchController matchController;
     private final Map<Integer, JComponent> newComponents;
+    private final transient SceneManager sceneManager;
 
     /**
+     * @param sceneManager the SceneManager of the application
      * @param gameContr the main controller linked to the map
-     * @param mainView  the main view interface of the application
-     * @param width     the width of the map
-     * @param height    the height of the map
-     * @param deck      the set to use as a deck
+     * @param width the width of the map
+     * @param height the height of the map
+     * @param deck the set to use as a deck
      */
-    public MatchViewImpl(final MatchController matchContr, final MainView mainView,
-            final int width, final int height, final Set<CardIdentifier> deck) {
-        this.mainView = mainView;
-        this.matchController=matchContr;
+    public MatchViewImpl(final SceneManager sceneManager, final MatchController gameContr,
+     final int width, final int height, final Set<CardIdentifier> deck) {
+        this.sceneManager = sceneManager;
         this.newComponents = new ConcurrentHashMap<>();
         this.mainPanel = new MatchPanel(this, matchContr, matchContr.getWallHealthBar(),
                 matchContr.getEventWriter(), matchContr.getCoinsWriter(), width, height, deck);
@@ -57,8 +55,8 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         final Dialog defeat = new Dialog(title, message, false);
         final JButton ok = new JButton("OK");
         ok.addActionListener(act -> {
-            defeat.dispose();
-            this.mainView.changePanel(SceneName.MATCH, SceneName.MENU);
+           defeat.dispose();
+           this.sceneManager.switchScene(SceneName.MATCH, SceneName.MENU);
         });
         defeat.addButton(ok);
         defeat.setLocationRelativeTo(this);
@@ -73,8 +71,8 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         final JButton ok = new JButton("OK");
         ok.addActionListener(act -> {
             victory.dispose();
-            this.mainView.changePanel(SceneName.MATCH, SceneName.SHOP);
-            // gameContr.notifyMatchToShop(false);
+            this.sceneManager.switchScene(SceneName.MATCH, SceneName.SHOP);
+            //gameContr.notifyMatchToShop(false);
         });
         victory.addButton(ok);
         victory.setLocationRelativeTo(this);
@@ -164,7 +162,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
     @Override
     public void notifyExitToMenu() {
-        this.mainView.changePanel(SceneName.MATCH, SceneName.MENU);
+        this.sceneManager.switchScene(SceneName.MATCH, SceneName.MENU);
     }
 
     // zona truppe (confine)

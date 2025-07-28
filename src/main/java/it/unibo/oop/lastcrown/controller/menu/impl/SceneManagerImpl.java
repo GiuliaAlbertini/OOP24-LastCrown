@@ -30,20 +30,18 @@ public class SceneManagerImpl implements SceneManager {
      * Constructs a SceneManagerImpl and initializes the main view.
      *
      * @param mainController the {@link MainController} to use
-     * @param accountController the {@link AccountController} to use
      * @param collectionController the {@link CollectionController} to use
      * @param deckContr the {@link DeckController} to use
      * @param gameContr the {@link GameControllerExample} to use
      */
     public SceneManagerImpl(
         final MainController mainController,
-        final AccountController accountController,
         final CollectionController collectionController,
         final DeckController deckContr,
         final MatchStartObserver gameContr
     ) {
         this.mainController = mainController;
-        this.accountController = accountController;
+        this.accountController = mainController.getAccountController();
         this.collectionController = collectionController;
         final DeckController deckController = new DeckControllerImpl(Set.copyOf(deckContr.getAvailableCards()));
         this.mainView = MainViewImpl.create(
@@ -58,6 +56,14 @@ public class SceneManagerImpl implements SceneManager {
 
     @Override
     public final void switchScene(final SceneName caller, final SceneName destination) {
+        switch (destination) {
+            case SHOP       -> this.mainView.onShop(caller);
+            case MATCH      -> this.mainView.onMatch(caller);
+            case MENU       -> this.mainView.onMenu(caller);
+            case COLLECTION -> this.mainView.onCollection(caller);
+            case DECK       -> this.mainView.onDeck(caller);
+            default         -> { }
+        }
         this.mainView.changePanel(caller, destination);
     }
 
@@ -69,5 +75,10 @@ public class SceneManagerImpl implements SceneManager {
     @Override
     public final void updateAccountUsers(final Account account) {
         this.mainView.updateAccountUsers(account);
+    }
+
+    @Override
+    public final MainView getMainView() {
+        return this.mainView.getFrame();
     }
 }

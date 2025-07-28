@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Optional;
 import java.util.Set;
 
-
 import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
@@ -31,7 +30,7 @@ import it.unibo.oop.lastcrown.controller.app_managing.api.MatchStartObserver;
  * Implementation of {@link MainController}.
  */
 public class MainControllerImpl implements MainController {
-    private static final double TO_MINUTES_FACTOR = 60000.0;
+    private static final double TO_MINUTES_FACTOR = 60_000.0;
     private static final String SEP = File.separator;
     private static final String ACCOUNT_PATH = getAccountPath();
     private Optional<SceneManager> sceneManager;
@@ -46,8 +45,7 @@ public class MainControllerImpl implements MainController {
     public MainControllerImpl() {
         this.sceneManager = Optional.empty();
         this.loginView = LoginViewImpl.create(this);
-        this.loginView.setVisibility(true);
-        this.gameController= new MatchStartObserverImpl(this);
+        this.gameController = new MatchStartObserverImpl(this);
         AudioEngine.playSoundTrack(SoundTrack.MENU);
         this.sessionTimer = System.currentTimeMillis();
     }
@@ -65,12 +63,11 @@ public class MainControllerImpl implements MainController {
         this.sceneManager = Optional.of(
             new SceneManagerImpl(
                 this,
-                accountController.get(),
                 collectionController,
                 deckController,
                 gameController
                 ));
-        this.closeLoginView();
+        this.loginView.close();
         this.sessionTimer = System.currentTimeMillis();
     }
 
@@ -90,13 +87,14 @@ public class MainControllerImpl implements MainController {
         final Account newAcc = this.getAccount().get();
         newAcc.addPlaytime(minutes);
         writeAccountOnFile(newAcc);
-        System.exit(0);
+        this.sceneManager.ifPresent(sm -> {
+            sm.getMainView().close();
+        });
     }
 
     @Override
     public final AccountController getAccountController() {
-        final var defensiveCopy = this.accountController.get();
-        return defensiveCopy;
+        return this.accountController.get();
     }
 
     @Override
@@ -145,11 +143,7 @@ public class MainControllerImpl implements MainController {
         return accountController.get().getAccount().getUserCollection().getCollection();
     }
 
-    private void closeLoginView() {
-        this.loginView.setVisibility(false);
-    }
-
-    public MatchController getMatchController(){
+    public MatchController getMatchController() {
         return this.gameController.getMatchControllerReference();
     }
 }

@@ -5,9 +5,7 @@ package it.unibo.oop.lastcrown.view.menu.api;
  */
 public interface LoginView {
     /**
-     * Changes the visibility of {@code LoginView}.
-     * 
-     * @param flag {@code True} if the visibility has to be set, {@code False} otherwise
+     * Close the view.
      */
-    void setVisibility(boolean flag);
+    void close();
 }

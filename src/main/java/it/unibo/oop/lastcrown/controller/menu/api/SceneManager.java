@@ -5,6 +5,7 @@ import java.util.Set;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.user.api.Account;
 import it.unibo.oop.lastcrown.view.SceneName;
+import it.unibo.oop.lastcrown.view.menu.api.MainView;
 
 /**
  * Provides methods to handle the visualization of differents scenes.
@@ -31,4 +32,10 @@ public interface SceneManager {
      * @param account the new version of the account
      */
     void updateAccountUsers(Account account);
+
+    /**
+     * Getter for the main view.
+     * @return the main view
+     */
+    MainView getMainView();
 }

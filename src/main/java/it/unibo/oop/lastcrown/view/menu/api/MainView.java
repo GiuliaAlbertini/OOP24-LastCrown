@@ -40,4 +40,50 @@ public interface MainView {
      * @param bossDefeated flag that is true if a boss has been defeated
      */
     void updateAccount(int amount, boolean bossDefeated);
+
+    /**
+     * Getter this view.
+     * @return the frame
+     */
+    MainView getFrame();
+
+    /**
+     * Close the view.
+     */
+    void close();
+
+    /**
+     * Describe the action to do when going to the ShopView.
+     * 
+     * @param caller the scene that called
+     */
+    void onShop(SceneName caller);
+
+    /**
+     * Describe the action to do when going to the MatchView.
+     * 
+     * @param caller the scene that called
+     */
+    void onMatch(SceneName caller);
+
+    /**
+     * Describe the action to do when going to the MenuView.
+     * 
+     * @param caller the scene that called
+     */
+    void onMenu(SceneName caller);
+
+    /**
+     * Describe the action to do when going to the CollectionView.
+     * 
+     * @param caller the scene that called
+     */
+    void onCollection(SceneName caller);
+
+    /**
+     * Describe the action to do when going to the DeckView.
+     * 
+     * @param caller the scene that called
+     */
+    void onDeck(SceneName caller);
 }

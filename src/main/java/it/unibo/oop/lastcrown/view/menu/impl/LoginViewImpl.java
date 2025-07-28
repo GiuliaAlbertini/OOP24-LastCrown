@@ -8,6 +8,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Locale;
 
 import javax.swing.Box;
@@ -24,6 +26,7 @@ import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.user.api.UsernameController;
 import it.unibo.oop.lastcrown.controller.user.impl.UsernameControllerImpl;
 import it.unibo.oop.lastcrown.view.menu.api.LoginView;
+import it.unibo.oop.lastcrown.view.scenes_utilities.DocumentListenerImpl;
 
 /**
  * View that represents the login scene of the application.
@@ -39,22 +42,23 @@ public final class LoginViewImpl extends JFrame implements LoginView {
     private static final String FONT_NAME = "DialogInput";
     private static final double FIELD_HEIGHT_RATIO = 0.05;
     private static final double FIELD_WIDTH_RATIO = 0.15;
-
-    private static final Color BG_COLOR = new Color(21, 76, 121);
+    private static final Color BG_COLOR = new Color(15, 35, 65);
     private static final Color TITLE_COLOR = new Color(255, 215, 0);
-    private static final Color LABEL_COLOR = new Color(100, 215, 0);
+    private static final Color LABEL_COLOR = new Color(144, 238, 144);
+    private static final Color BTN_BG_COLOR = new Color(255, 215, 0);
+    private static final Color BTN_FG_COLOR = new Color(15, 35, 65);
     private static final Font TITLE_FONT = getResponsiveFont(Font.BOLD, 80);
     private static final Font SUBTITLE_FONT = getResponsiveFont(Font.BOLD, 40);
     private static final Font LABEL_FONT = getResponsiveFont(Font.BOLD, 30);
     private static final Font FIELD_FONT = getResponsiveFont(Font.BOLD, 28);
-    private static final Font BUTTON_FONT = new Font("Monospaced", Font.BOLD, 26);
-
+    private static final Font BTN_FONT = new Font("Monospaced", Font.BOLD, 26);
     private static final double[] V_SPACING = {0.2, 0.03, 0.05, 0.03, 0.2};
 
     private final transient UsernameController usernameController = new UsernameControllerImpl();
     private final transient MainController mainController;
     private final JPanel mainPanel = new JPanel();
     private final JTextField usernameField;
+    private final JButton sendButton;
 
     /**
      * Initializes the view and add the controller to use.
@@ -65,6 +69,7 @@ public final class LoginViewImpl extends JFrame implements LoginView {
         this.mainController = mainController;
         this.configureFrame();
         this.usernameField = createUsernameField();
+        this.sendButton = createSendButton();
         this.arrangeComponents();
     }
 
@@ -75,12 +80,14 @@ public final class LoginViewImpl extends JFrame implements LoginView {
      * @return the view created
      */
     public static LoginViewImpl create(final MainController mainController) {
-        return new LoginViewImpl(mainController);
+        final LoginViewImpl view = new LoginViewImpl(mainController);
+        view.setVisible(true);
+        return view;
     }
 
     @Override
-    public void setVisibility(final boolean visible) {
-        this.setVisible(visible);
+    public void close() {
+        this.dispose();
     }
 
     private void configureFrame() {
@@ -104,11 +111,12 @@ public final class LoginViewImpl extends JFrame implements LoginView {
         this.mainPanel.add(Box.createVerticalStrut(spacing(2)));
         this.mainPanel.add(createInputPanel());
         this.mainPanel.add(Box.createVerticalStrut(spacing(3)));
-        this.mainPanel.add(createSendButton());
+        this.mainPanel.add(this.sendButton);
         this.mainPanel.add(Box.createVerticalStrut(spacing(4)));
         this.mainPanel.add(Box.createVerticalGlue());
         this.setTransparency(mainPanel);
         this.usernameField.setOpaque(true);
+        this.sendButton.setOpaque(true);
     }
 
     private JPanel createInputPanel() {
@@ -121,8 +129,25 @@ public final class LoginViewImpl extends JFrame implements LoginView {
 
     private JButton createSendButton() {
         final JButton button = new JButton("SEND");
-        button.setFont(BUTTON_FONT);
+        button.setFont(BTN_FONT);
         button.setAlignmentX(CENTER_ALIGNMENT);
+        button.setBackground(BTN_BG_COLOR);
+        button.setForeground(BTN_FG_COLOR);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(final MouseEvent evt) {
+                button.setBackground(BTN_BG_COLOR.brighter());
+            }
+
+            @Override
+            public void mouseExited(final MouseEvent evt) {
+                button.setBackground(BTN_BG_COLOR);
+            }
+        });
+
         button.addActionListener(sendActionListener());
         return button;
     }
@@ -151,7 +176,7 @@ public final class LoginViewImpl extends JFrame implements LoginView {
         return e -> {
             final String user = usernameField.getText().trim().toLowerCase(Locale.ROOT);
             if (!usernameController.checkValidity(user)) {
-                this.showError("Username field cannot be empty!");
+                this.showError("Incorrect username!");
             } else if (confirmUser(user)) {
                 this.mainController.goOverLogin(user);
             }

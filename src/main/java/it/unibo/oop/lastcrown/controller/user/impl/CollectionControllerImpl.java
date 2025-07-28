@@ -92,4 +92,3 @@ public class CollectionControllerImpl implements CollectionController {
             + File.separator + "entities";
     }
 }
-
