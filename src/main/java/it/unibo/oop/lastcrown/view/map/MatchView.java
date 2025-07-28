@@ -6,7 +6,12 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 
+import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
+import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
+import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.view.collision.api.HitboxPanel;
+import it.unibo.oop.lastcrown.view.collision.api.RadiusPanel;
 import it.unibo.oop.lastcrown.view.menu.api.Scene;
 
 /**
@@ -31,13 +36,15 @@ public interface MatchView extends Scene {
      * @param x x coordinate
      * @param y y coordinate
      */
-    void addGenericGraphics(int id, JComponent component, int x, int y);
+    HitboxController addGenericGraphics(int id, JComponent component, int x, int y, String typefolder, String name);
 
     /**
      * Add a generic hero graphic component. The position is already known.
      * @param heroGraphics the generic hero graphic component
      */
     void addHeroGraphics(JComponent heroGraphics);
+
+    //HitboxController addEnemyGraphics(int id, JComponent component, int x, int y, String typefolder, String name);
 
     /**
      * Remove safely a graphic component associated with the specified id from the map.
@@ -66,4 +73,5 @@ public interface MatchView extends Scene {
     Point getWallCoordinates();
 
     void updateInGameDeck(Set<CardIdentifier> newDeck);
+
 }
