@@ -28,6 +28,7 @@ public interface MatchController {
      */
     void addCharacter(int n, GenericCharacterController controller, HitboxController hitbox);
 
+    HitboxController setupCharacter(final JComponent charComp, final String typeFolder, final String name, final boolean isPlayable, int x, int y);
     /**
      * Called when the "Add Character" button is pressed in the UI.
      * This method should handle the logic to initiate character addition.
