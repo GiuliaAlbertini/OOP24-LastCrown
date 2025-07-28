@@ -36,9 +36,10 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
      * @param height the height of the map
      * @param deck the set to use as a deck
      */
-    public MatchViewImpl(final SceneManager sceneManager, final MatchController gameContr,
+    public MatchViewImpl(final SceneManager sceneManager, final MatchController matchContr,
      final int width, final int height, final Set<CardIdentifier> deck) {
         this.sceneManager = sceneManager;
+        this.matchController=matchContr;
         this.newComponents = new ConcurrentHashMap<>();
         this.mainPanel = new MatchPanel(this, matchContr, matchContr.getWallHealthBar(),
                 matchContr.getEventWriter(), matchContr.getCoinsWriter(), width, height, deck);
