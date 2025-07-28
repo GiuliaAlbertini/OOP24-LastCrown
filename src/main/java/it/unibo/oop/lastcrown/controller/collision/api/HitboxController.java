@@ -37,7 +37,7 @@ public interface HitboxController {
      *
      * @return the graphical JComponent of the hitbox
      */
-    JComponent getGraphicalComponent();
+    JComponent getHitboxPanel();
 
     /**
      * Returns the hitbox model object.

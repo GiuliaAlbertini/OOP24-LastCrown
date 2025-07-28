@@ -51,7 +51,7 @@ public final class HitboxControllerImpl implements HitboxController {
     }
 
     @Override
-    public JComponent getGraphicalComponent() {
+    public JComponent getHitboxPanel() {
         return view.getHitboxPanel();
     }
 
