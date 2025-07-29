@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
 import it.unibo.oop.lastcrown.model.collision.api.Radius;
+import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
 import it.unibo.oop.lastcrown.view.collision.api.HitboxPanel;
 import it.unibo.oop.lastcrown.view.collision.api.RadiusPanel;
 import it.unibo.oop.lastcrown.view.collision.impl.HitboxMaskBounds;
@@ -33,11 +34,13 @@ public final class HitboxControllerImpl implements HitboxController {
 
     @Override
     public void setnewPosition(final int x, final int y) {
+        this.hitbox.setPosition(new Point2DImpl(x, y));
+
         bounds.updateHitboxPosition(x, y);
         if (radiusPanel != null) {
             radiusPanel.updatePosition();
         }
-        view.updatePanel();
+        //view.updatePanel();
     }
 
     @Override
