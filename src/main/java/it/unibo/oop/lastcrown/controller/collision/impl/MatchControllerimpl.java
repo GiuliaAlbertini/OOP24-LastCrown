@@ -43,6 +43,7 @@ import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionManager;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
+import it.unibo.oop.lastcrown.model.collision.api.Point2D;
 import it.unibo.oop.lastcrown.model.collision.api.Radius;
 import it.unibo.oop.lastcrown.model.collision.impl.CollisionManagerImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.CollisionResolverImpl;
@@ -82,6 +83,7 @@ public final class MatchControllerimpl implements MatchController {
     private int frameWidth;
     private int frameHeight;
     private final CompleteCollection collection;
+    private final CollectionController collectionController;
     private final HeroController heroController;
     private static final int HITBOX_WIDTH = 10;
     private static final int HITBOX_HEIGHT = 10;
@@ -98,7 +100,7 @@ public final class MatchControllerimpl implements MatchController {
             final int frameHeight,
             CardIdentifier heroId,
             CollectionController collectionController) {
-
+        this.collectionController = collectionController;
         this.frameHeight = frameHeight;
         this.frameWidth = frameWidth;
         final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
@@ -129,16 +131,8 @@ public final class MatchControllerimpl implements MatchController {
         this.matchView.addHeroGraphics(this.heroController.getGraphicalComponent());
         this.heroController.setNextAnimation(Keyword.STOP);
         this.heroController.showNextFrame();
-        spawnRandomEnemy();
-
-    }
-
-    @Override
-    public void addCharacter(final int n, final GenericCharacterController controller,
-            final HitboxController hitboxController) {
-        charactersController.put(n, controller);
-        hitboxControllers.put(controller, hitboxController);
-        playerFSMs.put(n, new CharacterFSM(controller, this, radiusScanner, this.collisionResolver));
+        // spawnRandomEnemy(3);
+        spawn();
 
     }
 
@@ -215,6 +209,7 @@ public final class MatchControllerimpl implements MatchController {
         return nextId++;
     }
 
+    // ========================================================
     /**
      * Aggiorna lo stato di un nemico e pulisce le mappe se necessario.
      *
@@ -373,6 +368,35 @@ public final class MatchControllerimpl implements MatchController {
         return false;
     }
 
+        @Override
+    public boolean isPlayerStopped(final PlayableCharacterController player) {
+        CharacterFSM fsm = this.playerFSMs.get(player.getId().number());
+        if (fsm != null) {
+            return fsm.getCurrentState() == CharacterState.STOPPED;
+        }
+        return false;
+    }
+
+
+    public CharacterState getCharacterState(final GenericCharacterController character) {
+        for (Map.Entry<Integer, CharacterFSM> entry : playerFSMs.entrySet()) {
+            final int id = entry.getKey();
+            final CharacterFSM fsm = entry.getValue();
+            final CharacterState state = fsm.getCurrentState();
+
+            System.out.println("Player ID: " + id + " | Stato: " + state);
+        }
+
+        final int id = character.getId().number();
+        final CharacterFSM fsm = this.playerFSMs.get(id); // o enemyFSMs, a seconda dei casi
+
+        if (fsm == null) {
+            throw new IllegalStateException("FSM non trovato per il personaggio con ID: " + id);
+        }
+
+        return fsm.getCurrentState();
+    }
+
     public boolean isBossFightPartnerDead(final int id) {
         if (collisionResolver.hasOpponentBossPartner(id)) {
             final int partnerId = collisionResolver.getOpponentBossPartner(id);
@@ -420,15 +444,41 @@ public final class MatchControllerimpl implements MatchController {
 
             final HitboxController hitboxController = this.matchView.addGenericGraphics(id,
                     playerController.getGraphicalComponent(), x, y, typeFolder, name);
-            addCharacter(generateUniqueCharacterId(), playerController, hitboxController);
+            addCharacter(selected.get2().getId().number(), playerController, hitboxController);
             this.eventWriter.setText(name + " schierato in campo!");
         }
-
-        // Pulisce la lista dopo l'uso
         listCard.clear();
     }
 
-    public HitboxController setupCharacter(final JComponent charComp, final String typeFolder, final String name, final boolean isPlayable, int x, int y) {
+    @Override
+    public void addCharacter(final int n, final GenericCharacterController controller,
+            final HitboxController hitboxController) {
+        int id = controller.getId().number();
+        charactersController.put(id, controller);
+        hitboxControllers.put(controller, hitboxController);
+        playerFSMs.put(id, new CharacterFSM(controller, this, radiusScanner, this.collisionResolver));
+        System.out.println("id inserito in player" + id);
+        // charactersController.put(n, controller);
+        // hitboxControllers.put(controller, hitboxController);
+        // playerFSMs.put(n, new CharacterFSM(controller, this, radiusScanner,
+        // this.collisionResolver));
+
+    }
+
+    @Override
+    public void notifyButtonPressed(CardIdentifier id) {
+        final CharacterDeathObserver obs = idc -> System.out.println("Morto: " + idc);
+        if (id.type() == CardType.MELEE || id.type() == CardType.RANGED) {
+            final PlayableCharacter player = this.collection.getPlayableCharacter(id).get();
+            final PlayableCharacterController playerController = PlCharControllerFactory.createPlCharController(obs,
+                    generateUniqueCharacterId(), player);
+            listCard.add(new Pair<String, PlayableCharacterController>(player.getName(), playerController));
+            this.eventWriter.setText("Personaggio selezionato: " + player.getName().toString());
+        }
+    }
+
+    public HitboxController setupCharacter(final JComponent charComp, final String typeFolder, final String name,
+            final boolean isPlayable, int x, int y) {
         final Dimension size = charComp.getPreferredSize();
 
         final Hitbox hitbox = new HitboxImpl(HITBOX_WIDTH, HITBOX_HEIGHT, new Point2DImpl(x, y));
@@ -447,20 +497,6 @@ public final class MatchControllerimpl implements MatchController {
             hitboxController.setRadiusPanel(radiusPanel);
         }
         return hitboxController;
-    }
-
-
-    @Override
-    public void notifyButtonPressed(CardIdentifier id) {
-        final CharacterDeathObserver obs = idc -> System.out.println("Morto: " + idc);
-
-        if (id.type() == CardType.MELEE || id.type() == CardType.RANGED) {
-            final PlayableCharacter player = this.collection.getPlayableCharacter(id).get();
-            final PlayableCharacterController playerController = PlCharControllerFactory.createPlCharController(obs,
-                    id.number(), player);
-            listCard.add(new Pair<String, PlayableCharacterController>(player.getName(), playerController));
-            this.eventWriter.setText("Personaggio selezionato: " + player.getName().toString());
-        }
     }
 
     @Override
@@ -483,92 +519,90 @@ public final class MatchControllerimpl implements MatchController {
         return this.eventWriter;
     }
 
-    public void spawnRandomEnemy() {
+    // public void spawnRandomEnemy(int roundIndex) {
+    //     List<List<Enemy>> allEnemies = collectionController.getEnemies();
+    //     if (roundIndex < 0 || roundIndex > allEnemies.size()) {
+    //         throw new IllegalArgumentException("Round non valido: " + roundIndex);
+    //     }
+
+    //     final CharacterDeathObserver obs = id -> System.out.println("Nemico morto: " + id);
+    //     final List<Enemy> enemiesThisRound = allEnemies.get(roundIndex);
+
+    //     final int marginTop = 20;
+    //     final int marginBottom = (int) (frameHeight * DimensionResolver.UTILITYZONE.height());
+    //     final int availableHeight = (int) (frameHeight - marginBottom);
+    //     final int verticalSpace = availableHeight - marginTop - marginBottom;
+
+    //     final int spacing = verticalSpace / Math.max(enemiesThisRound.size(), 1); // evita divisione per 0
+    //     int currentY = marginTop;
+
+    //     for (Enemy enemy : enemiesThisRound) {
+    //         final EnemyController enemyController = EnemyControllerFactory.createEnemyController(
+    //                 obs, generateUniqueCharacterId(), enemy);
+    //         System.out.println("nomi dei personaggi" + enemy.getName() + enemyController.getId().number());
+
+    //         enemyController.attachCharacterAnimationPanel(
+    //                 (int) (frameWidth * DimensionResolver.CHAR.width()),
+    //                 (int) (frameHeight * DimensionResolver.CHAR.height()));
+
+    //         final int spawnX = frameWidth+700; // Fuori dallo schermo a destra
+    //         final int spawnY = 500;
+
+    //         currentY += spacing; // prepara Y per il prossimo nemico
+
+    //         final int enemyId = enemyController.getId().number();
+    //         final String typeFolder = enemyController.getId().type().name();
+    //         final String name = enemy.getName();
+
+    //         final HitboxController hitboxController = this.matchView.addEnemyGraphics(
+    //                 enemyId,
+    //                 enemyController.getGraphicalComponent(),
+    //                 spawnX, spawnY,
+    //                 typeFolder, name);
+
+    //         addCharacter(enemyId, enemyController, hitboxController);
+    //         this.eventWriter.setText("Nemico " + name + " è apparso!");
+    //     }
+    // }
+
+    public void spawn() {
         final CharacterDeathObserver obs = id -> System.out.println("Nemico morto: " + id);
 
-        final Enemy pipistrello = new EnemyImpl("Bat", 1, CardType.ENEMY, 23, 100, 0.8);
+        final Enemy pipistrello = new EnemyImpl("Bat", 1, CardType.ENEMY, 23, 100,
+                0.3);
 
         final EnemyController enemyController = EnemyControllerFactory.createEnemyController(obs,
                 generateUniqueCharacterId(), pipistrello);
+
         enemyController.attachCharacterAnimationPanel(
                 (int) (frameWidth * DimensionResolver.CHAR.width()),
                 (int) (frameHeight * DimensionResolver.CHAR.height()));
 
-        // 1. Genera posizione randomica nella zona nemici
-        Random rand = new Random();
-        double y = rand.nextInt(1000);
+        final int spawnX;
+        final int spawnY;
 
-        final int spawnX = (int) (frameWidth); // adatta la percentuale se serve
-        final int spawnY = (int) (y * (DimensionResolver.ENEMIESZONE.height() - DimensionResolver.WALL.height()));
+        // 1. Genera posizione randomica nella zona nemici
+        final Random rand = new Random();
+        final double randFactor = rand.nextDouble(); // numero tra 0.0 e 1.0
+
+        final int availableHeight = (int) (frameHeight *
+                DimensionResolver.ENEMIESZONE.height());
+        final int margin = 100;
+
+        spawnX = frameWidth; // Fuori dallo schermo a destra
+        spawnY = margin + (int) (randFactor * (availableHeight - 2 * margin));
 
         final int enemyId = enemyController.getId().number();
         final String typeFolder = enemyController.getId().type().name();
         final String name = "Bat";
 
-        final HitboxController hitboxController = this.matchView.addGenericGraphics(generateUniqueCharacterId(),
+        final HitboxController hitboxController = this.matchView.addEnemyGraphics(generateUniqueCharacterId(),
                 enemyController.getGraphicalComponent(), spawnX, spawnY, typeFolder, name);
         addCharacter(enemyId, enemyController, hitboxController);
         this.eventWriter.setText("Nemico " + name + " è apparso!");
     }
+
+    public MatchView getMatchView() {
+        return this.matchView;
+    }
 }
-
-// this.heroController = HeroControllerFactory.createHeroController(obs,
-// generateUniqueCharacterId(), hero);
-// heroController.attachCharacterAnimationPanel((int) (frameWidth *
-// DimensionResolver.HERO.width()),
-// (int) (frameHeight * DimensionResolver.HERO.height()));
-
-// @Override
-// public void onAddCharacterButtonPressed() {
-// final Enemy pipistrello = new EnemyImpl("Bat", 1, CardType.ENEMY, 23,
-// 100,0.8);
-// //final Enemy nemico2 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 23,
-// 200,0.8);
-// //final Enemy nemico3 = new EnemyImpl("Cthulu", 1, CardType.ENEMY, 23,
-// 200,0.8);
-
-// //spawnAndRegisterCharacter(generateUniqueCharacterId(), pipistrello, obs,
-// 450,100);
-// //spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico2, obs, 200,
-// 400);
-// //spawnAndRegisterCharacter(generateUniqueCharacterId(), nemico3, obs,
-// 700,180);
-
-// // BOSS-FIGHT ==
-// final Enemy boss = new EnemyImpl("Cthulu", 1, CardType.BOSS, 33, 100, 0.2);
-// spawnAndRegisterCharacter(generateUniqueCharacterId(), boss, obs, 400, 200);
-
-// // }
-
-// private void spawnAndRegisterCharacter(final int id, final Object model,
-// final CharacterDeathObserver observer,
-// final int x, final int y) {
-// final SpawnedCharacter spawned = spawnCharacter(id, model, observer, x, y);
-
-// addCharacter(id, spawned.controller(), spawned.hitboxController());
-// if (model instanceof GenericCharacter) {
-
-// final GenericCharacterController playerController = spawned.controller();
-// playerFSMs.put(id, new CharacterFSM(playerController, this, radiusScanner,
-// this.collisionResolver));
-// }
-// }
-
-// public SpawnedCharacter spawnCharacter(final int id, final Object model,
-// final CharacterDeathObserver observer,
-// final int x, final int y) {
-// if (model instanceof PlayableCharacter pc) {
-// return spawner.spawnPlayableCharacter(id, pc, observer, x, y);
-// } else if (model instanceof Hero hero) {
-// return spawner.spawnHeroCharacter(id, hero, observer, x, y);
-
-// } else if (model instanceof Enemy enemy) {
-// if (enemy.getEnemyType() == CardType.BOSS) {
-// return spawner.spawnBossCharacter(id, enemy, observer, x, y);
-// } else {
-// return spawner.spawnEnemyCharacter(id, enemy, observer, x, y);
-// }
-
-// }
-// throw new IllegalArgumentException("Model type non supportato");
-// }
