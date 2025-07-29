@@ -5,13 +5,8 @@ import java.awt.Point;
 import java.util.Set;
 
 import javax.swing.JComponent;
-
-import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
-import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
-import it.unibo.oop.lastcrown.view.collision.api.HitboxPanel;
-import it.unibo.oop.lastcrown.view.collision.api.RadiusPanel;
 import it.unibo.oop.lastcrown.view.menu.api.Scene;
 
 /**
@@ -44,7 +39,7 @@ public interface MatchView extends Scene {
      */
     void addHeroGraphics(JComponent heroGraphics);
 
-    //HitboxController addEnemyGraphics(int id, JComponent component, int x, int y, String typefolder, String name);
+    HitboxController addEnemyGraphics(int id, JComponent component, int x, int y, String typefolder, String name);
 
     /**
      * Remove safely a graphic component associated with the specified id from the map.

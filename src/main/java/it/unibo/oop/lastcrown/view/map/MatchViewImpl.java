@@ -116,19 +116,23 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     }
 
 
-    // @Override
-    // public synchronized HitboxController addEnemyGraphics(final int id, final JComponent enemyGraphics, final int x, final int y, String typefolder, String name) {
-    //     this.newComponents.put(id, enemyGraphics);
-    //     final Dimension size = enemyGraphics.getPreferredSize();
-    //     enemyGraphics.setBounds(x - size.width / 2, y - size.height / 2, size.width, size.height);
+     @Override
+    public synchronized HitboxController addEnemyGraphics(final int id, final JComponent enemyGraphics, final int x, final int y, String typefolder, String name) {
+        this.newComponents.put(id, enemyGraphics);
+        final Dimension size = enemyGraphics.getPreferredSize();
+        enemyGraphics.setBounds(x, y, size.width, size.height);
 
-    //     final HitboxController hitboxcontroller= matchController.setupCharacter(enemyGraphics, typefolder, name, false, enemyGraphics.getX(), enemyGraphics.getY());
-    //     this.mainPanel.add(hitboxPanel.getHitboxPanel());
-    //     this.mainPanel.add(enemyGraphics);
-    //     this.mainPanel.setComponentZOrder(enemyGraphics, 1);
-    //     this.mainPanel.repaint();
-    //     return hitboxcontroller;
-    // }
+        this.mainPanel.add(enemyGraphics);
+        this.mainPanel.setComponentZOrder(enemyGraphics, 1);
+
+        final HitboxController hitboxcontroller= matchController.setupCharacter(enemyGraphics, typefolder, name, false, enemyGraphics.getX(), enemyGraphics.getY());
+
+        this.mainPanel.add(hitboxcontroller.getHitboxPanel());
+        this.mainPanel.setComponentZOrder(hitboxcontroller.getHitboxPanel(), 1);
+
+        this.mainPanel.repaint();
+        return hitboxcontroller;
+    }
 
     @Override
     public synchronized void removeGraphicComponent(final int id) {
