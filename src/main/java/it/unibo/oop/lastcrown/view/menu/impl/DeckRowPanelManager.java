@@ -10,37 +10,42 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.scenes_utilities.CardsGridPanel;
 import it.unibo.oop.lastcrown.view.scenes_utilities.IconPanel;
 
+/**
+ * Classes that handle the deck panel of a DeckView.
+ */
 public final class DeckRowPanelManager {
-    
-    private final int CARD_CELL_SIZE = CardsGridPanel.getFixedCellSize();
 
-    private final DeckController deckController;
-    private final JPanel deckRowPanel;
+    private static final int CARD_CELL_SIZE = CardsGridPanel.getFixedCellSize();
+
     private final Runnable onDeckUpdated;
 
-    public DeckRowPanelManager(final DeckController deckController,
-                                final JPanel deckRowPanel,
-                                final int deckHeight,
-                                final Runnable onDeckUpdated) {
-        this.deckController = deckController;
-        this.deckRowPanel = deckRowPanel;
+    /**
+     * Construct a new DeckRowPanelManager.
+     * @param onDeckUpdated the action to perform on the deck update
+     */
+    public DeckRowPanelManager(final Runnable onDeckUpdated) {
         this.onDeckUpdated = onDeckUpdated;
     }
 
-    public void loadDeckIcons() {
-        deckRowPanel.removeAll();
+    /**
+     * Loads the icons that needs to be put in the deck panel.
+     * @param deckPanel the panel to modify
+     * @param deckController the deckController to use
+     */
+    public void loadDeckIcons(final JPanel deckPanel, final DeckController deckController) {
+        deckPanel.removeAll();
         for (final CardIdentifier card : deckController.getDeck()) {
             final IconPanel iconPanel = new IconPanel(card, false, false);
-            iconPanel.setPreferredSize(new Dimension(CARD_CELL_SIZE,CARD_CELL_SIZE));
+            iconPanel.setPreferredSize(new Dimension(CARD_CELL_SIZE, CARD_CELL_SIZE));
             iconPanel.addMouseListener(new MouseAdapter() {
                 @Override public void mouseClicked(final MouseEvent e) {
                     deckController.removeCard(card);
                     onDeckUpdated.run();
                 }
             });
-            deckRowPanel.add(iconPanel);
+            deckPanel.add(iconPanel);
         }
-        deckRowPanel.revalidate();
-        deckRowPanel.repaint();
+        deckPanel.revalidate();
+        deckPanel.repaint();
     }
 }

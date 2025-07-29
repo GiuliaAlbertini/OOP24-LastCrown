@@ -15,7 +15,6 @@ import javax.swing.border.EmptyBorder;
 
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
 import it.unibo.oop.lastcrown.controller.user.api.AccountController;
-import it.unibo.oop.lastcrown.model.user.api.Account;
 import it.unibo.oop.lastcrown.view.SceneName;
 import it.unibo.oop.lastcrown.view.scenes_utilities.BackButton;
 
@@ -48,16 +47,15 @@ public final class StatsView extends AbstractScene {
         statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
         statsPanel.setOpaque(false);
 
-        final Account account = accountController.getAccount();
-        statsPanel.add(createStatPanel("Coins",              String.valueOf(account.getCoins())));
+        statsPanel.add(createStatPanel("Coins",              String.valueOf(accountController.getAccount().getCoins())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        statsPanel.add(createStatPanel("Bosses Defeated",    String.valueOf(account.getBossesDefeated())));
+        statsPanel.add(createStatPanel("Bosses Defeated",    String.valueOf(accountController.getAccount().getBossesDefeated())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        statsPanel.add(createStatPanel("Games Played",       String.valueOf(account.getPlayedMatches())));
+        statsPanel.add(createStatPanel("Games Played",       String.valueOf(accountController.getAccount().getPlayedMatches())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        statsPanel.add(createStatPanel("Total Playtime (in minutes)",     String.format("%.2f", account.getPlaytime())));
+        statsPanel.add(createStatPanel("Total Playtime (in minutes)",     String.format("%.2f", accountController.getAccount().getPlaytime())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        statsPanel.add(createStatPanel("Bosses/Match Ratio", String.format("%.2f", account.computeBossesPerMatch())));
+        statsPanel.add(createStatPanel("Bosses/Match Ratio", String.format("%.2f", accountController.getAccount().computeBossesPerMatch())));
 
         final GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx   = 0;

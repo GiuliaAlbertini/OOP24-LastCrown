@@ -2,8 +2,11 @@ package it.unibo.oop.lastcrown.model.user.impl;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
@@ -67,7 +70,7 @@ public class DeckImpl implements Deck {
             LOG.warning("Cannot add non-hero " + card + " before selecting a hero");
             return;
         }
-        final Hero hero = completeCollection.getHero(heroId).orElse(null);
+        final Hero hero = getHeroInstance();
         if (hero == null) {
             LOG.warning("Hero details missing for " + heroId);
             return;
@@ -93,18 +96,6 @@ public class DeckImpl implements Deck {
     @Override
     public final CardIdentifier getHero() {
         return this.heroId;
-    }
-
-    /**
-     * Creates a new instance of {@link Deck}, initializing the first hero of the deck.
-     *
-     * @param userCollection the set of {@link CardIdentifier} of the user
-     * @return the deck created
-     */
-    public static Deck createDeck(final Set<CardIdentifier> userCollection) {
-        final Deck deck = new DeckImpl(userCollection);
-        deck.initHero();
-        return deck;
     }
 
     private CardIdentifier findFirstHero() {
@@ -133,9 +124,38 @@ public class DeckImpl implements Deck {
                     return false;
                 }
             });
-            heroId = newHero;
+            this.heroId = newHero;
             this.deck.add(newHero);
+            enforceLimits();
         }
+    }
+
+    private void enforceLimits() {
+        final Map<CardType, List<CardIdentifier>> byType = this.deck.stream()
+            .filter(c -> {
+                try {
+                    return c.type() != CardType.HERO;
+                } catch (final IllegalArgumentException e) {
+                    return false;
+                }
+            })
+            .collect(Collectors.groupingBy(CardIdentifier::type));
+        final Hero h = getHeroInstance();
+        byType.forEach((type, cards) -> {
+            final int limit = limitFor(type, h);
+            final int excess = cards.size() - limit;
+            if (excess > 0) {
+                cards.stream()
+                    .limit(excess)
+                    .forEach(card -> {
+                        this.deck.remove(card);
+                    });
+            }
+        });
+    }
+
+    private Hero getHeroInstance() {
+        return completeCollection.getHero(heroId).orElse(null);
     }
 
     private boolean withinLimit(final CardType type, final Hero hero) {
