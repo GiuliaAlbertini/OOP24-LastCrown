@@ -12,7 +12,7 @@ import it.unibo.oop.lastcrown.controller.user.api.DeckController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.user.api.Deck;
-import it.unibo.oop.lastcrown.model.user.impl.DeckImpl;
+import it.unibo.oop.lastcrown.model.user.impl.StandardDeckFactory;
 
 /**
  * Implementation of {@link DeckController}.
@@ -34,7 +34,7 @@ public class DeckControllerImpl implements DeckController {
      */
     public DeckControllerImpl(final Set<CardIdentifier> userCollection) {
         this.userCollection = new HashSet<>(userCollection);
-        this.deck = new DeckImpl(this.userCollection);
+        this.deck = StandardDeckFactory.createDeck(this.userCollection);
     }
 
     @Override
