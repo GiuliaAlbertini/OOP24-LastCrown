@@ -1,7 +1,10 @@
 package it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller;
 
+import java.util.Optional;
+
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
+import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.collision.impl.EnemyRadiusScanner;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
@@ -25,14 +28,14 @@ public final class StoppingHandler implements StateHandler {
     private boolean wait;
 
     /**
-     * @param eventFactory the factory used to create events for the character's
-     * state transitions
+     * @param eventFactory    the factory used to create events for the character's
+     *                        state transitions
      * @param matchController the match controller for game-wide interactions
-     * @param resolver the collision resolver for combat logic
-     * @param scanner the enemy radius scanner for detecting targets
+     * @param resolver        the collision resolver for combat logic
+     * @param scanner         the enemy radius scanner for detecting targets
      */
     public StoppingHandler(final EventFactory eventFactory, final MatchController matchController,
-                           final CollisionResolver resolver, final EnemyRadiusScanner scanner) {
+            final CollisionResolver resolver, final EnemyRadiusScanner scanner) {
         this.eventFactory = eventFactory;
         this.match = matchController;
         this.resolver = resolver;
@@ -42,13 +45,22 @@ public final class StoppingHandler implements StateHandler {
 
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
-                                 final int deltaTime) {
+            final int deltaTime) {
         final int charId = character.getId().number();
         final CardType characterType = character.getId().type();
 
         character.setNextAnimation(Keyword.STOP);
         character.showNextFrame();
 
+        final boolean isPlayer = character instanceof PlayableCharacterController;
+
+        //== caso TrupZone ==
+        if (isPlayer && isAtTroopZoneLimit(character)) {
+                handleCharacterTrupzone((PlayableCharacterController) character, queue, charId);
+                return CharacterState.STOPPED;
+        }
+
+        //== caso Ranged ==
         if (characterType == CardType.RANGED) {
             handleRangedCharacter(character, queue, charId);
             return CharacterState.STOPPED;
@@ -58,6 +70,7 @@ public final class StoppingHandler implements StateHandler {
         final boolean isBossFight = resolver.hasOpponentBossPartner(charId);
         final boolean isEngagedWithDead = match.isEngagedWithDead(charId) || match.isBossFightPartnerDead(charId);
 
+        //== caso enemy ==
         if (!isEngaged && wait && !isBossFight) {
             this.wait = false;
             queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
@@ -70,31 +83,60 @@ public final class StoppingHandler implements StateHandler {
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
             return CharacterState.COMBAT;
         }
+
     }
 
     /**
      * Handles the specific logic for RANGED characters in the STOPPED state.
+     *
      * @param character The character controller.
-     * @param queue The event queue.
-     * @param charId The ID of the character.
+     * @param queue     The event queue.
+     * @param charId    The ID of the character.
      */
-    private void handleRangedCharacter(final GenericCharacterController character, final EventQueue queue, final int charId) {
+    private void handleRangedCharacter(final GenericCharacterController character, final EventQueue queue,
+            final int charId) {
         if (match.isRangedFightPartnerDead(charId)) {
             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
         } else if (!resolver.hasOpponentRangedPartner(charId)) {
             match.getCharacterControllerById(charId)
-                 .filter(PlayableCharacterController.class::isInstance)
-                 .map(PlayableCharacterController.class::cast)
-                 .flatMap(scanner::scanForFollowEventForPlayer)
-                 .ifPresent(event -> {
-                     match.notifyCollisionObservers(event);
-                     queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
-                 });
+                    .filter(PlayableCharacterController.class::isInstance)
+                    .map(PlayableCharacterController.class::cast)
+                    .flatMap(scanner::scanForFollowEventForPlayer)
+                    .ifPresent(event -> {
+                        match.notifyCollisionObservers(event);
+                        queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
+                    });
             if (!queue.hasPendingEvents()) {
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
             }
         } else {
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
         }
+    }
+
+    private CharacterState handleCharacterTrupzone(final PlayableCharacterController player, final EventQueue queue,
+            final int charId) {
+
+        scanner.scanForFollowEventForPlayer(player)
+                .ifPresent(match::notifyCollisionObservers);
+        if (match.isPlayerEngaged(player.getId().number())) {
+            queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
+            return CharacterState.COMBAT;
+        } else if (resolver.hasOpponentBossPartner(player.getId().number())) {
+            queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+            return CharacterState.STOPPED;
+        }
+        queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+        return CharacterState.STOPPED;
+    }
+
+    private boolean isAtTroopZoneLimit(final GenericCharacterController player) {
+        Optional<HitboxController> hitboxController = match.getCharacterHitboxById(player.getId().number());
+        if (hitboxController.isPresent()) {
+            int limit = match.getMatchView().getTrupsZoneLimit() - hitboxController.get().getHitbox().getWidth();
+            int roundedLimit = limit + (5 - (limit % 5)) % 5;
+            return hitboxController.get().getHitbox().getPosition().x() == roundedLimit;
+        }
+        return false;
     }
 }
