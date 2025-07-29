@@ -176,8 +176,9 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
             this.traders.get(id).startCloseSequence();
             return;
         }
+        final int currentCoins = this.accManager.getAccount().getCoins();
         this.selection = Optional.of(new CardSelectionView(this.width, this.height,
-        id, cardType, ctrl, this));
+        id, cardType, ctrl, this, currentCoins));
         selection.get().setLocation(this.getLocation());
         selection.get().setVisible(true);
     }
@@ -188,6 +189,7 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
             final CardIdentifier ci = cardIdentifier.get();
             if (accManager.isBuyable(ci)) {
                 this.accManager.addCard(ci);
+                this.userColl = new ArrayList<>(this.accManager.getUserCollection());
                 this.sceneManager.updateUserCollectionUsers(this.accManager.getUserCollection());
                 this.selection.get().dispose();
                 this.traders.get(id).startApprovalSequence();
