@@ -128,17 +128,14 @@ public final class DeckView extends AbstractScene implements DeckViewInterface {
         deckRowPanel.repaint();
 
         deckRowManager = new DeckRowPanelManager(
-            deckController,
-            deckRowPanel,
-            cellSize,
             this::onDeckUpdated
         );
-        deckRowManager.loadDeckIcons();
+        this.deckRowManager.loadDeckIcons(this.deckRowPanel, this.deckController);
         refreshAvailableCardsGrid(Optional.empty());
     }
 
     private void onDeckUpdated() {
-        deckRowManager.loadDeckIcons();
+        this.deckRowManager.loadDeckIcons(deckRowPanel, this.deckController);
         refreshAvailableCardsGrid(currentFilter);
     }
 
@@ -179,34 +176,32 @@ public final class DeckView extends AbstractScene implements DeckViewInterface {
 
     @Override
     public void showRules() {
-        final Set<CardIdentifier> deck = deckController.getDeck();
-        if (deck.isEmpty()) {
-            final String title = "HOW TO BUILD A DECK";
-            final String message = """
-                To start building a deck you need to choose a hero first.\n
-                Once you choose a hero you can add other cards by clicking them in the panel in the bottom right.\n
-                Then just click the select button that appears on the detail panel located on the left to add them.\n
-                The limit of cards per type is determined by the hero.\n
-                To remove a card from the deck you can just click the card from the deck panel in the upper right.\n
-                An hero can't be removed.\n
-                In order to change the hero you need to select the new hero you want and it will be automatically switched.
-                """;
-            final JTextArea textArea = new JTextArea(message);
-            textArea.setWrapStyleWord(true);
-            textArea.setLineWrap(true);
-            textArea.setEditable(false);
-            textArea.setFocusable(false);
-            textArea.setFont(RULES_FONT);
-            final JScrollPane scroll = new JScrollPane(textArea);
-            scroll.setPreferredSize(new Dimension(RULES_MSG_WIDTH, RULES_MSG_HEIGHT));
+        final String title = "HOW TO BUILD A DECK";
+        final String message = """
+            To start building a deck you need to choose a hero first.\n
+            Once you choose a hero you can add other cards by clicking them in the panel in the bottom right.\n
+            Then just click the select button that appears on the detail panel located on the left to add them.\n
+            The limit of cards per type is determined by the hero.\n
+            To remove a card from the deck you can just click the card from the deck panel in the upper right.\n
+            An hero can't be removed.\n
+            In order to change the hero you need to select the new hero you want and it will be automatically switched.\n
+            The deck is automatically correct to respect the new hero.
+            """;
+        final JTextArea textArea = new JTextArea(message);
+        textArea.setWrapStyleWord(true);
+        textArea.setLineWrap(true);
+        textArea.setEditable(false);
+        textArea.setFocusable(false);
+        textArea.setFont(RULES_FONT);
+        final JScrollPane scroll = new JScrollPane(textArea);
+        scroll.setPreferredSize(new Dimension(RULES_MSG_WIDTH, RULES_MSG_HEIGHT));
 
-            JOptionPane.showMessageDialog(
-                SwingUtilities.getWindowAncestor(this),
-                scroll,
-                title,
-                JOptionPane.INFORMATION_MESSAGE
-        );
-        }
+        JOptionPane.showMessageDialog(
+            SwingUtilities.getWindowAncestor(this),
+            scroll,
+            title,
+            JOptionPane.INFORMATION_MESSAGE
+    );
     }
 
     private void refreshAvailableCardsGrid(final Optional<CardType> type) {
@@ -225,7 +220,7 @@ public final class DeckView extends AbstractScene implements DeckViewInterface {
         select.setFont(getResponsiveFont(Font.BOLD, SELECT_BTN_FONT_SIZE));
         select.addActionListener(e -> {
             deckController.addCard(card);
-            deckRowManager.loadDeckIcons();
+            deckRowManager.loadDeckIcons(this.deckRowPanel, this.deckController);
             refreshAvailableCardsGrid(currentFilter);
         });
 
