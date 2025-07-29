@@ -238,13 +238,15 @@ public class MainViewImpl extends JFrame implements MainView {
 
     private void updateDeckController(final Set<CardIdentifier> newSet) {
         final Set<CardIdentifier> currentDeck = this.deckController.getDeck();
-        final DeckController newDeckContr = new DeckControllerImpl(newSet);
-        final CardIdentifier hero = this.deckController.getHero();
-        newDeckContr.addCard(hero);
-        currentDeck.stream()
-               .filter(ci -> !ci.equals(hero))
-               .forEach(newDeckContr::addCard);
-        this.deckController = newDeckContr;
+        if (!currentDeck.isEmpty()) {   
+            final DeckController newDeckContr = new DeckControllerImpl(newSet);         
+            final CardIdentifier hero = this.deckController.getHero();
+            newDeckContr.addCard(hero);
+            currentDeck.stream()
+                .filter(ci -> !ci.equals(hero))
+                .forEach(newDeckContr::addCard);
+            this.deckController = newDeckContr;
+        }
     }
 
     private void setUpPanels() {
