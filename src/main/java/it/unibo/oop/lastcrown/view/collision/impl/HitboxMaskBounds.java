@@ -91,6 +91,7 @@ public final class HitboxMaskBounds {
         final int globalX = componentX + offsetX;
         final int globalY = componentY + offsetY;
         hitbox.setPosition(new Point2DImpl(globalX, globalY));
+        hitboxPanel.setPanelPosition(globalX, globalY);
         hitboxPanel.updatePanel();
     }
 
