@@ -53,9 +53,11 @@ public final class StatsView extends AbstractScene {
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         statsPanel.add(createStatPanel("Games Played",       String.valueOf(accountController.getAccount().getPlayedMatches())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        statsPanel.add(createStatPanel("Total Playtime (in minutes)",     String.format("%.2f", accountController.getAccount().getPlaytime())));
+        statsPanel.add(createStatPanel("Total Playtime (in minutes)", 
+            String.format("%.2f", accountController.getAccount().getPlaytime())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        statsPanel.add(createStatPanel("Bosses/Match Ratio", String.format("%.2f", accountController.getAccount().computeBossesPerMatch())));
+        statsPanel.add(createStatPanel("Bosses/Match Ratio", 
+            String.format("%.2f", accountController.getAccount().computeBossesPerMatch())));
 
         final GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx   = 0;
