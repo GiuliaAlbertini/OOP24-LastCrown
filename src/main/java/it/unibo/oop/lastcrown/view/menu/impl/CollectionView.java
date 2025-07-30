@@ -30,9 +30,9 @@ import it.unibo.oop.lastcrown.view.scenes_utilities.HideableScrollPane;
 public final class CollectionView extends AbstractScene implements ModifiableBackScene {
     private static final long serialVersionUID = 1L;
     private static final double DETAIL_RATIO = 0.30;
-    private static final int MIN_CELL_SIDE = 200;
     private static final int GRID_HGAP = 10;
     private static final int GRID_VGAP = 10;
+    private static final int GRID_COLUMNS = 5;
 
     private final transient CollectionController collectionController;
     private final transient SceneManager sceneManager;
@@ -45,7 +45,6 @@ public final class CollectionView extends AbstractScene implements ModifiableBac
     private final BackButton backButton;
 
     private final int detailWidth;
-    private int gridColumns = 5;
     private transient Optional<CardType> currentFilter = Optional.empty();
 
     private CollectionView(final SceneManager sceneManager,
@@ -57,7 +56,7 @@ public final class CollectionView extends AbstractScene implements ModifiableBac
 
         filterPanel = new FilterPanel(typeOpt -> loadCards(typeOpt, cardsOwned));
 
-        cardsGridPanel = CardsGridPanel.create(gridColumns, GRID_HGAP, GRID_VGAP);
+        cardsGridPanel = CardsGridPanel.create(GRID_COLUMNS, GRID_HGAP, GRID_VGAP);
         final var scrollPane = new HideableScrollPane(cardsGridPanel);
 
         rightContainer = new JPanel();
@@ -84,10 +83,6 @@ public final class CollectionView extends AbstractScene implements ModifiableBac
         }
         detailWidth = (int) Math.round(initWidth * DETAIL_RATIO);
         detailPanel.setPreferredSize(new Dimension(detailWidth, this.getHeight()));
-        final int availableW = initWidth - detailWidth;
-        gridColumns = Math.max(1,
-                (availableW + GRID_HGAP) / (MIN_CELL_SIDE + GRID_HGAP));
-        //cardsGridPanel.updateGridDimensions(availableW, MIN_CELL_SIDE);
 
         loadCards(this.currentFilter, cardsOwned);
     }
@@ -130,7 +125,7 @@ public final class CollectionView extends AbstractScene implements ModifiableBac
         currentFilter = type;
         final List<CardIdentifier> list = type.isPresent()
             ? collectionController.getCollectionByType(type.get())
-            : collectionController.getCompleteCollection().getCompleteCollectionAsSet();
+            : collectionController.getCompleteCollection().getCompleteCollectionAsList();
         cardsGridPanel.loadCards(Collections.unmodifiableList(list), 
             card -> detailPanel.showCard(card, detailWidth), cardsOwned);
     }
