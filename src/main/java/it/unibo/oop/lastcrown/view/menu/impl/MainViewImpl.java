@@ -238,8 +238,8 @@ public class MainViewImpl extends JFrame implements MainView {
 
     private void updateDeckController(final Set<CardIdentifier> newSet) {
         final Set<CardIdentifier> currentDeck = this.deckController.getDeck();
-        if (!currentDeck.isEmpty()) {   
-            final DeckController newDeckContr = new DeckControllerImpl(newSet);         
+        if (!currentDeck.isEmpty()) {
+            final DeckController newDeckContr = new DeckControllerImpl(newSet);
             final CardIdentifier hero = this.deckController.getHero();
             newDeckContr.addCard(hero);
             currentDeck.stream()
