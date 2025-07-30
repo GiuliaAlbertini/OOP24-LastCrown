@@ -99,8 +99,7 @@ public class CompleteCollectionImpl implements CompleteCollection {
 
     @Override
     public final CompleteCollection getCompleteCollection() {
-        final var defensiveCopy = this;
-        return defensiveCopy;
+        return this;
     }
 
     @Override
@@ -156,7 +155,7 @@ public class CompleteCollectionImpl implements CompleteCollection {
     }
 
     @Override
-   public final List<CardIdentifier> getCompleteCollectionAsSet() {
+   public final List<CardIdentifier> getCompleteCollectionAsList() {
        return Collections.unmodifiableList(this.completeCollection);
     }
 
