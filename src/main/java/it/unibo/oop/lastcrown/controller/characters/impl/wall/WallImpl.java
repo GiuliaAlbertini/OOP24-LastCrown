@@ -9,6 +9,8 @@ import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.Wall;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.view.characters.CharacterHealthBar;
 
 /**
@@ -20,7 +22,7 @@ public final class WallImpl implements Wall {
     private final int maximumHealth;
     private int currentHealth;
     private final int attack;
-    private final int id;
+    private final CardIdentifier id;
     private boolean dead;
 
     /**
@@ -36,12 +38,17 @@ public final class WallImpl implements Wall {
         this.maximumHealth = health;
         this.currentHealth = health;
         this.attack = attack;
-        this.id = id;
+        this.id = new CardIdentifier(id, CardType.WALL);
+    }
+
+    @Override
+    public CardIdentifier getCardIdentifier() {
+        return this.id;
     }
 
     @Override
     public int getObserverId() {
-        return this.id;
+        return this.id.number();
     }
 
     @Override

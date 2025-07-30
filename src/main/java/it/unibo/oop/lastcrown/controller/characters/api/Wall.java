@@ -4,10 +4,18 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+
 /**
  * A defensive Wall that protects the Hero. When the Wall runs out its health, the bossfight will start.
  */
 public interface Wall extends CharacterHitObserver {
+
+    /**
+     * @return the CardIdentifier liked to this wall.
+     */
+    CardIdentifier getCardIdentifier();
+
     /**
      * @return the current attack value
      */
