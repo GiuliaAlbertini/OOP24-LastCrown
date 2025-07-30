@@ -58,7 +58,6 @@ public class MainControllerImpl implements MainController {
         final CollectionController collectionController = new CollectionControllerImpl();
         final DeckController deckController = new DeckControllerImpl(getUserCollection(accountController));
 
-
         //= new GameController(hero, boss, playableChars, enemies, spellsMap, 1400, 800);
         this.sceneManager = Optional.of(
             new SceneManagerImpl(
