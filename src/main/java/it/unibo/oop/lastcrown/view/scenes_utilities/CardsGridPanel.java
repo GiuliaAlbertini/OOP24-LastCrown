@@ -19,8 +19,7 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
  */
 public final class CardsGridPanel extends JPanel {
     private static final long serialVersionUID = 1L;
-
-    static final int FIXED_CELL_SIZE = (int)(Toolkit.getDefaultToolkit().getScreenSize().height * 0.2);
+    private static final int FIXED_CELL_SIZE = (int) (Toolkit.getDefaultToolkit().getScreenSize().height * 0.2);
 
     private final int columns;
     private final int hGap;
@@ -33,10 +32,23 @@ public final class CardsGridPanel extends JPanel {
         setLayout(new GridLayout(0, columns, hGap, vGap));
     }
 
+    /**
+     * Creates a new panel containing a grid of cards.
+     * @param initialColumns number of columns at the creation
+     * @param hGap gap to add to the height
+     * @param vGap gap to add in vertical
+     * @return the new panel
+     */
     public static CardsGridPanel create(final int initialColumns, final int hGap, final int vGap) {
         return new CardsGridPanel(initialColumns, hGap, vGap);
     }
 
+    /**
+     * Loads the cards to put in the grid.
+     * @param cards the list of cards to load
+     * @param cardClicked the action to perform when a card is clicked
+     * @param cardsOwned the card to be displayed using colored icon
+     */
     public void loadCards(final List<CardIdentifier> cards,
                         final Consumer<CardIdentifier> cardClicked,
                         final Set<CardIdentifier> cardsOwned) {
@@ -61,7 +73,7 @@ public final class CardsGridPanel extends JPanel {
             count++;
         }
         for (int i = count; i < rows * columns; i++) {
-            JPanel empty = new JPanel();
+            final JPanel empty = new JPanel();
             empty.setOpaque(false);
             empty.setPreferredSize(new Dimension(FIXED_CELL_SIZE, FIXED_CELL_SIZE));
             add(empty);
@@ -70,6 +82,10 @@ public final class CardsGridPanel extends JPanel {
         repaint();
     }
 
+    /**
+     * Getter for the fixed size of a cell.
+     * @return the requested size
+     */
     public static int getFixedCellSize() {
         return FIXED_CELL_SIZE;
     }
