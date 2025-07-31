@@ -37,8 +37,6 @@ import it.unibo.oop.lastcrown.model.characters.api.Hero;
 import it.unibo.oop.lastcrown.model.characters.api.PassiveEffect;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.model.characters.api.Requirement;
-import it.unibo.oop.lastcrown.model.characters.impl.enemy.EnemyImpl;
-import it.unibo.oop.lastcrown.model.characters.impl.playablecharacter.PlayableCharacterImpl;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionManager;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
@@ -76,7 +74,8 @@ public final class MatchControllerimpl implements MatchController {
     private final CollisionResolver collisionResolver;
     private int nextId = 1;
     private MatchView matchView;
-    private final Wall wall;
+    private final Hero hero;
+    private Wall wall;
     private final JTextArea eventWriter;
     private final JTextArea coinsWriter;
     private int coins;
@@ -88,6 +87,14 @@ public final class MatchControllerimpl implements MatchController {
     private static final int HITBOX_WIDTH = 10;
     private static final int HITBOX_HEIGHT = 10;
     private static final int DEFAULT_RADIUS = 200;
+    private HitboxController wallHitboxController = null;
+    /* spawner */
+    private int spawnTimer = 0;
+    private static final int SPAWN_INTERVAL = 5000;
+    private int roundIndex = 3;
+    private int enemyIndexInRound = 0;
+    private List<Integer> usedPositions = new ArrayList<>();
+
 
     // set di carte passate che l'utente gioca -> crea il complete collection e con
     // i getter prendi le carte
@@ -105,12 +112,14 @@ public final class MatchControllerimpl implements MatchController {
         this.frameWidth = frameWidth;
         final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
         this.collection = collectionController.getCompleteCollection();
-        final Hero hero = this.collection.getHero(heroId).get();
+        this.hero = this.collection.getHero(heroId).get();
         this.heroController = HeroControllerFactory.createHeroController(obs, generateUniqueCharacterId(), hero);
         heroController.attachCharacterAnimationPanel((int) (frameWidth * DimensionResolver.HERO.width()),
                 (int) (frameHeight * DimensionResolver.HERO.height()));
-        wall = WallFactory.createWall(hero.getWallAttack(), hero.getWallHealth(), 10, frameWidth / 2,
-                (int) (frameHeight * DimensionResolver.UTILITYZONE.height()));
+
+        this.wall = WallFactory.createWall(hero.getWallAttack(), hero.getWallHealth(), 10000, frameWidth / 2,
+                (int) (frameHeight * DimensionResolver.UTILITYZONE.height()), Optional.empty());
+
         final Font font = new Font("Calibri", Font.CENTER_BASELINE, 20);
         this.eventWriter = new JTextArea();
         this.eventWriter.setEditable(false);
@@ -131,9 +140,27 @@ public final class MatchControllerimpl implements MatchController {
         this.matchView.addHeroGraphics(this.heroController.getGraphicalComponent());
         this.heroController.setNextAnimation(Keyword.STOP);
         this.heroController.showNextFrame();
-        // spawnRandomEnemy(3);
-        spawn();
+        //spawnRandomEnemy(3);
+        //spawn();
+        createWallHitbox(matchView);
+    }
 
+    private void createWallHitbox(final MatchView matchView) {
+        final Point2D pos = new Point2DImpl(matchView.getWallCoordinates().getX(),
+                matchView.getWallCoordinates().getY());
+        final Hitbox wallHitbox = new HitboxImpl(matchView.getWallSize().width, matchView.getWallSize().height, pos);
+        final HitboxPanel wallHitboxPanel = new HitboxPanelImpl(wallHitbox);
+        this.wallHitboxController = new HitboxControllerImpl(wallHitbox, wallHitboxPanel, null);
+        this.wall.setHitbox(wallHitbox);
+        this.matchView.addWallPanel(wallHitboxController);
+    }
+
+    public Wall getWall() {
+        return this.wall;
+    }
+
+    public HitboxController getWallHitboxController() {
+        return this.wallHitboxController;
     }
 
     @Override
@@ -163,6 +190,20 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public void update(final int deltaTime) {
+
+        spawnTimer += deltaTime;
+        List<List<Enemy>> allEnemies = collectionController.getEnemies();
+        if (roundIndex < allEnemies.size()) {
+            List<Enemy> currentRound = allEnemies.get(roundIndex);
+
+            if (spawnTimer >= SPAWN_INTERVAL && enemyIndexInRound < currentRound.size()) {
+                spawnRandomEnemy(currentRound.get(enemyIndexInRound), enemyIndexInRound, currentRound.size() );
+                enemyIndexInRound++;
+                spawnTimer = 0;
+            }
+
+        }
+
         for (final CharacterFSM fsm : new ArrayList<>(playerFSMs.values())) {
             fsm.update(deltaTime);
         }
@@ -191,18 +232,11 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public void removeCharacterCompletelyById(final int characterId) {
+        final GenericCharacterController controller = getCharacterControllerById(characterId).get();
+        this.matchView.removeGraphicComponent(characterId);
+        charactersController.remove(characterId, controller);
+        hitboxControllers.remove(characterId,controller);
         playerFSMs.remove(characterId);
-
-        final GenericCharacterController controller = charactersController.remove(characterId);
-        if (controller == null) {
-            return;
-        }
-
-        final HitboxController hitbox = hitboxControllers.remove(controller);
-        if (hitbox != null) {
-            hitbox.setVisibile(false);
-            hitbox.removeFromPanel();
-        }
     }
 
     private int generateUniqueCharacterId() {
@@ -280,6 +314,7 @@ public final class MatchControllerimpl implements MatchController {
      * @param characterId l'ID del personaggio da sganciare.
      * @return true se è stato trovato e rimosso un engagement.
      */
+
     public boolean releaseEngagementFor(final int characterId) {
         EnemyEngagement toRemove = null;
         synchronized (engagedEnemies) {
@@ -319,9 +354,11 @@ public final class MatchControllerimpl implements MatchController {
         if (isPlayerEngaged(characterId)) {
             int enemy = getEngagedCounterpart(characterId);
             if (enemy != -1) {
-                GenericCharacterController enemycontroller = getCharacterControllerById(enemy).get();
-                if (enemycontroller.isDead()) {
-                    return true;
+                Optional<GenericCharacterController> enemycontroller = getCharacterControllerById(enemy);
+                if (enemycontroller.isPresent()) {
+                    if (enemycontroller.get().isDead()) {
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -330,9 +367,11 @@ public final class MatchControllerimpl implements MatchController {
             if (isEnemyEngaged(characterId)) {
                 int character = getEngagedCounterpart(characterId);
                 if (character != -1) {
-                    GenericCharacterController charactercontroller = getCharacterControllerById(character).get();
-                    if (charactercontroller.isDead()) {
+                    Optional<GenericCharacterController> charactercontroller = getCharacterControllerById(character);
+                    if(charactercontroller.isPresent()){
+                        if (charactercontroller.get().isDead()) {
                         return true;
+                    }
                     }
                     return false;
                 }
@@ -368,7 +407,7 @@ public final class MatchControllerimpl implements MatchController {
         return false;
     }
 
-        @Override
+    @Override
     public boolean isPlayerStopped(final PlayableCharacterController player) {
         CharacterFSM fsm = this.playerFSMs.get(player.getId().number());
         if (fsm != null) {
@@ -377,14 +416,13 @@ public final class MatchControllerimpl implements MatchController {
         return false;
     }
 
-
     public CharacterState getCharacterState(final GenericCharacterController character) {
         for (Map.Entry<Integer, CharacterFSM> entry : playerFSMs.entrySet()) {
             final int id = entry.getKey();
             final CharacterFSM fsm = entry.getValue();
             final CharacterState state = fsm.getCurrentState();
 
-            System.out.println("Player ID: " + id + " | Stato: " + state);
+            System.out.println("Player ID: " + id +  "| tipo: " + character.getId().type() + " | Stato: " + state);
         }
 
         final int id = character.getId().number();
@@ -423,6 +461,7 @@ public final class MatchControllerimpl implements MatchController {
         GenericCharacterController controller = charactersController.get(enemyId);
         if (controller instanceof EnemyController enemyController) {
             if (enemyController.getId().type() != CardType.BOSS) {
+                //System.out.println("matchController" + enemyController.isDead() + "id: " +  enemyController.getId().number());
                 return controller.isDead();
             }
         }
@@ -457,7 +496,7 @@ public final class MatchControllerimpl implements MatchController {
         charactersController.put(id, controller);
         hitboxControllers.put(controller, hitboxController);
         playerFSMs.put(id, new CharacterFSM(controller, this, radiusScanner, this.collisionResolver));
-        System.out.println("id inserito in player" + id);
+        //System.out.println("id inserito in player" + id);
         // charactersController.put(n, controller);
         // hitboxControllers.put(controller, hitboxController);
         // playerFSMs.put(n, new CharacterFSM(controller, this, radiusScanner,
@@ -488,7 +527,7 @@ public final class MatchControllerimpl implements MatchController {
         final BufferedImage image = ImageLoader.getImage(path, (int) size.getWidth(), (int) size.getHeight());
         final HitboxMaskBounds bounds = new HitboxMaskBounds(hitbox, charComp, hitboxPanel);
         bounds.calculateHitboxCenter(image);
-        final HitboxController hitboxController = new HitboxControllerImpl(hitbox, hitboxPanel, bounds);
+        final HitboxController hitboxController = new HitboxControllerImpl(hitbox, hitboxPanel, Optional.of(bounds));
 
         if (isPlayable) {
             final Radius radius = new RadiusImpl(hitbox, DEFAULT_RADIUS);
@@ -519,87 +558,60 @@ public final class MatchControllerimpl implements MatchController {
         return this.eventWriter;
     }
 
-    // public void spawnRandomEnemy(int roundIndex) {
-    //     List<List<Enemy>> allEnemies = collectionController.getEnemies();
-    //     if (roundIndex < 0 || roundIndex > allEnemies.size()) {
-    //         throw new IllegalArgumentException("Round non valido: " + roundIndex);
-    //     }
-
-    //     final CharacterDeathObserver obs = id -> System.out.println("Nemico morto: " + id);
-    //     final List<Enemy> enemiesThisRound = allEnemies.get(roundIndex);
-
-    //     final int marginTop = 20;
-    //     final int marginBottom = (int) (frameHeight * DimensionResolver.UTILITYZONE.height());
-    //     final int availableHeight = (int) (frameHeight - marginBottom);
-    //     final int verticalSpace = availableHeight - marginTop - marginBottom;
-
-    //     final int spacing = verticalSpace / Math.max(enemiesThisRound.size(), 1); // evita divisione per 0
-    //     int currentY = marginTop;
-
-    //     for (Enemy enemy : enemiesThisRound) {
-    //         final EnemyController enemyController = EnemyControllerFactory.createEnemyController(
-    //                 obs, generateUniqueCharacterId(), enemy);
-    //         System.out.println("nomi dei personaggi" + enemy.getName() + enemyController.getId().number());
-
-    //         enemyController.attachCharacterAnimationPanel(
-    //                 (int) (frameWidth * DimensionResolver.CHAR.width()),
-    //                 (int) (frameHeight * DimensionResolver.CHAR.height()));
-
-    //         final int spawnX = frameWidth+700; // Fuori dallo schermo a destra
-    //         final int spawnY = 500;
-
-    //         currentY += spacing; // prepara Y per il prossimo nemico
-
-    //         final int enemyId = enemyController.getId().number();
-    //         final String typeFolder = enemyController.getId().type().name();
-    //         final String name = enemy.getName();
-
-    //         final HitboxController hitboxController = this.matchView.addEnemyGraphics(
-    //                 enemyId,
-    //                 enemyController.getGraphicalComponent(),
-    //                 spawnX, spawnY,
-    //                 typeFolder, name);
-
-    //         addCharacter(enemyId, enemyController, hitboxController);
-    //         this.eventWriter.setText("Nemico " + name + " è apparso!");
-    //     }
-    // }
-
-    public void spawn() {
+    public void spawnRandomEnemy(final Enemy enemy, int enemyIndex, int totalEnemies) {
         final CharacterDeathObserver obs = id -> System.out.println("Nemico morto: " + id);
 
-        final Enemy pipistrello = new EnemyImpl("Bat", 1, CardType.ENEMY, 23, 100,
-                0.3);
-
-        final EnemyController enemyController = EnemyControllerFactory.createEnemyController(obs,
-                generateUniqueCharacterId(), pipistrello);
+        final EnemyController enemyController = EnemyControllerFactory.createEnemyController(
+                obs, generateUniqueCharacterId(), enemy);
 
         enemyController.attachCharacterAnimationPanel(
                 (int) (frameWidth * DimensionResolver.CHAR.width()),
                 (int) (frameHeight * DimensionResolver.CHAR.height()));
 
-        final int spawnX;
-        final int spawnY;
-
-        // 1. Genera posizione randomica nella zona nemici
-        final Random rand = new Random();
-        final double randFactor = rand.nextDouble(); // numero tra 0.0 e 1.0
-
-        final int availableHeight = (int) (frameHeight *
-                DimensionResolver.ENEMIESZONE.height());
-        final int margin = 100;
-
-        spawnX = frameWidth; // Fuori dallo schermo a destra
-        spawnY = margin + (int) (randFactor * (availableHeight - 2 * margin));
+        final int spawnX = frameWidth; // Fuori dallo schermo a destra
+        int spawnY = generateRandomY(usedPositions, frameHeight);
+        usedPositions.add(spawnY); // registra la posizione usata
 
         final int enemyId = enemyController.getId().number();
         final String typeFolder = enemyController.getId().type().name();
-        final String name = "Bat";
+        final String name = enemy.getName();
 
-        final HitboxController hitboxController = this.matchView.addEnemyGraphics(generateUniqueCharacterId(),
-                enemyController.getGraphicalComponent(), spawnX, spawnY, typeFolder, name);
+        final HitboxController hitboxController = this.matchView.addEnemyGraphics(
+                enemyId,
+                enemyController.getGraphicalComponent(),
+                spawnX, spawnY,
+                typeFolder, name);
+
         addCharacter(enemyId, enemyController, hitboxController);
         this.eventWriter.setText("Nemico " + name + " è apparso!");
+    }
+
+
+    public int generateRandomY(List<Integer> usedPositions, int frameHeight) {
+        final int marginBottom = 300;
+        final int availableHeight = frameHeight - marginBottom;
+        final int minDistance = 40;
+        final Random rand = new Random();
+
+        int spawnY = 0;
+        int attempts = 0;
+
+        do {
+            spawnY = rand.nextInt(availableHeight + 1);
+            attempts++;
+            if (attempts > 10)
+                break; // evita loop infinito
+        } while (isTooClose(spawnY, usedPositions, minDistance));
+
+        return spawnY;
+    }
+
+    private boolean isTooClose(int candidate, List<Integer> positions, int minDistance) {
+        for (int pos : positions) {
+            if (Math.abs(candidate - pos) < minDistance)
+                return true;
+        }
+        return false;
     }
 
     public MatchView getMatchView() {
