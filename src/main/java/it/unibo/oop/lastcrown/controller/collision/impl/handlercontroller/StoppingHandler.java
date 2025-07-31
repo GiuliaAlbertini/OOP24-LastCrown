@@ -46,6 +46,7 @@ public final class StoppingHandler implements StateHandler {
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
             final int deltaTime) {
+
         final int charId = character.getId().number();
         final CardType characterType = character.getId().type();
 
@@ -53,6 +54,7 @@ public final class StoppingHandler implements StateHandler {
         character.showNextFrame();
 
         final boolean isPlayer = character instanceof PlayableCharacterController;
+
 
         //== caso TrupZone ==
         if (isPlayer && isAtTroopZoneLimit(character)) {
@@ -69,9 +71,9 @@ public final class StoppingHandler implements StateHandler {
         final boolean isEngaged = match.isPlayerEngaged(charId) || match.isEnemyEngaged(charId);
         final boolean isBossFight = resolver.hasOpponentBossPartner(charId);
         final boolean isEngagedWithDead = match.isEngagedWithDead(charId) || match.isBossFightPartnerDead(charId);
-
+        final boolean isWallFight= resolver.hasOpponentWallPartner(charId);
         //== caso enemy ==
-        if (!isEngaged && wait && !isBossFight) {
+        if (!isEngaged && wait && !isBossFight && !isWallFight) {
             this.wait = false;
             queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
             return CharacterState.IDLE;
@@ -119,7 +121,13 @@ public final class StoppingHandler implements StateHandler {
 
         scanner.scanForFollowEventForPlayer(player)
                 .ifPresent(match::notifyCollisionObservers);
-        if (match.isPlayerEngaged(player.getId().number())) {
+            final boolean isEngagedWithDead = match.isEngagedWithDead(charId) || match.isBossFightPartnerDead(charId);
+
+        if (isEngagedWithDead){
+            queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+            return CharacterState.STOPPED;
+        }
+        else if (match.isPlayerEngaged(player.getId().number())) {
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
             return CharacterState.COMBAT;
         } else if (resolver.hasOpponentBossPartner(player.getId().number())) {
@@ -135,7 +143,7 @@ public final class StoppingHandler implements StateHandler {
         if (hitboxController.isPresent()) {
             int limit = match.getMatchView().getTrupsZoneLimit() - hitboxController.get().getHitbox().getWidth();
             int roundedLimit = limit + (5 - (limit % 5)) % 5;
-            return hitboxController.get().getHitbox().getPosition().x() == roundedLimit;
+            return hitboxController.get().getHitbox().getPosition().x() >= roundedLimit;
         }
         return false;
     }
