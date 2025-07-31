@@ -35,9 +35,10 @@ public interface MatchView extends Scene {
 
     /**
      * Add a generic hero graphic component. The position is already known.
+     * @param id the numerical id of the hero graphic component
      * @param heroGraphics the generic hero graphic component
      */
-    void addHeroGraphics(JComponent heroGraphics);
+    void addHeroGraphics(int id, JComponent heroGraphics);
 
     HitboxController addEnemyGraphics(int id, JComponent component, int x, int y, String typefolder, String name);
 
