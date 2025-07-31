@@ -31,6 +31,7 @@ public final class EnemyRadiusScanner {
     private final MatchController matchController;
     private final CollisionResolver resolver;
 
+
     public EnemyRadiusScanner(final Map<GenericCharacterController, HitboxController> hitboxControllers,
             final MatchController matchController, final CollisionResolver resolver) {
         this.hitboxControllers = hitboxControllers;
@@ -68,7 +69,6 @@ public final class EnemyRadiusScanner {
 
         final Hitbox closestEnemyHitbox = closestEnemyOpt.get();
         final GenericCharacterController enemy = hitboxToEnemyMap.get(closestEnemyHitbox);
-
         if (enemy == null) {
             return Optional.empty();
         }
@@ -77,6 +77,28 @@ public final class EnemyRadiusScanner {
         determineAndCreateCollisionEvent(events, player, enemy);
 
         return events.isEmpty() ? Optional.empty() : Optional.of(events.get(0));
+    }
+
+    public Optional<CollisionEvent> scanForWallCollision(final GenericCharacterController enemy) {
+        final Optional<HitboxController> hitboxController = matchController.getCharacterHitboxById(enemy.getId().number());
+        if (hitboxController.isPresent()) {
+            final Hitbox enemyHitbox = hitboxController.get().getHitbox();
+            final int enemyX = (int)enemyHitbox.getPosition().x();
+            final int wallX = (int)matchController.getMatchView().getWallCoordinates().getX();
+            final int wallWidth = matchController.getWall().getHitbox().get().getWidth();
+            final int wallBoundary = wallX + wallWidth;
+            final int roundedLimit = wallBoundary + (2 - (wallBoundary % 2)) % 2;
+            if (enemyX <= roundedLimit) {
+                //dato che il muro non è un generic non posso usare createevents perchè usa hitboxControllers
+                final Collidable wall = new CollidableImpl(matchController.getWall().getHitbox().get(), matchController.getWall().getCardIdentifier());
+                final Collidable enemyCol = new CollidableImpl(enemyHitbox, enemy.getId());
+                final CollisionEvent event = new CollisionEventImpl(EventType.WALL, wall, enemyCol);
+                final List<CollisionEvent> events = new ArrayList<>();
+                events.add(event);
+                return Optional.of(event);
+            }
+        }
+        return Optional.empty();
     }
 
     /**
@@ -156,9 +178,6 @@ public final class EnemyRadiusScanner {
                     createAndAddEvent(events, player, regularEnemy, EventType.RANGED);
                 }
             } else {
-                System.out.println("personaggio dentro a enemyscanner" + playerId);
-                System.out.println("characterstate personaggio " + matchController.getCharacterState(player));
-
                 if (!regularEnemy.isInCombat() && matchController.isPlayerIdle(player)
                         && !matchController.isEnemyDead(enemyId)) {
                     synchronized (regularEnemy) {
@@ -167,16 +186,16 @@ public final class EnemyRadiusScanner {
                             createAndAddEvent(events, player, regularEnemy, EventType.ENEMY);
                         }
                     }
-                } else if (isAtTroopZoneLimit(player)) { //caso borzerzone
-                        if (!regularEnemy.isInCombat() && matchController.isPlayerStopped(player)
-                                && !matchController.isEnemyDead(enemyId)) {
-                            synchronized (regularEnemy) {
-                                boolean engaged = matchController.engageEnemy(enemyId, playerId);
-                                if (engaged) {
-                                    createAndAddEvent(events, player, regularEnemy, EventType.ENEMY);
-                                }
+                } else if (isAtTroopZoneLimit(player)) { // caso borzerzone
+                    if (!regularEnemy.isInCombat() && matchController.isPlayerStopped(player)
+                            && !matchController.isEnemyDead(enemyId)) {
+                        synchronized (regularEnemy) {
+                            boolean engaged = matchController.engageEnemy(enemyId, playerId);
+                            if (engaged) {
+                                createAndAddEvent(events, player, regularEnemy, EventType.ENEMY);
                             }
                         }
+                    }
                 }
             }
         }
@@ -212,7 +231,7 @@ public final class EnemyRadiusScanner {
             int limit = matchController.getMatchView().getTrupsZoneLimit()
                     - hitboxController.get().getHitbox().getWidth();
             int roundedLimit = limit + (5 - (limit % 5)) % 5;
-            return hitboxController.get().getHitbox().getPosition().x() == roundedLimit;
+            return hitboxController.get().getHitbox().getPosition().x() >= roundedLimit;
         }
         return false;
     }
