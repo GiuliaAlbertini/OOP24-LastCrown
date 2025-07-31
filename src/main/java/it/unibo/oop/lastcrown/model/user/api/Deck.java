@@ -30,11 +30,6 @@ public interface Deck {
     void removeCard(CardIdentifier card);
 
     /**
-     * Initializes the first hero to use.
-     */
-    void initHero();
-
-    /**
      * Getter for the current hero.
      * @return the {@link CardIdentifier} of the requested hero
      */

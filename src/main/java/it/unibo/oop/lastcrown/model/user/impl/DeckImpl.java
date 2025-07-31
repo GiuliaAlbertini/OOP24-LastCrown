@@ -35,16 +35,6 @@ public class DeckImpl implements Deck {
     }
 
     @Override
-    public final void initHero() {
-        this.heroId = findFirstHero();
-        if (heroId != null) {
-            this.deck.add(heroId);
-        } else {
-            LOG.warning("No hero in user collection; deck starts without a hero");
-        }
-    }
-
-    @Override
     public final Set<CardIdentifier> getDeck() {
         return Set.copyOf(this.deck);
     }
@@ -96,19 +86,6 @@ public class DeckImpl implements Deck {
     @Override
     public final CardIdentifier getHero() {
         return this.heroId;
-    }
-
-    private CardIdentifier findFirstHero() {
-        return this.userCollection.stream()
-            .filter(c -> {
-                try {
-                    return c.type() == CardType.HERO;
-                } catch (final IllegalArgumentException e) {
-                    return false;
-                }
-            })
-            .findFirst()
-            .orElse(null);
     }
 
     private boolean owns(final CardIdentifier card) {
