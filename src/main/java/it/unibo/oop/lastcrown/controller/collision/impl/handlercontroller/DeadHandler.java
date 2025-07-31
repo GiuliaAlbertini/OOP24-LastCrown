@@ -50,8 +50,8 @@ public final class DeadHandler implements StateHandler {
             if (character.getId().type() == CardType.BOSS) {
                 resolver.clearAllOpponentPairs();
             }
-            match.releaseEngagementFor(character.getId().number());
             match.removeCharacterCompletelyById(character.getId().number());
+            match.releaseEngagementFor(character.getId().number());
             resolver.clearEnemyCollision(character.getId().number());
             resolver.clearAllOpponentRangedPairs();
             resolver.clearBossFightPairById(character.getId().number());
