@@ -8,6 +8,7 @@ import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
+import it.unibo.oop.lastcrown.controller.characters.api.Wall;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.EventFactory;
@@ -46,25 +47,32 @@ public final class CombatHandler implements StateHandler {
 
         final boolean isPlayer = character instanceof PlayableCharacterController;
         if (isPlayer) {
-            if (match.isPlayerEngaged(character.getId().number())) {
+            if (match.isPlayerEngaged(character.getId().number())) { // nemico
                 opponentId = match.getEngagedCounterpart(character.getId().number());
-            } else if (resolver.hasOpponentBossPartner(character.getId().number())) {
+            } else if (resolver.hasOpponentBossPartner(character.getId().number())) { // boss
                 opponentId = resolver.getOpponentBossPartner(character.getId().number());
-            } else if (resolver.hasOpponentRangedPartner(character.getId().number())) {
+            } else if (resolver.hasOpponentRangedPartner(character.getId().number())) { // ranged
                 opponentId = resolver.getOpponentRangedPartner(character.getId().number());
-
             }
         } else {
             if (match.isEnemyEngaged(character.getId().number())) {
                 opponentId = match.getEngagedCounterpart(character.getId().number());
+            } else if (resolver.hasOpponentWallPartner(character.getId().number())) {
+                opponentId = resolver.getOpponentWallPartner(character.getId().number());
             } else {
                 opponentId = resolver.getOpponentBossPartner(character.getId().number());
             }
 
         }
 
-        // ti prendi il controller
-        final Optional<GenericCharacterController> opponentOpt = match.getCharacterControllerById(opponentId);
+        Optional<CharacterHitObserver> opponentOpt;
+
+        if (match.getWall().getCardIdentifier().number() == opponentId) {
+            opponentOpt = Optional.of(match.getWall());
+        } else {
+            opponentOpt = match.getCharacterControllerById(opponentId).map(c -> (CharacterHitObserver) c);
+        }
+
         if (opponentOpt.isEmpty()) {
             if (character.getId().type() != CardType.RANGED) {
                 return CharacterState.IDLE;
@@ -73,7 +81,7 @@ public final class CombatHandler implements StateHandler {
             }
         }
 
-        final GenericCharacterController opponent = opponentOpt.get();
+        final CharacterHitObserver opponent = opponentOpt.get();
         if (isPlayer) {
             // === COMBATTIMENTO GIOCATORE ===
             if (opponent.isDead()) {
@@ -95,6 +103,12 @@ public final class CombatHandler implements StateHandler {
             } else {
                 setupCombat(character, opponent);
 
+                // Se il nemico combatte il muro, anche il muro deve combattere
+                if (opponent instanceof Wall wall) {
+                    combatWall(wall, opponent);
+                }
+
+
                 queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
                 return CharacterState.COMBAT;
             }
@@ -103,7 +117,7 @@ public final class CombatHandler implements StateHandler {
         return CharacterState.COMBAT;
     }
 
-    private void setupCombat(GenericCharacterController character, GenericCharacterController opponent) {
+    private void setupCombat(GenericCharacterController character, CharacterHitObserver opponent) {
         if (character.getId().type() == CardType.BOSS && character instanceof BossController boss) {
             List<Integer> personaggi = resolver.getAllCharacterIdsInBossFight();
             boss.setOpponents(getCharactersFromIds(personaggi));
@@ -113,6 +127,14 @@ public final class CombatHandler implements StateHandler {
 
         character.setNextAnimation(Keyword.ATTACK);
         character.showNextFrame();
+
+    }
+
+    private void combatWall(Wall wall,  CharacterHitObserver enemy){
+        List<Integer> enemies = resolver.getAllCharacterIdsInWallFight();
+        wall.addOpponents(getCharactersFromIds(enemies));
+        wall.doAttack();
+
     }
 
     private List<CharacterHitObserver> getCharactersFromIds(final List<Integer> ids) {
