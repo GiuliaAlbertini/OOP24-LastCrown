@@ -90,6 +90,7 @@ public final class IdleHandler implements StateHandler {
      * @return The next character state.
      */
     private CharacterState handlePlayerIdleLogic(final PlayableCharacterController player, final EventQueue queue) {
+
         if (isAtTroopZoneLimit(player)) {
             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
             return CharacterState.STOPPED;
@@ -116,13 +117,15 @@ public final class IdleHandler implements StateHandler {
      * @return The next character state.
      */
     private CharacterState handleEnemyIdleLogic(final GenericCharacterController enemy, final EventQueue queue) {
+        scanner.scanForWallCollision(enemy).ifPresent(matchController::notifyCollisionObservers);
+
         if (matchController.isEnemyDead(enemy.getId().number())) {
             queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
             return CharacterState.DEAD;
         } else {
 
             final boolean collision = resolver.wasEnemyCollided(enemy.getId().number());
-            if (collision || resolver.hasOpponentBossPartner(enemy.getId().number())) {
+            if (collision || resolver.hasOpponentBossPartner(enemy.getId().number()) || resolver.hasOpponentWallPartner(enemy.getId().number())) {
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                 return CharacterState.STOPPED;
                 //sono ingaggiatio ma il mio personaggio è al di là del muro
@@ -145,7 +148,7 @@ public final class IdleHandler implements StateHandler {
     if (hitboxController.isPresent()) {
         int limit = matchController.getMatchView().getTrupsZoneLimit() - hitboxController.get().getHitbox().getWidth();
         int roundedLimit = limit + (5 - (limit % 5)) % 5;
-        return hitboxController.get().getHitbox().getPosition().x() == roundedLimit;
+        return hitboxController.get().getHitbox().getPosition().x() >= roundedLimit;
     }
     return false;
 }
