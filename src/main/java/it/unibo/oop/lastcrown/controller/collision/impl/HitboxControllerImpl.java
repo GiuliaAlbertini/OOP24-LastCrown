@@ -1,4 +1,6 @@
 package it.unibo.oop.lastcrown.controller.collision.impl;
+import java.util.Optional;
+
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -17,7 +19,7 @@ import it.unibo.oop.lastcrown.view.collision.impl.HitboxMaskBounds;
 public final class HitboxControllerImpl implements HitboxController {
     private final Hitbox hitbox;
     private final HitboxPanel view;
-    private final HitboxMaskBounds bounds;
+    private final Optional<HitboxMaskBounds> bounds;
     private Radius radius;
     private RadiusPanel radiusPanel;
 
@@ -26,7 +28,7 @@ public final class HitboxControllerImpl implements HitboxController {
      * @param panel the visual panel displaying the hitbox
      * @param bounds the bounds calculator for positioning based on the mask
      */
-    public HitboxControllerImpl(final Hitbox hitbox, final HitboxPanel panel, final HitboxMaskBounds bounds) {
+    public HitboxControllerImpl(final Hitbox hitbox, final HitboxPanel panel, final Optional <HitboxMaskBounds> bounds) {
         this.hitbox = hitbox;
         this.view = panel;
         this.bounds = bounds;
@@ -36,7 +38,8 @@ public final class HitboxControllerImpl implements HitboxController {
     public void setnewPosition(final int x, final int y) {
         this.hitbox.setPosition(new Point2DImpl(x, y));
 
-        bounds.updateHitboxPosition(x, y);
+        bounds.ifPresent(b -> b.updateHitboxPosition(x, y));
+
         if (radiusPanel != null) {
             radiusPanel.updatePosition();
         }
@@ -65,7 +68,7 @@ public final class HitboxControllerImpl implements HitboxController {
 
     @Override
     public JPanel getRadiusPanel() {
-        return radiusPanel.getRadiusPanel();
+        return radiusPanel != null ? radiusPanel.getRadiusPanel() : null;
     }
 
     @Override
