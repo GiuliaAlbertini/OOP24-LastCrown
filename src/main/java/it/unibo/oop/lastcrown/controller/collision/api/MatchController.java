@@ -7,6 +7,7 @@ import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
+import it.unibo.oop.lastcrown.controller.characters.api.Wall;
 import it.unibo.oop.lastcrown.controller.collision.impl.EnemyEngagement;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
@@ -31,11 +32,6 @@ public interface MatchController {
 
     HitboxController setupCharacter(final JComponent charComp, final String typeFolder, final String name,
             final boolean isPlayable, int x, int y);
-    /**
-     * Called when the "Add Character" button is pressed in the UI.
-     * This method should handle the logic to initiate character addition.
-     */
-    // void onAddCharacterButtonPressed();
 
     /**
      * Updates the match model.
@@ -135,4 +131,8 @@ public interface MatchController {
     CharacterState getCharacterState(final GenericCharacterController character);
 
     MatchView getMatchView();
+
+    Wall getWall();
+
+    HitboxController getWallHitboxController();
 }
