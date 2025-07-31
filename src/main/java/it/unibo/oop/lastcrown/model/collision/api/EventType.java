@@ -23,5 +23,5 @@ public enum EventType {
     /**
      * Event triggered when any entity collides with a wall.
      */
-    WALL_COLLISION,
+    WALL,
 }
