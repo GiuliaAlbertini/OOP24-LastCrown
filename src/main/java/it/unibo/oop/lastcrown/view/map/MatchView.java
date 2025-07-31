@@ -26,23 +26,46 @@ public interface MatchView extends Scene {
 
     /**
      * Add a generic JComponent to the map, centered in the specified coordinates.
-     * @param id the numerical id of the new JComponent
+     *
+     * @param id        the numerical id of the new JComponent
      * @param component the generic JComponent
-     * @param x x coordinate
-     * @param y y coordinate
+     * @param x         x coordinate
+     * @param y         y coordinate
      */
     HitboxController addGenericGraphics(int id, JComponent component, int x, int y, String typefolder, String name);
 
     /**
      * Add a generic hero graphic component. The position is already known.
+     *
      * @param heroGraphics the generic hero graphic component
      */
     void addHeroGraphics(JComponent heroGraphics);
 
+    /**
+     * Adds the graphical representation of an enemy to the view at the specified
+     * position.
+     *
+     * @param id the unique identifier of the enemy
+     * @param component the graphical component representing the enemy
+     * @param x the X coordinate where the enemy should be placed
+     * @param y the Y coordinate where the enemy should be placed
+     * @param typefolder the folder name indicating the enemy type used for loading assets
+     * @param name the name of the enemy used for display and identification
+     * @return the HitboxController associated with the added enemy
+     */
     HitboxController addEnemyGraphics(int id, JComponent component, int x, int y, String typefolder, String name);
 
     /**
-     * Remove safely a graphic component associated with the specified id from the map.
+     * Adds a wall panel (obstacle) to the game view.
+     *
+     * @param panel the {@link HitboxController} representing the wall to be added
+     */
+    void addWallPanel(HitboxController panel);
+
+    /**
+     * Remove safely a graphic component associated with the specified id from the
+     * map.
+     *
      * @param id the id linked to the component to eliminate
      */
     void removeGraphicComponent(int id);

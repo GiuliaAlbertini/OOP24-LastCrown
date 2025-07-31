@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
@@ -134,16 +133,29 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         return hitboxcontroller;
     }
 
+    public void addWallPanel(HitboxController hitboxController){
+        this.mainPanel.add(hitboxController.getHitboxPanel());
+        this.mainPanel.setComponentZOrder(hitboxController.getHitboxPanel(), 1);
+        this.mainPanel.repaint();
+    }
+
     @Override
     public synchronized void removeGraphicComponent(final int id) {
-        SwingUtilities.invokeLater(() -> {
-            final var component = this.newComponents.get(id);
-            if (component != null) {
-                this.mainPanel.remove(this.newComponents.get(id));
-                this.mainPanel.repaint();
-                this.newComponents.remove(id);
-            }
-        });
+        final HitboxController hitboxcontroller = matchController.getCharacterHitboxById(id).get();
+        this.mainPanel.remove(hitboxcontroller.getHitboxPanel());
+
+        var radiusPanel = hitboxcontroller.getRadiusPanel();
+        if (radiusPanel != null){
+            this.mainPanel.remove(hitboxcontroller.getRadiusPanel());
+        }
+
+        final var component = this.newComponents.get(id);
+        if (component != null) {
+            this.mainPanel.remove(this.newComponents.get(id));
+            this.newComponents.remove(id);
+        }
+        this.mainPanel.repaint();
+
     }
 
     @Override
