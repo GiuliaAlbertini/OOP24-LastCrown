@@ -1,6 +1,9 @@
 package it.unibo.oop.lastcrown.controller.characters.impl.wall;
 
+import java.util.Optional;
+
 import it.unibo.oop.lastcrown.controller.characters.api.Wall;
+import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
 
 /**
  * Creates a Wall with the specified parameters.
@@ -17,7 +20,7 @@ public final class WallFactory {
      * @return a new Wall
      */
     public static Wall createWall(final int attack, final int health, final int id,
-     final int healthWidth, final int healthHeight) {
-        return new WallImpl(attack, health, id, healthWidth, healthHeight);
+     final int healthWidth, final int healthHeight, final Optional<Hitbox> hitbox) {
+        return new WallImpl(attack, health, id, healthWidth, healthHeight, hitbox);
     }
 }
