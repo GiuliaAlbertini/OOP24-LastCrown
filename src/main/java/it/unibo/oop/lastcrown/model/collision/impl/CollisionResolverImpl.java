@@ -26,6 +26,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
     private final Map<Integer, Integer> completedMeleeEngagements = new HashMap<>();
     private final MatchController matchController;
 
+    private final Set<Pair<Integer, Integer>> wallFightPairs = ConcurrentHashMap.newKeySet();
     private final Set<Pair<Integer, Integer>> bossFightPairs = ConcurrentHashMap.newKeySet();
     private final Set<Pair<Integer, Integer>> rangedEngagements = ConcurrentHashMap.newKeySet();
 
@@ -43,6 +44,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
             case ENEMY -> handleMeleeEngagement(event);
             case BOSS -> handleBossEngagement(event);
             case RANGED -> handleRangedEngagement(event);
+            case WALL -> handleWallEngagement(event);
             // default -> logger.warn("Evento collisione non gestito: {}", event.getType());
         }
     }
@@ -68,6 +70,13 @@ public final class CollisionResolverImpl implements CollisionResolver {
         final int characterId = event.getCollidable1().getCardidentifier().number();
         final int bossId = event.getCollidable2().getCardidentifier().number();
         bossFightPairs.add(new Pair<>(characterId, bossId));
+    }
+
+
+    private void handleWallEngagement(final CollisionEvent event) {
+        final int wallId = event.getCollidable1().getCardidentifier().number();
+        final int bossId = event.getCollidable2().getCardidentifier().number();
+        wallFightPairs.add(new Pair<>(wallId, bossId));
     }
 
     /**
@@ -113,6 +122,17 @@ public final class CollisionResolverImpl implements CollisionResolver {
     }
 
     @Override
+    public boolean hasOpponentWallPartner(final int id) {
+        for (final Pair<Integer, Integer> pair : wallFightPairs) {
+            if (pair.get1() == id || pair.get2() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    @Override
     public int getOpponentBossPartner(final int id) {
         for (final Pair<Integer, Integer> pair : bossFightPairs) {
             if (pair.get1() == id) {
@@ -123,6 +143,29 @@ public final class CollisionResolverImpl implements CollisionResolver {
         }
         return -1;
     }
+
+
+    @Override
+    public int getOpponentWallPartner(final int id) {
+        for (final Pair<Integer, Integer> pair : wallFightPairs) {
+            if (pair.get1() == id) {
+                return pair.get2();
+            } else if (pair.get2() == id) {
+                return pair.get1();
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public List<Integer> getAllCharacterIdsInWallFight() {
+        final Set<Integer> uniqueEnemyIds = new HashSet<>();
+        for (final Pair<Integer, Integer> pair : wallFightPairs) {
+            uniqueEnemyIds.add(pair.get2());
+        }
+        return new ArrayList<>(uniqueEnemyIds);
+    }
+
 
     @Override
     public List<Integer> getAllCharacterIdsInBossFight() {
