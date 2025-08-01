@@ -234,8 +234,9 @@ public final class MatchControllerimpl implements MatchController {
     public void removeCharacterCompletelyById(final int characterId) {
         final GenericCharacterController controller = getCharacterControllerById(characterId).get();
         this.matchView.removeGraphicComponent(characterId);
+        final HitboxController hitboxController= getCharacterHitboxById(characterId).get();
+        hitboxControllers.remove(controller,hitboxController);
         charactersController.remove(characterId, controller);
-        hitboxControllers.remove(characterId,controller);
         playerFSMs.remove(characterId);
     }
 
