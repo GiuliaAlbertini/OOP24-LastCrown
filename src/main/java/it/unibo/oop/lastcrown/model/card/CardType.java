@@ -16,11 +16,6 @@ public enum CardType {
     HERO("hero"),
 
     /**
-     * the Wall that defends the Hero and the ranged trups.
-     */
-    WALL("wall"),
-
-    /**
      * close combat friendly characters.
      */
     MELEE("melee"),
