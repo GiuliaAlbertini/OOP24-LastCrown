@@ -101,7 +101,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
 
     @Override
-    public synchronized void addHeroGraphics(final JComponent heroGraphics) {
+    public synchronized void addHeroGraphics(final int id, final JComponent heroGraphics) {
         final int cardZoneWidth = (int) (this.getPreferredSize().width * DimensionResolver.DECKZONE.width());
         final int posZoneWidth = (int) (this.getPreferredSize().width * DimensionResolver.POSITIONINGZONE.width());
         final int panelsHeight = this.getPreferredSize().height - (int) (this.getPreferredSize().height * DimensionResolver.UTILITYZONE.height());
@@ -112,6 +112,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         this.mainPanel.add(heroGraphics);
         this.mainPanel.setComponentZOrder(heroGraphics, 0);
         this.mainPanel.repaint();
+        this.newComponents.put(id, heroGraphics);
     }
 
 

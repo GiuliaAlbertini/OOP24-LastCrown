@@ -30,6 +30,8 @@ import it.unibo.oop.lastcrown.view.scenes_utilities.CardPanel;
  * that prompts a purchase confirmation dialog.
  */
 public final class CardSelectionView extends JFrame {
+    private static final Font LABEL_FONT = getResponsiveFont(Font.PLAIN, 24);
+    private static final Font TITLE_FONT = getResponsiveFont(Font.BOLD, 28);
     private static final int MAX_CARDS = 4;
     private static final long serialVersionUID = 1L;
     private static final int H_GAP = 10;
@@ -51,14 +53,14 @@ public final class CardSelectionView extends JFrame {
      * @param currentCoins 
      */
     public CardSelectionView(final int width, final int height, final int id, final CardType type,
-     final ShopCardsSelectionControllerImpl shopController, final ContainerObserver obs, int currentCoins) {
+     final ShopCardsSelectionControllerImpl shopController, final ContainerObserver obs, final int currentCoins) {
         this.setPreferredSize(new Dimension(width, height));
         this.setResizable(false);
         this.id = id;
         this.obs = obs;
         final JPanel header = initHeader(type, currentCoins);
         this.add(header, BorderLayout.NORTH);
-        
+
         final List<CardIdentifier> cards = shopController.getRandomCardsByType(type);
         final int maxCols = MAX_CARDS;
         final JPanel content = initContent(width, height, cards, maxCols);
@@ -90,17 +92,17 @@ public final class CardSelectionView extends JFrame {
         return content;
     }
 
-    private JPanel initHeader(final CardType type, int currentCoins) {
+    private JPanel initHeader(final CardType type, final int currentCoins) {
         final JPanel header = new JPanel(new BorderLayout());
         header.setBackground(HEADER_BG);
         final JLabel title = new JLabel(type.name().toUpperCase() + "'s shop", SwingConstants.CENTER);
-        title.setFont(getResponsiveFont(Font.BOLD, 28));
+        title.setFont(TITLE_FONT);
         title.setForeground(Color.YELLOW);
         header.add(title, BorderLayout.CENTER);
-        final JLabel coinsLbl = new JLabel("You have " + currentCoins + " coins", SwingConstants.RIGHT);
-        coinsLbl.setFont(getResponsiveFont(Font.PLAIN, 24));
-        coinsLbl.setForeground(Color.YELLOW);
-        header.add(coinsLbl, BorderLayout.EAST);
+        final JLabel coinsLabel = new JLabel("You have " + currentCoins + " coins", SwingConstants.RIGHT);
+        coinsLabel.setFont(LABEL_FONT);
+        coinsLabel.setForeground(Color.YELLOW);
+        header.add(coinsLabel, BorderLayout.EAST);
         return header;
     }
 

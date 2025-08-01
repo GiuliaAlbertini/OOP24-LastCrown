@@ -61,7 +61,7 @@ public class CollectionControllerImpl implements CollectionController {
 
     @Override
     public final List<CardIdentifier> getCollectionByType(final CardType type) {
-        return getCompleteCollection().getCompleteCollectionAsSet().stream()
+        return getCompleteCollection().getCompleteCollectionAsList().stream()
             .filter(card -> card.type().equals(type))
             .collect(Collectors.toList());
     }

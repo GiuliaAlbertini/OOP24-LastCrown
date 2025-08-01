@@ -137,7 +137,7 @@ public final class MatchControllerimpl implements MatchController {
 
     public void newMatchView(final MatchView matchView) {
         this.matchView = matchView;
-        this.matchView.addHeroGraphics(this.heroController.getGraphicalComponent());
+        this.matchView.addHeroGraphics(this.heroController.getId().number(), this.heroController.getGraphicalComponent());
         this.heroController.setNextAnimation(Keyword.STOP);
         this.heroController.showNextFrame();
         //spawnRandomEnemy(3);

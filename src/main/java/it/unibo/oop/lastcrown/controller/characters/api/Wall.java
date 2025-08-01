@@ -13,6 +13,7 @@ import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
  * the bossfight will start.
  */
 public interface Wall extends CharacterHitObserver {
+
     /**
      * @return the current attack value
      */

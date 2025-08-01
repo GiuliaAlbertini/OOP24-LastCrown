@@ -10,10 +10,7 @@ import it.unibo.oop.lastcrown.model.file_handling.api.ReadOnlyFileHandler;
  * 
  * @param <T> the type of object this handler reads and writes
  */
-public class ReadOnlyFileHandlerImpl<T>
-        extends BaseFileHandler<T>
-        implements ReadOnlyFileHandler<T> {
-
+public class ReadOnlyFileHandlerImpl<T> extends BaseFileHandler<T> implements ReadOnlyFileHandler<T> {
     /**
      * Constructs a new {@code ReadOnlyFileHandler}.
      * 

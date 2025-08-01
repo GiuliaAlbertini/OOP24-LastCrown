@@ -36,10 +36,11 @@ public interface MatchView extends Scene {
 
     /**
      * Add a generic hero graphic component. The position is already known.
+     * @param id the numerical id of the hero graphic component
      *
      * @param heroGraphics the generic hero graphic component
      */
-    void addHeroGraphics(JComponent heroGraphics);
+    void addHeroGraphics(int id, JComponent heroGraphics);
 
     /**
      * Adds the graphical representation of an enemy to the view at the specified

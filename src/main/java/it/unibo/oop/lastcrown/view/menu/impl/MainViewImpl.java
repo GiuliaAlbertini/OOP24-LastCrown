@@ -62,6 +62,7 @@ public class MainViewImpl extends JFrame implements MainView {
     private ModifiableBackScene collectionView;
     private final ShopView shopView;
     private MatchView matchView;
+    private boolean matchExist = false;
 
     /**
      * Constructs the main application window, initializes each scene,
@@ -183,9 +184,12 @@ public class MainViewImpl extends JFrame implements MainView {
         }
         this.shopView.notifyHidden();
         this.gameController.onMatchStart(WIDTH, HEIGHT, this.deckController.getHero(), this.collectionController);
-        this.matchView = new MatchViewImpl(this.sceneManager, this.gameController.getMatchControllerReference(),
-                WIDTH, HEIGHT, this.deckController.getDeck());
-        this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName().get());
+        if (!this.matchExist) {
+            this.matchView = new MatchViewImpl(this.sceneManager, this.gameController.getMatchControllerReference(),
+                    WIDTH, HEIGHT, this.deckController.getDeck());
+            this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName().get());
+            this.matchExist = true;
+        }
         this.matchView.updateInGameDeck(this.deckController.getDeck());
         this.gameController.getMatchView(matchView);
         AudioEngine.playSoundTrack(SoundTrack.BATTLE);
@@ -238,8 +242,8 @@ public class MainViewImpl extends JFrame implements MainView {
 
     private void updateDeckController(final Set<CardIdentifier> newSet) {
         final Set<CardIdentifier> currentDeck = this.deckController.getDeck();
-        if (!currentDeck.isEmpty()) {   
-            final DeckController newDeckContr = new DeckControllerImpl(newSet);         
+        if (!currentDeck.isEmpty()) {
+            final DeckController newDeckContr = new DeckControllerImpl(newSet);
             final CardIdentifier hero = this.deckController.getHero();
             newDeckContr.addCard(hero);
             currentDeck.stream()
