@@ -20,7 +20,7 @@ public final class HitboxControllerImpl implements HitboxController {
     private final Hitbox hitbox;
     private final HitboxPanel view;
     private final Optional<HitboxMaskBounds> bounds;
-    private Radius radius;
+    private Optional<Radius> radius;
     private RadiusPanel radiusPanel;
 
     /**
@@ -28,10 +28,11 @@ public final class HitboxControllerImpl implements HitboxController {
      * @param panel the visual panel displaying the hitbox
      * @param bounds the bounds calculator for positioning based on the mask
      */
-    public HitboxControllerImpl(final Hitbox hitbox, final HitboxPanel panel, final Optional <HitboxMaskBounds> bounds) {
+    public HitboxControllerImpl(final Hitbox hitbox, final HitboxPanel panel, final Optional <HitboxMaskBounds> bounds, final Optional<Radius> radius) {
         this.hitbox = hitbox;
         this.view = panel;
         this.bounds = bounds;
+        this.radius= Optional.ofNullable(radius).orElse(Optional.empty());
     }
 
     @Override
@@ -44,6 +45,11 @@ public final class HitboxControllerImpl implements HitboxController {
             radiusPanel.updatePosition();
         }
         //view.updatePanel();
+    }
+
+    @Override
+    public Optional<HitboxMaskBounds> getBounds() {
+        return this.bounds;
     }
 
     @Override
@@ -62,7 +68,7 @@ public final class HitboxControllerImpl implements HitboxController {
     }
 
     @Override
-    public Radius getRadius() {
+    public Optional<Radius> getRadius() {
         return this.radius;
     }
 
@@ -78,7 +84,7 @@ public final class HitboxControllerImpl implements HitboxController {
 
     @Override
     public void setRadius(final Radius radius) {
-        this.radius = radius;
+        this.radius = Optional.ofNullable(radius);
     }
 
     @Override

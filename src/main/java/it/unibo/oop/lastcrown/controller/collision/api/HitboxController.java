@@ -1,11 +1,14 @@
 package it.unibo.oop.lastcrown.controller.collision.api;
 
+import java.util.Optional;
+
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
 import it.unibo.oop.lastcrown.model.collision.api.Radius;
 import it.unibo.oop.lastcrown.view.collision.api.RadiusPanel;
+import it.unibo.oop.lastcrown.view.collision.impl.HitboxMaskBounds;
 
 /**
  * Controller interface for managing a hitbox and its graphical representation.
@@ -51,7 +54,7 @@ public interface HitboxController {
      *
      * @return the Radius object
      */
-    Radius getRadius();
+    Optional<Radius> getRadius();
 
     /**
      * Returns the panel used to display the radius.
@@ -78,4 +81,5 @@ public interface HitboxController {
      * Removes the hitbox and associated graphical elements from the UI.
      */
     void removeFromPanel();
+     Optional<HitboxMaskBounds> getBounds();
 }
