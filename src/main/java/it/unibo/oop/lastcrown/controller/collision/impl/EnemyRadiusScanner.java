@@ -56,11 +56,11 @@ public final class EnemyRadiusScanner {
         final Map<GenericCharacterController, HitboxController> currentHitboxStates = new HashMap<>(hitboxControllers);
         final List<Hitbox> enemyHitboxes = getAllEnemyHitboxes(currentHitboxStates);
         final Map<Hitbox, GenericCharacterController> hitboxToEnemyMap = mapHitboxesToEnemies(currentHitboxStates);
-        if (!playerHitboxController.getRadius().hasEnemyInRadius(enemyHitboxes)) {
+        if (!playerHitboxController.getRadius().get().hasEnemyInRadius(enemyHitboxes)) {
             return Optional.empty();
         }
 
-        final Optional<Hitbox> closestEnemyOpt = playerHitboxController.getRadius()
+        final Optional<Hitbox> closestEnemyOpt = playerHitboxController.getRadius().get()
                 .getClosestEnemyInRadius(enemyHitboxes);
         if (closestEnemyOpt.isEmpty()) {
 
