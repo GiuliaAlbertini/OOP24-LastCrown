@@ -60,7 +60,9 @@ public final class DeadHandler implements StateHandler {
             if (match.getWall().getCurrentHealth() <=0 && !match.hasBossInMap()){
                 if (!match.hasAnyEnemiesInMap()){
                     match.getRandomEnemyFromFirstList();
+                    match.setRadiusPlayerInMap();
                 }
+
             }
 
 

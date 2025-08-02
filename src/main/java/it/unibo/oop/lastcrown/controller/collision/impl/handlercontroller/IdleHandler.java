@@ -91,7 +91,7 @@ public final class IdleHandler implements StateHandler {
      */
     private CharacterState handlePlayerIdleLogic(final PlayableCharacterController player, final EventQueue queue) {
 
-        if (isAtTroopZoneLimit(player)) {
+        if (isAtTroopZoneLimit(player)  && !matchController.hasBossInMap()) {
             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
             return CharacterState.STOPPED;
         }

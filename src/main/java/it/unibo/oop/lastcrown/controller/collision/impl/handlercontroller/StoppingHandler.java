@@ -49,14 +49,19 @@ public final class StoppingHandler implements StateHandler {
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
             final int deltaTime) {
 
-        if (!match.hasBossInMap()) {
+        final boolean isPlayer = character instanceof PlayableCharacterController;
+        final boolean isBosshandle = resolver.hasOpponentBossPartner(character.getId().number());
+
+        if (!match.hasBossInMap()) { //se il boss non è nella mappa allora
             if (match.getWall().getCurrentHealth() <= 0) {
                 if (character.getId().type() == CardType.ENEMY) {
+                    //match.setIsBossPresent(true);;
                     final Movement movementCharacter = new Movement(ENEMY_SPEED, 0);
                     character.setNextAnimation(Keyword.RETREAT);
                     character.showNextFrameAndMove(movementCharacter);
                     match.updateCharacterPosition(character, movementCharacter.x(), movementCharacter.y());
 
+                    //aspetta che tutti i nemici siano andati via dalla mappa
                     if (match.isEnemyBeyondFrame(character.getId().number())) {
                         queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
                         return CharacterState.DEAD;
@@ -71,6 +76,8 @@ public final class StoppingHandler implements StateHandler {
                     return CharacterState.STOPPED;
                 }
             }
+        }else if (!isBosshandle){ //se il boss compare andate tutti in idle
+            match.setAllFSMsToState(CharacterState.IDLE);
         }
 
         final int charId = character.getId().number();
@@ -78,7 +85,9 @@ public final class StoppingHandler implements StateHandler {
         character.setNextAnimation(Keyword.STOP);
         character.showNextFrame();
 
-        final boolean isPlayer = character instanceof PlayableCharacterController;
+        //Stampo gli ingaggi
+        match.printEngagedEnemies();
+
 
         // == caso TrupZone ==
         if (isPlayer && isAtTroopZoneLimit(character)) {
@@ -92,12 +101,13 @@ public final class StoppingHandler implements StateHandler {
             return CharacterState.STOPPED;
         }
 
+
         final boolean isEngaged = match.isPlayerEngaged(charId) || match.isEnemyEngaged(charId);
         final boolean isBossFight = resolver.hasOpponentBossPartner(charId);
         final boolean isEngagedWithDead = match.isEngagedWithDead(charId) || match.isBossFightPartnerDead(charId);
         final boolean isWallFight = resolver.hasOpponentWallPartner(charId);
         // == caso enemy ==
-        System.out.println("vediamo un po" + !isEngaged + wait + !isBossFight + !isWallFight);
+        System.out.println("vediamo un po " + !isEngaged + wait + !isBossFight + !isWallFight);
         if (!isEngaged && wait && !isBossFight && !isWallFight) {
             this.wait = false;
             queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
@@ -155,8 +165,8 @@ public final class StoppingHandler implements StateHandler {
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
             return CharacterState.COMBAT;
         } else if (resolver.hasOpponentBossPartner(player.getId().number())) {
-            queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-            return CharacterState.STOPPED;
+            queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
+            return CharacterState.COMBAT;
         }
         queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
         return CharacterState.STOPPED;
