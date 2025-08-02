@@ -11,6 +11,7 @@ import it.unibo.oop.lastcrown.controller.characters.api.Wall;
 import it.unibo.oop.lastcrown.controller.collision.impl.EnemyEngagement;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.view.map.MatchView;
@@ -135,4 +136,11 @@ public interface MatchController {
     Wall getWall();
 
     HitboxController getWallHitboxController();
+    void setAllFSMsToState(final CharacterState newState);
+    boolean isEnemyBeyondFrame(final int enemyId);
+    int getHitboxControllersCount();
+    void getRandomEnemyFromFirstList();
+    boolean hasAnyEnemiesInMap();
+    boolean hasBossInMap();
+
 }

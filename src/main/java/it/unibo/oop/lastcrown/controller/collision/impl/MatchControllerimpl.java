@@ -16,12 +16,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
+import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.Wall;
+import it.unibo.oop.lastcrown.controller.characters.impl.boss.BossControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.enemy.EnemyControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.hero.HeroControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.playablecharacter.PlCharControllerFactory;
@@ -37,6 +39,7 @@ import it.unibo.oop.lastcrown.model.characters.api.Hero;
 import it.unibo.oop.lastcrown.model.characters.api.PassiveEffect;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.model.characters.api.Requirement;
+import it.unibo.oop.lastcrown.model.characters.impl.enemy.EnemyImpl;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionManager;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
@@ -91,7 +94,7 @@ public final class MatchControllerimpl implements MatchController {
     /* spawner */
     private int spawnTimer = 0;
     private static final int SPAWN_INTERVAL = 5000;
-    private int roundIndex = 3;
+    private int roundIndex = 1;
     private int enemyIndexInRound = 0;
     private List<Integer> usedPositions = new ArrayList<>();
 
@@ -162,6 +165,30 @@ public final class MatchControllerimpl implements MatchController {
     public HitboxController getWallHitboxController() {
         return this.wallHitboxController;
     }
+
+    //controllo se i nemici hanno superato la linea
+    public boolean isEnemyBeyondFrame(final int enemyId) {
+        for (var entry : hitboxControllers.entrySet()) {
+            final GenericCharacterController character = entry.getKey();
+            final HitboxController hitbox = entry.getValue();
+
+            if (character.getId().type() == CardType.ENEMY && character.getId().number() == enemyId) {
+                return hitbox.getHitbox().getPosition().x() > frameWidth;
+            }
+        }
+        return false;
+    }
+
+    //controllo se ci sono nemici nella mappa
+    public boolean hasAnyEnemiesInMap() {
+    for (var character : hitboxControllers.keySet()) {
+        if (character.getId().type() == CardType.ENEMY) {
+            return true; // Almeno un nemico trovato
+        }
+    }
+    return false; // Nessun nemico trovato
+}
+
 
     @Override
     public void updateCharacterPosition(final GenericCharacterController controller, final int dx, final int dy) {
@@ -520,11 +547,12 @@ public final class MatchControllerimpl implements MatchController {
     public HitboxController setupCharacter(final JComponent charComp, final String typeFolder, final String name,
             final boolean isPlayable, int x, int y) {
         final Dimension size = charComp.getPreferredSize();
-
+        System.out.println("vediamo se i parametri in setup vanno bene"+  typeFolder + name + charComp);
         final Hitbox hitbox = new HitboxImpl(HITBOX_WIDTH, HITBOX_HEIGHT, new Point2DImpl(x, y));
         final HitboxPanel hitboxPanel = new HitboxPanelImpl(hitbox);
 
         final String path = CharacterPathLoader.loadHitboxPath(typeFolder, name);
+        System.out.println("vediamo il percorso" + path);
         final BufferedImage image = ImageLoader.getImage(path, (int) size.getWidth(), (int) size.getHeight());
         final HitboxMaskBounds bounds = new HitboxMaskBounds(hitbox, charComp, hitboxPanel);
         bounds.calculateHitboxCenter(image);
@@ -582,9 +610,48 @@ public final class MatchControllerimpl implements MatchController {
                 enemyController.getGraphicalComponent(),
                 spawnX, spawnY,
                 typeFolder, name);
-
+        System.out.println("personaggio aggiunto" + enemyId + enemy.getName());
         addCharacter(enemyId, enemyController, hitboxController);
         this.eventWriter.setText("Nemico " + name + " è apparso!");
+    }
+
+
+    public void getRandomEnemyFromFirstList() {
+        final CharacterDeathObserver obs = id -> System.out.println("Nemico morto: " + id);
+
+        List<List<Enemy>> allEnemies = collectionController.getEnemies();
+
+        // if (allEnemies.isEmpty() || allEnemies.get(0).isEmpty()) {
+        //     return null; // oppure lancia un'eccezione, a seconda del tuo caso
+        // }
+
+
+        List<Enemy> bossList = allEnemies.get(0);
+        Random random = new Random();
+        int randomIndex = random.nextInt(bossList.size());
+
+        final Enemy boss = bossList.get(randomIndex);
+        final BossController bossController = BossControllerFactory.createBossController(obs, generateUniqueCharacterId(), boss);
+        //BossControllerFactory.createEnemyController(obs, generateUniqueCharacterId(), boss);
+        bossController.attachCharacterAnimationPanel(
+                (int) (frameWidth * DimensionResolver.BOSS.width()),
+                (int) (frameHeight * DimensionResolver.BOSS.height()));
+
+        final int spawnX = frameWidth; // Fuori dallo schermo a destra
+        int spawnY = frameHeight/10;
+
+        final int bossId = bossController.getId().number();
+        final String typeFolder = bossController.getId().type().name();
+        final String name = boss.getName();
+
+        final HitboxController hitboxController = this.matchView.addEnemyGraphics(
+                bossId,
+                bossController.getGraphicalComponent(),
+                spawnX, spawnY,
+                typeFolder, name);
+        addCharacter(bossId, bossController, hitboxController);
+
+        this.eventWriter.setText("Inizio BossFight!");
     }
 
 
@@ -615,7 +682,31 @@ public final class MatchControllerimpl implements MatchController {
         return false;
     }
 
+    //setto tutti i personaggi allo stato che voglio
+    public void setAllFSMsToState(final CharacterState newState) {
+        for (CharacterFSM fsm : playerFSMs.values()) {
+            fsm.setState(newState);
+        }
+    }
+
+
     public MatchView getMatchView() {
         return this.matchView;
     }
+
+
+    public int getHitboxControllersCount() {
+        return hitboxControllers.size();
+    }
+
+
+    public boolean hasBossInMap() {
+        for (GenericCharacterController controller : hitboxControllers.keySet()) {
+            if (controller.getId().type() == CardType.BOSS) {
+                return true; // Trovato almeno un boss
+            }
+        }
+        return false; // Nessun boss trovato
+    }
+
 }
