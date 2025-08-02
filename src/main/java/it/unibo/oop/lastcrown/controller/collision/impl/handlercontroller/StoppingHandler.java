@@ -14,6 +14,7 @@ import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.StateHan
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
+import it.unibo.oop.lastcrown.view.characters.api.Movement;
 
 /**
  * A StateHandler that handles the character's stopping state.
@@ -26,6 +27,7 @@ public final class StoppingHandler implements StateHandler {
     private final EnemyRadiusScanner scanner;
     private final MatchController match;
     private boolean wait;
+    private static final int ENEMY_SPEED = 2;
 
     /**
      * @param eventFactory    the factory used to create events for the character's
@@ -47,22 +49,44 @@ public final class StoppingHandler implements StateHandler {
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
             final int deltaTime) {
 
+        if (!match.hasBossInMap()) {
+            if (match.getWall().getCurrentHealth() <= 0) {
+                if (character.getId().type() == CardType.ENEMY) {
+                    final Movement movementCharacter = new Movement(ENEMY_SPEED, 0);
+                    character.setNextAnimation(Keyword.RETREAT);
+                    character.showNextFrameAndMove(movementCharacter);
+                    match.updateCharacterPosition(character, movementCharacter.x(), movementCharacter.y());
+
+                    if (match.isEnemyBeyondFrame(character.getId().number())) {
+                        queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
+                        return CharacterState.DEAD;
+                    }
+
+                    queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+                    return CharacterState.STOPPED;
+                } else {
+                    character.setNextAnimation(Keyword.STOP);
+                    character.showNextFrame();
+                    queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+                    return CharacterState.STOPPED;
+                }
+            }
+        }
+
         final int charId = character.getId().number();
         final CardType characterType = character.getId().type();
-
         character.setNextAnimation(Keyword.STOP);
         character.showNextFrame();
 
         final boolean isPlayer = character instanceof PlayableCharacterController;
 
-
-        //== caso TrupZone ==
+        // == caso TrupZone ==
         if (isPlayer && isAtTroopZoneLimit(character)) {
-                handleCharacterTrupzone((PlayableCharacterController) character, queue, charId);
-                return CharacterState.STOPPED;
+            handleCharacterTrupzone((PlayableCharacterController) character, queue, charId);
+            return CharacterState.STOPPED;
         }
 
-        //== caso Ranged ==
+        // == caso Ranged ==
         if (characterType == CardType.RANGED) {
             handleRangedCharacter(character, queue, charId);
             return CharacterState.STOPPED;
@@ -71,8 +95,9 @@ public final class StoppingHandler implements StateHandler {
         final boolean isEngaged = match.isPlayerEngaged(charId) || match.isEnemyEngaged(charId);
         final boolean isBossFight = resolver.hasOpponentBossPartner(charId);
         final boolean isEngagedWithDead = match.isEngagedWithDead(charId) || match.isBossFightPartnerDead(charId);
-        final boolean isWallFight= resolver.hasOpponentWallPartner(charId);
-        //== caso enemy ==
+        final boolean isWallFight = resolver.hasOpponentWallPartner(charId);
+        // == caso enemy ==
+        System.out.println("vediamo un po" + !isEngaged + wait + !isBossFight + !isWallFight);
         if (!isEngaged && wait && !isBossFight && !isWallFight) {
             this.wait = false;
             queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
@@ -121,13 +146,12 @@ public final class StoppingHandler implements StateHandler {
 
         scanner.scanForFollowEventForPlayer(player)
                 .ifPresent(match::notifyCollisionObservers);
-            final boolean isEngagedWithDead = match.isEngagedWithDead(charId) || match.isBossFightPartnerDead(charId);
+        final boolean isEngagedWithDead = match.isEngagedWithDead(charId) || match.isBossFightPartnerDead(charId);
 
-        if (isEngagedWithDead){
+        if (isEngagedWithDead) {
             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
             return CharacterState.STOPPED;
-        }
-        else if (match.isPlayerEngaged(player.getId().number())) {
+        } else if (match.isPlayerEngaged(player.getId().number())) {
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
             return CharacterState.COMBAT;
         } else if (resolver.hasOpponentBossPartner(player.getId().number())) {

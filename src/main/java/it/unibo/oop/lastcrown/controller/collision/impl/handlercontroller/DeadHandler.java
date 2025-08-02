@@ -56,6 +56,14 @@ public final class DeadHandler implements StateHandler {
             resolver.clearAllOpponentRangedPairs();
             resolver.clearBossFightPairById(character.getId().number());
             this.currentFrameIndex = 0;
+
+            if (match.getWall().getCurrentHealth() <=0 && !match.hasBossInMap()){
+                if (!match.hasAnyEnemiesInMap()){
+                    match.getRandomEnemyFromFirstList();
+                }
+            }
+
+
             return CharacterState.DEAD;
         }
         queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
