@@ -142,5 +142,7 @@ public interface MatchController {
     void getRandomEnemyFromFirstList();
     boolean hasAnyEnemiesInMap();
     boolean hasBossInMap();
+    void printEngagedEnemies();
+    void setRadiusPlayerInMap();
 
 }

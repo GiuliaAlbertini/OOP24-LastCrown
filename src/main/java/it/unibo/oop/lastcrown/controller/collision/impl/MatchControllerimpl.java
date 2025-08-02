@@ -89,7 +89,9 @@ public final class MatchControllerimpl implements MatchController {
     private final HeroController heroController;
     private static final int HITBOX_WIDTH = 10;
     private static final int HITBOX_HEIGHT = 10;
-    private static final int DEFAULT_RADIUS = 200;
+    private static final int DEFAULT_RADIUS = 250;
+    private static final int UPGRADE_RADIUS = 400;
+
     private HitboxController wallHitboxController = null;
     /* spawner */
     private int spawnTimer = 0;
@@ -97,6 +99,8 @@ public final class MatchControllerimpl implements MatchController {
     private int roundIndex = 1;
     private int enemyIndexInRound = 0;
     private List<Integer> usedPositions = new ArrayList<>();
+
+    private boolean isBoosPresent = false;
 
 
     // set di carte passate che l'utente gioca -> crea il complete collection e con
@@ -148,12 +152,26 @@ public final class MatchControllerimpl implements MatchController {
         createWallHitbox(matchView);
     }
 
+
+    public void printEngagedEnemies() {
+        if (engagedEnemies.isEmpty()) {
+            System.out.println("Nessun nemico ingaggiato.");
+            return;
+        }
+
+        System.out.println("Nemici ingaggiati:");
+        for (EnemyEngagement engagement : engagedEnemies) {
+            System.out.printf("- Nemico ID: %d, Giocatore ID: %d%n",
+                    engagement.enemyId(), engagement.playerId());
+        }
+}
+
     private void createWallHitbox(final MatchView matchView) {
         final Point2D pos = new Point2DImpl(matchView.getWallCoordinates().getX(),
                 matchView.getWallCoordinates().getY());
         final Hitbox wallHitbox = new HitboxImpl(matchView.getWallSize().width, matchView.getWallSize().height, pos);
         final HitboxPanel wallHitboxPanel = new HitboxPanelImpl(wallHitbox);
-        this.wallHitboxController = new HitboxControllerImpl(wallHitbox, wallHitboxPanel, null);
+        this.wallHitboxController = new HitboxControllerImpl(wallHitbox, wallHitboxPanel, null, null);
         this.wall.setHitbox(wallHitbox);
         this.matchView.addWallPanel(wallHitboxController);
     }
@@ -179,15 +197,28 @@ public final class MatchControllerimpl implements MatchController {
         return false;
     }
 
-    //controllo se ci sono nemici nella mappa
+    // controllo se ci sono nemici nella mappa
     public boolean hasAnyEnemiesInMap() {
-    for (var character : hitboxControllers.keySet()) {
-        if (character.getId().type() == CardType.ENEMY) {
-            return true; // Almeno un nemico trovato
+        for (var character : hitboxControllers.keySet()) {
+            if (character.getId().type() == CardType.ENEMY) {
+                return true; // Almeno un nemico trovato
+            }
+        }
+        return false; // Nessun nemico trovato
+    }
+
+
+    public void setRadiusPlayerInMap() {
+        for (Map.Entry<GenericCharacterController, HitboxController> entry : hitboxControllers.entrySet()) {
+            final GenericCharacterController character = entry.getKey();
+            final HitboxController hitboxController = entry.getValue();
+
+            if (character.getId().type() == CardType.MELEE) {
+                final Radius radius= hitboxController.getRadius().get();
+                radius.setRadius(UPGRADE_RADIUS);
+            }
         }
     }
-    return false; // Nessun nemico trovato
-}
 
 
     @Override
@@ -498,7 +529,7 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public void notifyClicked(int x, int y) {
-        if (!listCard.isEmpty()) {
+        if (!listCard.isEmpty() && !hasBossInMap()) {
             final Pair<String, PlayableCharacterController> selected = listCard.get(listCard.size() - 1);
             final int id = selected.get2().getId().number();
             final PlayableCharacterController playerController = selected.get2();
@@ -556,10 +587,11 @@ public final class MatchControllerimpl implements MatchController {
         final BufferedImage image = ImageLoader.getImage(path, (int) size.getWidth(), (int) size.getHeight());
         final HitboxMaskBounds bounds = new HitboxMaskBounds(hitbox, charComp, hitboxPanel);
         bounds.calculateHitboxCenter(image);
-        final HitboxController hitboxController = new HitboxControllerImpl(hitbox, hitboxPanel, Optional.of(bounds));
+        final HitboxController hitboxController = new HitboxControllerImpl(hitbox, hitboxPanel, Optional.of(bounds),null );
 
         if (isPlayable) {
             final Radius radius = new RadiusImpl(hitbox, DEFAULT_RADIUS);
+            hitboxController.setRadius(radius);
             final RadiusPanel radiusPanel = new RadiusPanelImpl(radius, bounds);
             hitboxController.setRadius(radius);
             hitboxController.setRadiusPanel(radiusPanel);
@@ -638,7 +670,7 @@ public final class MatchControllerimpl implements MatchController {
                 (int) (frameHeight * DimensionResolver.BOSS.height()));
 
         final int spawnX = frameWidth; // Fuori dallo schermo a destra
-        int spawnY = frameHeight/10;
+        int spawnY = frameHeight/8;
 
         final int bossId = bossController.getId().number();
         final String typeFolder = bossController.getId().type().name();
