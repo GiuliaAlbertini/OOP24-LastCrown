@@ -53,4 +53,12 @@ public final class CharacterFSM {
     public CharacterState getCurrentState() {
         return this.currentState;
     }
+
+
+    public CharacterState  setState(final CharacterState newState) {
+        this.currentState = newState;
+        this.eventQueue.clear(); // eventualmente svuota la coda di eventi
+        this.eventQueue.enqueue(this.eventFactory.createEvent(this.currentState));
+        return this.currentState;
+    }
 }
