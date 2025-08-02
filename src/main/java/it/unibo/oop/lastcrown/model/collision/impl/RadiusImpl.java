@@ -15,7 +15,7 @@ import it.unibo.oop.lastcrown.model.collision.api.Radius;
  */
 public final class RadiusImpl implements Radius {
     private final Hitbox origin;
-    private final double radius;
+    private double radius;
 
     /**
      * Constructs a new RadiusImpl with a specified hitbox as origin
@@ -84,5 +84,9 @@ public final class RadiusImpl implements Radius {
         final Point2D originCenter = origin.getCenter();
         // Controlla se il punto è nella metà destra del cerchio
         return target.x() >= originCenter.x();
+    }
+
+    public void setRadius(final double radius) {
+        this.radius = radius;
     }
 }

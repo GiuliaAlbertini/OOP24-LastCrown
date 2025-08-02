@@ -46,4 +46,6 @@ public interface Radius {
      * @return the radius as a double
      */
     double getRadius();
+
+    void setRadius(final double radius);
 }
