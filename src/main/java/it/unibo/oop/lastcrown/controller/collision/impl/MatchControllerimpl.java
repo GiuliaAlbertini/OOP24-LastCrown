@@ -39,7 +39,6 @@ import it.unibo.oop.lastcrown.model.characters.api.Hero;
 import it.unibo.oop.lastcrown.model.characters.api.PassiveEffect;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.model.characters.api.Requirement;
-import it.unibo.oop.lastcrown.model.characters.impl.enemy.EnemyImpl;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionManager;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
@@ -89,8 +88,12 @@ public final class MatchControllerimpl implements MatchController {
     private final HeroController heroController;
     private static final int HITBOX_WIDTH = 10;
     private static final int HITBOX_HEIGHT = 10;
-    private static final int DEFAULT_RADIUS = 250;
-    private static final int UPGRADE_RADIUS = 400;
+    private static final int DEFAULT_MELEE_RADIUS = 250;
+    private static final int DEFAULT_RANGED_RADIUS = 470;
+    private static final int DEFAULT_BOSS_RADIUS = 400;
+    private static final int UPGRADE_RADIUS_MELEE = 400;
+    private static final int UPGRADE_RADIUS_RANGED = 800;
+
 
     private HitboxController wallHitboxController = null;
     /* spawner */
@@ -99,8 +102,6 @@ public final class MatchControllerimpl implements MatchController {
     private int roundIndex = 1;
     private int enemyIndexInRound = 0;
     private List<Integer> usedPositions = new ArrayList<>();
-
-    private boolean isBoosPresent = false;
 
 
     // set di carte passate che l'utente gioca -> crea il complete collection e con
@@ -127,6 +128,8 @@ public final class MatchControllerimpl implements MatchController {
         this.wall = WallFactory.createWall(hero.getWallAttack(), hero.getWallHealth(), 10000, frameWidth / 2,
                 (int) (frameHeight * DimensionResolver.UTILITYZONE.height()), Optional.empty());
 
+
+
         final Font font = new Font("Calibri", Font.CENTER_BASELINE, 20);
         this.eventWriter = new JTextArea();
         this.eventWriter.setEditable(false);
@@ -144,9 +147,10 @@ public final class MatchControllerimpl implements MatchController {
 
     public void newMatchView(final MatchView matchView) {
         this.matchView = matchView;
-        this.matchView.addHeroGraphics(this.heroController.getId().number(), this.heroController.getGraphicalComponent());
+        HitboxController heroHitbox = this.matchView.addHeroGraphics(this.heroController.getId().number(), this.heroController.getGraphicalComponent(), this.heroController.getId().type().get(), this.hero.getName());
         this.heroController.setNextAnimation(Keyword.STOP);
         this.heroController.showNextFrame();
+        addCharacter(this.heroController.getId().number(), heroController, heroHitbox);
         //spawnRandomEnemy(3);
         //spawn();
         createWallHitbox(matchView);
@@ -208,6 +212,17 @@ public final class MatchControllerimpl implements MatchController {
     }
 
 
+    // controllo se ci sono nemici nella mappa
+    public boolean hasAnyPlayerInMap() {
+        for (var character : hitboxControllers.keySet()) {
+            if (character.getId().type() == CardType.MELEE) {
+                return true; // Almeno un nemico trovato
+            }
+        }
+        return false; // Nessun nemico trovato
+    }
+
+
     public void setRadiusPlayerInMap() {
         for (Map.Entry<GenericCharacterController, HitboxController> entry : hitboxControllers.entrySet()) {
             final GenericCharacterController character = entry.getKey();
@@ -215,7 +230,11 @@ public final class MatchControllerimpl implements MatchController {
 
             if (character.getId().type() == CardType.MELEE) {
                 final Radius radius= hitboxController.getRadius().get();
-                radius.setRadius(UPGRADE_RADIUS);
+                radius.setRadius(UPGRADE_RADIUS_MELEE);
+            }
+            if (character.getId().type() == CardType.RANGED){
+                final Radius radius= hitboxController.getRadius().get();
+                radius.setRadius(UPGRADE_RADIUS_RANGED);
             }
         }
     }
@@ -577,20 +596,25 @@ public final class MatchControllerimpl implements MatchController {
 
     public HitboxController setupCharacter(final JComponent charComp, final String typeFolder, final String name,
             final boolean isPlayable, int x, int y) {
+            System.out.println("il typefolder è " + typeFolder);
         final Dimension size = charComp.getPreferredSize();
-        System.out.println("vediamo se i parametri in setup vanno bene"+  typeFolder + name + charComp);
         final Hitbox hitbox = new HitboxImpl(HITBOX_WIDTH, HITBOX_HEIGHT, new Point2DImpl(x, y));
         final HitboxPanel hitboxPanel = new HitboxPanelImpl(hitbox);
 
         final String path = CharacterPathLoader.loadHitboxPath(typeFolder, name);
-        System.out.println("vediamo il percorso" + path);
         final BufferedImage image = ImageLoader.getImage(path, (int) size.getWidth(), (int) size.getHeight());
         final HitboxMaskBounds bounds = new HitboxMaskBounds(hitbox, charComp, hitboxPanel);
         bounds.calculateHitboxCenter(image);
         final HitboxController hitboxController = new HitboxControllerImpl(hitbox, hitboxPanel, Optional.of(bounds),null );
 
         if (isPlayable) {
-            final Radius radius = new RadiusImpl(hitbox, DEFAULT_RADIUS);
+            final double radiusValue = switch (typeFolder) {
+                case "MELEE" -> DEFAULT_MELEE_RADIUS;
+                case "RANGED" -> DEFAULT_RANGED_RADIUS;
+                default -> DEFAULT_BOSS_RADIUS;
+            };
+
+            final Radius radius = new RadiusImpl(hitbox, radiusValue);
             hitboxController.setRadius(radius);
             final RadiusPanel radiusPanel = new RadiusPanelImpl(radius, bounds);
             hitboxController.setRadius(radius);
@@ -670,7 +694,7 @@ public final class MatchControllerimpl implements MatchController {
                 (int) (frameHeight * DimensionResolver.BOSS.height()));
 
         final int spawnX = frameWidth; // Fuori dallo schermo a destra
-        int spawnY = frameHeight/8;
+        int spawnY = frameHeight/9;
 
         final int bossId = bossController.getId().number();
         final String typeFolder = bossController.getId().type().name();
@@ -735,10 +759,21 @@ public final class MatchControllerimpl implements MatchController {
     public boolean hasBossInMap() {
         for (GenericCharacterController controller : hitboxControllers.keySet()) {
             if (controller.getId().type() == CardType.BOSS) {
-                return true; // Trovato almeno un boss
+                return true; // Trovato almeno un bosse
             }
         }
         return false; // Nessun boss trovato
     }
+
+
+    public void printHitboxControllers() {
+        System.out.println("Mappa dei controller personaggio -> controller hitbox:");
+        hitboxControllers.forEach((character, hitbox) -> {
+            System.out.println("Personaggio: ID=" + character.getId().number() +
+                    ", Tipo=" + character.getId().type() +
+                    " -> Hitbox pos: " + hitbox.getHitbox().getPosition());
+        });
+    }
+
 
 }

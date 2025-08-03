@@ -144,5 +144,6 @@ public interface MatchController {
     boolean hasBossInMap();
     void printEngagedEnemies();
     void setRadiusPlayerInMap();
-
+    boolean hasAnyPlayerInMap();
+    void printHitboxControllers();
 }
