@@ -20,9 +20,21 @@ public interface Wall extends CharacterHitObserver {
     int getAttack();
 
     /**
+     * Sets the new value of the attack
+     * @param attack the new attack value
+     */
+    void changeAttackValue(int attack);
+
+    /**
      * @return the current health value
      */
     int getCurrentHealth();
+
+    /**
+     * Sets the new value of the maximum health
+     * @param health the new maximum health
+     */
+    void changeMaximumHealth(int health);
 
     /**
      * Returns the Hitbox associated with this entity, if present.

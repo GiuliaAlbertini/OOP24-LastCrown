@@ -21,9 +21,9 @@ import it.unibo.oop.lastcrown.view.characters.CharacterHealthBar;
 public final class WallImpl implements Wall {
     private final Map<Integer, CharacterHitObserver> opponents = new ConcurrentHashMap<>();
     private final CharacterHealthBar healthBar;
-    private final int maximumHealth;
+    private int maximumHealth;
     private int currentHealth;
-    private final int attack;
+    private int attack;
     private final CardIdentifier id;
     private boolean dead;
     private Optional<Hitbox> hitbox;
@@ -80,8 +80,18 @@ public final class WallImpl implements Wall {
     }
 
     @Override
+    public void changeAttackValue(int attack) {
+        this.attack = attack;
+    }
+
+    @Override
     public int getCurrentHealth() {
         return this.currentHealth;
+    }
+
+    @Override
+    public void changeMaximumHealth(int health) {
+        this.maximumHealth = health;
     }
 
     @Override
