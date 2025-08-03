@@ -79,6 +79,59 @@ public final class EnemyRadiusScanner {
         return events.isEmpty() ? Optional.empty() : Optional.of(events.get(0));
     }
 
+
+    //====HERO===
+    public Optional<CollisionEvent> scanForFollowEventForHero(final GenericCharacterController player) {
+        final HitboxController heroHitboxController = hitboxControllers.get(player); // hitbox player
+        if (heroHitboxController == null || heroHitboxController.getRadius() == null) {
+            return Optional.empty();
+        }
+
+        final Map<GenericCharacterController, HitboxController> currentHitboxStates = new HashMap<>(hitboxControllers);
+        final List<Hitbox> enemyHitboxes = getAllEnemyHitboxes(currentHitboxStates);
+        final Map<Hitbox, GenericCharacterController> hitboxToEnemyMap = mapHitboxesToEnemies(currentHitboxStates);
+        if (!heroHitboxController.getRadius().get().hasEnemyInRadius(enemyHitboxes)) {
+            return Optional.empty();
+        }
+
+        final Optional<Hitbox> closestEnemyOpt = heroHitboxController.getRadius().get()
+                .getClosestEnemyInRadius(enemyHitboxes);
+        if (closestEnemyOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        final Hitbox closestEnemyHitbox = closestEnemyOpt.get();
+        final GenericCharacterController enemy = hitboxToEnemyMap.get(closestEnemyHitbox);
+        if (enemy == null) {
+            return Optional.empty();
+        }
+
+        final List<CollisionEvent> events = new ArrayList<>();
+        if (enemy instanceof BossController boss) {
+            synchronized (boss) {
+                boolean alreadyInBossFight = resolver.hasOpponentBossPartner(player.getId().number());
+                if (!alreadyInBossFight) {
+                    final HitboxController enemyHitboxController = hitboxControllers.get(enemy);
+
+                    if (heroHitboxController != null && enemyHitboxController != null) {
+                        final Collidable bossCol = new CollidableImpl(heroHitboxController.getHitbox(),
+                                player.getId());
+                        final Collidable enemyCol = new CollidableImpl(enemyHitboxController.getHitbox(),
+                                enemy.getId());
+                        events.add(new CollisionEventImpl(EventType.BOSS, bossCol, enemyCol));
+                    }
+                }
+            }
+        }
+
+        return events.isEmpty() ? Optional.empty() : Optional.of(events.get(0));
+    }
+
+
+
+
+
+
     public Optional<CollisionEvent> scanForWallCollision(final GenericCharacterController enemy) {
         final Optional<HitboxController> hitboxController = matchController.getCharacterHitboxById(enemy.getId().number());
         if (hitboxController.isPresent()) {
