@@ -101,7 +101,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
 
     @Override
-    public synchronized void addHeroGraphics(final int id, final JComponent heroGraphics) {
+    public synchronized HitboxController addHeroGraphics(final int id, final JComponent heroGraphics, String typefolder, String name) {
         final int cardZoneWidth = (int) (this.getPreferredSize().width * DimensionResolver.DECKZONE.width());
         final int posZoneWidth = (int) (this.getPreferredSize().width * DimensionResolver.POSITIONINGZONE.width());
         final int panelsHeight = this.getPreferredSize().height - (int) (this.getPreferredSize().height * DimensionResolver.UTILITYZONE.height());
@@ -110,9 +110,16 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         heroGraphics.setBounds(cornerWidth, cornerHeight, heroGraphics.getPreferredSize().width,
                 heroGraphics.getPreferredSize().height);
         this.mainPanel.add(heroGraphics);
-        this.mainPanel.setComponentZOrder(heroGraphics, 0);
-        this.mainPanel.repaint();
         this.newComponents.put(id, heroGraphics);
+        this.mainPanel.setComponentZOrder(heroGraphics,1);
+
+        final HitboxController hitboxcontroller= matchController.setupCharacter(heroGraphics, typefolder, name, true, heroGraphics.getX(), heroGraphics.getY());
+        this.mainPanel.add(hitboxcontroller.getHitboxPanel());
+        this.mainPanel.add(hitboxcontroller.getRadiusPanel());
+        this.mainPanel.setComponentZOrder(hitboxcontroller.getHitboxPanel(), 1);
+        this.mainPanel.setComponentZOrder(hitboxcontroller.getRadiusPanel(), 1);
+        this.mainPanel.repaint();
+        return hitboxcontroller;
     }
 
 

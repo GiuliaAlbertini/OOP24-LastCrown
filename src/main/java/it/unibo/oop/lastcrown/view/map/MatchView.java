@@ -40,7 +40,7 @@ public interface MatchView extends Scene {
      *
      * @param heroGraphics the generic hero graphic component
      */
-    void addHeroGraphics(int id, JComponent heroGraphics);
+    HitboxController addHeroGraphics(int id, JComponent heroGraphics, String typefolder, String name);
 
     /**
      * Adds the graphical representation of an enemy to the view at the specified
