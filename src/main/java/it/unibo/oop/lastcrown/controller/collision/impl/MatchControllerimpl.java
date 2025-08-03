@@ -93,7 +93,8 @@ public final class MatchControllerimpl implements MatchController {
     private static final int DEFAULT_BOSS_RADIUS = 400;
     private static final int UPGRADE_RADIUS_MELEE = 400;
     private static final int UPGRADE_RADIUS_RANGED = 800;
-
+    private final MainController mainController;
+    private boolean bossActive;
 
     private HitboxController wallHitboxController = null;
     /* spawner */
@@ -110,7 +111,7 @@ public final class MatchControllerimpl implements MatchController {
     Requirement require = new Requirement("hero", 2);
     Optional<PassiveEffect> optionalEffect = Optional.of(new PassiveEffect("none", 0));
 
-    public MatchControllerimpl(final MainController controller,
+    public MatchControllerimpl(final MainController mainController,
             final int frameWidth,
             final int frameHeight,
             CardIdentifier heroId,
@@ -118,13 +119,13 @@ public final class MatchControllerimpl implements MatchController {
         this.collectionController = collectionController;
         this.frameHeight = frameHeight;
         this.frameWidth = frameWidth;
+        this.mainController = mainController;
         final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
         this.collection = collectionController.getCompleteCollection();
         this.hero = this.collection.getHero(heroId).get();
         this.heroController = HeroControllerFactory.createHeroController(obs, generateUniqueCharacterId(), hero);
         heroController.attachCharacterAnimationPanel((int) (frameWidth * DimensionResolver.HERO.width()),
                 (int) (frameHeight * DimensionResolver.HERO.height()));
-
         this.wall = WallFactory.createWall(hero.getWallAttack(), hero.getWallHealth(), 10000, frameWidth / 2,
                 (int) (frameHeight * DimensionResolver.UTILITYZONE.height()), Optional.empty());
 
@@ -340,7 +341,7 @@ public final class MatchControllerimpl implements MatchController {
                 }
                 engagedEnemies.add(new EnemyEngagement(enemyId, playerId));
                 setEnemyInCombat(enemyId, true);
-                System.out.println(engagedEnemies);
+                //System.out.println(engagedEnemies);
                 return true;
 
             } else {
@@ -596,7 +597,6 @@ public final class MatchControllerimpl implements MatchController {
 
     public HitboxController setupCharacter(final JComponent charComp, final String typeFolder, final String name,
             final boolean isPlayable, int x, int y) {
-            System.out.println("il typefolder è " + typeFolder);
         final Dimension size = charComp.getPreferredSize();
         final Hitbox hitbox = new HitboxImpl(HITBOX_WIDTH, HITBOX_HEIGHT, new Point2DImpl(x, y));
         final HitboxPanel hitboxPanel = new HitboxPanelImpl(hitbox);
@@ -666,21 +666,15 @@ public final class MatchControllerimpl implements MatchController {
                 enemyController.getGraphicalComponent(),
                 spawnX, spawnY,
                 typeFolder, name);
-        System.out.println("personaggio aggiunto" + enemyId + enemy.getName());
         addCharacter(enemyId, enemyController, hitboxController);
         this.eventWriter.setText("Nemico " + name + " è apparso!");
     }
 
 
-    public void getRandomEnemyFromFirstList() {
+    public void getRandomBossFromFirstList() {
         final CharacterDeathObserver obs = id -> System.out.println("Nemico morto: " + id);
 
         List<List<Enemy>> allEnemies = collectionController.getEnemies();
-
-        // if (allEnemies.isEmpty() || allEnemies.get(0).isEmpty()) {
-        //     return null; // oppure lancia un'eccezione, a seconda del tuo caso
-        // }
-
 
         List<Enemy> bossList = allEnemies.get(0);
         Random random = new Random();
@@ -688,7 +682,6 @@ public final class MatchControllerimpl implements MatchController {
 
         final Enemy boss = bossList.get(randomIndex);
         final BossController bossController = BossControllerFactory.createBossController(obs, generateUniqueCharacterId(), boss);
-        //BossControllerFactory.createEnemyController(obs, generateUniqueCharacterId(), boss);
         bossController.attachCharacterAnimationPanel(
                 (int) (frameWidth * DimensionResolver.BOSS.width()),
                 (int) (frameHeight * DimensionResolver.BOSS.height()));
@@ -706,7 +699,7 @@ public final class MatchControllerimpl implements MatchController {
                 spawnX, spawnY,
                 typeFolder, name);
         addCharacter(bossId, bossController, hitboxController);
-
+        bossActive=true;
         this.eventWriter.setText("Inizio BossFight!");
     }
 
@@ -775,5 +768,47 @@ public final class MatchControllerimpl implements MatchController {
         });
     }
 
+    public boolean isHeroMissing() {
+        return hitboxControllers.keySet().stream()
+                .noneMatch(c -> c instanceof HeroController);
+    }
+
+    public boolean isBossMissing() {
+        return hitboxControllers.keySet().stream()
+                .noneMatch(c -> c instanceof BossController);
+    }
+
+      // Setter per marcare la sconfitta del boss
+    public void setBossActive() {
+        this.bossActive = true;
+    }
+
+    public void matchResult() {
+        if (isHeroMissing()){
+            matchView.disposeDefeat();
+            this.mainController.getMatchStartObserver().onMatchEnd();
+            //se il boss manca (inzialmente è vero) e bossactive è falso
+            //poi il boss compare ma bossActive diventa vero
+        }else if (isBossMissing() && bossActive){
+            matchView.disposeVictory();
+            this.mainController.getMatchStartObserver().onMatchEnd();
+        }
+    }
+
+    /**
+     * Aggiunge coins in base al round corrente.
+     * Se è un boss, applica un bonus al reward.
+     *
+     * @param boss true se il nemico sconfitto è un boss
+     */
+    public void rewardCoinsForRound(boolean bossFight) {
+        final double baseReward = 20.0;
+        final double decayFactor = 0.85;
+        double multiplier = Math.pow(decayFactor, roundIndex - 1);
+        int reward = (int) Math.round(baseReward * multiplier);
+        this.coins += reward;
+        this.coinsWriter.setText(this.coins + " coins");
+        this.eventWriter.setText((bossFight ? "Boss sconfitto! " : "") + "Hai guadagnato " + reward + "!");
+    }
 
 }

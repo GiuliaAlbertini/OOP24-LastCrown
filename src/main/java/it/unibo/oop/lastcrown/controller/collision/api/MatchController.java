@@ -139,11 +139,14 @@ public interface MatchController {
     void setAllFSMsToState(final CharacterState newState);
     boolean isEnemyBeyondFrame(final int enemyId);
     int getHitboxControllersCount();
-    void getRandomEnemyFromFirstList();
+    void getRandomBossFromFirstList();
     boolean hasAnyEnemiesInMap();
     boolean hasBossInMap();
     void printEngagedEnemies();
     void setRadiusPlayerInMap();
     boolean hasAnyPlayerInMap();
     void printHitboxControllers();
+    public void matchResult();
+    void rewardCoinsForRound(boolean bossFight);
+    void setBossActive();
 }
