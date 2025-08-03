@@ -13,6 +13,7 @@ import it.unibo.oop.lastcrown.view.characters.impl.HeroGUI;
  */
 public class HeroControllerImpl extends GenericCharacterControllerImpl implements HeroController {
     private final String charName;
+    private final int maximumHealth;
 
     /**
      * @param deathObs the Character Death observer
@@ -22,6 +23,7 @@ public class HeroControllerImpl extends GenericCharacterControllerImpl implement
     public HeroControllerImpl(final CharacterDeathObserver deathObs, final int id, final Hero hero) {
         super(deathObs, id, hero, CardType.HERO);
         this.charName = hero.getName();
+        this.maximumHealth = hero.getHealthValue();
     }
 
     @Override
@@ -29,6 +31,11 @@ public class HeroControllerImpl extends GenericCharacterControllerImpl implement
         final var view = new HeroGUI(this, this.charName, width, height);
         view.setSupportedAnimation();
         return view;
+    }
+
+    @Override
+    public int getMaximumHealthValue() {
+        return this.maximumHealth;
     }
 }
 
