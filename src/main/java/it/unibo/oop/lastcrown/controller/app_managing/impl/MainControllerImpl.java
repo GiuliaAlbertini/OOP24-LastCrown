@@ -145,4 +145,9 @@ public class MainControllerImpl implements MainController {
     public MatchController getMatchController() {
         return this.gameController.getMatchControllerReference();
     }
+
+     // getter per recuperare l'observer
+    public MatchStartObserver getMatchStartObserver() {
+        return this.gameController;
+    }
 }

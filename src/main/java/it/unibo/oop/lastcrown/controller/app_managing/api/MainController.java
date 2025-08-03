@@ -59,4 +59,6 @@ public interface MainController {
      * @return a defensive copy of the account controller
      */
     AccountController getAccountController();
+
+    MatchStartObserver getMatchStartObserver();
 }
