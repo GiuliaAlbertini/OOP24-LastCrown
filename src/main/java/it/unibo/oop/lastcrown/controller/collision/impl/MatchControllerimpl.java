@@ -95,12 +95,14 @@ public final class MatchControllerimpl implements MatchController {
     private static final int UPGRADE_RADIUS_RANGED = 800;
     private final MainController mainController;
     private boolean bossActive;
+    private boolean roundSpawnComplete = false;
+
 
     private HitboxController wallHitboxController = null;
     /* spawner */
     private int spawnTimer = 0;
     private static final int SPAWN_INTERVAL = 5000;
-    private int roundIndex = 1;
+    private int roundIndex = 3;
     private int enemyIndexInRound = 0;
     private List<Integer> usedPositions = new ArrayList<>();
 
@@ -278,6 +280,9 @@ public final class MatchControllerimpl implements MatchController {
                 spawnRandomEnemy(currentRound.get(enemyIndexInRound), enemyIndexInRound, currentRound.size() );
                 enemyIndexInRound++;
                 spawnTimer = 0;
+            }
+            if (enemyIndexInRound >= currentRound.size()) {
+                roundSpawnComplete=true;
             }
 
         }
@@ -793,6 +798,11 @@ public final class MatchControllerimpl implements MatchController {
             matchView.disposeVictory();
             this.mainController.getMatchStartObserver().onMatchEnd();
         }
+    }
+
+
+    public boolean isRoundSpawnComplete() {
+        return roundSpawnComplete;
     }
 
     /**

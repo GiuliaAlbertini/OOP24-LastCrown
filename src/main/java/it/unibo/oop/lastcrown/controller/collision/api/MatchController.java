@@ -149,4 +149,5 @@ public interface MatchController {
     public void matchResult();
     void rewardCoinsForRound(boolean bossFight);
     void setBossActive();
+    boolean isRoundSpawnComplete();
 }
