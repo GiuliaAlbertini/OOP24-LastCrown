@@ -34,7 +34,7 @@ public final class Gameloop extends Thread {
         this.running = true;
         long lastTime = System.currentTimeMillis();
         while (this.running) {
-            System.out.println("sono partito");
+            //System.out.println("sono partito");
             final long current = System.currentTimeMillis();
             this.controller.getMatchController().update((int) (current - lastTime));
             waitForNextFrame(current);
