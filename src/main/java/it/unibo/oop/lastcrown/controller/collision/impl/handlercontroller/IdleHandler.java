@@ -68,6 +68,11 @@ public final class IdleHandler implements StateHandler {
             return CharacterState.STOPPED;
         }
 
+        if (characterType == CardType.HERO) {
+            queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+            return CharacterState.STOPPED;
+        }
+
         final boolean isPlayer = character instanceof PlayableCharacterController;
         final Keyword animationKeyword = isPlayer ? Keyword.RUN_RIGHT : Keyword.RUN_LEFT;
         final Movement movementCharacter = new Movement(isPlayer ? PLAYER_SPEED : ENEMY_SPEED, 0);
@@ -123,20 +128,21 @@ public final class IdleHandler implements StateHandler {
             queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
             return CharacterState.DEAD;
         } else {
-
-            final boolean collision = resolver.wasEnemyCollided(enemy.getId().number());
-            if (collision || resolver.hasOpponentBossPartner(enemy.getId().number()) || resolver.hasOpponentWallPartner(enemy.getId().number())) {
-                queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-                return CharacterState.STOPPED;
-                //sono ingaggiatio ma il mio personaggio è al di là del muro
-            }else if (matchController.isEnemyEngaged(enemy.getId().number())){
-                int idPlayer= matchController.getEngagedCounterpart(enemy.getId().number());
-                GenericCharacterController player = matchController.getCharacterControllerById(idPlayer).get();
-                if (isAtTroopZoneLimit(player)){
+                final boolean collision = resolver.wasEnemyCollided(enemy.getId().number());
+                if (collision || resolver.hasOpponentBossPartner(enemy.getId().number())
+                        || resolver.hasOpponentWallPartner(enemy.getId().number())) {
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
+                    // sono ingaggiatio ma il mio personaggio è al di là del muro
+                } else if (matchController.isEnemyEngaged(enemy.getId().number())) {
+                    int idPlayer = matchController.getEngagedCounterpart(enemy.getId().number());
+                    GenericCharacterController player = matchController.getCharacterControllerById(idPlayer).get();
+                    if (isAtTroopZoneLimit(player)) {
+                        queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+                        return CharacterState.STOPPED;
+                    }
                 }
-            }
+
         }
         queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
         return CharacterState.IDLE;

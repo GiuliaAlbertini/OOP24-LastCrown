@@ -51,11 +51,27 @@ public final class StoppingHandler implements StateHandler {
 
         final boolean isPlayer = character instanceof PlayableCharacterController;
         final boolean isBosshandle = resolver.hasOpponentBossPartner(character.getId().number());
+        final int charId = character.getId().number();
+        final CardType characterType = character.getId().type();
 
+
+
+        // == caso heroe ==
+        if (characterType == CardType.HERO) {
+            handleHeroCharacter(character, queue, charId); // dovrebbe già restituire qualcosa
+            return CharacterState.STOPPED;
+        }
+
+            // == caso Ranged ==
+        if (characterType == CardType.RANGED) {
+            handleRangedCharacter(character, queue, charId);
+            return CharacterState.STOPPED;
+        }
+
+        //SE NON SEI HERO
         if (!match.hasBossInMap()) { //se il boss non è nella mappa allora
             if (match.getWall().getCurrentHealth() <= 0) {
                 if (character.getId().type() == CardType.ENEMY) {
-                    //match.setIsBossPresent(true);;
                     final Movement movementCharacter = new Movement(ENEMY_SPEED, 0);
                     character.setNextAnimation(Keyword.RETREAT);
                     character.showNextFrameAndMove(movementCharacter);
@@ -77,29 +93,21 @@ public final class StoppingHandler implements StateHandler {
                 }
             }
         }else if (!isBosshandle){ //se il boss compare andate tutti in idle
-            match.setAllFSMsToState(CharacterState.IDLE);
+            //match.setAllFSMsToState(CharacterState.IDLE);
+            queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
+            return CharacterState.IDLE;
         }
 
-        final int charId = character.getId().number();
-        final CardType characterType = character.getId().type();
         character.setNextAnimation(Keyword.STOP);
         character.showNextFrame();
 
-        //Stampo gli ingaggi
-        match.printEngagedEnemies();
-
-
         // == caso TrupZone ==
-        if (isPlayer && isAtTroopZoneLimit(character)) {
+        if (isPlayer && isAtTroopZoneLimit(character) && !match.hasBossInMap()) {
             handleCharacterTrupzone((PlayableCharacterController) character, queue, charId);
             return CharacterState.STOPPED;
         }
 
-        // == caso Ranged ==
-        if (characterType == CardType.RANGED) {
-            handleRangedCharacter(character, queue, charId);
-            return CharacterState.STOPPED;
-        }
+
 
 
         final boolean isEngaged = match.isPlayerEngaged(charId) || match.isEnemyEngaged(charId);
@@ -107,7 +115,6 @@ public final class StoppingHandler implements StateHandler {
         final boolean isEngagedWithDead = match.isEngagedWithDead(charId) || match.isBossFightPartnerDead(charId);
         final boolean isWallFight = resolver.hasOpponentWallPartner(charId);
         // == caso enemy ==
-        System.out.println("vediamo un po " + !isEngaged + wait + !isBossFight + !isWallFight);
         if (!isEngaged && wait && !isBossFight && !isWallFight) {
             this.wait = false;
             queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
@@ -130,8 +137,9 @@ public final class StoppingHandler implements StateHandler {
      * @param queue     The event queue.
      * @param charId    The ID of the character.
      */
-    private void handleRangedCharacter(final GenericCharacterController character, final EventQueue queue,
+    private CharacterState handleRangedCharacter(final GenericCharacterController character, final EventQueue queue,
             final int charId) {
+
         if (match.isRangedFightPartnerDead(charId)) {
             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
         } else if (!resolver.hasOpponentRangedPartner(charId)) {
@@ -149,7 +157,39 @@ public final class StoppingHandler implements StateHandler {
         } else {
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
         }
+
+        character.setNextAnimation(Keyword.STOP);
+        character.showNextFrame();
+        queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+        return CharacterState.STOPPED;
     }
+
+
+
+
+    private CharacterState handleHeroCharacter(final GenericCharacterController character, final EventQueue queue,
+            final int charId) {
+        //print
+        //match.printHitboxControllers();
+        if (match.hasBossInMap() && !match.hasAnyPlayerInMap()) {
+            // Boss in campo, nessun altro player: prova lo scanner
+            scanner.scanForFollowEventForHero(character)
+                    .ifPresent(match::notifyCollisionObservers);
+
+            if (resolver.hasOpponentBossPartner(character.getId().number())) {
+                queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
+                return CharacterState.COMBAT;
+            }
+        }
+        character.setNextAnimation(Keyword.STOP);
+        character.showNextFrame();
+        queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+        return CharacterState.STOPPED;
+    }
+
+
+
+
 
     private CharacterState handleCharacterTrupzone(final PlayableCharacterController player, final EventQueue queue,
             final int charId) {

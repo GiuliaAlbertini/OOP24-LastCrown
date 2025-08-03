@@ -7,6 +7,7 @@ import java.util.Optional;
 import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
+import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.Wall;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
@@ -46,7 +47,8 @@ public final class CombatHandler implements StateHandler {
         }
 
         final boolean isPlayer = character instanceof PlayableCharacterController;
-        if (isPlayer) {
+        final boolean isHero = character instanceof HeroController;
+        if (isPlayer || isHero) {
             if (match.isPlayerEngaged(character.getId().number())) { // nemico
                 opponentId = match.getEngagedCounterpart(character.getId().number());
             } else if (resolver.hasOpponentBossPartner(character.getId().number())) { // boss
@@ -82,7 +84,7 @@ public final class CombatHandler implements StateHandler {
         }
 
         final CharacterHitObserver opponent = opponentOpt.get();
-        if (isPlayer) {
+        if (isPlayer|| isHero) {
             // === COMBATTIMENTO GIOCATORE ===
             if (opponent.isDead()) {
                 queue.clear();
