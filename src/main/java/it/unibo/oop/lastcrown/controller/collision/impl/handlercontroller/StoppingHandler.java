@@ -69,7 +69,7 @@ public final class StoppingHandler implements StateHandler {
             return CharacterState.STOPPED;
         }
 
-        //SE NON SEI HERO
+        //SE NON SEI HERO, inizio ritirata
         if (!match.hasBossInMap()) { //se il boss non è nella mappa allora
             if (match.getWall().getCurrentHealth() <= 0) {
                 if (character.getId().type() == CardType.ENEMY) {
@@ -92,6 +92,14 @@ public final class StoppingHandler implements StateHandler {
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
                 }
+                //se sono spawnati tutti i nemici e non ci sono più nemici nella mappa
+            }else if (match.isRoundSpawnComplete() && !match.hasAnyEnemiesInMap()) {
+                    match.getRandomBossFromFirstList();
+                    match.setRadiusPlayerInMap();
+                    character.setNextAnimation(Keyword.STOP);
+                    character.showNextFrame();
+                    queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+                    return CharacterState.STOPPED;
             }
         }else if (!isBosshandle){ //se il boss compare andate tutti in idle
             //match.setAllFSMsToState(CharacterState.IDLE);
