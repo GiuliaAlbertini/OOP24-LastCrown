@@ -54,6 +54,7 @@ public final class StoppingHandler implements StateHandler {
         final int charId = character.getId().number();
         final CardType characterType = character.getId().type();
 
+        match.matchResult();
 
 
         // == caso heroe ==

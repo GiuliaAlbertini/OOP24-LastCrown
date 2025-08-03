@@ -104,13 +104,10 @@ public final class CombatHandler implements StateHandler {
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
             } else {
                 setupCombat(character, opponent);
-
                 // Se il nemico combatte il muro, anche il muro deve combattere
                 if (opponent instanceof Wall wall) {
                     combatWall(wall, opponent);
                 }
-
-
                 queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
                 return CharacterState.COMBAT;
             }
