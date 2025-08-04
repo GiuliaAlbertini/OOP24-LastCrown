@@ -37,4 +37,16 @@ public interface DeckZone {
      * @param start {@code True} if the boss fight is started, {@code False} otherwise
      */
     void handleButtonsEnabling(boolean start);
+
+    /**
+     * Moves and resizes this component. 
+     * The new location of the top-left corner is specified by x and y, and the new size is specified by width and height.
+     * This method changes layout-related information, and therefore, invalidates the component hierarchy
+     * 
+     * @param x the new x-coordinate of this component
+     * @param y the new y-coordinate of this component
+     * @param width the new width of this component
+     * @param height the new height of this component
+     */
+    void setBounds(int x, int y, int width, int height);
 }

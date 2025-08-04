@@ -124,11 +124,6 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
         updateCardButtons(buttonListener, mouseListener);
     }
 
-    /**
-     * Refreshes the card buttons based on next available cards.
-     * @param act the ActionListener
-     * @param ml the MouseListener
-     */
     private void updateCardButtons(final ActionListener act, final MouseListener ml) {
         this.btnsPanel.removeAll();
         final List<CardIdentifier> nextCards = inGameDeckController.getNextAvailableCards();
@@ -194,11 +189,6 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
         jb.setIcon(icon);
     }
 
-    /**
-     * Sets up the energy bar.
-     * @param container the container of the energy bar
-     * @param width the width of the bar
-     */
     private void setupEnergyBar(final JPanel container, final int width) {
         energyBarPanel = new JPanel();
         energyBarPanel.setBackground(Color.BLACK);
@@ -216,10 +206,6 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
         return this.lastClicked;
     }
 
-    /**
-     * Updates the energyBar with a new level.
-     * @param energyLevel new energy level
-     */
     private void updateEnergyBar(final int energyLevel) {
         energyBarPanel.removeAll();
         final Color full = new Color(255, 105, 180);
@@ -266,13 +252,13 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
         this.mouseListener = this.mouseListenerDefensiveCopy;
     }
 
-    public void handleButtonsEnabling(final boolean start) {
-        System.out.println("boss fight iniziata: "+start);
-        enablePanelAndChildren(btnsPanel, !start);       
+    @Override
+    public final void handleButtonsEnabling(final boolean start) {
+        enablePanelAndChildren(btnsPanel, !start);
     }
 
     private void enablePanelAndChildren(final JPanel panel, final boolean start) {
-            for (Component comp : panel.getComponents()) {
+            for (final Component comp : panel.getComponents()) {
                 comp.setEnabled(start);
                 if (comp instanceof Container && !(comp instanceof JButton || comp instanceof JLabel)) {
                     enablePanelAndChildren((JPanel) comp, start);
