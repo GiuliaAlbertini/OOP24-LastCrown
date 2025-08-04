@@ -89,6 +89,8 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         this.mainPanel.setComponentZOrder(component, 0);
 
         final HitboxController hitboxcontroller= matchController.setupCharacter(component, typefolder, name, true, component.getX(), component.getY());
+        this.newComponents.put(id + 1, hitboxcontroller.getHitboxPanel());
+        this.newComponents.put(id + 2, hitboxcontroller.getRadiusPanel());
 
         this.mainPanel.add(hitboxcontroller.getHitboxPanel());
         this.mainPanel.add(hitboxcontroller.getRadiusPanel());
@@ -164,21 +166,20 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
     @Override
     public synchronized void removeGraphicComponent(final int id) {
-        final HitboxController hitboxcontroller = matchController.getCharacterHitboxById(id).get();
-        this.mainPanel.remove(hitboxcontroller.getHitboxPanel());
+            final HitboxController hitboxcontroller = matchController.getCharacterHitboxById(id).get();
+            this.mainPanel.remove(hitboxcontroller.getHitboxPanel());
 
-        var radiusPanel = hitboxcontroller.getRadiusPanel();
-        if (radiusPanel != null){
-            this.mainPanel.remove(hitboxcontroller.getRadiusPanel());
-        }
+            var radiusPanel = hitboxcontroller.getRadiusPanel();
+            if (radiusPanel != null) {
+                this.mainPanel.remove(hitboxcontroller.getRadiusPanel());
+            }
 
-        final var component = this.newComponents.get(id);
-        if (component != null) {
-            this.mainPanel.remove(this.newComponents.get(id));
-            this.newComponents.remove(id);
-        }
-        this.mainPanel.repaint();
-
+            final var component = this.newComponents.get(id);
+            if (component != null) {
+                this.mainPanel.remove(this.newComponents.get(id));
+                this.newComponents.remove(id);
+            }
+            this.mainPanel.repaint();
     }
 
     @Override
