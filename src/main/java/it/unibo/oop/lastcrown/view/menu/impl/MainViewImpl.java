@@ -62,7 +62,7 @@ public class MainViewImpl extends JFrame implements MainView {
     private ModifiableBackScene collectionView;
     private final ShopView shopView;
     private MatchView matchView;
-    private boolean matchExist = false;
+    private boolean matchExist;
 
     /**
      * Constructs the main application window, initializes each scene,
