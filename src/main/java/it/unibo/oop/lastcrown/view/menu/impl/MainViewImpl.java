@@ -188,10 +188,10 @@ public class MainViewImpl extends JFrame implements MainView {
             this.matchView = new MatchViewImpl(this.sceneManager, this.gameController.getMatchControllerReference(),
                     WIDTH, HEIGHT, this.deckController.getDeck());
             this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName().get());
+            this.gameController.getMatchView(matchView);
             this.matchExist = true;
         }
         this.matchView.updateInGameDeck(this.deckController.getDeck());
-        this.gameController.getMatchView(matchView);
         AudioEngine.playSoundTrack(SoundTrack.BATTLE);
     }
 
@@ -199,6 +199,7 @@ public class MainViewImpl extends JFrame implements MainView {
     public final void onMenu(final SceneName caller) {
         if (SceneName.SHOP.equals(caller) || SceneName.MATCH.equals(caller)) {
             this.mainController.updateAccount(this.shopView.getManagedAccount());
+            this.matchView.clearNewGraphicsComponent();
         }
         if (!AudioEngine.getActualSoundTrack().equals(SoundTrack.MENU)) {
             AudioEngine.playSoundTrack(SoundTrack.MENU);
