@@ -28,7 +28,7 @@ public final class Dialog extends JDialog {
         this.setSize(WIDTH, HEIGHT);
         this.setFocusableWindowState(false);
         this.setResizable(false);
-        this.setModalityType(JDialog.ModalityType.DOCUMENT_MODAL);
+        this.setModalityType(JDialog.ModalityType.APPLICATION_MODAL);
         final JPanel content = new JPanel(new BorderLayout());
 
         final JTextArea area = new JTextArea(message);

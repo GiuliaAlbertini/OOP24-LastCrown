@@ -66,6 +66,12 @@ public interface MatchView extends Scene {
     void addWallPanel(HitboxController panel);
 
     /**
+     * Notifies the MatchView about the bossfight.
+     * @param start True if it started, False if it ended
+     */
+    void notifyBossFight(boolean start);
+
+    /**
      * Remove safely a graphic component associated with the specified id from the
      * map.
      *

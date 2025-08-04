@@ -158,6 +158,11 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     }
 
     @Override
+    public void notifyBossFight(final boolean start) {
+        this.mainPanel.notifyBossFight(start);
+    }
+
+    @Override
     public synchronized void removeGraphicComponent(final int id) {
         final HitboxController hitboxcontroller = matchController.getCharacterHitboxById(id).get();
         this.mainPanel.remove(hitboxcontroller.getHitboxPanel());
