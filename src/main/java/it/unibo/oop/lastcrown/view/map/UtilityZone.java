@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
+import it.unibo.oop.lastcrown.utility.DialogCloseHandler;
 import it.unibo.oop.lastcrown.view.Dialog;
 
 /**
@@ -67,7 +68,7 @@ public final class UtilityZone extends JPanel {
         + "INSTRUCTIONS: check the instructions";
         this.pauseDialog = new Dialog(title, message, false);
         this.pauseDialog.setLocationRelativeTo(this);
-
+        this.pauseDialog.addWindowListener(DialogCloseHandler.createCloseListener(pauseDialog, () -> gameContr.notifyPauseEnd()));
         final String insTitle = "Instructions";
         final String insMessage = "Select a card from your deck to the left\n"
         + "And play it in the highlighted zone\n"
@@ -99,7 +100,7 @@ public final class UtilityZone extends JPanel {
 
         final JButton pause = new JButton("PAUSE");
         pause.addActionListener(act -> {
-            gameContr.notifyPauseEnd();
+            gameContr.notifyPauseStart();
             pauseDialog.setVisible(true);
         });
         pause.setPreferredSize(new Dimension(width / WIDTH_DIVISOR, height));
@@ -111,6 +112,6 @@ public final class UtilityZone extends JPanel {
             wrapper.add(component, BorderLayout.CENTER);
             wrapper.setOpaque(false);
             this.add(wrapper);
-        } 
+        }
     }
 }
