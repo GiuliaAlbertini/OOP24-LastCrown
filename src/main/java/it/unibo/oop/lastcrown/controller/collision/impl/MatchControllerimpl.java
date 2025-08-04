@@ -36,9 +36,7 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.model.characters.api.Hero;
-import it.unibo.oop.lastcrown.model.characters.api.PassiveEffect;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
-import it.unibo.oop.lastcrown.model.characters.api.Requirement;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionManager;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
@@ -79,7 +77,7 @@ public final class MatchControllerimpl implements MatchController {
     private final Map<Integer, Object> enemyLocks = new HashMap<>();
     private final CollisionManager collisionManager = new CollisionManagerImpl();
     private final CollisionResolver collisionResolver;
-    private int nextId = 1;
+    private int nextId;
     private MatchView matchView;
     private final Hero hero;
     private Wall wall;
@@ -98,7 +96,6 @@ public final class MatchControllerimpl implements MatchController {
     private static final int DEFAULT_BOSS_RADIUS = 400;
     private static final int UPGRADE_RADIUS_MELEE = 400;
     private static final int UPGRADE_RADIUS_RANGED = 800;
-
     private final MainController mainController;
     private boolean bossActive;
     private boolean roundSpawnComplete = false;
@@ -106,9 +103,7 @@ public final class MatchControllerimpl implements MatchController {
     private MainView mainView;
     private int spell_x;
     private int spell_y;
-
     private HitboxController wallHitboxController = null;
-    /* spawner */
     private int spawnTimer = 0;
     private static final int SPAWN_INTERVAL = 5000;
     private int roundIndex = 3;
@@ -119,8 +114,6 @@ public final class MatchControllerimpl implements MatchController {
     // set di carte passate che l'utente gioca -> crea il complete collection e con
     // i getter prendi le carte
     private final EnemyRadiusScanner radiusScanner;
-    Requirement require = new Requirement("hero", 2);
-    Optional<PassiveEffect> optionalEffect = Optional.of(new PassiveEffect("none", 0));
 
     public MatchControllerimpl(final MainController mainController,
             final int frameWidth,
@@ -128,6 +121,7 @@ public final class MatchControllerimpl implements MatchController {
             CardIdentifier heroId,
             CollectionController collectionController,
             MainView mainView) {
+        this.nextId=1;
         this.collectionController = collectionController;
         this.frameHeight = frameHeight;
         this.frameWidth = frameWidth;
@@ -318,7 +312,6 @@ public final class MatchControllerimpl implements MatchController {
     @Override
     public Optional<GenericCharacterController> getCharacterControllerById(final int id) {
         return Optional.ofNullable(this.charactersController.get(id));
-
     }
 
     @Override
@@ -338,8 +331,8 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public void removeCharacterCompletelyById(final int characterId) {
-        final GenericCharacterController controller = getCharacterControllerById(characterId).get();
         this.matchView.removeGraphicComponent(characterId);
+        final GenericCharacterController controller = getCharacterControllerById(characterId).get();
         final HitboxController hitboxController= getCharacterHitboxById(characterId).get();
         hitboxControllers.remove(controller,hitboxController);
         charactersController.remove(characterId, controller);
@@ -347,7 +340,8 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     private int generateUniqueCharacterId() {
-        return nextId++;
+        this.nextId = this.nextId + 3;
+        return this.nextId;
     }
 
     // ========================================================
@@ -836,7 +830,7 @@ public final class MatchControllerimpl implements MatchController {
         System.out.println("Mappa dei controller personaggio -> controller hitbox:");
         hitboxControllers.forEach((character, hitbox) -> {
             System.out.println("Personaggio: ID=" + character.getId().number() +
-                    ", Tipo=" + character.getId().type() +
+                    ", Tipo=" + character.getId() +
                     " -> Hitbox pos: " + hitbox.getHitbox().getPosition());
         });
     }
@@ -860,14 +854,18 @@ public final class MatchControllerimpl implements MatchController {
         if (isHeroMissing()){
             matchView.disposeDefeat();
             this.mainController.getMatchStartObserver().stopMatchLoop();
-            mainView.updateAccount(this.coins, true);
-
+            mainView.updateAccount(this.coins, false);
+            charactersController.clear();
+            hitboxControllers.clear();
+            playerFSMs.clear();
         }else if (isBossMissing() && bossActive){
             matchView.disposeVictory();
             this.mainController.getMatchStartObserver().stopMatchLoop();
-            mainView.updateAccount(this.coins, false);
+            mainView.updateAccount(this.coins, true);
+            charactersController.clear();
+            hitboxControllers.clear();
+            playerFSMs.clear();
         }
-
     }
 
 
