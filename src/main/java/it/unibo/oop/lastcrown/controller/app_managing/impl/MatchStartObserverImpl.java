@@ -25,15 +25,14 @@ public class MatchStartObserverImpl implements MatchStartObserver {
 
     @Override
     public void onMatchStart(final int width, final int height, final CardIdentifier id,
-                            final CollectionController collectionController, final MainView mainView) {
+                            final CollectionController collectionController, final MainView mainView, final int enemyList) {
         // Step 1: Istanzia il MatchController la PRIMA VOLTA o resettalo se esiste già
-        this.matchController = new MatchControllerimpl(this.mainController, width, height, id, collectionController, mainView);
+        this.matchController = new MatchControllerimpl(this.mainController, width, height, id, collectionController, mainView, enemyList);
 
         // Step 2: Avvia il Gameloop (solo se non è già attivo)
         if (this.gameLoopThread == null || !this.gameLoopThread.isAlive()) {
             this.gameLoopThread = new Gameloop(this.mainController);
             this.gameLoopThread.start();
-            System.out.println("Game Loop avviato da MatchStartObserver!");
         }
     }
 

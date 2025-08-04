@@ -19,7 +19,8 @@ public interface MatchStartObserver {
      * Called when the game match is about to start.
      * Responsible for initializing the MatchController and starting the game loop.
      */
-    void onMatchStart(int width, int height, CardIdentifier id, CollectionController collectionController, MainView mainView);
+    void onMatchStart(int width, int height, CardIdentifier id,
+                      CollectionController collectionController, MainView mainView, int enemyList);
 
     /**
      * Called when the game match is about to end.
