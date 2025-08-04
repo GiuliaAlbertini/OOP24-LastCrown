@@ -104,6 +104,21 @@ public final class AudioEngine {
         ClipLoader.closeClip(loopClip);
     }
 
+    /**
+     * Stops the current playing soundtrack.
+     */
+    public static void stopTrack() {
+        final CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
+                stopCurrent();
+        }, EXECUTOR);
+
+        task.whenComplete((result, execution) -> {
+            if (execution != null) {
+                LOG.fine("Error occurred during the sound effect task");
+            }
+        });
+    }
+
     private static void fadeOutAndStop(final Clip clip) {
         if (clip != null && clip.isRunning()) {
             try {
