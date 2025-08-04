@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
@@ -38,6 +39,7 @@ public final class WallImpl implements Wall {
     public WallImpl(final int attack, final int health, final int id,
      final int healthWidth, final int healthHeight, final Optional<Hitbox> hitbox) {
         this.healthBar = CharacterHealthBar.create(healthWidth, healthHeight, Color.GREEN);
+        this.healthBar.setBorder(BorderFactory.createLineBorder(Color.BLUE, 5));
         this.maximumHealth = health;
         this.currentHealth = health;
         this.attack = attack;
