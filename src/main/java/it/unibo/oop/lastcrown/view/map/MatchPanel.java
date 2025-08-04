@@ -168,6 +168,14 @@ public final class MatchPanel extends JPanel {
     }
 
     /**
+     * Notifies the MatchView about the bossfight.
+     * @param start True if it started, False if it ended
+     */
+    public void notifyBossFight(final boolean start) {
+        this.cardZone.handleButtonsEnabling(start);
+    }
+
+    /**
      * @return the trupszone limit of the x coordinate
      */
     public int getTrupsZoneLimit() {
