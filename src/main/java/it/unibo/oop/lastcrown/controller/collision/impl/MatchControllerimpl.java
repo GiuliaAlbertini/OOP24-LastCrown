@@ -50,6 +50,7 @@ import it.unibo.oop.lastcrown.model.collision.impl.Pair;
 import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.RadiusImpl;
 import it.unibo.oop.lastcrown.model.spell.api.Spell;
+import it.unibo.oop.lastcrown.model.spell.api.SpellEffect;
 import it.unibo.oop.lastcrown.model.user.api.CompleteCollection;
 import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
@@ -106,7 +107,7 @@ public final class MatchControllerimpl implements MatchController {
     private HitboxController wallHitboxController = null;
     private int spawnTimer = 0;
     private static final int SPAWN_INTERVAL = 5000;
-    private int roundIndex = 3;
+    private int roundIndex;
     private int enemyIndexInRound = 0;
     private List<Integer> usedPositions = new ArrayList<>();
 
@@ -120,8 +121,10 @@ public final class MatchControllerimpl implements MatchController {
             final int frameHeight,
             CardIdentifier heroId,
             CollectionController collectionController,
-            MainView mainView) {
-        this.nextId=1;
+            MainView mainView,
+            final int enemyList) {
+        this.roundIndex = enemyList;
+        this.nextId = 1;
         this.collectionController = collectionController;
         this.frameHeight = frameHeight;
         this.frameWidth = frameWidth;
@@ -633,7 +636,10 @@ public final class MatchControllerimpl implements MatchController {
         matchView.addSpellGraphics(id.number(), spellComponent, x, y);
         spellGUI.startAnimation();
         spellScanner=false;
-        //collection.getSpell(id).get().getSpellEffect();
+
+        final SpellEffect spellEffect = collection.getSpell(id).get().getSpellEffect();
+        //switch sul target -> categoria -> amount
+
     }
 
     @Override
@@ -768,6 +774,7 @@ public final class MatchControllerimpl implements MatchController {
         addCharacter(bossId, bossController, hitboxController);
         bossActive=true;
         this.eventWriter.setText("Inizio BossFight!");
+        this.matchView.notifyBossFight(bossActive);
     }
 
 
@@ -855,16 +862,18 @@ public final class MatchControllerimpl implements MatchController {
             matchView.disposeDefeat();
             this.mainController.getMatchStartObserver().stopMatchLoop();
             mainView.updateAccount(this.coins, false);
-            charactersController.clear();
-            hitboxControllers.clear();
-            playerFSMs.clear();
+            // charactersController.clear();
+            // hitboxControllers.clear();
+            // playerFSMs.clear();
+            this.matchView.notifyBossFight(false);
         }else if (isBossMissing() && bossActive){
             matchView.disposeVictory();
             this.mainController.getMatchStartObserver().stopMatchLoop();
             mainView.updateAccount(this.coins, true);
-            charactersController.clear();
-            hitboxControllers.clear();
-            playerFSMs.clear();
+            // charactersController.clear();
+            // hitboxControllers.clear();
+            // playerFSMs.clear();
+            this.matchView.notifyBossFight(false);
         }
     }
 
