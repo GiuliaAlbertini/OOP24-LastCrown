@@ -51,6 +51,7 @@ import it.unibo.oop.lastcrown.model.collision.impl.HitboxImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.Pair;
 import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.RadiusImpl;
+import it.unibo.oop.lastcrown.model.spell.api.Spell;
 import it.unibo.oop.lastcrown.model.user.api.CompleteCollection;
 import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
@@ -62,13 +63,17 @@ import it.unibo.oop.lastcrown.view.collision.impl.HitboxPanelImpl;
 import it.unibo.oop.lastcrown.view.collision.impl.RadiusPanelImpl;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 import it.unibo.oop.lastcrown.view.map.MatchView;
+import it.unibo.oop.lastcrown.view.menu.api.MainView;
+import it.unibo.oop.lastcrown.view.spell.api.SpellGUI;
+import it.unibo.oop.lastcrown.view.spell.impl.SpellGUIImpl;
 
 public final class MatchControllerimpl implements MatchController {
     // private final MainController controller;
     private final Map<Integer, CharacterFSM> playerFSMs = new HashMap<>();
     private final Map<Integer, GenericCharacterController> charactersController = new HashMap<>();
     private final Map<GenericCharacterController, HitboxController> hitboxControllers = new HashMap<>();
-    final List<Pair<String, PlayableCharacterController>> listCard = new ArrayList<>();
+    final List<Pair<String, PlayableCharacterController>> CardList = new ArrayList<>();
+    final List<Pair<CardIdentifier, SpellGUI>> spellList = new ArrayList<>();
     // Aggiungi queste mappe
     private final Set<EnemyEngagement> engagedEnemies = ConcurrentHashMap.newKeySet();
     private final Map<Integer, Object> enemyLocks = new HashMap<>();
@@ -93,10 +98,14 @@ public final class MatchControllerimpl implements MatchController {
     private static final int DEFAULT_BOSS_RADIUS = 400;
     private static final int UPGRADE_RADIUS_MELEE = 400;
     private static final int UPGRADE_RADIUS_RANGED = 800;
+
     private final MainController mainController;
     private boolean bossActive;
     private boolean roundSpawnComplete = false;
-
+    private boolean spellScanner;
+    private MainView mainView;
+    private int spell_x;
+    private int spell_y;
 
     private HitboxController wallHitboxController = null;
     /* spawner */
@@ -117,11 +126,13 @@ public final class MatchControllerimpl implements MatchController {
             final int frameWidth,
             final int frameHeight,
             CardIdentifier heroId,
-            CollectionController collectionController) {
+            CollectionController collectionController,
+            MainView mainView) {
         this.collectionController = collectionController;
         this.frameHeight = frameHeight;
         this.frameWidth = frameWidth;
         this.mainController = mainController;
+        this.mainView = mainView;
         final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
         this.collection = collectionController.getCompleteCollection();
         this.hero = this.collection.getHero(heroId).get();
@@ -279,6 +290,9 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public void update(final int deltaTime) {
+
+        checkAndAnimateLastSpell(spellList);
+
 
         spawnTimer += deltaTime;
         List<List<Enemy>> allEnemies = collectionController.getEnemies();
@@ -570,8 +584,8 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public void notifyClicked(int x, int y) {
-        if (!listCard.isEmpty() && !hasBossInMap()) {
-            final Pair<String, PlayableCharacterController> selected = listCard.get(listCard.size() - 1);
+        if (!CardList.isEmpty() && !hasBossInMap()) {
+            final Pair<String, PlayableCharacterController> selected = CardList.get(CardList.size() - 1);
             final int id = selected.get2().getId().number();
             final PlayableCharacterController playerController = selected.get2();
             final String typeFolder = playerController.getId().type().name();
@@ -585,8 +599,47 @@ public final class MatchControllerimpl implements MatchController {
                     playerController.getGraphicalComponent(), x, y, typeFolder, name);
             addCharacter(selected.get2().getId().number(), playerController, hitboxController);
             this.eventWriter.setText(name + " schierato in campo!");
+        }else{
+            spell_x = x;
+            spell_y = y;
+            spellScanner=true;
         }
-        listCard.clear();
+        CardList.clear();
+    }
+
+    @Override
+    public void notifyButtonPressed(CardIdentifier id) {
+        final CharacterDeathObserver obs = idc -> System.out.println("Morto: " + idc);
+        if (id.type() == CardType.MELEE || id.type() == CardType.RANGED) {
+            final PlayableCharacter player = this.collection.getPlayableCharacter(id).get();
+            final PlayableCharacterController playerController = PlCharControllerFactory.createPlCharController(obs,
+                    generateUniqueCharacterId(), player);
+            CardList.add(new Pair<String, PlayableCharacterController>(player.getName(), playerController));
+        } else if (id.type() == CardType.SPELL) {
+            spellScanner=false;
+            final Spell spell = this.collection.getSpell(id).get();
+            SpellGUI spellGUI = new SpellGUIImpl(spell.getName(), ((int) (frameWidth * DimensionResolver.SPELL.width())));
+            spellList.add(new Pair<CardIdentifier,SpellGUI>(id, spellGUI));
+        }
+    }
+
+    public void checkAndAnimateLastSpell(List<Pair<CardIdentifier, SpellGUI>> spellList) {
+        if (spellList != null && !spellList.isEmpty() && spellScanner) {
+            Pair<CardIdentifier, SpellGUI> spellSelected = spellList.get(spellList.size() - 1);
+
+            if (spellSelected != null && spellSelected.get1() != null && spellSelected.get2() != null) {
+                final CardIdentifier id = spellSelected.get1();
+                final JComponent spellComponent = spellSelected.get2().getGraphicalComponent();
+                spellAnimation(spellSelected.get2(), id, spellComponent, spell_x, spell_y);
+            }
+        }
+    }
+
+    public void spellAnimation(SpellGUI spellGUI, CardIdentifier id, JComponent spellComponent,int x, int y){
+        matchView.addSpellGraphics(id.number(), spellComponent, x, y);
+        spellGUI.startAnimation();
+        spellScanner=false;
+        //collection.getSpell(id).get().getSpellEffect();
     }
 
     @Override
@@ -604,17 +657,7 @@ public final class MatchControllerimpl implements MatchController {
 
     }
 
-    @Override
-    public void notifyButtonPressed(CardIdentifier id) {
-        final CharacterDeathObserver obs = idc -> System.out.println("Morto: " + idc);
-        if (id.type() == CardType.MELEE || id.type() == CardType.RANGED) {
-            final PlayableCharacter player = this.collection.getPlayableCharacter(id).get();
-            final PlayableCharacterController playerController = PlCharControllerFactory.createPlCharController(obs,
-                    generateUniqueCharacterId(), player);
-            listCard.add(new Pair<String, PlayableCharacterController>(player.getName(), playerController));
-            this.eventWriter.setText("Personaggio selezionato: " + player.getName().toString());
-        }
-    }
+
 
     public HitboxController setupCharacter(final JComponent charComp, final String typeFolder, final String name,
             final boolean isPlayable, int x, int y) {
@@ -623,6 +666,7 @@ public final class MatchControllerimpl implements MatchController {
         final HitboxPanel hitboxPanel = new HitboxPanelImpl(hitbox);
 
         final String path = CharacterPathLoader.loadHitboxPath(typeFolder, name);
+
         final BufferedImage image = ImageLoader.getImage(path, (int) size.getWidth(), (int) size.getHeight());
         final HitboxMaskBounds bounds = new HitboxMaskBounds(hitbox, charComp, hitboxPanel);
         bounds.calculateHitboxCenter(image);
@@ -643,6 +687,9 @@ public final class MatchControllerimpl implements MatchController {
         }
         return hitboxController;
     }
+
+
+
 
     @Override
     public void notifyPauseStart() {
@@ -813,12 +860,14 @@ public final class MatchControllerimpl implements MatchController {
         if (isHeroMissing()){
             matchView.disposeDefeat();
             this.mainController.getMatchStartObserver().stopMatchLoop();
-            //se il boss manca (inzialmente è vero) e bossactive è falso
-            //poi il boss compare ma bossActive diventa vero
+            mainView.updateAccount(this.coins, true);
+
         }else if (isBossMissing() && bossActive){
             matchView.disposeVictory();
             this.mainController.getMatchStartObserver().stopMatchLoop();
+            mainView.updateAccount(this.coins, false);
         }
+
     }
 
 
