@@ -38,15 +38,29 @@ public class MatchStartObserverImpl implements MatchStartObserver {
     }
 
     @Override
-    public void onMatchEnd() {
+    public void stopMatchLoop() {
         // Step 1: Ferma il Gameloop
         if (this.gameLoopThread != null && this.gameLoopThread.isAlive()) {
             this.gameLoopThread.interrupt();
             this.gameLoopThread = null;
             System.out.println("Game Loop fermato da MatchStartObserver!");
         }
-
     }
+
+    public void resumeMatchLoop() {
+        if (this.matchController == null) {
+            throw new IllegalStateException("MatchController non inizializzato.");
+        }
+
+        if (this.gameLoopThread == null || !this.gameLoopThread.isAlive()) {
+            this.gameLoopThread = new Gameloop(this.mainController);
+            this.gameLoopThread.start();
+            System.out.println("Game Loop riavviato (resumeMatchLoop)!");
+        } else {
+            System.out.println("Game Loop già attivo.");
+        }
+    }
+
 
 
     public MatchController getMatchControllerReference() {

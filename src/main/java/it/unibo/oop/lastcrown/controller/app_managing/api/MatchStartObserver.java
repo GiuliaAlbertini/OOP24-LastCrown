@@ -24,7 +24,7 @@ public interface MatchStartObserver {
      * Called when the game match is about to end.
      * Handles stopping the game loop and cleaning up the match state.
      */
-    void onMatchEnd();
+    void stopMatchLoop();
 
     /**
      * Returns the reference to the current MatchController instance,
@@ -36,4 +36,6 @@ public interface MatchStartObserver {
     MatchController getMatchControllerReference();
 
     void getMatchView(final MatchView matchView);
+
+    void resumeMatchLoop();
 }
