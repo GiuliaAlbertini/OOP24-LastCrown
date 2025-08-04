@@ -98,7 +98,11 @@ public interface MatchView extends Scene {
      * @return the upper left corner coordinates of the wall
      */
     Point getWallCoordinates();
-
+    
+    /**
+     * Update the button cards shown in the match.
+     * @param newDeck the new card set to show 
+     */
     void updateInGameDeck(Set<CardIdentifier> newDeck);
 
 }
