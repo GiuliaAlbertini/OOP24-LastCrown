@@ -89,7 +89,7 @@ public final class MatchControllerimpl implements MatchController {
     private static final int HITBOX_WIDTH = 10;
     private static final int HITBOX_HEIGHT = 10;
     private static final int DEFAULT_MELEE_RADIUS = 250;
-    private static final int DEFAULT_RANGED_RADIUS = 470;
+    private static final int DEFAULT_RANGED_RADIUS = 475;
     private static final int DEFAULT_BOSS_RADIUS = 400;
     private static final int UPGRADE_RADIUS_MELEE = 400;
     private static final int UPGRADE_RADIUS_RANGED = 800;
@@ -225,6 +225,15 @@ public final class MatchControllerimpl implements MatchController {
         return false; // Nessun nemico trovato
     }
 
+    // controllo se ci sono nemici nella mappa
+    public boolean hasAnyRangedInMap() {
+        for (var character : hitboxControllers.keySet()) {
+            if (character.getId().type() == CardType.RANGED) {
+                return true; // Almeno un nemico trovato
+            }
+        }
+        return false; // Nessun nemico trovato
+    }
 
     public void setRadiusPlayerInMap() {
         for (Map.Entry<GenericCharacterController, HitboxController> entry : hitboxControllers.entrySet()) {
@@ -390,6 +399,13 @@ public final class MatchControllerimpl implements MatchController {
     @Override
     public boolean engageEnemy(int enemyId, int playerId) {
         return updateEnemyState(enemyId, playerId, true);
+    }
+
+    public boolean retreat(){
+        if (!hasBossInMap() && getWall().getCurrentHealth() <= 0){
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -629,8 +645,13 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     @Override
-    public void notifyPauseEnd() {
+    public void notifyPauseStart() {
+        mainController.getMatchStartObserver().stopMatchLoop();
+    }
 
+    @Override
+    public void notifyPauseEnd() {
+        mainController.getMatchStartObserver().resumeMatchLoop();
     }
 
     @Override
@@ -791,12 +812,12 @@ public final class MatchControllerimpl implements MatchController {
     public void matchResult() {
         if (isHeroMissing()){
             matchView.disposeDefeat();
-            this.mainController.getMatchStartObserver().onMatchEnd();
+            this.mainController.getMatchStartObserver().stopMatchLoop();
             //se il boss manca (inzialmente è vero) e bossactive è falso
             //poi il boss compare ma bossActive diventa vero
         }else if (isBossMissing() && bossActive){
             matchView.disposeVictory();
-            this.mainController.getMatchStartObserver().onMatchEnd();
+            this.mainController.getMatchStartObserver().stopMatchLoop();
         }
     }
 
