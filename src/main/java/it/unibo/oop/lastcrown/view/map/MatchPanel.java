@@ -196,8 +196,9 @@ public final class MatchPanel extends JPanel {
     public Point getWallCoordinates() {
         return new Point(this.deckZoneWidth + this.posZoneWidth, 0);
     }
+
     /**
-     * Notify the cardzone about the new deck
+     * Notify the cardzone about the new deck.
      * @param newDeck the new deck to use
      */
     public void updateInGameDeck(final Set<CardIdentifier> newDeck) {
