@@ -27,9 +27,7 @@ public class MatchStartObserverImpl implements MatchStartObserver {
     public void onMatchStart(final int width, final int height, final CardIdentifier id,
                             final CollectionController collectionController, final MainView mainView) {
         // Step 1: Istanzia il MatchController la PRIMA VOLTA o resettalo se esiste già
-        if (this.matchController == null) {
-            this.matchController = new MatchControllerimpl(this.mainController, width, height, id, collectionController, mainView);
-        }
+        this.matchController = new MatchControllerimpl(this.mainController, width, height, id, collectionController, mainView);
 
         // Step 2: Avvia il Gameloop (solo se non è già attivo)
         if (this.gameLoopThread == null || !this.gameLoopThread.isAlive()) {
