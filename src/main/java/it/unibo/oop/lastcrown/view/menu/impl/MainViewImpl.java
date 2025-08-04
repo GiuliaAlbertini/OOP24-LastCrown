@@ -63,6 +63,7 @@ public class MainViewImpl extends JFrame implements MainView {
     private final ShopView shopView;
     private MatchView matchView;
     private boolean matchExist;
+    private int enemyList = 3;
 
     /**
      * Constructs the main application window, initializes each scene,
@@ -183,9 +184,13 @@ public class MainViewImpl extends JFrame implements MainView {
             return;
         }
         this.shopView.notifyHidden();
-        this.gameController.onMatchStart(WIDTH, HEIGHT, this.deckController.getHero(), this.collectionController, this);
+        this.gameController.onMatchStart(WIDTH, HEIGHT, this.deckController.getHero(), this.collectionController, this, enemyList);
         if (this.matchExist) {
+            if (SceneName.SHOP.equals(caller) && this.enemyList > 1) {
+                this.enemyList = this.enemyList - 1;
+            }
             this.mainPanel.remove(this.matchView.getPanel());
+            this.matchExist = false;
         }
         this.matchView = new MatchViewImpl(this.sceneManager, this.gameController.getMatchControllerReference(),
                     WIDTH, HEIGHT, this.deckController.getDeck());
@@ -198,6 +203,7 @@ public class MainViewImpl extends JFrame implements MainView {
 
     @Override
     public final void onMenu(final SceneName caller) {
+        this.enemyList = 3;
         if (SceneName.SHOP.equals(caller) || SceneName.MATCH.equals(caller)) {
             this.mainController.updateAccount(this.shopView.getManagedAccount());
             if (matchExist) {
