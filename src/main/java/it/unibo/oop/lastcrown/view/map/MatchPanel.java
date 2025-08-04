@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Optional;
 import java.util.Set;
 
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
@@ -71,11 +72,11 @@ public final class MatchPanel extends JPanel {
             @Override
             public void mouseClicked(final MouseEvent e) {
                 final Point pointInPosZone = SwingUtilities.convertPoint(overLayPanel, e.getPoint(), posZone);
-                final CardIdentifier cardId = cardZone.getLastClicked();
-                if (cardId == null) {
+                final Optional<CardIdentifier> cardId = cardZone.getLastClicked();
+                if (cardId.isEmpty()) {
                     return;
                 }
-                switch (cardId.type()) {
+                switch (cardId.get().type()) {
                     case CardType.MELEE -> {
                         if (posZone.isValidClick(CardType.MELEE, pointInPosZone)) {
                             final int x = deckZoneWidth + posZoneWidth * 3 / 4;
@@ -125,9 +126,9 @@ public final class MatchPanel extends JPanel {
         this.panelsHeight = this.frameHeight - this.utilityZoneHeight;
         this.setOpaque(false);
         this.posZone = new PositioningZone(this.posZoneWidth, panelsHeight);
-        this.cardZone = new DeckZone(gameContr, posZone, deckZoneWidth, panelsHeight, energyBarWidth, deck);
+        this.cardZone = new DeckZoneImpl(gameContr, posZone, deckZoneWidth, panelsHeight, energyBarWidth, deck);
         cardZone.setBounds(0, 0, this.deckZoneWidth, panelsHeight);
-        this.add(cardZone);
+        this.add((DeckZoneImpl) cardZone);
 
         posZone.setBounds(deckZoneWidth, 0, this.posZoneWidth, panelsHeight);
         this.add(posZone);
