@@ -42,6 +42,8 @@ public interface MatchView extends Scene {
      */
     HitboxController addHeroGraphics(int id, JComponent heroGraphics, String typefolder, String name);
 
+    void addSpellGraphics(final int id, final JComponent component, final int x, final int y);
+
     /**
      * Adds the graphical representation of an enemy to the view at the specified
      * position.

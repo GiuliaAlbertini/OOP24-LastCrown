@@ -24,7 +24,7 @@ import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 public final class MatchViewImpl extends JPanel implements MatchView, MatchExitObserver {
     private static final long serialVersionUID = 1L;
     private final MatchPanel mainPanel;
-    MatchController matchController;
+    private final MatchController matchController;
     private final Map<Integer, JComponent> newComponents;
     private final transient SceneManager sceneManager;
 
@@ -86,7 +86,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         component.setBounds(x - size.width / 2, y - size.height / 2, size.width, size.height);
 
         this.mainPanel.add(component);
-        this.mainPanel.setComponentZOrder(component, 1);
+        this.mainPanel.setComponentZOrder(component, 0);
 
         final HitboxController hitboxcontroller= matchController.setupCharacter(component, typefolder, name, true, component.getX(), component.getY());
 
@@ -99,6 +99,16 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         return hitboxcontroller;
     }
 
+
+    @Override
+    public synchronized void addSpellGraphics(final int id, final JComponent component, final int x, final int y) {
+        this.newComponents.put(id, component);
+        final Dimension size = component.getPreferredSize();
+        component.setBounds(x - size.width / 2, y - size.height / 2, size.width, size.height);
+        this.mainPanel.add(component);
+        this.mainPanel.setComponentZOrder(component, 0);
+        this.mainPanel.repaint();
+    }
 
     @Override
     public synchronized HitboxController addHeroGraphics(final int id, final JComponent heroGraphics, String typefolder, String name) {
