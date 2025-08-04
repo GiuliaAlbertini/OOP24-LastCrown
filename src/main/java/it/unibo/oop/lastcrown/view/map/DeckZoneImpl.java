@@ -124,6 +124,41 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
         updateCardButtons(buttonListener, mouseListener);
     }
 
+    @Override
+    public Optional<CardIdentifier> getLastClicked() {
+        return this.lastClicked;
+    }
+
+    @Override
+    public boolean playCard() {
+        if (this.lastClicked.isPresent()) {
+            final int cost = inGameDeckController.getEnergyToPlay(this.lastClicked.get());
+            if (currentEnergy >= cost) {
+                currentEnergy -= cost;
+                updateEnergyBar(currentEnergy);
+                if (!rechargeTimer.isRunning()) {
+                    rechargeTimer.start();
+                }
+                inGameDeckController.playCard(this.lastClicked.get());
+                updateCardButtons(this.buttonListener, this.mouseListener);
+                this.lastClicked = Optional.empty();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void updateInGameDeck(final Set<CardIdentifier> newDeck) {
+        this.inGameDeckController = InGameDeckController.create(newDeck);
+        this.updateCardButtons(buttonListener, mouseListener);
+    }
+
+    @Override
+    public void handleButtonsEnabling(final boolean start) {
+        enablePanelAndChildren(btnsPanel, !start);
+    }
+
     private void updateCardButtons(final ActionListener act, final MouseListener ml) {
         this.btnsPanel.removeAll();
         final List<CardIdentifier> nextCards = inGameDeckController.getNextAvailableCards();
@@ -131,8 +166,6 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
             final JPanel singleCardPanel = initSingleCardPanel(act, ml, id);
             this.btnsPanel.add(singleCardPanel);
         }
-        this.btnsPanel.revalidate();
-        this.btnsPanel.repaint();
     }
 
     private JPanel initSingleCardPanel(final ActionListener act, final MouseListener ml, final CardIdentifier id) {
@@ -201,11 +234,6 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
         container.add(energyBarPanel);
     }
 
-    @Override
-    public final Optional<CardIdentifier> getLastClicked() {
-        return this.lastClicked;
-    }
-
     private void updateEnergyBar(final int energyLevel) {
         energyBarPanel.removeAll();
         final Color full = new Color(255, 105, 180);
@@ -221,40 +249,10 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
         energyBarPanel.repaint();
     }
 
-    @Override
-    public final boolean playCard() {
-        if (this.lastClicked.isPresent()) {
-            final int cost = inGameDeckController.getEnergyToPlay(this.lastClicked.get());
-            if (currentEnergy >= cost) {
-                currentEnergy -= cost;
-                updateEnergyBar(currentEnergy);
-                if (!rechargeTimer.isRunning()) {
-                    rechargeTimer.start();
-                }
-                inGameDeckController.playCard(this.lastClicked.get());
-                updateCardButtons(this.buttonListener, this.mouseListener);
-                this.lastClicked = Optional.empty();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public final void updateInGameDeck(final Set<CardIdentifier> newDeck) {
-        this.inGameDeckController = InGameDeckController.create(newDeck);
-        this.updateCardButtons(buttonListener, mouseListener);
-    }
-
     private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         this.buttonListener = this.buttonListenerDefensiveCopy;
         this.mouseListener = this.mouseListenerDefensiveCopy;
-    }
-
-    @Override
-    public final void handleButtonsEnabling(final boolean start) {
-        enablePanelAndChildren(btnsPanel, !start);
     }
 
     private void enablePanelAndChildren(final JPanel panel, final boolean start) {
