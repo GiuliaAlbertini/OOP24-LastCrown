@@ -199,7 +199,9 @@ public class MainViewImpl extends JFrame implements MainView {
     public final void onMenu(final SceneName caller) {
         if (SceneName.SHOP.equals(caller) || SceneName.MATCH.equals(caller)) {
             this.mainController.updateAccount(this.shopView.getManagedAccount());
-            this.matchView.clearNewGraphicsComponent();
+            if (matchExist) {
+                this.matchView.clearNewGraphicsComponent();
+            }
         }
         if (!AudioEngine.getActualSoundTrack().equals(SoundTrack.MENU)) {
             AudioEngine.playSoundTrack(SoundTrack.MENU);
