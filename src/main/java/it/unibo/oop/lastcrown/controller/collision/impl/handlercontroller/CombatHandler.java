@@ -46,6 +46,12 @@ public final class CombatHandler implements StateHandler {
             return CharacterState.DEAD;
         }
 
+        if (character.getId().type() == CardType.RANGED && match.retreat()){
+            queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+            return CharacterState.STOPPED;
+        }
+
+
         final boolean isPlayer = character instanceof PlayableCharacterController;
         final boolean isHero = character instanceof HeroController;
         if (isPlayer || isHero) {

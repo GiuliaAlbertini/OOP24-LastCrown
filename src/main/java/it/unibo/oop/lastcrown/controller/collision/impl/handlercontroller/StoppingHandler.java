@@ -28,6 +28,8 @@ public final class StoppingHandler implements StateHandler {
     private final MatchController match;
     private boolean wait;
     private static final int ENEMY_SPEED = 2;
+    private boolean retreat;
+
 
     /**
      * @param eventFactory    the factory used to create events for the character's
@@ -56,17 +58,25 @@ public final class StoppingHandler implements StateHandler {
 
         match.matchResult();
 
+        if (characterType == CardType.HERO && !match.hasBossInMap() && match.isRoundSpawnComplete()
+            && !match.hasAnyPlayerInMap() && !match.hasAnyEnemiesInMap()){
+            match.setRadiusPlayerInMap();
+            match.getRandomBossFromFirstList();
+        }
 
         // == caso heroe ==
         if (characterType == CardType.HERO) {
-            handleHeroCharacter(character, queue, charId); // dovrebbe già restituire qualcosa
+            handleHeroCharacter(character, queue, charId);
             return CharacterState.STOPPED;
         }
 
             // == caso Ranged ==
         if (characterType == CardType.RANGED) {
-            handleRangedCharacter(character, queue, charId);
-            return CharacterState.STOPPED;
+            if (!retreat) {
+                return handleRangedCharacter(character, queue, charId);
+            } else {
+                return handleRetreatRanged(character, queue, charId);
+            }
         }
 
         //SE NON SEI HERO, inizio ritirata
@@ -77,7 +87,7 @@ public final class StoppingHandler implements StateHandler {
                     character.setNextAnimation(Keyword.RETREAT);
                     character.showNextFrameAndMove(movementCharacter);
                     match.updateCharacterPosition(character, movementCharacter.x(), movementCharacter.y());
-
+                    retreat=true;
                     //aspetta che tutti i nemici siano andati via dalla mappa
                     if (match.isEnemyBeyondFrame(character.getId().number())) {
                         queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
@@ -103,6 +113,7 @@ public final class StoppingHandler implements StateHandler {
             }
         }else if (!isBosshandle){ //se il boss compare andate tutti in idle
             //match.setAllFSMsToState(CharacterState.IDLE);
+            retreat=false;
             queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
             return CharacterState.IDLE;
         }
@@ -149,26 +160,50 @@ public final class StoppingHandler implements StateHandler {
     private CharacterState handleRangedCharacter(final GenericCharacterController character, final EventQueue queue,
             final int charId) {
 
-        if (match.isRangedFightPartnerDead(charId)) {
-            queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-        } else if (!resolver.hasOpponentRangedPartner(charId)) {
-            match.getCharacterControllerById(charId)
+        character.setNextAnimation(Keyword.STOP);
+        character.showNextFrame();
+
+        final boolean isBossFight = resolver.hasOpponentBossPartner(charId);
+        match.getCharacterControllerById(charId)
                     .filter(PlayableCharacterController.class::isInstance)
                     .map(PlayableCharacterController.class::cast)
                     .flatMap(scanner::scanForFollowEventForPlayer)
                     .ifPresent(event -> {
                         match.notifyCollisionObservers(event);
-                        queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
                     });
-            if (!queue.hasPendingEvents()) {
-                queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-            }
-        } else {
-            queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
+
+        //se la ritirata è falsa
+        if (match.isRangedFightPartnerDead(charId)) {
+            queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+        //se la ritirata è falsa
+        } else if ((resolver.hasOpponentRangedPartner(charId)) || isBossFight) {
+                queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
+                return CharacterState.COMBAT;
         }
+        queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+        return CharacterState.STOPPED;
+    }
+
+
+
+    private CharacterState handleRetreatRanged(final GenericCharacterController character, final EventQueue queue, final int charId) {
 
         character.setNextAnimation(Keyword.STOP);
         character.showNextFrame();
+
+        final boolean isBossFight = resolver.hasOpponentBossPartner(charId);
+        match.getCharacterControllerById(charId)
+                    .filter(PlayableCharacterController.class::isInstance)
+                    .map(PlayableCharacterController.class::cast)
+                    .flatMap(scanner::scanForFollowEventForPlayer)
+                    .ifPresent(event -> {
+                        match.notifyCollisionObservers(event);
+                    });
+
+         if (isBossFight) {
+                queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
+                return CharacterState.COMBAT;
+            }
         queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
         return CharacterState.STOPPED;
     }
