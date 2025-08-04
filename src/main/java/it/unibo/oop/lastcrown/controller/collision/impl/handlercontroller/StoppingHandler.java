@@ -93,7 +93,6 @@ public final class StoppingHandler implements StateHandler {
                         queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
                         return CharacterState.DEAD;
                     }
-
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
                 } else {
@@ -213,22 +212,28 @@ public final class StoppingHandler implements StateHandler {
 
     private CharacterState handleHeroCharacter(final GenericCharacterController character, final EventQueue queue,
             final int charId) {
-        //print
-        //match.printHitboxControllers();
+        final boolean isEngagedWithDead = match.isBossFightPartnerDead(charId);
+
+        character.setNextAnimation(Keyword.STOP);
+        character.showNextFrame();
+
+
         if (match.hasBossInMap() && !match.hasAnyPlayerInMap()) {
             // Boss in campo, nessun altro player: prova lo scanner
             scanner.scanForFollowEventForHero(character)
                     .ifPresent(match::notifyCollisionObservers);
 
-            if (resolver.hasOpponentBossPartner(character.getId().number())) {
+        if (isEngagedWithDead) {
+            queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+            return CharacterState.STOPPED;
+        } else if (resolver.hasOpponentBossPartner(character.getId().number())) {
                 queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
                 return CharacterState.COMBAT;
             }
         }
-        character.setNextAnimation(Keyword.STOP);
-        character.showNextFrame();
         queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
         return CharacterState.STOPPED;
+
     }
 
 
