@@ -94,7 +94,7 @@ public class MainViewImpl extends JFrame implements MainView {
         this.statsView = StatsView.create(this.sceneManager, this.accountController);
         this.deckView = DeckView.create(this.sceneManager, deckController);
         this.collectionView = CollectionView.create(this.sceneManager, this.collectionController, getOwnedCards());
-        this.shopView = new ShopViewImpl(this.sceneManager, collectionController, 
+        this.shopView = new ShopViewImpl(this.sceneManager, collectionController,
             deckContr.getAvailableCards(), WIDTH, HEIGHT, accountController.getAccount());
         // HERE MISSING SHOP VIEW AND MATCH VIEW TO THE MAIN CONTROLLER
         // gameContr.newShopView(this.shopView);
@@ -183,7 +183,7 @@ public class MainViewImpl extends JFrame implements MainView {
             return;
         }
         this.shopView.notifyHidden();
-        this.gameController.onMatchStart(WIDTH, HEIGHT, this.deckController.getHero(), this.collectionController);
+        this.gameController.onMatchStart(WIDTH, HEIGHT, this.deckController.getHero(), this.collectionController, this);
         if (!this.matchExist) {
             this.matchView = new MatchViewImpl(this.sceneManager, this.gameController.getMatchControllerReference(),
                     WIDTH, HEIGHT, this.deckController.getDeck());

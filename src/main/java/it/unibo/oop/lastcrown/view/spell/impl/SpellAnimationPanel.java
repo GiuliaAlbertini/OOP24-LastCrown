@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.view.spell.impl;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 
@@ -31,7 +32,7 @@ final class SpellAnimationPanel extends JComponent implements AnimationPanel {
     private void init(final int width, final int height) {
         this.setLayout(null);
         this.setOpaque(false);
-        this.setSize(width, height);
+        this.setPreferredSize(new Dimension(width, height));
     }
 
     @Override

@@ -7,6 +7,7 @@ import it.unibo.oop.lastcrown.controller.collision.impl.MatchControllerimpl;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.map.MatchView;
+import it.unibo.oop.lastcrown.view.menu.api.MainView;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 
 
@@ -23,10 +24,11 @@ public class MatchStartObserverImpl implements MatchStartObserver {
     }
 
     @Override
-    public void onMatchStart(final int width, final int height, final CardIdentifier id, final CollectionController collectionController) {
+    public void onMatchStart(final int width, final int height, final CardIdentifier id,
+                            final CollectionController collectionController, final MainView mainView) {
         // Step 1: Istanzia il MatchController la PRIMA VOLTA o resettalo se esiste già
         if (this.matchController == null) {
-            this.matchController = new MatchControllerimpl(this.mainController, width, height, id, collectionController);
+            this.matchController = new MatchControllerimpl(this.mainController, width, height, id, collectionController, mainView);
         }
 
         // Step 2: Avvia il Gameloop (solo se non è già attivo)
