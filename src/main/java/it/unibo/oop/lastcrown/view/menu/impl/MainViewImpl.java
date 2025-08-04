@@ -184,13 +184,14 @@ public class MainViewImpl extends JFrame implements MainView {
         }
         this.shopView.notifyHidden();
         this.gameController.onMatchStart(WIDTH, HEIGHT, this.deckController.getHero(), this.collectionController, this);
-        if (!this.matchExist) {
-            this.matchView = new MatchViewImpl(this.sceneManager, this.gameController.getMatchControllerReference(),
-                    WIDTH, HEIGHT, this.deckController.getDeck());
-            this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName().get());
-            this.gameController.getMatchView(matchView);
-            this.matchExist = true;
+        if (this.matchExist) {
+            this.mainPanel.remove(this.matchView.getPanel());
         }
+        this.matchView = new MatchViewImpl(this.sceneManager, this.gameController.getMatchControllerReference(),
+                    WIDTH, HEIGHT, this.deckController.getDeck());
+        this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName().get());
+        this.matchExist = true;
+        this.gameController.getMatchView(matchView);
         this.matchView.updateInGameDeck(this.deckController.getDeck());
         AudioEngine.playSoundTrack(SoundTrack.BATTLE);
     }
