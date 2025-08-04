@@ -3,6 +3,8 @@ package it.unibo.oop.lastcrown.view.map;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -267,5 +269,19 @@ public final class DeckZone extends JPanel {
         in.defaultReadObject();
         this.buttonListener = this.buttonListenerDefensiveCopy;
         this.mouseListener = this.mouseListenerDefensiveCopy;
+    }
+
+    public void handleButtonsEnabling(final boolean start) {
+        System.out.println("boss fight iniziata: "+start);
+        enablePanelAndChildren(btnsPanel, !start);       
+    }
+
+    private void enablePanelAndChildren(final JPanel panel, final boolean start) {
+            for (Component comp : panel.getComponents()) {
+                comp.setEnabled(start);
+                if (comp instanceof Container && !(comp instanceof JButton || comp instanceof JLabel)) {
+                    enablePanelAndChildren((JPanel) comp, start);
+            }
+        }
     }
 }
