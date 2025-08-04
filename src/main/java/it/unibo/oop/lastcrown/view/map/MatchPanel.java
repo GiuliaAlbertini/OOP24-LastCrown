@@ -80,21 +80,24 @@ public final class MatchPanel extends JPanel {
                     case CardType.MELEE -> {
                         if (posZone.isValidClick(CardType.MELEE, pointInPosZone)) {
                             final int x = deckZoneWidth + posZoneWidth * 3 / 4;
-                            cardZone.playCard();
-                            gameContr.notifyClicked(x, e.getY());
+                            if (cardZone.playCard()) {
+                               gameContr.notifyClicked(x, e.getY()); 
+                            }
                         }
                     }
                     case CardType.RANGED -> {
                         if (posZone.isValidClick(CardType.RANGED, pointInPosZone)) {
                             final int x = deckZoneWidth + posZoneWidth * 1 / 4;
-                            cardZone.playCard();
-                            gameContr.notifyClicked(x, e.getY());
+                            if (cardZone.playCard()) {
+                                gameContr.notifyClicked(x, e.getY());
+                            }
                         }
                     }
                     case CardType.SPELL -> {
                         if (e.getX() > posZoneWidth + wallZoneWidth && e.getY() < panelsHeight) {
-                            cardZone.playCard();
-                            gameContr.notifyClicked(e.getX() + deckZoneWidth, e.getY());
+                            if (cardZone.playCard()) {
+                                gameContr.notifyClicked(e.getX() + deckZoneWidth, e.getY());
+                            }
                         }
                     }
                     default -> { }
