@@ -1,13 +1,12 @@
 package it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller;
 
-
 import java.util.Optional;
 
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
-import it.unibo.oop.lastcrown.controller.collision.impl.EnemyRadiusScanner;
+import it.unibo.oop.lastcrown.controller.collision.api.TargetingSystem;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.EventFactory;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.EventQueue;
@@ -26,7 +25,7 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
  */
 public final class IdleHandler implements StateHandler {
     private final MatchController matchController;
-    private final EnemyRadiusScanner scanner;
+    private final TargetingSystem scanner;
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;
     private static final int PLAYER_SPEED = 2;
@@ -44,7 +43,7 @@ public final class IdleHandler implements StateHandler {
      *                        interactions
      */
     public IdleHandler(final MatchController matchController,
-            final EnemyRadiusScanner scanner,
+            final TargetingSystem scanner,
             final EventFactory eventFactory,
             final CollisionResolver resolver) {
         this.matchController = matchController;
@@ -55,7 +54,7 @@ public final class IdleHandler implements StateHandler {
 
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
-                                 final int deltaTime) {
+            final int deltaTime) {
         if (character == null) {
             queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
             return CharacterState.DEAD;
@@ -96,12 +95,12 @@ public final class IdleHandler implements StateHandler {
      */
     private CharacterState handlePlayerIdleLogic(final PlayableCharacterController player, final EventQueue queue) {
 
-        if (isAtTroopZoneLimit(player)  && !matchController.hasEntityTypeInMap(CardType.BOSS)) {
+        if (isAtTroopZoneLimit(player) && !matchController.hasEntityTypeInMap(CardType.BOSS)) {
             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
             return CharacterState.STOPPED;
         }
 
-        scanner.scanForFollowEventForPlayer(player)
+        scanner.scanForTarget(player)
                 .ifPresent(matchController::notifyCollisionObservers);
         if (matchController.isPlayerEngaged(player.getId().number())) {
             queue.enqueue(eventFactory.createEvent(CharacterState.FOLLOWING));
@@ -148,15 +147,15 @@ public final class IdleHandler implements StateHandler {
         return CharacterState.IDLE;
     }
 
-
     private boolean isAtTroopZoneLimit(final GenericCharacterController player) {
-    Optional<HitboxController> hitboxController = matchController.getCharacterHitboxById(player.getId().number());
-    if (hitboxController.isPresent()) {
-        int limit = matchController.getMatchView().getTrupsZoneLimit() - hitboxController.get().getHitbox().getWidth();
-        int roundedLimit = limit + (5 - (limit % 5)) % 5;
-        return hitboxController.get().getHitbox().getPosition().x() >= roundedLimit;
+        Optional<HitboxController> hitboxController = matchController.getCharacterHitboxById(player.getId().number());
+        if (hitboxController.isPresent()) {
+            int limit = matchController.getMatchView().getTrupsZoneLimit()
+                    - hitboxController.get().getHitbox().getWidth();
+            int roundedLimit = limit + (5 - (limit % 5)) % 5;
+            return hitboxController.get().getHitbox().getPosition().x() >= roundedLimit;
+        }
+        return false;
     }
-    return false;
-}
 
 }

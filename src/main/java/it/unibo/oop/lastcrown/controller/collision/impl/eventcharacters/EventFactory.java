@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
+import it.unibo.oop.lastcrown.controller.collision.api.TargetingSystem;
 import it.unibo.oop.lastcrown.controller.collision.impl.EnemyRadiusScanner;
 import it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller.CombatHandler;
 import it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller.DeadHandler;
@@ -28,7 +29,7 @@ public final class EventFactory {
      */
 
     public EventFactory(final MatchController matchController,
-                        final EnemyRadiusScanner scanner,
+                        final TargetingSystem scanner,
                         final CollisionResolver resolver) {
         registerDefaultHandlers(matchController, scanner, resolver);
     }
@@ -40,7 +41,7 @@ public final class EventFactory {
      * @param resolver the collision resolver
      */
     private void registerDefaultHandlers(final MatchController matchController,
-                                         final EnemyRadiusScanner scanner,
+                                         final TargetingSystem scanner,
                                          final CollisionResolver resolver) {
         registerHandler(CharacterState.IDLE, new IdleHandler(matchController, scanner, this, resolver));
         registerHandler(CharacterState.FOLLOWING, new FollowingHandler(matchController, resolver, this));

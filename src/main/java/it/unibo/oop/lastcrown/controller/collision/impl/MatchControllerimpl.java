@@ -30,6 +30,7 @@ import it.unibo.oop.lastcrown.controller.characters.impl.wall.WallFactory;
 import it.unibo.oop.lastcrown.controller.collision.api.EntityStateManager;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
+import it.unibo.oop.lastcrown.controller.collision.api.TargetingSystem;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
@@ -104,7 +105,7 @@ public final class MatchControllerimpl implements MatchController {
 
     private final EntityStateManager entityStateManager;
 
-    private final EnemyRadiusScanner radiusScanner;
+    private final TargetingSystem radiusScanner;
     private EnemySpawnerImpl enemySpawner;
 
     public MatchControllerimpl(final MainController mainController,
@@ -141,7 +142,7 @@ public final class MatchControllerimpl implements MatchController {
         this.collisionResolver = new CollisionResolverImpl(this);
         this.collisionManager.addObserver(collisionResolver);
         this.entityStateManager = new EntityStateManagerImpl();
-        this.radiusScanner = new EnemyRadiusScanner(this.entityStateManager.getHitboxControllersMap(), this,
+        this.radiusScanner = new TargetingSystemImpl(this.entityStateManager.getHitboxControllersMap(), this,
                 collisionResolver);
         this.enemySpawner = new EnemySpawnerImpl(this, collectionController, frameWidth, frameHeight, enemyList);
 
