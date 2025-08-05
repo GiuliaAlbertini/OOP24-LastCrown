@@ -65,6 +65,7 @@ public class MainViewImpl extends JFrame implements MainView {
     private MatchView matchView;
     private boolean matchExist;
     private int enemyList = 3;
+
     private boolean victory;
 
     /**
@@ -102,31 +103,6 @@ public class MainViewImpl extends JFrame implements MainView {
 
         setUpPanels();
         this.layout.show(this.mainPanel, menuView.getSceneName().get());
-    }
-
-    private Set<CardIdentifier> getOwnedCards() {
-        return this.accountController.getAccount().getUserCollection().getCollection();
-    }
-
-    private void init() {
-        this.setTitle("LastCrown");
-        this.setExtendedState(MAXIMIZED_BOTH);
-        this.setSize(new Dimension(WIDTH, HEIGHT));
-        this.setContentPane(this.mainPanel);
-        this.setBackground(BG_COLOR);
-        this.setResizable(false);
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
-        this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        this.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentMoved(final ComponentEvent e) {
-                SwingUtilities.invokeLater(() -> {
-                    revalidate();
-                    repaint();
-                });
-            }
-        });
     }
 
     /**
@@ -247,6 +223,51 @@ public class MainViewImpl extends JFrame implements MainView {
         this.mainPanel.add(this.collectionView.getPanel(), this.collectionView.getSceneName().get());
     }
 
+    @Override
+    public final void updateAccountUsers(final Account account) {
+        this.accountController.setAccount(account);
+        this.mainPanel.remove(this.statsView.getPanel());
+        this.statsView = StatsView.create(this.sceneManager, this.accountController);
+        this.mainPanel.add(this.statsView.getPanel(), this.statsView.getSceneName().get());
+        updateUserCollectionUsers(account.getUserCollection().getCollection());
+    }
+
+    @Override
+    public final MainView getFrame() {
+        return this;
+    }
+
+    @Override
+    public final void close() {
+        this.dispose();
+        AudioEngine.stopTrack();
+    }
+
+    private Set<CardIdentifier> getOwnedCards() {
+        return this.accountController.getAccount().getUserCollection().getCollection();
+    }
+
+    private void init() {
+        this.setTitle("LastCrown");
+        this.setExtendedState(MAXIMIZED_BOTH);
+        this.setSize(new Dimension(WIDTH, HEIGHT));
+        this.setContentPane(this.mainPanel);
+        this.setBackground(BG_COLOR);
+        this.setResizable(false);
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
+        this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentMoved(final ComponentEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    revalidate();
+                    repaint();
+                });
+            }
+        });
+    }
+
     private void updateDeckController(final Set<CardIdentifier> newSet) {
         final Set<CardIdentifier> currentDeck = this.deckController.getDeck();
         final DeckController newDeckContr = new DeckControllerImpl(newSet);
@@ -276,25 +297,5 @@ public class MainViewImpl extends JFrame implements MainView {
                 f.dispose();
             }
         }
-    }
-
-    @Override
-    public final void updateAccountUsers(final Account account) {
-        this.accountController.setAccount(account);
-        this.mainPanel.remove(this.statsView.getPanel());
-        this.statsView = StatsView.create(this.sceneManager, this.accountController);
-        this.mainPanel.add(this.statsView.getPanel(), this.statsView.getSceneName().get());
-        updateUserCollectionUsers(account.getUserCollection().getCollection());
-    }
-
-    @Override
-    public final MainView getFrame() {
-        return this;
-    }
-
-    @Override
-    public final void close() {
-        this.dispose();
-        AudioEngine.stopTrack();
     }
 }
