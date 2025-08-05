@@ -105,15 +105,19 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
         this.mouseListener = new MouseAdapter() {
             @Override
             public void mouseEntered(final MouseEvent e) {
-                final var jb = (JButton) e.getSource();
-                final CardIdentifier id = (CardIdentifier) jb.getClientProperty(KEY_PROPERTY);
-                pos.highlightCells(id.type());
+                if (!bossFight) {
+                    final var jb = (JButton) e.getSource();
+                    final CardIdentifier id = (CardIdentifier) jb.getClientProperty(KEY_PROPERTY);
+                    pos.highlightCells(id.type());
+                }
             }
             @Override
             public void mouseExited(final MouseEvent e) {
-                final var jb = (JButton) e.getSource();
-                final CardIdentifier id = (CardIdentifier) jb.getClientProperty(KEY_PROPERTY);
-                pos.stopHighLight(id.type());
+                if (!bossFight) {
+                    final var jb = (JButton) e.getSource();
+                    final CardIdentifier id = (CardIdentifier) jb.getClientProperty(KEY_PROPERTY);
+                    pos.stopHighLight(id.type());
+                }
             }
         };
         this.mouseListenerDefensiveCopy = mouseListener;
