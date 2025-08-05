@@ -63,6 +63,7 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
     private final int deckZoneWidth;
     private final int deckZoneHeight;
     private final int energyZoneWidth;
+    private boolean bossFight;
 
     /**
      * @param mainContr main controller
@@ -156,6 +157,7 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
 
     @Override
     public void handleButtonsEnabling(final boolean start) {
+        this.bossFight = start;
         enablePanelAndChildren(btnsPanel, !start);
     }
 
@@ -165,6 +167,9 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
         for (final CardIdentifier id : nextCards) {
             final JPanel singleCardPanel = initSingleCardPanel(act, ml, id);
             this.btnsPanel.add(singleCardPanel);
+        }
+        if (this.bossFight) {
+            enablePanelAndChildren(btnsPanel, !bossFight);
         }
     }
 
