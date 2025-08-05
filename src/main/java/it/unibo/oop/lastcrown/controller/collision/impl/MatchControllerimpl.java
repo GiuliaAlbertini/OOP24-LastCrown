@@ -601,7 +601,6 @@ public final class MatchControllerimpl implements MatchController {
             spell_y = y;
             spellScanner=true;
         }
-        CardList.clear();
     }
 
     @Override
@@ -613,6 +612,7 @@ public final class MatchControllerimpl implements MatchController {
                     generateUniqueCharacterId(), player);
             CardList.add(new Pair<String, PlayableCharacterController>(player.getName(), playerController));
         } else if (id.type() == CardType.SPELL) {
+            CardList.clear();
             spellScanner=false;
             final Spell spell = this.collection.getSpell(id).get();
             SpellGUI spellGUI = new SpellGUIImpl(spell.getName(), ((int) (frameWidth * DimensionResolver.SPELL.width())));
@@ -636,6 +636,7 @@ public final class MatchControllerimpl implements MatchController {
         matchView.addSpellGraphics(id.number(), spellComponent, x, y);
         spellGUI.startAnimation();
         spellScanner=false;
+        spellList.clear(); // Svuota dopo aver lanciato la magia
 
         final SpellEffect spellEffect = collection.getSpell(id).get().getSpellEffect();
         //switch sul target -> categoria -> amount
@@ -862,17 +863,11 @@ public final class MatchControllerimpl implements MatchController {
             matchView.disposeDefeat();
             this.mainController.getMatchStartObserver().stopMatchLoop();
             mainView.updateAccount(this.coins, false);
-            // charactersController.clear();
-            // hitboxControllers.clear();
-            // playerFSMs.clear();
             this.matchView.notifyBossFight(false);
         }else if (isBossMissing() && bossActive){
             matchView.disposeVictory();
             this.mainController.getMatchStartObserver().stopMatchLoop();
             mainView.updateAccount(this.coins, true);
-            // charactersController.clear();
-            // hitboxControllers.clear();
-            // playerFSMs.clear();
             this.matchView.notifyBossFight(false);
         }
     }
