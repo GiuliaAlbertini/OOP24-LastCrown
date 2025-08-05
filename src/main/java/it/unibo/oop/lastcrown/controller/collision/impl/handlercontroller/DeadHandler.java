@@ -38,10 +38,6 @@ public final class DeadHandler implements StateHandler {
             return CharacterState.DEAD;
         }
 
-        boolean isBoss = character.getId().type() == CardType.BOSS;
-        if (character.getId().type() == CardType.ENEMY || isBoss) {
-            match.rewardCoinsForRound(isBoss);
-        }
 
         final int totalFrames = character.getDeathAnimationSize();
         character.setNextAnimation(Keyword.DEATH);
@@ -56,6 +52,12 @@ public final class DeadHandler implements StateHandler {
                 resolver.clearAllOpponentPairs();
                 match.setBossActive();
             }
+
+            boolean isBoss = character.getId().type() == CardType.BOSS;
+            if (character.getId().type() == CardType.ENEMY || isBoss) {
+                match.rewardCoinsForRound(isBoss);
+            }
+
             match.removeCharacterCompletelyById(character.getId().number());
             match.releaseEngagementFor(character.getId().number());
             resolver.clearEnemyCollision(character.getId().number());
