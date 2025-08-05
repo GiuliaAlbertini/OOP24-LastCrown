@@ -11,7 +11,6 @@ import it.unibo.oop.lastcrown.audio.SoundTrack;
  */
 public final class TracksPathLoader {
     private static final String SEP = System.getProperty("file.separator");
-    private static final String OOP = "OOP24-LastCrown";
     private static final String EFFECT = "effect";
     private static final String INTRO = "intro";
     private static final String LOOP = "loop";
@@ -35,7 +34,7 @@ public final class TracksPathLoader {
     }
 
     private static String loadGenericPath(final SoundTrack soundTrack, final String type) {
-        final String path = OOP + SEP + "src" + SEP + "main" + SEP + "resources" + SEP + "tracks"
+        final String path = "src" + SEP + "main" + SEP + "resources" + SEP + "tracks"
          + SEP + soundTrack.get() + SEP + type + FORMAT;
         if (Files.exists(Paths.get(path))) {
             return path;
@@ -48,7 +47,7 @@ public final class TracksPathLoader {
      * @return the path of the given sound effect or null if the path doesn't exist
      */
     public static String loadSoundEffectPath(final SoundEffect soundEffect) {
-        final String path = OOP + SEP + "src" + SEP + "main" + SEP + "resources" + SEP + "tracks"
+        final String path = "src" + SEP + "main" + SEP + "resources" + SEP + "tracks"
          + SEP + EFFECT + SEP + soundEffect.get() + FORMAT;
         if (Files.exists(Paths.get(path))) {
             return path;
