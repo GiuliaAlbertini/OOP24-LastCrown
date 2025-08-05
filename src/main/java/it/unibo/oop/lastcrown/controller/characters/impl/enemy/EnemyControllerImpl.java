@@ -1,6 +1,5 @@
 package it.unibo.oop.lastcrown.controller.characters.impl.enemy;
 
-import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.impl.GenericCharacterControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardType;
@@ -15,14 +14,11 @@ public class EnemyControllerImpl extends GenericCharacterControllerImpl implemen
     private final String charName;
 
     /**
-     * @param obs the character death observer that communicates with the main controller
-     * the death of this linked enemy
      * @param id the numerical id of this controller
      * @param enemy the enemy linked to this controller
      */
-    public EnemyControllerImpl(final CharacterDeathObserver obs,
-     final int id, final Enemy enemy) {
-        super(obs, id, enemy, CardType.ENEMY);
+    public EnemyControllerImpl(final int id, final Enemy enemy) {
+        super(id, enemy, CardType.ENEMY);
         this.charName = enemy.getName();
     }
 

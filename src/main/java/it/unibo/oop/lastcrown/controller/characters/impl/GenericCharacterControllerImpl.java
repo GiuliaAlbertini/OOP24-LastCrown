@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import javax.swing.JComponent;
 
-import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
@@ -23,19 +22,14 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
     private GenericCharacterGUI view;
     private final InGameCharacter character;
     private CharacterHitObserver opponent;
-    private final CharacterDeathObserver deathObserver;
     private final CardIdentifier id;
 
     /**
-     * @param obs the character death observer that communicates with the main controller
-     * the death of this linked character
      * @param id the numerical id of this controller
      * @param character the Generic character linked to this controller
      * @param charType the type of the linked character
      */
-    public GenericCharacterControllerImpl(final CharacterDeathObserver obs,
-     final int id, final GenericCharacter character, final CardType charType) {
-        this.deathObserver = obs;
+    public GenericCharacterControllerImpl(final int id, final GenericCharacter character, final CardType charType) {
         this.character = InGameCharacterFactory.createInGameCharacter(charType, character.getName(),
         character.getHealthValue(), character.getAttackValue(), character.getSpeedMultiplier());
         this.id = new CardIdentifier(id, charType);
@@ -101,9 +95,6 @@ public abstract class GenericCharacterControllerImpl implements GenericCharacter
     public final synchronized void takeHit(final int damage) {
         this.character.takeDamage(damage);
         this.view.setHealthPercentage(this.character.getHealthPercentage());
-        if (this.character.isDead()) {
-            this.deathObserver.notifyDeath(this.id);
-        }
     }
 
     @Override

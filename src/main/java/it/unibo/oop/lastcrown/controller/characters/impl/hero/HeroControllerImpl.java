@@ -1,6 +1,5 @@
 package it.unibo.oop.lastcrown.controller.characters.impl.hero;
 
-import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
 import it.unibo.oop.lastcrown.controller.characters.impl.GenericCharacterControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardType;
@@ -16,12 +15,11 @@ public class HeroControllerImpl extends GenericCharacterControllerImpl implement
     private final int maximumHealth;
 
     /**
-     * @param deathObs the Character Death observer
      * @param id this hero controller id
      * @param hero the ehero linked to this controller
      */
-    public HeroControllerImpl(final CharacterDeathObserver deathObs, final int id, final Hero hero) {
-        super(deathObs, id, hero, CardType.HERO);
+    public HeroControllerImpl(final int id, final Hero hero) {
+        super(id, hero, CardType.HERO);
         this.charName = hero.getName();
         this.maximumHealth = hero.getHealthValue();
     }
