@@ -16,6 +16,10 @@ import java.util.stream.Collectors;
 
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
+
+import it.unibo.oop.lastcrown.audio.SoundEffect;
+import it.unibo.oop.lastcrown.audio.SoundTrack;
+import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
@@ -111,6 +115,7 @@ public final class MatchControllerimpl implements MatchController {
     private int roundIndex;
     private int enemyIndexInRound = 0;
     private List<Integer> usedPositions = new ArrayList<>();
+    private boolean alreadyDone;
 
 
     // set di carte passate che l'utente gioca -> crea il complete collection e con
@@ -818,6 +823,9 @@ public void handleSpellEnemy(SpellEffect spellEffect){
         bossActive=true;
         this.eventWriter.setText("Inizio BossFight!");
         this.matchView.notifyBossFight(bossActive);
+        if (!alreadyDone) {
+            AudioEngine.playSoundTrack(SoundTrack.BOSSFIGHT);
+        }
     }
 
 
@@ -901,16 +909,22 @@ public void handleSpellEnemy(SpellEffect spellEffect){
     }
 
     public void matchResult() {
-        if (isHeroMissing()){
-            matchView.disposeDefeat();
-            this.mainController.getMatchStartObserver().stopMatchLoop();
-            mainView.updateAccount(this.coins, false);
-            this.matchView.notifyBossFight(false);
-        }else if (isBossMissing() && bossActive){
-            matchView.disposeVictory();
-            this.mainController.getMatchStartObserver().stopMatchLoop();
-            mainView.updateAccount(this.coins, true);
-            this.matchView.notifyBossFight(false);
+        if (!alreadyDone) {
+                if (isHeroMissing()){
+                this.alreadyDone = true;
+                mainView.updateAccount(this.coins, false);
+                AudioEngine.playEffect(SoundEffect.LOSE);
+                matchView.disposeDefeat();
+                this.matchView.notifyBossFight(false);
+                this.mainController.getMatchStartObserver().stopMatchLoop();
+            }else if (isBossMissing() && bossActive){
+                this.alreadyDone = true;
+                mainView.updateAccount(this.coins, true);
+                AudioEngine.playEffect(SoundEffect.WIN);
+                matchView.disposeVictory();
+                this.matchView.notifyBossFight(false);
+                this.mainController.getMatchStartObserver().stopMatchLoop();
+            }
         }
     }
 
