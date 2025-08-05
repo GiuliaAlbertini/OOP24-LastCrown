@@ -63,6 +63,7 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
     private final int deckZoneWidth;
     private final int deckZoneHeight;
     private final int energyZoneWidth;
+    private boolean bossFight;
 
     /**
      * @param mainContr main controller
@@ -104,15 +105,19 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
         this.mouseListener = new MouseAdapter() {
             @Override
             public void mouseEntered(final MouseEvent e) {
-                final var jb = (JButton) e.getSource();
-                final CardIdentifier id = (CardIdentifier) jb.getClientProperty(KEY_PROPERTY);
-                pos.highlightCells(id.type());
+                if (!bossFight) {
+                    final var jb = (JButton) e.getSource();
+                    final CardIdentifier id = (CardIdentifier) jb.getClientProperty(KEY_PROPERTY);
+                    pos.highlightCells(id.type());
+                }
             }
             @Override
             public void mouseExited(final MouseEvent e) {
-                final var jb = (JButton) e.getSource();
-                final CardIdentifier id = (CardIdentifier) jb.getClientProperty(KEY_PROPERTY);
-                pos.stopHighLight(id.type());
+                if (!bossFight) {
+                    final var jb = (JButton) e.getSource();
+                    final CardIdentifier id = (CardIdentifier) jb.getClientProperty(KEY_PROPERTY);
+                    pos.stopHighLight(id.type());
+                }
             }
         };
         this.mouseListenerDefensiveCopy = mouseListener;
@@ -156,6 +161,7 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
 
     @Override
     public void handleButtonsEnabling(final boolean start) {
+        this.bossFight = start;
         enablePanelAndChildren(btnsPanel, !start);
     }
 
@@ -165,6 +171,9 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
         for (final CardIdentifier id : nextCards) {
             final JPanel singleCardPanel = initSingleCardPanel(act, ml, id);
             this.btnsPanel.add(singleCardPanel);
+        }
+        if (this.bossFight) {
+            enablePanelAndChildren(btnsPanel, !bossFight);
         }
     }
 
