@@ -3,6 +3,7 @@ package it.unibo.oop.lastcrown.view.menu.impl;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -108,6 +109,7 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     private void init() {
+        this.setTitle("LastCrown");
         this.setExtendedState(MAXIMIZED_BOTH);
         this.setSize(new Dimension(WIDTH, HEIGHT));
         this.setContentPane(this.mainPanel);
@@ -178,6 +180,7 @@ public class MainViewImpl extends JFrame implements MainView {
             dialog.setVisible(true);
             return;
         }
+        closeAllFramesExceptOne();
         this.shopView.notifyHidden();
         if (this.matchExist) {
             if (this.victory && this.enemyList > 1) {
@@ -199,6 +202,8 @@ public class MainViewImpl extends JFrame implements MainView {
     public final void onMenu(final SceneName caller) {
         this.enemyList = 3;
         if (SceneName.SHOP.equals(caller) || SceneName.MATCH.equals(caller)) {
+            closeAllFramesExceptOne();
+            this.shopView.notifyHidden();
             this.mainController.updateAccount(this.shopView.getManagedAccount());
         }
         if (!AudioEngine.getActualSoundTrack().equals(SoundTrack.MENU)) {
@@ -262,6 +267,15 @@ public class MainViewImpl extends JFrame implements MainView {
         this.mainPanel.add(this.deckView.getPanel(), this.deckView.getSceneName().get());
         this.mainPanel.add(this.collectionView.getPanel(), this.collectionView.getSceneName().get());
         this.mainPanel.add(this.shopView.getPanel(), this.shopView.getSceneName().get());
+    }
+
+    private void closeAllFramesExceptOne() {
+        final Frame[] frames = Frame.getFrames();
+        for (final Frame f : frames) {
+            if (f != this) {
+                f.dispose();
+            }
+        }
     }
 
     @Override
