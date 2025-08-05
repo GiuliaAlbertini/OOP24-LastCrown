@@ -16,7 +16,6 @@ import javax.swing.SwingUtilities;
 
 import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
-import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MatchStartObserver;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;

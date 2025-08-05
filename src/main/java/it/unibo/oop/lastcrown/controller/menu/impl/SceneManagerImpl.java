@@ -2,7 +2,6 @@ package it.unibo.oop.lastcrown.controller.menu.impl;
 
 import java.util.Set;
 
-import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MatchStartObserver;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
