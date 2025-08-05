@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,14 +19,11 @@ import it.unibo.oop.lastcrown.audio.SoundEffect;
 import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
-import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.Wall;
-import it.unibo.oop.lastcrown.controller.characters.impl.boss.BossControllerFactory;
-import it.unibo.oop.lastcrown.controller.characters.impl.enemy.EnemyControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.hero.HeroControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.playablecharacter.PlCharControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.wall.WallFactory;
@@ -38,7 +34,6 @@ import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.Characte
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
-import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.model.characters.api.Hero;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
@@ -71,11 +66,9 @@ import it.unibo.oop.lastcrown.view.spell.api.SpellGUI;
 import it.unibo.oop.lastcrown.view.spell.impl.SpellGUIImpl;
 
 public final class MatchControllerimpl implements MatchController {
-    // private final MainController controller;
 
     final List<Pair<String, PlayableCharacterController>> CardList = new ArrayList<>();
     final List<Pair<CardIdentifier, SpellGUI>> spellList = new ArrayList<>();
-    // Aggiungi queste mappe
     private final Set<EnemyEngagement> engagedEnemies = ConcurrentHashMap.newKeySet();
     private final Map<Integer, Object> enemyLocks = new HashMap<>();
     private final CollisionManager collisionManager = new CollisionManagerImpl();
@@ -101,24 +94,18 @@ public final class MatchControllerimpl implements MatchController {
     private static final int UPGRADE_RADIUS_RANGED = 800;
     private final MainController mainController;
     private boolean bossActive;
-    private boolean roundSpawnComplete = false;
     private boolean spellScanner;
     private MainView mainView;
     private int spell_x;
     private int spell_y;
     private HitboxController wallHitboxController = null;
-    private int spawnTimer = 0;
-    private static final int SPAWN_INTERVAL = 5000;
-    private int roundIndex;
-    private int enemyIndexInRound = 0;
-    private List<Integer> usedPositions = new ArrayList<>();
+
     private boolean alreadyDone;
 
     private final EntityStateManager entityStateManager;
 
-    // set di carte passate che l'utente gioca -> crea il complete collection e con
-    // i getter prendi le carte
     private final EnemyRadiusScanner radiusScanner;
+    private EnemySpawnerImpl enemySpawner;
 
     public MatchControllerimpl(final MainController mainController,
             final int frameWidth,
@@ -127,7 +114,6 @@ public final class MatchControllerimpl implements MatchController {
             CollectionController collectionController,
             MainView mainView,
             final int enemyList) {
-        this.roundIndex = enemyList;
         this.nextId = 1;
         this.collectionController = collectionController;
         this.frameHeight = frameHeight;
@@ -157,6 +143,7 @@ public final class MatchControllerimpl implements MatchController {
         this.entityStateManager = new EntityStateManagerImpl();
         this.radiusScanner = new EnemyRadiusScanner(this.entityStateManager.getHitboxControllersMap(), this,
                 collisionResolver);
+        this.enemySpawner = new EnemySpawnerImpl(this, collectionController, frameWidth, frameHeight, enemyList);
 
     }
 
@@ -168,8 +155,7 @@ public final class MatchControllerimpl implements MatchController {
         this.heroController.setNextAnimation(Keyword.STOP);
         this.heroController.showNextFrame();
         addCharacter(this.heroController.getId().number(), heroController, heroHitbox);
-        // spawnRandomEnemy(3);
-        // spawn();
+
         createWallHitbox(matchView);
     }
 
@@ -241,26 +227,15 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public void update(final int deltaTime) {
-
         checkAndAnimateLastSpell(spellList);
 
-        spawnTimer += deltaTime;
-        List<List<Enemy>> allEnemies = collectionController.getEnemies();
-        if (roundIndex < allEnemies.size()) {
-            List<Enemy> currentRound = allEnemies.get(roundIndex);
+        this.enemySpawner.update(deltaTime);
 
-            if (spawnTimer >= SPAWN_INTERVAL && enemyIndexInRound < currentRound.size()) {
-                spawnRandomEnemy(currentRound.get(enemyIndexInRound), enemyIndexInRound, currentRound.size());
-                enemyIndexInRound++;
-                spawnTimer = 0;
-            }
-            if (enemyIndexInRound >= currentRound.size()) {
-                roundSpawnComplete = true;
-            }
+        entityStateManager.updateAll(deltaTime);
 
+        if (this.matchView != null) {
+            this.matchView.getPanel().repaint();
         }
-
-        this.entityStateManager.updateAll(deltaTime);
     }
 
     @Override
@@ -285,7 +260,8 @@ public final class MatchControllerimpl implements MatchController {
 
     }
 
-    private int generateUniqueCharacterId() {
+    @Override
+    public int generateUniqueCharacterId() {
         this.nextId = this.nextId + 3;
         return this.nextId;
     }
@@ -309,7 +285,6 @@ public final class MatchControllerimpl implements MatchController {
                 }
                 engagedEnemies.add(new EnemyEngagement(enemyId, playerId));
                 setEnemyInCombat(enemyId, true);
-                // System.out.println(engagedEnemies);
                 return true;
 
             } else {
@@ -592,11 +567,9 @@ public final class MatchControllerimpl implements MatchController {
     public void addCharacter(final int n, final GenericCharacterController controller,
             final HitboxController hitboxController) {
         final int id = controller.getId().number();
-        // 1. La FSM viene creata qui, perché ha bisogno di dipendenze del
-        // MatchController
+
         final CharacterFSM fsm = new CharacterFSM(controller, this, radiusScanner, this.collisionResolver);
 
-        // 2. Tutti e tre gli oggetti vengono passati al gestore per essere salvati
         this.entityStateManager.addCharacter(id, controller, hitboxController, fsm);
     }
 
@@ -655,92 +628,9 @@ public final class MatchControllerimpl implements MatchController {
         return this.eventWriter;
     }
 
-    public void spawnRandomEnemy(final Enemy enemy, int enemyIndex, int totalEnemies) {
-        final EnemyController enemyController = EnemyControllerFactory.createEnemyController(
-                generateUniqueCharacterId(), enemy);
-
-        enemyController.attachCharacterAnimationPanel(
-                (int) (frameWidth * DimensionResolver.CHAR.width()),
-                (int) (frameHeight * DimensionResolver.CHAR.height()));
-
-        final int spawnX = frameWidth; // Fuori dallo schermo a destra
-        int spawnY = generateRandomY(usedPositions, frameHeight);
-        usedPositions.add(spawnY); // registra la posizione usata
-
-        final int enemyId = enemyController.getId().number();
-        final String typeFolder = enemyController.getId().type().name();
-        final String name = enemy.getName();
-
-        final HitboxController hitboxController = this.matchView.addEnemyGraphics(
-                enemyId,
-                enemyController.getGraphicalComponent(),
-                spawnX, spawnY,
-                typeFolder, name);
-        addCharacter(enemyId, enemyController, hitboxController);
-        this.eventWriter.setText("Nemico " + name + " è apparso!");
-    }
-
+    @Override
     public void getRandomBossFromFirstList() {
-
-        List<List<Enemy>> allEnemies = collectionController.getEnemies();
-
-        List<Enemy> bossList = allEnemies.get(0);
-        Random random = new Random();
-        int randomIndex = random.nextInt(bossList.size());
-
-        final Enemy boss = bossList.get(randomIndex);
-        final BossController bossController = BossControllerFactory.createBossController(generateUniqueCharacterId(),
-                boss);
-        bossController.attachCharacterAnimationPanel(
-                (int) (frameWidth * DimensionResolver.BOSS.width()),
-                (int) (frameHeight * DimensionResolver.BOSS.height()));
-
-        final int spawnX = frameWidth; // Fuori dallo schermo a destra
-        int spawnY = frameHeight / 9;
-
-        final int bossId = bossController.getId().number();
-        final String typeFolder = bossController.getId().type().name();
-        final String name = boss.getName();
-
-        final HitboxController hitboxController = this.matchView.addEnemyGraphics(
-                bossId,
-                bossController.getGraphicalComponent(),
-                spawnX, spawnY,
-                typeFolder, name);
-        addCharacter(bossId, bossController, hitboxController);
-        bossActive = true;
-        this.eventWriter.setText("Inizio BossFight!");
-        this.matchView.notifyBossFight(bossActive);
-        if (!alreadyDone) {
-            AudioEngine.playSoundTrack(SoundTrack.BOSSFIGHT);
-        }
-    }
-
-    public int generateRandomY(List<Integer> usedPositions, int frameHeight) {
-        final int marginBottom = 300;
-        final int availableHeight = frameHeight - marginBottom;
-        final int minDistance = 40;
-        final Random rand = new Random();
-
-        int spawnY = 0;
-        int attempts = 0;
-
-        do {
-            spawnY = rand.nextInt(availableHeight + 1);
-            attempts++;
-            if (attempts > 10)
-                break; // evita loop infinito
-        } while (isTooClose(spawnY, usedPositions, minDistance));
-
-        return spawnY;
-    }
-
-    private boolean isTooClose(int candidate, List<Integer> positions, int minDistance) {
-        for (int pos : positions) {
-            if (Math.abs(candidate - pos) < minDistance)
-                return true;
-        }
-        return false;
+        this.enemySpawner.spawnBoss();
     }
 
     @Override
@@ -758,7 +648,7 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     public void matchResult() {
-        if (!alreadyDone) {
+        if (!this.alreadyDone) {
             if (!hasEntityTypeInMap(CardType.HERO)) {
                 this.alreadyDone = true;
                 mainView.updateAccount(this.coins, false);
@@ -782,7 +672,7 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     public boolean isRoundSpawnComplete() {
-        return roundSpawnComplete;
+        return this.enemySpawner.isRoundSpawnComplete();
     }
 
     /**
@@ -793,7 +683,7 @@ public final class MatchControllerimpl implements MatchController {
      */
     public void rewardCoinsForRound(boolean bossFight) {
         final int baseReward = 50;
-        int reward = baseReward - roundIndex * 10;
+        int reward = baseReward - this.enemySpawner.getRoundIndex() * 10;
         this.coins += reward;
         this.coinsWriter.setText(this.coins + " coins");
         this.eventWriter.setText((bossFight ? "Boss sconfitto! " : "") + "Hai guadagnato " + reward + "!");
@@ -820,5 +710,13 @@ public final class MatchControllerimpl implements MatchController {
             return fsm.getCurrentState() == stateToCompare;
         }
         return false;
+    }
+
+    @Override
+    public void handleBossMusic() {
+        if (!alreadyDone) {
+            AudioEngine.playSoundTrack(SoundTrack.BOSSFIGHT);
+            //this.alreadyDone = true;
+        }
     }
 }

@@ -12,6 +12,7 @@ import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterControll
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
+import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.collision.api.Collidable;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
@@ -231,7 +232,7 @@ public final class EnemyRadiusScanner {
                     createAndAddEvent(events, player, regularEnemy, EventType.RANGED);
                 }
             } else {
-                if (!regularEnemy.isInCombat() && matchController.isPlayerIdle(player)
+                if (!regularEnemy.isInCombat() && matchController.isPlayerInState(player, CharacterState.IDLE)
                         && !matchController.isEnemyDead(enemyId)) {
                     synchronized (regularEnemy) {
                         boolean engaged = matchController.engageEnemy(enemyId, playerId);
@@ -240,7 +241,7 @@ public final class EnemyRadiusScanner {
                         }
                     }
                 } else if (isAtTroopZoneLimit(player)) { // caso borzerzone
-                    if (!regularEnemy.isInCombat() && matchController.isPlayerStopped(player)
+                    if (!regularEnemy.isInCombat() && matchController.isPlayerInState(player, CharacterState.STOPPED)
                             && !matchController.isEnemyDead(enemyId)) {
                         synchronized (regularEnemy) {
                             boolean engaged = matchController.engageEnemy(enemyId, playerId);
