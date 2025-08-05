@@ -85,8 +85,7 @@ public class CollectionControllerImpl implements CollectionController {
     }
 
     private static String getPath() {
-        return "OOP24-LastCrown"
-            + File.separator + "src"
+        return "src"
             + File.separator + "main"
             + File.separator + "resources"
             + File.separator + "entities";

@@ -34,9 +34,7 @@ public class CreditsControllerImpl implements CreditsController {
     }
 
     private static String getPath() {
-        return "OOP24-LastCrown"
-        + File.separator
-        + "src"
+        return "src"
         + File.separator
         + "main"
         + File.separator
