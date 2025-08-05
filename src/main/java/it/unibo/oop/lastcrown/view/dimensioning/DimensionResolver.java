@@ -5,67 +5,67 @@ package it.unibo.oop.lastcrown.view.dimensioning;
  */
 public enum DimensionResolver {
     /**
-     * JButton percentage. 
+     * JButton percentage.
      */
     JBUTTON(new SizePercentage(0.1, 0.085)),
 
     /**
-     * CustomInstruction percentage. 
+     * CustomInstruction percentage.
      */
     INSTRUCTIONS(new SizePercentage(0.5, 0.5)),
 
     /**
-     * Character panel percentage. 
+     * Character panel percentage.
      */
     CHAR(new SizePercentage(0.14, 0.186)),
 
     /**
-     * Hero panel percentage. 
+     * Hero panel percentage.
      */
     HERO(new SizePercentage(0.24, 0.35)),
 
     /**
-     * Spell panel percentage. 
+     * Spell panel percentage.
      */
     SPELL(new SizePercentage(0.20, 0.30)),
 
     /**
-     * Boss panel percentage. 
+     * Boss panel percentage.
      */
-    BOSS(new SizePercentage(0.75, 0.85)),
+    BOSS(new SizePercentage(0.6, 0.7)),
 
     /**
-     * Trader panel percentage. 
+     * Trader panel percentage.
      */
     TRADER(new SizePercentage(0.2, 0.4)),
 
     /**
-     * Energy bar percentage. 
+     * Energy bar percentage.
      */
     ENERGYBAR(new SizePercentage(0.02, 0.7)),
 
     /**
-     * Deck zone percentage. 
+     * Deck zone percentage.
      */
     DECKZONE(new SizePercentage(0.12, 0.9)),
 
     /**
-     * Positioning zone percentage. 
+     * Positioning zone percentage.
      */
     POSITIONINGZONE(new SizePercentage(0.28, 0.9)),
 
     /**
-     * Wall percentage. 
+     * Wall percentage.
      */
     WALL(new SizePercentage(0.03, 0.9)),
 
     /**
-     * Trups zone percentage. 
+     * Trups zone percentage.
      */
     TRUPSZONE(new SizePercentage(0.28, 0.9)),
 
     /**
-     * Enemies zone percentage. 
+     * Enemies zone percentage.
      */
     ENEMIESZONE(new SizePercentage(0.29, 0.9)),
 
