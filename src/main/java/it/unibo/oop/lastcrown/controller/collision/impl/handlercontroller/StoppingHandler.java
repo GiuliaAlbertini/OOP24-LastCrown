@@ -51,6 +51,11 @@ public final class StoppingHandler implements StateHandler {
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
             final int deltaTime) {
 
+        if (character == null) {
+            queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
+            return CharacterState.DEAD;
+        }
+
         final boolean isPlayer = character instanceof PlayableCharacterController;
         final boolean isBosshandle = resolver.hasOpponentBossPartner(character.getId().number());
         final int charId = character.getId().number();

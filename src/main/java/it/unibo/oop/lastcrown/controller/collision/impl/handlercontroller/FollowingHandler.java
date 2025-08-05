@@ -40,8 +40,14 @@ public final class FollowingHandler implements StateHandler {
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
             final int deltaTime) {
-        if (!(character instanceof PlayableCharacterController)) {
 
+        if (character == null) {
+            queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
+            return CharacterState.DEAD;
+        }
+
+
+        if (!(character instanceof PlayableCharacterController)) {
             queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
             return CharacterState.IDLE;
         }
