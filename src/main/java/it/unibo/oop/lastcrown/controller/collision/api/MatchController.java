@@ -152,4 +152,5 @@ public interface MatchController {
     boolean isRoundSpawnComplete();
     boolean retreat();
     void notifyPauseStart();
+    void halveHeroMaxHealth();
 }

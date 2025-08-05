@@ -898,4 +898,12 @@ public final class MatchControllerimpl implements MatchController {
         this.eventWriter.setText((bossFight ? "Boss sconfitto! " : "") + "Hai guadagnato " + reward + "!");
     }
 
+    public void halveHeroMaxHealth() {
+        final int currentHealth = this.heroController.getMaximumHealthValue();
+        final int reductionRate = 80;
+        final int newHealth = currentHealth - (int)(currentHealth * reductionRate / 100);
+        if (currentHealth > newHealth){
+            this.heroController.takeHit(newHealth);
+        }
+    }
 }
