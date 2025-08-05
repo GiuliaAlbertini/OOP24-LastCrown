@@ -86,7 +86,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         component.setBounds(x - size.width / 2, y - size.height / 2, size.width, size.height);
 
         this.mainPanel.add(component);
-        this.mainPanel.setComponentZOrder(component, 0);
+        this.mainPanel.setComponentZOrder(component, 1);
 
         final HitboxController hitboxcontroller= matchController.setupCharacter(component, typefolder, name, true, component.getX(), component.getY());
         this.newComponents.put(id + 1, hitboxcontroller.getHitboxPanel());
@@ -108,7 +108,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         final Dimension size = component.getPreferredSize();
         component.setBounds(x - size.width / 2, y - size.height / 2, size.width, size.height);
         this.mainPanel.add(component);
-        this.mainPanel.setComponentZOrder(component, 0);
+        this.mainPanel.setComponentZOrder(component, 1);
         this.mainPanel.repaint();
     }
 
