@@ -63,8 +63,8 @@ public final class StoppingHandler implements StateHandler {
 
         match.matchResult();
 
-        if (characterType == CardType.HERO && !match.hasBossInMap() && match.isRoundSpawnComplete()
-            && !match.hasAnyPlayerInMap() && !match.hasAnyEnemiesInMap()){
+        if (characterType == CardType.HERO && !match.hasEntityTypeInMap(CardType.BOSS) && match.isRoundSpawnComplete()
+            && !match.hasEntityTypeInMap(CardType.MELEE) && !match.hasEntityTypeInMap(CardType.ENEMY)){
             match.setRadiusPlayerInMap();
             match.getRandomBossFromFirstList();
         }
@@ -85,7 +85,7 @@ public final class StoppingHandler implements StateHandler {
         }
 
         //SE NON SEI HERO, inizio ritirata
-        if (!match.hasBossInMap()) { //se il boss non è nella mappa allora
+        if (!match.hasEntityTypeInMap(CardType.BOSS)) { //se il boss non è nella mappa allora
             if (match.getWall().getCurrentHealth() <= 0) {
                 if (character.getId().type() == CardType.ENEMY) {
                     final Movement movementCharacter = new Movement(ENEMY_SPEED, 0);
@@ -107,7 +107,7 @@ public final class StoppingHandler implements StateHandler {
                     return CharacterState.STOPPED;
                 }
                 //se sono spawnati tutti i nemici e non ci sono più nemici nella mappa
-            }else if (match.isRoundSpawnComplete() && !match.hasAnyEnemiesInMap()) {
+            }else if (match.isRoundSpawnComplete() && !match.hasEntityTypeInMap(CardType.ENEMY)) {
                     match.getRandomBossFromFirstList();
                     match.setRadiusPlayerInMap();
                     character.setNextAnimation(Keyword.STOP);
@@ -126,7 +126,7 @@ public final class StoppingHandler implements StateHandler {
         character.showNextFrame();
 
         // == caso TrupZone ==
-        if (isPlayer && isAtTroopZoneLimit(character) && !match.hasBossInMap()) {
+        if (isPlayer && isAtTroopZoneLimit(character) && !match.hasEntityTypeInMap(CardType.BOSS)) {
             handleCharacterTrupzone((PlayableCharacterController) character, queue, charId);
             return CharacterState.STOPPED;
         }
@@ -223,7 +223,7 @@ public final class StoppingHandler implements StateHandler {
         character.showNextFrame();
 
 
-        if (match.hasBossInMap() && !match.hasAnyPlayerInMap()) {
+        if (match.hasEntityTypeInMap(CardType.BOSS) && !match.hasEntityTypeInMap(CardType.MELEE)) {
             // Boss in campo, nessun altro player: prova lo scanner
             scanner.scanForFollowEventForHero(character)
                     .ifPresent(match::notifyCollisionObservers);

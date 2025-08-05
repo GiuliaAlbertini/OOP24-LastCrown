@@ -65,8 +65,8 @@ public final class DeadHandler implements StateHandler {
             resolver.clearBossFightPairById(character.getId().number());
             this.currentFrameIndex = 0;
 
-            if (match.getWall().getCurrentHealth() <=0 && !match.hasBossInMap()){
-                if (!match.hasAnyEnemiesInMap()){
+            if (match.getWall().getCurrentHealth() <=0 && !match.hasEntityTypeInMap(CardType.BOSS)) {
+                if (!match.hasEntityTypeInMap(CardType.ENEMY)) {
                     match.getRandomBossFromFirstList();
                     match.setRadiusPlayerInMap();
                 }
