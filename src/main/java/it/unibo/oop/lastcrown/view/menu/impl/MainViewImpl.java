@@ -64,6 +64,7 @@ public class MainViewImpl extends JFrame implements MainView {
     private MatchView matchView;
     private boolean matchExist;
     private int enemyList = 3;
+    private boolean victory;
 
     /**
      * Constructs the main application window, initializes each scene,
@@ -97,9 +98,6 @@ public class MainViewImpl extends JFrame implements MainView {
         this.collectionView = CollectionView.create(this.sceneManager, this.collectionController, getOwnedCards());
         this.shopView = new ShopViewImpl(this.sceneManager, collectionController,
             deckContr.getAvailableCards(), WIDTH, HEIGHT, accountController.getAccount());
-        // HERE MISSING SHOP VIEW AND MATCH VIEW TO THE MAIN CONTROLLER
-        // gameContr.newShopView(this.shopView);
-        // gameContr.newMatchView(this.matchView);
 
         setUpPanels();
         this.layout.show(this.mainPanel, menuView.getSceneName().get());
@@ -165,9 +163,6 @@ public class MainViewImpl extends JFrame implements MainView {
     @Override
     public final void onShop(final SceneName caller) {
         this.shopView.notifyVisible();
-        if (SceneName.MATCH.equals(caller)) {
-            this.matchView.clearNewGraphicsComponent();
-        }
         if (!AudioEngine.getActualSoundTrack().equals(SoundTrack.SHOP)) {
             AudioEngine.playSoundTrack(SoundTrack.SHOP);
         }
@@ -184,14 +179,13 @@ public class MainViewImpl extends JFrame implements MainView {
             return;
         }
         this.shopView.notifyHidden();
-        this.gameController.onMatchStart(WIDTH, HEIGHT, this.deckController.getHero(), this.collectionController, this, enemyList);
         if (this.matchExist) {
-            if (SceneName.SHOP.equals(caller) && this.enemyList > 1) {
+            if (this.victory && this.enemyList > 1) {
                 this.enemyList = this.enemyList - 1;
             }
             this.mainPanel.remove(this.matchView.getPanel());
-            this.matchExist = false;
         }
+        this.gameController.onMatchStart(WIDTH, HEIGHT, this.deckController.getHero(), this.collectionController, this, enemyList);
         this.matchView = new MatchViewImpl(this.sceneManager, this.gameController.getMatchControllerReference(),
                     WIDTH, HEIGHT, this.deckController.getDeck());
         this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName().get());
@@ -206,9 +200,6 @@ public class MainViewImpl extends JFrame implements MainView {
         this.enemyList = 3;
         if (SceneName.SHOP.equals(caller) || SceneName.MATCH.equals(caller)) {
             this.mainController.updateAccount(this.shopView.getManagedAccount());
-            if (matchExist) {
-                this.matchView.clearNewGraphicsComponent();
-            }
         }
         if (!AudioEngine.getActualSoundTrack().equals(SoundTrack.MENU)) {
             AudioEngine.playSoundTrack(SoundTrack.MENU);
@@ -236,6 +227,7 @@ public class MainViewImpl extends JFrame implements MainView {
 
     @Override
     public final void updateAccount(final int amount, final boolean bossDefeated) {
+        this.victory = bossDefeated;
         this.shopView.notifyUpdateAccount(amount, bossDefeated);
     }
 
@@ -289,5 +281,6 @@ public class MainViewImpl extends JFrame implements MainView {
     @Override
     public final void close() {
         this.dispose();
+        AudioEngine.stopTrack();
     }
 }
