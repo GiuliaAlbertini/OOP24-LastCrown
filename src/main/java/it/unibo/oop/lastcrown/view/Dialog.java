@@ -2,6 +2,7 @@ package it.unibo.oop.lastcrown.view;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -14,8 +15,8 @@ import javax.swing.JTextArea;
  */
 public final class Dialog extends JDialog {
     private static final long serialVersionUID = 1L;
-    private static final int WIDTH = 300;
-    private static final int HEIGHT = 150;
+    private static final int WIDTH = 600;
+    private static final int HEIGHT = 300;
     private final JPanel jbPanel;
 
     /**
@@ -32,6 +33,7 @@ public final class Dialog extends JDialog {
         final JPanel content = new JPanel(new BorderLayout());
 
         final JTextArea area = new JTextArea(message);
+        area.setFont(new Font("Arial", Font.BOLD, 24));
         area.setWrapStyleWord(true);
         area.setLineWrap(true);
         area.setEditable(false);
