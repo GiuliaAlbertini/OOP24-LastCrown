@@ -22,7 +22,6 @@ import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.characters.api.BossController;
-import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
@@ -136,10 +135,9 @@ public final class MatchControllerimpl implements MatchController {
         this.frameWidth = frameWidth;
         this.mainController = mainController;
         this.mainView = mainView;
-        final CharacterDeathObserver obs = id -> System.out.println("Morto: " + id);
         this.collection = collectionController.getCompleteCollection();
         this.hero = this.collection.getHero(heroId).get();
-        this.heroController = HeroControllerFactory.createHeroController(obs, generateUniqueCharacterId(), hero);
+        this.heroController = HeroControllerFactory.createHeroController(generateUniqueCharacterId(), hero);
         heroController.attachCharacterAnimationPanel((int) (frameWidth * DimensionResolver.HERO.width()),
                 (int) (frameHeight * DimensionResolver.HERO.height()));
         this.wall = WallFactory.createWall(hero.getWallAttack(), hero.getWallHealth(), 10000, frameWidth / 2,
@@ -611,10 +609,9 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public void notifyButtonPressed(CardIdentifier id) {
-        final CharacterDeathObserver obs = idc -> System.out.println("Morto: " + idc);
         if (id.type() == CardType.MELEE || id.type() == CardType.RANGED) {
             final PlayableCharacter player = this.collection.getPlayableCharacter(id).get();
-            final PlayableCharacterController playerController = PlCharControllerFactory.createPlCharController(obs,
+            final PlayableCharacterController playerController = PlCharControllerFactory.createPlCharController(
                     generateUniqueCharacterId(), player);
             CardList.add(new Pair<String, PlayableCharacterController>(player.getName(), playerController));
         } else if (id.type() == CardType.SPELL) {
@@ -765,10 +762,8 @@ public void handleSpellEnemy(SpellEffect spellEffect){
     }
 
     public void spawnRandomEnemy(final Enemy enemy, int enemyIndex, int totalEnemies) {
-        final CharacterDeathObserver obs = id -> System.out.println("Nemico morto: " + id);
-
         final EnemyController enemyController = EnemyControllerFactory.createEnemyController(
-                obs, generateUniqueCharacterId(), enemy);
+                generateUniqueCharacterId(), enemy);
 
         enemyController.attachCharacterAnimationPanel(
                 (int) (frameWidth * DimensionResolver.CHAR.width()),
@@ -793,7 +788,6 @@ public void handleSpellEnemy(SpellEffect spellEffect){
 
 
     public void getRandomBossFromFirstList() {
-        final CharacterDeathObserver obs = id -> System.out.println("Nemico morto: " + id);
 
         List<List<Enemy>> allEnemies = collectionController.getEnemies();
 
@@ -802,7 +796,7 @@ public void handleSpellEnemy(SpellEffect spellEffect){
         int randomIndex = random.nextInt(bossList.size());
 
         final Enemy boss = bossList.get(randomIndex);
-        final BossController bossController = BossControllerFactory.createBossController(obs, generateUniqueCharacterId(), boss);
+        final BossController bossController = BossControllerFactory.createBossController(generateUniqueCharacterId(), boss);
         bossController.attachCharacterAnimationPanel(
                 (int) (frameWidth * DimensionResolver.BOSS.width()),
                 (int) (frameHeight * DimensionResolver.BOSS.height()));
