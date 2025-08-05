@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -29,6 +30,7 @@ public final class ClipLoader {
             final AudioInputStream stream = AudioSystem.getAudioInputStream(file);
             final Clip clip = AudioSystem.getClip();
             clip.open(stream);
+            setVolume(clip, 0.3f);
             return clip;
         }
         return null;
@@ -45,6 +47,20 @@ public final class ClipLoader {
             }
             clip.flush();
             clip.close();
+        }
+    }
+
+     private static void setVolume(Clip clip, float volume) {
+        if (volume < 0f || volume > 1f) {
+            throw new IllegalArgumentException("Volume must be beetween 0.0 and 1.0");
+        }
+
+        if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            float dB = 20f * (float) Math.log10(volume);
+            gainControl.setValue(dB);
+        } else {
+            System.out.println("Controllo volume non supportato");
         }
     }
 }
