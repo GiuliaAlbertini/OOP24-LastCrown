@@ -193,7 +193,6 @@ public class MainViewImpl extends JFrame implements MainView {
         } else {
             this.collectionView.setBackDestination(SceneName.MENU);
         }
-        AudioEngine.playSoundTrack(SoundTrack.COLLECTION);
     }
 
     @Override
