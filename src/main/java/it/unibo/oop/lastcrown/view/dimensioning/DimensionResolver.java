@@ -32,7 +32,7 @@ public enum DimensionResolver {
     /**
      * Boss panel percentage. 
      */
-    BOSS(new SizePercentage(0.6, 0.7)),
+    BOSS(new SizePercentage(0.75, 0.85)),
 
     /**
      * Trader panel percentage. 
