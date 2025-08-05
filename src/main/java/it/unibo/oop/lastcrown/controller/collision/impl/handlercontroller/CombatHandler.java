@@ -138,6 +138,7 @@ public final class CombatHandler implements StateHandler {
     private void combatWall(Wall wall,  CharacterHitObserver enemy){
         if (wall.getCurrentHealth() <= 0){
             match.setAllFSMsToState(CharacterState.STOPPED);
+            match.halveHeroMaxHealth();
         }else{
             List<Integer> enemies = resolver.getAllCharacterIdsInWallFight();
             wall.addOpponents(getCharactersFromIds(enemies));
