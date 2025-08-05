@@ -16,7 +16,7 @@ import javax.swing.JTextArea;
 public final class Dialog extends JDialog {
     private static final long serialVersionUID = 1L;
     private static final int WIDTH = 500;
-    private static final int HEIGHT = 200;
+    private static final int HEIGHT = 250;
     private final JPanel jbPanel;
 
     /**
