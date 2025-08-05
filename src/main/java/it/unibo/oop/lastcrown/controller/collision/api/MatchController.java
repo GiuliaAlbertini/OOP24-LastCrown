@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.controller.collision.api;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import it.unibo.oop.lastcrown.controller.characters.api.Wall;
 import it.unibo.oop.lastcrown.controller.collision.impl.EnemyEngagement;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.view.map.MatchView;

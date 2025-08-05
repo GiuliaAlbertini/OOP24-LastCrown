@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
@@ -632,16 +633,57 @@ public final class MatchControllerimpl implements MatchController {
         }
     }
 
-    public void spellAnimation(SpellGUI spellGUI, CardIdentifier id, JComponent spellComponent,int x, int y){
-        matchView.addSpellGraphics(id.number(), spellComponent, x, y);
-        spellGUI.startAnimation();
-        spellScanner=false;
-        spellList.clear(); // Svuota dopo aver lanciato la magia
+    public void spellAnimation(SpellGUI spellGUI, CardIdentifier id, JComponent spellComponent, int x, int y){
+    matchView.addSpellGraphics(id.number(), spellComponent, x, y);
+    spellGUI.startAnimation();
+    spellScanner = false;
+    spellList.clear();
 
-        final SpellEffect spellEffect = collection.getSpell(id).get().getSpellEffect();
-        //switch sul target -> categoria -> amount
-
+    final SpellEffect spellEffect = collection.getSpell(id).get().getSpellEffect();
+    switch (spellEffect.target()) {
+        case FRIENDLY:
+            handleSpellFriendly(spellEffect);
+            break;
+        case ENEMY:
+            handleSpellEnemy(spellEffect);
+            break;
+        default:
+            break;
     }
+}
+
+public void handleSpellFriendly(SpellEffect spellEffect){
+    // Ottieni tutti i personaggi friendly (HERO, MELEE, RANGED)
+    List<GenericCharacterController> friendlyCharacters = getCharactersByType(CardType.MELEE);
+
+    if ("health".equals(spellEffect.category())){
+        for (var character : friendlyCharacters) {
+            character.heal(spellEffect.amount());
+        }
+    } else if ("attack".equals(spellEffect.category())){
+        for (var character : friendlyCharacters) {
+            character.setAttackValue(spellEffect.amount());
+        }
+    }
+}
+
+public void handleSpellEnemy(SpellEffect spellEffect){
+    List<GenericCharacterController> enemyCharacters = getCharactersByType(CardType.ENEMY);
+
+    if ("health".equals(spellEffect.category())){
+        for (var character : enemyCharacters) {
+            character.takeHit(spellEffect.amount());
+        }
+    } else if ("attack".equals(spellEffect.category())){
+        for (var character : enemyCharacters) {
+            character.setAttackValue((-1) * spellEffect.amount());
+        }
+    } else if ("speedMultiplier".equals(spellEffect.category())){
+        for (var character : enemyCharacters) {
+            character.setSpeedMultiplierValue((-1) * spellEffect.amount());
+        }
+    }
+}
 
     @Override
     public void addCharacter(final int n, final GenericCharacterController controller,
@@ -872,6 +914,12 @@ public final class MatchControllerimpl implements MatchController {
         }
     }
 
+    public List<GenericCharacterController> getCharactersByType(CardType cardType) {
+    return hitboxControllers.keySet().stream()
+            .filter(controller -> controller.getId().type() == cardType)
+            .collect(Collectors.toList());
+    }
+
 
     public boolean isRoundSpawnComplete() {
         return roundSpawnComplete;
@@ -884,10 +932,8 @@ public final class MatchControllerimpl implements MatchController {
      * @param boss true se il nemico sconfitto è un boss
      */
     public void rewardCoinsForRound(boolean bossFight) {
-        final double baseReward = 20.0;
-        final double decayFactor = 0.85;
-        double multiplier = Math.pow(decayFactor, roundIndex - 1);
-        int reward = (int) Math.round(baseReward * multiplier);
+        final int baseReward = 50;
+        int reward = baseReward - roundIndex * 10;
         this.coins += reward;
         this.coinsWriter.setText(this.coins + " coins");
         this.eventWriter.setText((bossFight ? "Boss sconfitto! " : "") + "Hai guadagnato " + reward + "!");
