@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
@@ -32,6 +31,7 @@ import it.unibo.oop.lastcrown.controller.characters.impl.enemy.EnemyControllerFa
 import it.unibo.oop.lastcrown.controller.characters.impl.hero.HeroControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.playablecharacter.PlCharControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.wall.WallFactory;
+import it.unibo.oop.lastcrown.controller.collision.api.EntityStateManager;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
@@ -72,9 +72,7 @@ import it.unibo.oop.lastcrown.view.spell.impl.SpellGUIImpl;
 
 public final class MatchControllerimpl implements MatchController {
     // private final MainController controller;
-    private final Map<Integer, CharacterFSM> playerFSMs = new HashMap<>();
-    private final Map<Integer, GenericCharacterController> charactersController = new HashMap<>();
-    private final Map<GenericCharacterController, HitboxController> hitboxControllers = new HashMap<>();
+
     final List<Pair<String, PlayableCharacterController>> CardList = new ArrayList<>();
     final List<Pair<CardIdentifier, SpellGUI>> spellList = new ArrayList<>();
     // Aggiungi queste mappe
@@ -116,6 +114,7 @@ public final class MatchControllerimpl implements MatchController {
     private List<Integer> usedPositions = new ArrayList<>();
     private boolean alreadyDone;
 
+    private final EntityStateManager entityStateManager;
 
     // set di carte passate che l'utente gioca -> crea il complete collection e con
     // i getter prendi le carte
@@ -143,8 +142,6 @@ public final class MatchControllerimpl implements MatchController {
         this.wall = WallFactory.createWall(hero.getWallAttack(), hero.getWallHealth(), 10000, frameWidth / 2,
                 (int) (frameHeight * DimensionResolver.UTILITYZONE.height()), Optional.empty());
 
-
-
         final Font font = new Font("Calibri", Font.CENTER_BASELINE, 20);
         this.eventWriter = new JTextArea();
         this.eventWriter.setEditable(false);
@@ -157,20 +154,24 @@ public final class MatchControllerimpl implements MatchController {
         this.coinsWriter.setText(this.coins + "coins");
         this.collisionResolver = new CollisionResolverImpl(this);
         this.collisionManager.addObserver(collisionResolver);
-        this.radiusScanner = new EnemyRadiusScanner(hitboxControllers, this, collisionResolver);
+        this.entityStateManager = new EntityStateManagerImpl();
+        this.radiusScanner = new EnemyRadiusScanner(this.entityStateManager.getHitboxControllersMap(), this,
+                collisionResolver);
+
     }
 
     public void newMatchView(final MatchView matchView) {
         this.matchView = matchView;
-        HitboxController heroHitbox = this.matchView.addHeroGraphics(this.heroController.getId().number(), this.heroController.getGraphicalComponent(), this.heroController.getId().type().get(), this.hero.getName());
+        HitboxController heroHitbox = this.matchView.addHeroGraphics(this.heroController.getId().number(),
+                this.heroController.getGraphicalComponent(), this.heroController.getId().type().get(),
+                this.hero.getName());
         this.heroController.setNextAnimation(Keyword.STOP);
         this.heroController.showNextFrame();
         addCharacter(this.heroController.getId().number(), heroController, heroHitbox);
-        //spawnRandomEnemy(3);
-        //spawn();
+        // spawnRandomEnemy(3);
+        // spawn();
         createWallHitbox(matchView);
     }
-
 
     public void printEngagedEnemies() {
         if (engagedEnemies.isEmpty()) {
@@ -183,7 +184,7 @@ public final class MatchControllerimpl implements MatchController {
             System.out.printf("- Nemico ID: %d, Giocatore ID: %d%n",
                     engagement.enemyId(), engagement.playerId());
         }
-}
+    }
 
     private void createWallHitbox(final MatchView matchView) {
         final Point2D pos = new Point2DImpl(matchView.getWallCoordinates().getX(),
@@ -203,66 +204,15 @@ public final class MatchControllerimpl implements MatchController {
         return this.wallHitboxController;
     }
 
-    //controllo se i nemici hanno superato la linea
+    @Override
     public boolean isEnemyBeyondFrame(final int enemyId) {
-        for (var entry : hitboxControllers.entrySet()) {
-            final GenericCharacterController character = entry.getKey();
-            final HitboxController hitbox = entry.getValue();
-
-            if (character.getId().type() == CardType.ENEMY && character.getId().number() == enemyId) {
-                return hitbox.getHitbox().getPosition().x() > frameWidth;
-            }
-        }
-        return false;
+        return this.entityStateManager.isEnemyBeyondFrame(enemyId, this.frameWidth);
     }
 
-    // controllo se ci sono nemici nella mappa
-    public boolean hasAnyEnemiesInMap() {
-        for (var character : hitboxControllers.keySet()) {
-            if (character.getId().type() == CardType.ENEMY) {
-                return true; // Almeno un nemico trovato
-            }
-        }
-        return false; // Nessun nemico trovato
-    }
-
-
-    // controllo se ci sono nemici nella mappa
-    public boolean hasAnyPlayerInMap() {
-        for (var character : hitboxControllers.keySet()) {
-            if (character.getId().type() == CardType.MELEE) {
-                return true; // Almeno un nemico trovato
-            }
-        }
-        return false; // Nessun nemico trovato
-    }
-
-    // controllo se ci sono nemici nella mappa
-    public boolean hasAnyRangedInMap() {
-        for (var character : hitboxControllers.keySet()) {
-            if (character.getId().type() == CardType.RANGED) {
-                return true; // Almeno un nemico trovato
-            }
-        }
-        return false; // Nessun nemico trovato
-    }
-
+    @Override
     public void setRadiusPlayerInMap() {
-        for (Map.Entry<GenericCharacterController, HitboxController> entry : hitboxControllers.entrySet()) {
-            final GenericCharacterController character = entry.getKey();
-            final HitboxController hitboxController = entry.getValue();
-
-            if (character.getId().type() == CardType.MELEE) {
-                final Radius radius= hitboxController.getRadius().get();
-                radius.setRadius(UPGRADE_RADIUS_MELEE);
-            }
-            if (character.getId().type() == CardType.RANGED){
-                final Radius radius= hitboxController.getRadius().get();
-                radius.setRadius(UPGRADE_RADIUS_RANGED);
-            }
-        }
+        this.entityStateManager.setRadiusForAllPlayers(UPGRADE_RADIUS_MELEE, UPGRADE_RADIUS_RANGED);
     }
-
 
     @Override
     public void updateCharacterPosition(final GenericCharacterController controller, final int dx, final int dy) {
@@ -275,12 +225,12 @@ public final class MatchControllerimpl implements MatchController {
         final int newY = component.getY() + dy;
         component.setLocation(newX, newY);
 
-        final HitboxController hitboxController = hitboxControllers.get(controller);
-        if (hitboxController != null) {
+        this.entityStateManager.getHitboxForController(controller).ifPresent(hitboxController -> {
             hitboxController.setnewPosition(newX, newY);
             hitboxController.updateView();
             hitboxController.setVisibile(true);
-        }
+        });
+
         component.repaint();
     }
 
@@ -294,31 +244,28 @@ public final class MatchControllerimpl implements MatchController {
 
         checkAndAnimateLastSpell(spellList);
 
-
         spawnTimer += deltaTime;
         List<List<Enemy>> allEnemies = collectionController.getEnemies();
         if (roundIndex < allEnemies.size()) {
             List<Enemy> currentRound = allEnemies.get(roundIndex);
 
             if (spawnTimer >= SPAWN_INTERVAL && enemyIndexInRound < currentRound.size()) {
-                spawnRandomEnemy(currentRound.get(enemyIndexInRound), enemyIndexInRound, currentRound.size() );
+                spawnRandomEnemy(currentRound.get(enemyIndexInRound), enemyIndexInRound, currentRound.size());
                 enemyIndexInRound++;
                 spawnTimer = 0;
             }
             if (enemyIndexInRound >= currentRound.size()) {
-                roundSpawnComplete=true;
+                roundSpawnComplete = true;
             }
 
         }
 
-        for (final CharacterFSM fsm : new ArrayList<>(playerFSMs.values())) {
-            fsm.update(deltaTime);
-        }
+        this.entityStateManager.updateAll(deltaTime);
     }
 
     @Override
     public Optional<GenericCharacterController> getCharacterControllerById(final int id) {
-        return Optional.ofNullable(this.charactersController.get(id));
+        return this.entityStateManager.getCharacterControllerById(id);
     }
 
     @Override
@@ -328,22 +275,14 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public Optional<HitboxController> getCharacterHitboxById(final int id) {
-        final var charaController = this.getCharacterControllerById(id);
-        if (charaController.isPresent()) {
-            return Optional.ofNullable(this.hitboxControllers.get(charaController.get()));
-        } else {
-            return Optional.empty();
-        }
+        return this.entityStateManager.getCharacterHitboxById(id);
     }
 
     @Override
     public void removeCharacterCompletelyById(final int characterId) {
         this.matchView.removeGraphicComponent(characterId);
-        final GenericCharacterController controller = getCharacterControllerById(characterId).get();
-        final HitboxController hitboxController= getCharacterHitboxById(characterId).get();
-        hitboxControllers.remove(controller,hitboxController);
-        charactersController.remove(characterId, controller);
-        playerFSMs.remove(characterId);
+        this.entityStateManager.removeCharacterById(characterId);
+
     }
 
     private int generateUniqueCharacterId() {
@@ -370,7 +309,7 @@ public final class MatchControllerimpl implements MatchController {
                 }
                 engagedEnemies.add(new EnemyEngagement(enemyId, playerId));
                 setEnemyInCombat(enemyId, true);
-                //System.out.println(engagedEnemies);
+                // System.out.println(engagedEnemies);
                 return true;
 
             } else {
@@ -416,8 +355,9 @@ public final class MatchControllerimpl implements MatchController {
         return updateEnemyState(enemyId, playerId, true);
     }
 
-    public boolean retreat(){
-        if (!hasBossInMap() && getWall().getCurrentHealth() <= 0){
+    @Override
+    public boolean retreat() {
+        if (!hasEntityTypeInMap(CardType.BOSS) && getWall().getCurrentHealth() <= 0) {
             return true;
         }
         return false;
@@ -483,10 +423,10 @@ public final class MatchControllerimpl implements MatchController {
                 int character = getEngagedCounterpart(characterId);
                 if (character != -1) {
                     Optional<GenericCharacterController> charactercontroller = getCharacterControllerById(character);
-                    if(charactercontroller.isPresent()){
+                    if (charactercontroller.isPresent()) {
                         if (charactercontroller.get().isDead()) {
-                        return true;
-                    }
+                            return true;
+                        }
                     }
                     return false;
                 }
@@ -513,43 +453,6 @@ public final class MatchControllerimpl implements MatchController {
         return -1;
     }
 
-    @Override
-    public boolean isPlayerIdle(final PlayableCharacterController player) {
-        CharacterFSM fsm = this.playerFSMs.get(player.getId().number());
-        if (fsm != null) {
-            return fsm.getCurrentState() == CharacterState.IDLE;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isPlayerStopped(final PlayableCharacterController player) {
-        CharacterFSM fsm = this.playerFSMs.get(player.getId().number());
-        if (fsm != null) {
-            return fsm.getCurrentState() == CharacterState.STOPPED;
-        }
-        return false;
-    }
-
-    public CharacterState getCharacterState(final GenericCharacterController character) {
-        for (Map.Entry<Integer, CharacterFSM> entry : playerFSMs.entrySet()) {
-            final int id = entry.getKey();
-            final CharacterFSM fsm = entry.getValue();
-            final CharacterState state = fsm.getCurrentState();
-
-            System.out.println("Player ID: " + id +  "| tipo: " + character.getId().type() + " | Stato: " + state);
-        }
-
-        final int id = character.getId().number();
-        final CharacterFSM fsm = this.playerFSMs.get(id); // o enemyFSMs, a seconda dei casi
-
-        if (fsm == null) {
-            throw new IllegalStateException("FSM non trovato per il personaggio con ID: " + id);
-        }
-
-        return fsm.getCurrentState();
-    }
-
     public boolean isBossFightPartnerDead(final int id) {
         if (collisionResolver.hasOpponentBossPartner(id)) {
             final int partnerId = collisionResolver.getOpponentBossPartner(id);
@@ -572,20 +475,17 @@ public final class MatchControllerimpl implements MatchController {
         return false;
     }
 
+    @Override
     public boolean isEnemyDead(int enemyId) {
-        GenericCharacterController controller = charactersController.get(enemyId);
-        if (controller instanceof EnemyController enemyController) {
-            if (enemyController.getId().type() != CardType.BOSS) {
-                //System.out.println("matchController" + enemyController.isDead() + "id: " +  enemyController.getId().number());
-                return controller.isDead();
-            }
-        }
-        return false;
+        return this.entityStateManager.getCharacterControllerById(enemyId)
+
+                .map(controller -> controller.getId().type() != CardType.BOSS && controller.isDead())
+                .orElse(false);
     }
 
     @Override
     public void notifyClicked(int x, int y) {
-        if (!CardList.isEmpty() && !hasBossInMap()) {
+        if (!CardList.isEmpty() && !hasEntityTypeInMap(CardType.BOSS)) {
             final Pair<String, PlayableCharacterController> selected = CardList.get(CardList.size() - 1);
             final int id = selected.get2().getId().number();
             final PlayableCharacterController playerController = selected.get2();
@@ -600,10 +500,10 @@ public final class MatchControllerimpl implements MatchController {
                     playerController.getGraphicalComponent(), x, y, typeFolder, name);
             addCharacter(selected.get2().getId().number(), playerController, hitboxController);
             this.eventWriter.setText(name + " schierato in campo!");
-        }else{
+        } else {
             spell_x = x;
             spell_y = y;
-            spellScanner=true;
+            spellScanner = true;
         }
     }
 
@@ -616,10 +516,11 @@ public final class MatchControllerimpl implements MatchController {
             CardList.add(new Pair<String, PlayableCharacterController>(player.getName(), playerController));
         } else if (id.type() == CardType.SPELL) {
             CardList.clear();
-            spellScanner=false;
+            spellScanner = false;
             final Spell spell = this.collection.getSpell(id).get();
-            SpellGUI spellGUI = new SpellGUIImpl(spell.getName(), ((int) (frameWidth * DimensionResolver.SPELL.width())));
-            spellList.add(new Pair<CardIdentifier,SpellGUI>(id, spellGUI));
+            SpellGUI spellGUI = new SpellGUIImpl(spell.getName(),
+                    ((int) (frameWidth * DimensionResolver.SPELL.width())));
+            spellList.add(new Pair<CardIdentifier, SpellGUI>(id, spellGUI));
         }
     }
 
@@ -635,74 +536,69 @@ public final class MatchControllerimpl implements MatchController {
         }
     }
 
-    public void spellAnimation(SpellGUI spellGUI, CardIdentifier id, JComponent spellComponent, int x, int y){
-    matchView.addSpellGraphics(id.number(), spellComponent, x, y);
-    spellGUI.startAnimation();
-    spellScanner = false;
-    spellList.clear();
+    public void spellAnimation(SpellGUI spellGUI, CardIdentifier id, JComponent spellComponent, int x, int y) {
+        matchView.addSpellGraphics(id.number(), spellComponent, x, y);
+        spellGUI.startAnimation();
+        spellScanner = false;
+        spellList.clear();
 
-    final SpellEffect spellEffect = collection.getSpell(id).get().getSpellEffect();
-    switch (spellEffect.target()) {
-        case FRIENDLY:
-            handleSpellFriendly(spellEffect);
-            break;
-        case ENEMY:
-            handleSpellEnemy(spellEffect);
-            break;
-        default:
-            break;
-    }
-}
-
-public void handleSpellFriendly(SpellEffect spellEffect){
-    // Ottieni tutti i personaggi friendly (HERO, MELEE, RANGED)
-    List<GenericCharacterController> friendlyCharacters = getCharactersByType(CardType.MELEE);
-
-    if ("health".equals(spellEffect.category())){
-        for (var character : friendlyCharacters) {
-            character.heal(spellEffect.amount());
-        }
-    } else if ("attack".equals(spellEffect.category())){
-        for (var character : friendlyCharacters) {
-            character.setAttackValue(spellEffect.amount());
+        final SpellEffect spellEffect = collection.getSpell(id).get().getSpellEffect();
+        switch (spellEffect.target()) {
+            case FRIENDLY:
+                handleSpellFriendly(spellEffect);
+                break;
+            case ENEMY:
+                handleSpellEnemy(spellEffect);
+                break;
+            default:
+                break;
         }
     }
-}
 
-public void handleSpellEnemy(SpellEffect spellEffect){
-    List<GenericCharacterController> enemyCharacters = getCharactersByType(CardType.ENEMY);
+    public void handleSpellFriendly(SpellEffect spellEffect) {
+        // Ottieni tutti i personaggi friendly (HERO, MELEE, RANGED)
+        List<GenericCharacterController> friendlyCharacters = getCharactersByType(CardType.MELEE);
 
-    if ("health".equals(spellEffect.category())){
-        for (var character : enemyCharacters) {
-            character.takeHit(spellEffect.amount());
-        }
-    } else if ("attack".equals(spellEffect.category())){
-        for (var character : enemyCharacters) {
-            character.setAttackValue((-1) * spellEffect.amount());
-        }
-    } else if ("speedMultiplier".equals(spellEffect.category())){
-        for (var character : enemyCharacters) {
-            character.setSpeedMultiplierValue((-1) * spellEffect.amount());
+        if ("health".equals(spellEffect.category())) {
+            for (var character : friendlyCharacters) {
+                character.heal(spellEffect.amount());
+            }
+        } else if ("attack".equals(spellEffect.category())) {
+            for (var character : friendlyCharacters) {
+                character.setAttackValue(spellEffect.amount());
+            }
         }
     }
-}
+
+    public void handleSpellEnemy(SpellEffect spellEffect) {
+        List<GenericCharacterController> enemyCharacters = getCharactersByType(CardType.ENEMY);
+
+        if ("health".equals(spellEffect.category())) {
+            for (var character : enemyCharacters) {
+                character.takeHit(spellEffect.amount());
+            }
+        } else if ("attack".equals(spellEffect.category())) {
+            for (var character : enemyCharacters) {
+                character.setAttackValue((-1) * spellEffect.amount());
+            }
+        } else if ("speedMultiplier".equals(spellEffect.category())) {
+            for (var character : enemyCharacters) {
+                character.setSpeedMultiplierValue((-1) * spellEffect.amount());
+            }
+        }
+    }
 
     @Override
     public void addCharacter(final int n, final GenericCharacterController controller,
             final HitboxController hitboxController) {
-        int id = controller.getId().number();
-        charactersController.put(id, controller);
-        hitboxControllers.put(controller, hitboxController);
-        playerFSMs.put(id, new CharacterFSM(controller, this, radiusScanner, this.collisionResolver));
-        //System.out.println("id inserito in player" + id);
-        // charactersController.put(n, controller);
-        // hitboxControllers.put(controller, hitboxController);
-        // playerFSMs.put(n, new CharacterFSM(controller, this, radiusScanner,
-        // this.collisionResolver));
+        final int id = controller.getId().number();
+        // 1. La FSM viene creata qui, perché ha bisogno di dipendenze del
+        // MatchController
+        final CharacterFSM fsm = new CharacterFSM(controller, this, radiusScanner, this.collisionResolver);
 
+        // 2. Tutti e tre gli oggetti vengono passati al gestore per essere salvati
+        this.entityStateManager.addCharacter(id, controller, hitboxController, fsm);
     }
-
-
 
     public HitboxController setupCharacter(final JComponent charComp, final String typeFolder, final String name,
             final boolean isPlayable, int x, int y) {
@@ -715,7 +611,8 @@ public void handleSpellEnemy(SpellEffect spellEffect){
         final BufferedImage image = ImageLoader.getImage(path, (int) size.getWidth(), (int) size.getHeight());
         final HitboxMaskBounds bounds = new HitboxMaskBounds(hitbox, charComp, hitboxPanel);
         bounds.calculateHitboxCenter(image);
-        final HitboxController hitboxController = new HitboxControllerImpl(hitbox, hitboxPanel, Optional.of(bounds),null );
+        final HitboxController hitboxController = new HitboxControllerImpl(hitbox, hitboxPanel, Optional.of(bounds),
+                null);
 
         if (isPlayable) {
             final double radiusValue = switch (typeFolder) {
@@ -732,9 +629,6 @@ public void handleSpellEnemy(SpellEffect spellEffect){
         }
         return hitboxController;
     }
-
-
-
 
     @Override
     public void notifyPauseStart() {
@@ -786,7 +680,6 @@ public void handleSpellEnemy(SpellEffect spellEffect){
         this.eventWriter.setText("Nemico " + name + " è apparso!");
     }
 
-
     public void getRandomBossFromFirstList() {
 
         List<List<Enemy>> allEnemies = collectionController.getEnemies();
@@ -796,13 +689,14 @@ public void handleSpellEnemy(SpellEffect spellEffect){
         int randomIndex = random.nextInt(bossList.size());
 
         final Enemy boss = bossList.get(randomIndex);
-        final BossController bossController = BossControllerFactory.createBossController(generateUniqueCharacterId(), boss);
+        final BossController bossController = BossControllerFactory.createBossController(generateUniqueCharacterId(),
+                boss);
         bossController.attachCharacterAnimationPanel(
                 (int) (frameWidth * DimensionResolver.BOSS.width()),
                 (int) (frameHeight * DimensionResolver.BOSS.height()));
 
         final int spawnX = frameWidth; // Fuori dallo schermo a destra
-        int spawnY = frameHeight/9;
+        int spawnY = frameHeight / 9;
 
         final int bossId = bossController.getId().number();
         final String typeFolder = bossController.getId().type().name();
@@ -814,14 +708,13 @@ public void handleSpellEnemy(SpellEffect spellEffect){
                 spawnX, spawnY,
                 typeFolder, name);
         addCharacter(bossId, bossController, hitboxController);
-        bossActive=true;
+        bossActive = true;
         this.eventWriter.setText("Inizio BossFight!");
         this.matchView.notifyBossFight(bossActive);
         if (!alreadyDone) {
             AudioEngine.playSoundTrack(SoundTrack.BOSSFIGHT);
         }
     }
-
 
     public int generateRandomY(List<Integer> usedPositions, int frameHeight) {
         final int marginBottom = 300;
@@ -850,68 +743,30 @@ public void handleSpellEnemy(SpellEffect spellEffect){
         return false;
     }
 
-    //setto tutti i personaggi allo stato che voglio
+    @Override
     public void setAllFSMsToState(final CharacterState newState) {
-        for (CharacterFSM fsm : playerFSMs.values()) {
-            fsm.setState(newState);
-        }
+        this.entityStateManager.setAllFSMsToState(newState);
     }
-
 
     public MatchView getMatchView() {
         return this.matchView;
     }
 
-
-    public int getHitboxControllersCount() {
-        return hitboxControllers.size();
-    }
-
-
-    public boolean hasBossInMap() {
-        for (GenericCharacterController controller : hitboxControllers.keySet()) {
-            if (controller.getId().type() == CardType.BOSS) {
-                return true; // Trovato almeno un bosse
-            }
-        }
-        return false; // Nessun boss trovato
-    }
-
-
-    public void printHitboxControllers() {
-        System.out.println("Mappa dei controller personaggio -> controller hitbox:");
-        hitboxControllers.forEach((character, hitbox) -> {
-            System.out.println("Personaggio: ID=" + character.getId().number() +
-                    ", Tipo=" + character.getId() +
-                    " -> Hitbox pos: " + hitbox.getHitbox().getPosition());
-        });
-    }
-
-    public boolean isHeroMissing() {
-        return hitboxControllers.keySet().stream()
-                .noneMatch(c -> c instanceof HeroController);
-    }
-
-    public boolean isBossMissing() {
-        return hitboxControllers.keySet().stream()
-                .noneMatch(c -> c instanceof BossController);
-    }
-
-      // Setter per marcare la sconfitta del boss
+    // Setter per marcare la sconfitta del boss
     public void setBossActive() {
         this.bossActive = true;
     }
 
     public void matchResult() {
         if (!alreadyDone) {
-                if (isHeroMissing()){
+            if (!hasEntityTypeInMap(CardType.HERO)) {
                 this.alreadyDone = true;
                 mainView.updateAccount(this.coins, false);
                 AudioEngine.playEffect(SoundEffect.LOSE);
                 matchView.disposeDefeat();
                 this.matchView.notifyBossFight(false);
                 this.mainController.getMatchStartObserver().stopMatchLoop();
-            }else if (isBossMissing() && bossActive){
+            } else if (!hasEntityTypeInMap(CardType.BOSS) && bossActive) {
                 this.alreadyDone = true;
                 mainView.updateAccount(this.coins, true);
                 AudioEngine.playEffect(SoundEffect.WIN);
@@ -922,12 +777,9 @@ public void handleSpellEnemy(SpellEffect spellEffect){
         }
     }
 
-    public List<GenericCharacterController> getCharactersByType(CardType cardType) {
-    return hitboxControllers.keySet().stream()
-            .filter(controller -> controller.getId().type() == cardType)
-            .collect(Collectors.toList());
+    private List<GenericCharacterController> getCharactersByType(final CardType cardType) {
+        return this.entityStateManager.getCharactersByType(cardType);
     }
-
 
     public boolean isRoundSpawnComplete() {
         return roundSpawnComplete;
@@ -950,9 +802,23 @@ public void handleSpellEnemy(SpellEffect spellEffect){
     public void halveHeroMaxHealth() {
         final int currentHealth = this.heroController.getMaximumHealthValue();
         final int reductionRate = 80;
-        final int newHealth = currentHealth - (int)(currentHealth * reductionRate / 100);
-        if (currentHealth > newHealth){
+        final int newHealth = currentHealth - (int) (currentHealth * reductionRate / 100);
+        if (currentHealth > newHealth) {
             this.heroController.takeHit(newHealth);
         }
+    }
+
+    @Override
+    public boolean hasEntityTypeInMap(final CardType type) {
+        return this.entityStateManager.hasEntityWithType(type);
+    }
+
+    @Override
+    public boolean isPlayerInState(final PlayableCharacterController player, final CharacterState stateToCompare) {
+        final CharacterFSM fsm = this.entityStateManager.getFSM(player.getId().number());
+        if (fsm != null) {
+            return fsm.getCurrentState() == stateToCompare;
+        }
+        return false;
     }
 }

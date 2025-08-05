@@ -1,6 +1,5 @@
 package it.unibo.oop.lastcrown.controller.collision.api;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -105,15 +104,11 @@ public interface MatchController {
 
     int getEngagedCounterpart(final int characterId);
 
-    boolean isPlayerIdle(PlayableCharacterController player);
-
     boolean isBossFightPartnerDead(final int id);
 
     boolean isEnemyDead(int enemyId);
 
     boolean isRangedFightPartnerDead(final int id);
-
-    boolean isPlayerStopped(final PlayableCharacterController player);
 
     void notifyClicked(int x, int y);
 
@@ -130,29 +125,38 @@ public interface MatchController {
     void newMatchView(final MatchView matchView);
     // void notifyShopToMatch();
 
-    CharacterState getCharacterState(final GenericCharacterController character);
-
     MatchView getMatchView();
 
     Wall getWall();
 
     HitboxController getWallHitboxController();
+
     void setAllFSMsToState(final CharacterState newState);
+
     boolean isEnemyBeyondFrame(final int enemyId);
-    int getHitboxControllersCount();
-    void getRandomBossFromFirstList();
-    boolean hasAnyEnemiesInMap();
-    boolean hasBossInMap();
+
+    void getRandomBossFromFirstList();;
+
     void printEngagedEnemies();
+
     void setRadiusPlayerInMap();
-    boolean hasAnyPlayerInMap();
-    boolean hasAnyRangedInMap();
-    void printHitboxControllers();
+
     public void matchResult();
+
     void rewardCoinsForRound(boolean bossFight);
+
     void setBossActive();
+
     boolean isRoundSpawnComplete();
+
     boolean retreat();
+
     void notifyPauseStart();
+
     void halveHeroMaxHealth();
+
+    boolean hasEntityTypeInMap(CardType type);
+
+    boolean isPlayerInState(PlayableCharacterController player, CharacterState stateToCompare);
+
 }
