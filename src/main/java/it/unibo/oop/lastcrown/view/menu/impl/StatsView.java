@@ -33,8 +33,8 @@ public final class StatsView extends AbstractScene {
     private static final Font INFO_FONT  = getResponsiveFont(new Font(FONT_NAME, Font.PLAIN, 50));
     private static final Font VALUE_FONT = getResponsiveFont(new Font(FONT_NAME, Font.BOLD, 45));
     private static final Color CARD_BACKGROUND = new Color(33, 37, 43);
-    private static final Color STAT_COLOR      = new Color(135, 206, 250);
-    private static final Color VALUE_COLOR     = new Color(245, 245, 245);
+    private static final Color STAT_COLOR = new Color(135, 206, 250);
+    private static final Color VALUE_COLOR = new Color(245, 245, 245);
 
     private StatsView(final SceneManager sceneManager, final AccountController accountController) {
         this.setLayout(new BorderLayout());
@@ -47,11 +47,11 @@ public final class StatsView extends AbstractScene {
         statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
         statsPanel.setOpaque(false);
 
-        statsPanel.add(createStatPanel("Coins",              String.valueOf(accountController.getAccount().getCoins())));
+        statsPanel.add(createStatPanel("Coins", String.valueOf(accountController.getAccount().getCoins())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        statsPanel.add(createStatPanel("Bosses Defeated",    String.valueOf(accountController.getAccount().getBossesDefeated())));
+        statsPanel.add(createStatPanel("Bosses Defeated", String.valueOf(accountController.getAccount().getBossesDefeated())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        statsPanel.add(createStatPanel("Games Played",       String.valueOf(accountController.getAccount().getPlayedMatches())));
+        statsPanel.add(createStatPanel("Games Played", String.valueOf(accountController.getAccount().getPlayedMatches())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         statsPanel.add(createStatPanel("Total Playtime (in minutes)", 
             String.format("%.2f", accountController.getAccount().getPlaytime())));
