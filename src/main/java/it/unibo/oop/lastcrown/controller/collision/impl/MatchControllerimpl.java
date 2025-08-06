@@ -589,7 +589,7 @@ public final class MatchControllerimpl implements MatchController {
             final Pair<String, PlayableCharacterController> selected = CardList.get(CardList.size() - 1);
             final int id = selected.get2().getId().number();
             final PlayableCharacterController playerController = selected.get2();
-            final String typeFolder = playerController.getId().type().name();
+            final String typeFolder = playerController.getId().type().get();
             final String name = selected.get1();
 
             playerController.attachCharacterAnimationPanel(
@@ -719,8 +719,8 @@ public void handleSpellEnemy(SpellEffect spellEffect){
 
         if (isPlayable) {
             final double radiusValue = switch (typeFolder) {
-                case "MELEE" -> DEFAULT_MELEE_RADIUS;
-                case "RANGED" -> DEFAULT_RANGED_RADIUS;
+                case "melee" -> DEFAULT_MELEE_RADIUS;
+                case "ranged" -> DEFAULT_RANGED_RADIUS;
                 default -> DEFAULT_BOSS_RADIUS;
             };
 
@@ -774,7 +774,7 @@ public void handleSpellEnemy(SpellEffect spellEffect){
         usedPositions.add(spawnY); // registra la posizione usata
 
         final int enemyId = enemyController.getId().number();
-        final String typeFolder = enemyController.getId().type().name();
+        final String typeFolder = enemyController.getId().type().get();
         final String name = enemy.getName();
 
         final HitboxController hitboxController = this.matchView.addEnemyGraphics(
@@ -802,10 +802,10 @@ public void handleSpellEnemy(SpellEffect spellEffect){
                 (int) (frameHeight * DimensionResolver.BOSS.height()));
 
         final int spawnX = frameWidth; // Fuori dallo schermo a destra
-        int spawnY = frameHeight/9;
+        int spawnY = 0;
 
         final int bossId = bossController.getId().number();
-        final String typeFolder = bossController.getId().type().name();
+        final String typeFolder = bossController.getId().type().get();
         final String name = boss.getName();
 
         final HitboxController hitboxController = this.matchView.addEnemyGraphics(
