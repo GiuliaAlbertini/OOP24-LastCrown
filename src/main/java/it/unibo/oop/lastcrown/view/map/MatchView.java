@@ -5,104 +5,140 @@ import java.awt.Point;
 import java.util.Set;
 
 import javax.swing.JComponent;
+import javax.swing.JTextArea;
+
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.menu.api.Scene;
 
 /**
- * An interface that models the match view.
+ * Represents the view for an active match, managing all in‑game graphical components
+ * and updates during gameplay.
  */
 public interface MatchView extends Scene {
 
     /**
-     * Notifies the match view that it must show the Defeat Dialog.
+     * Displays the defeat dialog and performs cleanup after a defeat.
      */
     void disposeDefeat();
 
     /**
-     * Notifies the match view that it must show the Victory Dialog.
+     * Displays the victory dialog and performs cleanup after a victory.
      */
     void disposeVictory();
 
     /**
-     * Add a generic JComponent to the map, centered in the specified coordinates.
+     * Adds a generic graphical component to the map, centered at the specified coordinates.
      *
-     * @param id        the numerical id of the new JComponent
-     * @param component the generic JComponent
-     * @param x         x coordinate
-     * @param y         y coordinate
+     * @param id         the unique numeric identifier for the component
+     * @param component  the graphical component to add
+     * @param x          the x-coordinate for placement
+     * @param y          the y-coordinate for placement
+     * @param typefolder the string representing the asset folder type
+     * @param name       the name of the entity (for identification or display)
+     * @return the HitboxController associated with the added component
      */
     HitboxController addGenericGraphics(int id, JComponent component, int x, int y, String typefolder, String name);
 
     /**
-     * Add a generic hero graphic component. The position is already known.
-     * @param id the numerical id of the hero graphic component
+     * Adds a hero graphical component to the view using a predefined position.
      *
-     * @param heroGraphics the generic hero graphic component
+     * @param id           the hero’s unique numeric identifier
+     * @param heroGraphics the graphical component representing the hero
+     * @param typefolder   the asset folder string indicating hero type
+     * @param name         the hero’s name for identification
+     * @return the HitboxController associated with the added hero
      */
     HitboxController addHeroGraphics(int id, JComponent heroGraphics, String typefolder, String name);
 
-    void addSpellGraphics(final int id, final JComponent component, final int x, final int y);
+    /**
+     * Adds a spell graphical component to the view at the specified position.
+     *
+     * @param id        the unique numeric identifier for the spell
+     * @param component the graphical component of the spell
+     * @param x         the x-coordinate for placement
+     * @param y         the y-coordinate for placement
+     */
+    void addSpellGraphics(int id, JComponent component, int x, int y);
 
     /**
-     * Adds the graphical representation of an enemy to the view at the specified
-     * position.
+     * Adds an enemy graphical component to the map at the given coordinates.
      *
-     * @param id the unique identifier of the enemy
-     * @param component the graphical component representing the enemy
-     * @param x the X coordinate where the enemy should be placed
-     * @param y the Y coordinate where the enemy should be placed
-     * @param typefolder the folder name indicating the enemy type used for loading assets
-     * @param name the name of the enemy used for display and identification
+     * @param id         the unique identifier of the enemy
+     * @param component  the graphical component representing the enemy
+     * @param x          the x-coordinate where the enemy should appear
+     * @param y          the y-coordinate where the enemy should appear
+     * @param typefolder string indicating enemy type folder for loading assets
+     * @param name       the name of the enemy for display
      * @return the HitboxController associated with the added enemy
      */
     HitboxController addEnemyGraphics(int id, JComponent component, int x, int y, String typefolder, String name);
 
     /**
-     * Adds a wall panel (obstacle) to the game view.
+     * Adds a wall (obstacle) to the game view.
      *
-     * @param panel the {@link HitboxController} representing the wall to be added
+     * @param panel the hitbox controller representing the wall
      */
     void addWallPanel(HitboxController panel);
 
     /**
-     * Notifies the MatchView about the bossfight.
-     * @param start True if it started, False if it ended
+     * Notifies the view about the start or end of a boss fight.
+     *
+     * @param start true if the boss fight has begun, false if it has ended
      */
     void notifyBossFight(boolean start);
 
     /**
-     * Remove safely a graphic component associated with the specified id from the
-     * map.
+     * Removes the graphical component associated with the specified identifier.
      *
-     * @param id the id linked to the component to eliminate
+     * @param id the identifier of the component to remove
      */
     void removeGraphicComponent(int id);
 
     /**
-     * Removes all the new graphic components from the map.
+     * Clears all dynamically added graphical components from the view.
      */
     void clearNewGraphicsComponent();
 
     /**
-     * @return the vertical limit of the trups zone
+     * Returns the vertical limit of the troop deployment zone.
+     *
+     * @return the vertical boundary coordinate for the troop deployment zone
      */
     int getTrupsZoneLimit();
 
     /**
-     * @return the wall size
+     * Returns the size (width and height) of the wall obstacle in the view.
+     *
+     * @return the wall’s dimensions
      */
     Dimension getWallSize();
 
     /**
-     * @return the upper left corner coordinates of the wall
+     * Returns the upper-left corner coordinates of the wall obstacle.
+     *
+     * @return the wall’s top-left coordinate
      */
     Point getWallCoordinates();
-    
+
     /**
-     * Update the button cards shown in the match.
-     * @param newDeck the new card set to show 
+     * Updates the set of in‑game card buttons displayed in the match.
+     *
+     * @param newDeck the new set of card identifiers to display
      */
     void updateInGameDeck(Set<CardIdentifier> newDeck);
 
+    /**
+     * Updates the text shown in the event display area of the UI.
+     *
+     * @param text the new event message to display
+     */
+    void setEventText(String text);
+
+    /**
+     * Updates the displayed amount of coins in the UI.
+     *
+     * @param coins the current number of coins to show
+     */
+    void setCoins(int coins);
 }

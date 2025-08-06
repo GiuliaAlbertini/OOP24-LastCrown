@@ -1,7 +1,6 @@
 package it.unibo.oop.lastcrown.controller.collision.impl;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -10,7 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.JComponent;
-import javax.swing.JTextArea;
 
 import it.unibo.oop.lastcrown.audio.SoundEffect;
 import it.unibo.oop.lastcrown.audio.SoundTrack;
@@ -23,12 +21,12 @@ import it.unibo.oop.lastcrown.controller.characters.api.Wall;
 import it.unibo.oop.lastcrown.controller.characters.impl.hero.HeroControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.playablecharacter.PlCharControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.wall.WallFactory;
-import it.unibo.oop.lastcrown.controller.collision.api.EngagementManager;
+import it.unibo.oop.lastcrown.controller.collision.api.EntityEngagementManager;
 import it.unibo.oop.lastcrown.controller.collision.api.EntityStateManager;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.collision.api.SpellManager;
-import it.unibo.oop.lastcrown.controller.collision.api.TargetingSystem;
+import it.unibo.oop.lastcrown.controller.collision.api.EntityTargetingSystem;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
@@ -47,8 +45,8 @@ import it.unibo.oop.lastcrown.model.collision.impl.HitboxImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.Pair;
 import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.RadiusImpl;
-
 import it.unibo.oop.lastcrown.model.user.api.CompleteCollection;
+import it.unibo.oop.lastcrown.utility.Constant;
 import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
@@ -72,45 +70,26 @@ public final class MatchControllerimpl implements MatchController {
     private MatchView matchView;
     private final Hero hero;
     private Wall wall;
-    private final JTextArea eventWriter;
-    private final JTextArea coinsWriter;
     private int coins;
     private int frameWidth;
     private int frameHeight;
     private final CompleteCollection collection;
-    private final CollectionController collectionController;
     private final HeroController heroController;
-    private static final int HITBOX_WIDTH = 10;
-    private static final int HITBOX_HEIGHT = 10;
-    private static final int DEFAULT_MELEE_RADIUS = 250;
-    private static final int DEFAULT_RANGED_RADIUS = 475;
-    private static final int DEFAULT_BOSS_RADIUS = 400;
-    private static final int UPGRADE_RADIUS_MELEE = 400;
-    private static final int UPGRADE_RADIUS_RANGED = 800;
     private final MainController mainController;
     private boolean bossActive;
     private MainView mainView;
-
     private HitboxController wallHitboxController = null;
-
     private boolean alreadyDone;
-
     private final EntityStateManager entityStateManager;
-
-    private final TargetingSystem radiusScanner;
+    private final EntityTargetingSystem radiusScanner;
     private EnemySpawnerImpl enemySpawner;
-    private final EngagementManager engagementManager;
+    private final EntityEngagementManager engagementManager;
     private final SpellManager spellManager;
 
-    public MatchControllerimpl(final MainController mainController,
-            final int frameWidth,
-            final int frameHeight,
-            CardIdentifier heroId,
-            CollectionController collectionController,
-            MainView mainView,
+    public MatchControllerimpl(final MainController mainController, final int frameWidth, final int frameHeight,
+            CardIdentifier heroId, CollectionController collectionController, MainView mainView,
             final int enemyList) {
         this.nextId = 1;
-        this.collectionController = collectionController;
         this.frameHeight = frameHeight;
         this.frameWidth = frameWidth;
         this.mainController = mainController;
@@ -122,40 +101,41 @@ public final class MatchControllerimpl implements MatchController {
                 (int) (frameHeight * DimensionResolver.HERO.height()));
         this.wall = WallFactory.createWall(hero.getWallAttack(), hero.getWallHealth(), 10000, frameWidth / 2,
                 (int) (frameHeight * DimensionResolver.UTILITYZONE.height()), Optional.empty());
-
-        final Font font = new Font("Calibri", Font.CENTER_BASELINE, 20);
-        this.eventWriter = new JTextArea();
-        this.eventWriter.setEditable(false);
-        this.eventWriter.setFocusable(false);
-        this.eventWriter.setFont(font);
-        this.coinsWriter = new JTextArea();
-        this.coinsWriter.setEditable(false);
-        this.coinsWriter.setFocusable(false);
-        this.coinsWriter.setFont(font);
-        this.coinsWriter.setText(this.coins + "coins");
         this.collisionResolver = new CollisionResolverImpl(this);
         this.collisionManager.addObserver(collisionResolver);
-        this.engagementManager = new EngagementManagerImpl(this);
-
+        this.engagementManager = new EntityEngagementManagerImpl(this);
         this.entityStateManager = new EntityStateManagerImpl();
-        this.radiusScanner = new TargetingSystemImpl(this.entityStateManager.getHitboxControllersMap(), this,
+        this.radiusScanner = new EntityTargetingSystemImpl(this.entityStateManager.getHitboxControllersMap(), this,
                 collisionResolver);
-        this.enemySpawner = new EnemySpawnerImpl(this, collectionController, this.frameWidth, this.frameHeight,
-                enemyList);
+        this.enemySpawner = new EnemySpawnerImpl(this, collectionController.getEnemies(), this.frameWidth,
+                this.frameHeight, enemyList);
         this.spellManager = new SpellManagerImpl(this, this.collection, this.frameWidth);
-
     }
 
     public void newMatchView(final MatchView matchView) {
         this.matchView = matchView;
+        updateCoinsDisplay();
         HitboxController heroHitbox = this.matchView.addHeroGraphics(this.heroController.getId().number(),
                 this.heroController.getGraphicalComponent(), this.heroController.getId().type().get(),
                 this.hero.getName());
         this.heroController.setNextAnimation(Keyword.STOP);
         this.heroController.showNextFrame();
         addCharacter(this.heroController.getId().number(), heroController, heroHitbox);
-
         createWallHitbox(matchView);
+    }
+
+    private void updateCoinsDisplay() {
+        matchView.setCoins(this.coins);
+    }
+
+    @Override
+    public void updateEventText(String text) {
+        matchView.setEventText(text);
+    }
+
+    @Override
+    public int getCurrentCoins() {
+        return this.coins;
     }
 
     private void createWallHitbox(final MatchView matchView) {
@@ -179,7 +159,7 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public void setRadiusPlayerInMap() {
-        this.entityStateManager.setRadiusForAllPlayers(UPGRADE_RADIUS_MELEE, UPGRADE_RADIUS_RANGED);
+        this.entityStateManager.setRadiusForAllPlayers(Constant.UPGRADE_RADIUS_MELEE, Constant.UPGRADE_RADIUS_RANGED);
     }
 
     @Override
@@ -261,13 +241,6 @@ public final class MatchControllerimpl implements MatchController {
         return false;
     }
 
-    /**
-     * Rimuove un engagement sia che il personaggio sia un enemy che un player.
-     *
-     * @param characterId l'ID del personaggio da sganciare.
-     * @return true se è stato trovato e rimosso un engagement.
-     */
-
     @Override
     public boolean releaseEngagementFor(final int characterId) {
         return this.engagementManager.releaseEngagementFor(characterId);
@@ -346,7 +319,7 @@ public final class MatchControllerimpl implements MatchController {
             final HitboxController hitboxController = this.matchView.addGenericGraphics(id,
                     playerController.getGraphicalComponent(), x, y, typeFolder, name);
             addCharacter(selected.get2().getId().number(), playerController, hitboxController);
-            this.eventWriter.setText(name + " schierato in campo!");
+            updateEventText(name + "schierato!");
         } else {
             this.spellManager.castSpell(x, y);
         }
@@ -378,7 +351,7 @@ public final class MatchControllerimpl implements MatchController {
     public HitboxController setupCharacter(final JComponent charComp, final String typeFolder, final String name,
             final boolean isPlayable, int x, int y) {
         final Dimension size = charComp.getPreferredSize();
-        final Hitbox hitbox = new HitboxImpl(HITBOX_WIDTH, HITBOX_HEIGHT, new Point2DImpl(x, y));
+        final Hitbox hitbox = new HitboxImpl(Constant.HITBOX_WIDTH, Constant.HITBOX_HEIGHT, new Point2DImpl(x, y));
         final HitboxPanel hitboxPanel = new HitboxPanelImpl(hitbox);
 
         final String path = CharacterPathLoader.loadHitboxPath(typeFolder, name);
@@ -391,9 +364,9 @@ public final class MatchControllerimpl implements MatchController {
 
         if (isPlayable) {
             final double radiusValue = switch (typeFolder) {
-                case "MELEE" -> DEFAULT_MELEE_RADIUS;
-                case "RANGED" -> DEFAULT_RANGED_RADIUS;
-                default -> DEFAULT_BOSS_RADIUS;
+                case "MELEE" -> Constant.DEFAULT_MELEE_RADIUS;
+                case "RANGED" -> Constant.DEFAULT_RANGED_RADIUS;
+                default -> Constant.DEFAULT_BOSS_RADIUS;
             };
 
             final Radius radius = new RadiusImpl(hitbox, radiusValue);
@@ -418,16 +391,6 @@ public final class MatchControllerimpl implements MatchController {
     @Override
     public JComponent getWallHealthBar() {
         return this.wall.getHealthBarComponent();
-    }
-
-    @Override
-    public JComponent getCoinsWriter() {
-        return this.coinsWriter;
-    }
-
-    @Override
-    public JComponent getEventWriter() {
-        return this.eventWriter;
     }
 
     @Override
@@ -491,8 +454,8 @@ public final class MatchControllerimpl implements MatchController {
         final int baseReward = 50;
         int reward = baseReward - this.enemySpawner.getRoundIndex() * 10;
         this.coins += reward;
-        this.coinsWriter.setText(this.coins + " coins");
-        this.eventWriter.setText((bossFight ? "Boss sconfitto! " : "") + "Hai guadagnato " + reward + "!");
+        updateCoinsDisplay();
+        updateEventText((bossFight ? "Boss sconfitto! " : "") + "Hai guadagnato " + reward + "!");
     }
 
     public void halveHeroMaxHealth() {

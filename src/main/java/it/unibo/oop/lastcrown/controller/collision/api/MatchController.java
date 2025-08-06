@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.JComponent;
+import javax.swing.JTextArea;
 
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
@@ -14,7 +15,6 @@ import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.Characte
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
-import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.view.map.MatchView;
 
 /**
@@ -108,10 +108,6 @@ public interface MatchController {
 
     JComponent getWallHealthBar();
 
-    JComponent getCoinsWriter();
-
-    JComponent getEventWriter();
-
     void newMatchView(final MatchView matchView);
     // void notifyShopToMatch();
 
@@ -152,7 +148,9 @@ public interface MatchController {
     boolean isEntityEngaged(int entityId);
 
     List<GenericCharacterController> getCharactersByType(CardType cardType);
+    //void setUIComponents(JTextArea eventWriter, JTextArea coinsWriter);
 
-    //List<GenericCharacterController> getCharactersByType(CardType cardType);
+     int getCurrentCoins();
+     void updateEventText(String text);
 
 }

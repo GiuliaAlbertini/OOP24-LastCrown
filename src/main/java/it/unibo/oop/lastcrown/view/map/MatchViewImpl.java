@@ -1,6 +1,7 @@
 package it.unibo.oop.lastcrown.view.map;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.util.Map;
 import java.util.Set;
@@ -9,6 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
@@ -23,10 +26,15 @@ import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
  */
 public final class MatchViewImpl extends JPanel implements MatchView, MatchExitObserver {
     private static final long serialVersionUID = 1L;
+    private static final Font UI_FONT = new Font("Calibri", Font.CENTER_BASELINE, 20);
+
     private final MatchPanel mainPanel;
     private final MatchController matchController;
     private final Map<Integer, JComponent> newComponents;
     private final transient SceneManager sceneManager;
+        // Componenti UI creati qui
+    private final JTextArea eventWriter;
+    private final JTextArea coinsWriter;
 
     /**
      * @param sceneManager the SceneManager of the application
@@ -40,12 +48,36 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         this.sceneManager = sceneManager;
         this.matchController=matchContr;
         this.newComponents = new ConcurrentHashMap<>();
+        this.eventWriter = createEventWriter();
+        this.coinsWriter = createCoinsWriter();
         this.mainPanel = new MatchPanel(this, matchContr, matchContr.getWallHealthBar(),
-                matchContr.getEventWriter(), matchContr.getCoinsWriter(), width, height, deck);
+                this.eventWriter, this.coinsWriter, width, height, deck);
         this.setPreferredSize(new Dimension(width, height));
         this.setLayout(new BorderLayout());
         this.add(mainPanel, BorderLayout.CENTER);
         mainPanel.setBounds(0, 0, width, height);
+    }
+
+
+    private JTextArea createEventWriter() {
+        JTextArea writer = new JTextArea();
+        writer.setEditable(false);
+        writer.setFocusable(false);
+        writer.setFont(UI_FONT);
+        return writer;
+    }
+      /**
+     * Crea il componente per la visualizzazione delle monete
+     */
+    private JTextArea createCoinsWriter() {
+        JTextArea writer = new JTextArea();
+        writer.setEditable(false);
+        writer.setFocusable(false);
+        writer.setFont(UI_FONT);
+
+        int currentCoins = matchController.getCurrentCoins();
+        writer.setText(currentCoins + " coins");
+        return writer;
     }
 
     @Override
@@ -86,7 +118,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         component.setBounds(x - size.width / 2, y - size.height / 2, size.width, size.height);
 
         this.mainPanel.add(component);
-        this.mainPanel.setComponentZOrder(component, 1);
+        this.mainPanel.setComponentZOrder(component, 0);
 
         final HitboxController hitboxcontroller= matchController.setupCharacter(component, typefolder, name, true, component.getX(), component.getY());
         this.newComponents.put(id + 1, hitboxcontroller.getHitboxPanel());
@@ -108,7 +140,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         final Dimension size = component.getPreferredSize();
         component.setBounds(x - size.width / 2, y - size.height / 2, size.width, size.height);
         this.mainPanel.add(component);
-        this.mainPanel.setComponentZOrder(component, 1);
+        this.mainPanel.setComponentZOrder(component, 0);
         this.mainPanel.repaint();
     }
 
@@ -225,5 +257,15 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     @Override
     public void updateInGameDeck(final Set<CardIdentifier> newDeck) {
         this.mainPanel.updateInGameDeck(newDeck);
+    }
+
+    @Override
+    public void setEventText(final String text) {
+        this.eventWriter.setText(text);
+    }
+
+    @Override
+    public void setCoins(final int coins) {
+        this.coinsWriter.setText(coins + " coins");
     }
 }
