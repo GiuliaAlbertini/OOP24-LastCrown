@@ -4,8 +4,9 @@ import java.awt.Color;
 import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
-import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
+import it.unibo.oop.lastcrown.model.collision.api.Point2D;
 import it.unibo.oop.lastcrown.view.collision.api.HitboxPanel;
+import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
 
 /**
  * Implementation of HitboxPanel that visually represents a hitbox using a JPanel
@@ -40,15 +41,25 @@ public final class HitboxPanelImpl implements HitboxPanel {
     @Override
     public void updatePanel() {
         hitboxPanel.setBounds(
-                (int) hitbox.getPosition().x(),
-                (int) hitbox.getPosition().y(),
-                hitbox.getWidth(),
-                hitbox.getHeight());
+                (int) this.hitbox.getPosition().x(),
+                (int) this.hitbox.getPosition().y(),
+                this.hitbox.getWidth(),
+                this.hitbox.getHeight());
     }
 
     @Override
     public void setPanelPosition(final int x, final int y) {
-        hitbox.setPosition(new Point2DImpl(x, y));
+        this.hitbox.setPosition(new Point2DImpl(x, y));
         updatePanel();
     }
+
+/**
+ * Returns the center point of the hitbox.
+ *
+ * @return the (x, y) center of the hitbox as Point2DImpl
+ */
+public Point2D getCenter() {
+    return this.hitbox.getCenter();
+}
+
 }

@@ -3,12 +3,17 @@ package it.unibo.oop.lastcrown.controller.characters.impl.wall;
 import java.awt.Color;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.Wall;
+import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.model.card.CardType;
+import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
 import it.unibo.oop.lastcrown.view.characters.CharacterHealthBar;
 
 /**
@@ -17,11 +22,12 @@ import it.unibo.oop.lastcrown.view.characters.CharacterHealthBar;
 public final class WallImpl implements Wall {
     private final Map<Integer, CharacterHitObserver> opponents = new ConcurrentHashMap<>();
     private final CharacterHealthBar healthBar;
-    private final int maximumHealth;
+    private int maximumHealth;
     private int currentHealth;
-    private final int attack;
-    private final int id;
+    private int attack;
+    private final CardIdentifier id;
     private boolean dead;
+    private Optional<Hitbox> hitbox;
 
     /**
      * @param attack the attack value of the new Wall
@@ -31,17 +37,19 @@ public final class WallImpl implements Wall {
      * @param healthHeight the height of the health bar
      */
     public WallImpl(final int attack, final int health, final int id,
-     final int healthWidth, final int healthHeight) {
+     final int healthWidth, final int healthHeight, final Optional<Hitbox> hitbox) {
         this.healthBar = CharacterHealthBar.create(healthWidth, healthHeight, Color.GREEN);
+        this.healthBar.setBorder(BorderFactory.createLineBorder(Color.BLUE, 5));
         this.maximumHealth = health;
         this.currentHealth = health;
         this.attack = attack;
-        this.id = id;
+        this.id = new CardIdentifier(id, CardType.WALL);
+        this.hitbox= Optional.ofNullable(hitbox).orElse(Optional.empty());
     }
 
     @Override
     public int getObserverId() {
-        return this.id;
+        return this.id.number();
     }
 
     @Override
@@ -55,6 +63,15 @@ public final class WallImpl implements Wall {
     }
 
     @Override
+    public Optional<Hitbox> getHitbox() {
+        return this.hitbox;
+    }
+
+    public void setHitbox(final Hitbox hitbox) {
+        this.hitbox = Optional.ofNullable(hitbox);
+    }
+
+    @Override
     public boolean isDead() {
         return this.dead;
     }
@@ -65,8 +82,18 @@ public final class WallImpl implements Wall {
     }
 
     @Override
+    public void changeAttackValue(int attack) {
+        this.attack = attack;
+    }
+
+    @Override
     public int getCurrentHealth() {
         return this.currentHealth;
+    }
+
+    @Override
+    public void changeMaximumHealth(int health) {
+        this.maximumHealth = health;
     }
 
     @Override
@@ -106,4 +133,10 @@ public final class WallImpl implements Wall {
     public JComponent getHealthBarComponent() {
         return this.healthBar.getComponent();
     }
+
+    @Override
+    public CardIdentifier getCardIdentifier() {
+        return this.id;
+    }
+
 }

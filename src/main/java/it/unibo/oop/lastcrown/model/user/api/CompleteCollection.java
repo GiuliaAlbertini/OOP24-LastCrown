@@ -58,5 +58,9 @@ public interface CompleteCollection {
      */
     int getCost(CardIdentifier id);
 
-    List<CardIdentifier> getCompleteCollectionAsSet();
+    /**
+     * Getter for the CompleteCollection as a List of CardIdentifiers.
+     * @return the collection as a list
+     */
+    List<CardIdentifier> getCompleteCollectionAsList();
 }

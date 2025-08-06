@@ -53,7 +53,10 @@ public class AccountImpl implements Account {
 
     @Override
     public final double computeBossesPerMatch() {
-        return (double) this.playedMatches / (this.bossesDefeated == 0 ? 1 : this.bossesDefeated);
+        if (playedMatches == 0) {
+            return 0.0;
+        }
+        return this.bossesDefeated / this.playedMatches;
     }
 
     @Override

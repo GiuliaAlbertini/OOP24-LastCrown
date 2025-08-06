@@ -38,6 +38,7 @@ public final class DeadHandler implements StateHandler {
             return CharacterState.DEAD;
         }
 
+
         final int totalFrames = character.getDeathAnimationSize();
         character.setNextAnimation(Keyword.DEATH);
 
@@ -49,13 +50,27 @@ public final class DeadHandler implements StateHandler {
         if (currentFrameIndex >= totalFrames) {
             if (character.getId().type() == CardType.BOSS) {
                 resolver.clearAllOpponentPairs();
+                match.setBossActive();
             }
-            match.releaseEngagementFor(character.getId().number());
+
+            boolean isBoss = character.getId().type() == CardType.BOSS;
+            if (character.getId().type() == CardType.ENEMY || isBoss) {
+                match.rewardCoinsForRound(isBoss);
+            }
+
             match.removeCharacterCompletelyById(character.getId().number());
+            match.releaseEngagementFor(character.getId().number());
             resolver.clearEnemyCollision(character.getId().number());
             resolver.clearAllOpponentRangedPairs();
             resolver.clearBossFightPairById(character.getId().number());
             this.currentFrameIndex = 0;
+
+            if (match.getWall().getCurrentHealth() <=0 && !match.hasBossInMap()){
+                if (!match.hasAnyEnemiesInMap()){
+                    match.getRandomBossFromFirstList();
+                    match.setRadiusPlayerInMap();
+                }
+            }
             return CharacterState.DEAD;
         }
         queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));

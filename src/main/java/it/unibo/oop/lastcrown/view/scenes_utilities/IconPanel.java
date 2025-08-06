@@ -28,6 +28,7 @@ import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
  * A JPanel that displays only the card’s icon (normal or grey), scaled to fit its bounds.
  */
 public final class IconPanel extends JPanel {
+    private static final Color BG_COLOR = new Color(40, 40, 40);
     private static final long serialVersionUID = 1L;
     private static final int WIDTH_FALLBACK = 200;
     private static final int HEIGHT_FALLBACK = 300;
@@ -42,9 +43,15 @@ public final class IconPanel extends JPanel {
     );
     private final Border hoverBorder = BorderFactory.createLineBorder(new Color(255, 215, 0), 3, true);
 
+    /**
+     * Construct a new IconPanel.
+     * @param card the card to show
+     * @param useGrey a flag to know if the icon has to be gray
+     * @param hoverEffect the effect to perform on mouse hover
+     */
     public IconPanel(final CardIdentifier card, final boolean useGrey, final boolean hoverEffect) {
-        super(new BorderLayout());
-        setBackground(new Color(40, 40, 40));
+        setLayout(new BorderLayout());
+        setBackground(BG_COLOR);
         setBorder(defaultBorder);
 
         final CollectionController collContr = new CollectionControllerImpl();

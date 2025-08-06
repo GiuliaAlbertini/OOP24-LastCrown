@@ -10,7 +10,6 @@ import java.util.List;
  */
 public final class CharacterPathLoader {
     private static final String SEP = System.getProperty("file.separator");
-    private static final String OOP = "OOP24-LastCrown";
     private static final String ICON = "icon";
     private static final String ICON_GREY = "icon_grey"; 
     private CharacterPathLoader() { }
@@ -79,7 +78,7 @@ public final class CharacterPathLoader {
     }
 
     private static String getGenericCharacterPath(final String charType, final String charName, final String keyword) {
-        return OOP + SEP + "src" + SEP + "main" + SEP + "resources" + SEP + "pngs"
+        return "src" + SEP + "main" + SEP + "resources" + SEP + "pngs"
          + SEP + charType + SEP + charName + SEP + keyword + ".png";
     }
 }

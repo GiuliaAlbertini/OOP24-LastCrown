@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import it.unibo.oop.lastcrown.controller.characters.api.BossController;
-import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.impl.GenericCharacterControllerImpl;
 import it.unibo.oop.lastcrown.model.card.CardType;
@@ -21,13 +20,11 @@ public class BossControllerImpl extends GenericCharacterControllerImpl implement
     private final String charName;
 
     /**
-     * @param deathObs the character death observer that communicates with the main controller
-     * the death of this linked boss
      * @param id the numerical id of this controller
      * @param boss the Generic character linked to this controller
      */
-    public BossControllerImpl(final CharacterDeathObserver deathObs, final int id, final Enemy boss) {
-        super(deathObs, id, boss, CardType.BOSS);
+    public BossControllerImpl(final int id, final Enemy boss) {
+        super(id, boss, CardType.BOSS);
         this.charName = boss.getName();
     }
 

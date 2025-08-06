@@ -42,7 +42,7 @@ public final class LoginViewImpl extends JFrame implements LoginView {
     private static final String FONT_NAME = "DialogInput";
     private static final double FIELD_HEIGHT_RATIO = 0.05;
     private static final double FIELD_WIDTH_RATIO = 0.15;
-    private static final Color BG_COLOR = new Color(30, 60, 90);
+    private static final Color BG_COLOR = new Color(15, 35, 65);
     private static final Color TITLE_COLOR = new Color(255, 215, 0);
     private static final Color LABEL_COLOR = new Color(144, 238, 144);
     private static final Color BTN_BG_COLOR = new Color(255, 215, 0);
@@ -138,12 +138,12 @@ public final class LoginViewImpl extends JFrame implements LoginView {
 
         button.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent evt) {
+            public void mouseEntered(final MouseEvent evt) {
                 button.setBackground(BTN_BG_COLOR.brighter());
             }
 
             @Override
-            public void mouseExited(MouseEvent evt) {
+            public void mouseExited(final MouseEvent evt) {
                 button.setBackground(BTN_BG_COLOR);
             }
         });
@@ -176,7 +176,7 @@ public final class LoginViewImpl extends JFrame implements LoginView {
         return e -> {
             final String user = usernameField.getText().trim().toLowerCase(Locale.ROOT);
             if (!usernameController.checkValidity(user)) {
-                this.showError("Username field cannot be empty!");
+                this.showError("Incorrect username!");
             } else if (confirmUser(user)) {
                 this.mainController.goOverLogin(user);
             }

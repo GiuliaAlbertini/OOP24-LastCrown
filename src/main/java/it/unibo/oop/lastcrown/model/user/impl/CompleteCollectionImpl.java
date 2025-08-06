@@ -27,7 +27,7 @@ import it.unibo.oop.lastcrown.model.user.api.CompleteCollection;
  * Implementation of a {@link CompleteCollection}.
  */
 public class CompleteCollectionImpl implements CompleteCollection {
-    private static final String FILE_NAME = "entities";
+
     private static final String HEROES = "heroes";
     private static final String PLAYABLE_CHARACTER = "playableCharacters";
     private static final String SPELLS = "spells";
@@ -99,8 +99,7 @@ public class CompleteCollectionImpl implements CompleteCollection {
 
     @Override
     public final CompleteCollection getCompleteCollection() {
-        final var defensiveCopy = this;
-        return defensiveCopy;
+        return this;
     }
 
     @Override
@@ -156,20 +155,18 @@ public class CompleteCollectionImpl implements CompleteCollection {
     }
 
     @Override
-   public final List<CardIdentifier> getCompleteCollectionAsSet() {
+   public final List<CardIdentifier> getCompleteCollectionAsList() {
        return Collections.unmodifiableList(this.completeCollection);
     }
 
     private static String getPath() {
-        final var resource = CompleteCollectionImpl.class
-            .getClassLoader()
-            .getResource(FILE_NAME);
-
-        if (resource == null) {
-            throw new IllegalStateException("Resource path '"+ FILE_NAME + "' not found.");
-        }
-
-        return new File(resource.getPath()).getAbsolutePath();
+        return "src"
+        + File.separator
+        + "main"
+        + File.separator
+        + "resources"
+        + File.separator
+        + "entities";
     }
 
 }

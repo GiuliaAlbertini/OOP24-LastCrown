@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.util.Optional;
 import java.util.Set;
 import java.util.List;
@@ -33,8 +32,8 @@ import it.unibo.oop.lastcrown.view.scenes_utilities.HideableScrollPane;
  * View to handle the user's deck.
  */
 public final class DeckView extends AbstractScene implements DeckViewInterface {
-    private static final int RULES_MSG_HEIGHT = 300;
-    private static final int RULES_MSG_WIDTH = 500;
+    private static final int RULES_MSG_HEIGHT = SCREEN_HEIGHT / 2;
+    private static final int RULES_MSG_WIDTH = SCREEN_WIDTH / 3;
     private static final long serialVersionUID = 1L;
     private static final int SELECT_BTN_FONT_SIZE = 24;
     private static final double DETAIL_RATIO = 0.30;
@@ -42,9 +41,9 @@ public final class DeckView extends AbstractScene implements DeckViewInterface {
     private static final int BASE_GRID_VGAP = 10;
     private static final int BASE_SCREEN_WIDTH = 1920;
     private static final String FONT_NAME = "SansSerif";
-    private static final int SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
-    private final static int COLUMNS = 5;
-    private final int CARD_CELL_SIZE = CardsGridPanel.getFixedCellSize();
+    private static final Font RULES_FONT = new Font(FONT_NAME, Font.BOLD, 16);
+    private static final int COLUMNS = 5;
+    private static final int CARD_CELL_SIZE = CardsGridPanel.getFixedCellSize();
 
     private final transient DeckController deckController;
     private final transient SceneManager sceneManager;
@@ -56,8 +55,8 @@ public final class DeckView extends AbstractScene implements DeckViewInterface {
     private final CardsGridPanel cardsGridPanel;
     private final JPanel rightContainer;
     private final BackButton back;
-    private DeckRowPanelManager deckRowManager;
-    private Optional<CardType> currentFilter = Optional.empty();
+    private final transient DeckRowPanelManager deckRowManager;
+    private transient Optional<CardType> currentFilter = Optional.empty();
 
     private final int detailWidth;
 
@@ -70,12 +69,12 @@ public final class DeckView extends AbstractScene implements DeckViewInterface {
     private DeckView(final SceneManager sceneManager,
                      final DeckController deckController) {
         this.sceneManager = sceneManager;
-        this.deckController =  deckController;        
+        this.deckController =  deckController;
 
         final int initWidth = this.getWidth() > 0 ? this.getWidth() : SCREEN_WIDTH;
         final int initHeight = this.getHeight() > 0 ? this.getHeight() : SCREEN_HEIGHT;
 
-        detailPanel = new DetailPanel();        
+        detailPanel = new DetailPanel();
         this.detailWidth = (int) Math.round(initWidth * DETAIL_RATIO);
         this.detailPanel.setPreferredSize(new Dimension(this.detailWidth, initHeight));
         final int rightWidth = initWidth - this.detailWidth;
@@ -93,7 +92,7 @@ public final class DeckView extends AbstractScene implements DeckViewInterface {
             currentFilter = typeOpt;
             refreshAvailableCardsGrid(typeOpt);
         });
-                                              
+
         cardsGridPanel = CardsGridPanel.create(COLUMNS, scaled(BASE_GRID_HGAP), scaled(BASE_GRID_VGAP));
         final JScrollPane gridScroll = new HideableScrollPane(cardsGridPanel);
         final int rowsVisible = 3;
@@ -116,23 +115,39 @@ public final class DeckView extends AbstractScene implements DeckViewInterface {
         add(mainContainer, BorderLayout.CENTER);
 
         this.back = BackButton.create(SceneName.DECK, SceneName.MENU, this.sceneManager);
+        final JButton rulesBtn = createRulesBtn();
         final JPanel south = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        south.add(rulesBtn);
         south.add(back);
         add(south, BorderLayout.SOUTH);
-        setComponentsOpacity(back);
+        makeComponentsTransparent(this);
+        back.setOpaque(true);
+        rulesBtn.setOpaque(true);
 
         deckRowPanel.revalidate();
         deckRowPanel.repaint();
 
         deckRowManager = new DeckRowPanelManager(
-            deckController, deckRowPanel, cellSize,
-            () -> {
-                deckRowManager.loadDeckIcons();
-                refreshAvailableCardsGrid(currentFilter);
-            }
+            this::onDeckUpdated
         );
-        deckRowManager.loadDeckIcons();
+        this.deckRowManager.loadDeckIcons(this.deckRowPanel, this.deckController);
         refreshAvailableCardsGrid(Optional.empty());
+    }
+
+    private void onDeckUpdated() {
+        this.deckRowManager.loadDeckIcons(deckRowPanel, this.deckController);
+        refreshAvailableCardsGrid(currentFilter);
+    }
+
+    private JButton createRulesBtn() {
+        final JButton rulesBtn = new JButton("RULES");
+        rulesBtn.setPreferredSize(back.getPreferredSize());
+        rulesBtn.setFont(back.getFont());
+        rulesBtn.setBackground(back.getBackground());
+        rulesBtn.setForeground(back.getForeground());
+        rulesBtn.setBorder(back.getBorder());
+        rulesBtn.addActionListener(e -> showRules());
+        return rulesBtn;
     }
 
     /**
@@ -161,42 +176,41 @@ public final class DeckView extends AbstractScene implements DeckViewInterface {
 
     @Override
     public void showRules() {
-        final Set<CardIdentifier> deck = deckController.getDeck();
-        if (deck.isEmpty()) {
-            final String title = "HOW TO BUILD A DECK";
-            final String message = """
-                To start building a deck you need to choose a hero first.\n
-                Once you choose a HERO you can add other cards by clicking them in the panel \
-                in the bottom right and clicking the select button that appears on the detail \
-                panel located on the left.\n
-                The limit of cards per type is determined by the hero.\n
-                To remove a card from the deck you can just click the card from the deck panel in the upper right.\n
-                An hero can't be removed. In order to change the hero you need to select the new hero you want and \
-                it will be automatically switched.
-                """;
-            final JTextArea textArea = new JTextArea(message);
-            textArea.setWrapStyleWord(true);
-            textArea.setLineWrap(true);
-            textArea.setEditable(false);
-            final JScrollPane scroll = new JScrollPane(textArea);
-            scroll.setPreferredSize(new Dimension(RULES_MSG_WIDTH, RULES_MSG_HEIGHT));
+        final String title = "HOW TO BUILD A DECK";
+        final String message = """
+            To start building a deck you need to choose a hero first.\n
+            Once you choose a hero you can add other cards by clicking them in the panel in the bottom right.\n
+            Then just click the select button that appears on the detail panel located on the left to add them.\n
+            The limit of cards per type is determined by the hero.\n
+            To remove a card from the deck you can just click the card from the deck panel in the upper right.\n
+            An hero can't be removed.\n
+            In order to change the hero you need to select the new hero you want and it will be automatically switched.\n
+            The deck is automatically correct to respect the new hero.
+            """;
+        final JTextArea textArea = new JTextArea(message);
+        textArea.setWrapStyleWord(true);
+        textArea.setLineWrap(true);
+        textArea.setEditable(false);
+        textArea.setFocusable(false);
+        textArea.setFont(RULES_FONT);
+        final JScrollPane scroll = new JScrollPane(textArea);
+        scroll.setPreferredSize(new Dimension(RULES_MSG_WIDTH, RULES_MSG_HEIGHT));
 
-            JOptionPane.showMessageDialog(
-                SwingUtilities.getWindowAncestor(this),
-                scroll,
-                title,
-                JOptionPane.INFORMATION_MESSAGE
-        );
-        }
+        JOptionPane.showMessageDialog(
+            SwingUtilities.getWindowAncestor(this),
+            scroll,
+            title,
+            JOptionPane.INFORMATION_MESSAGE
+    );
     }
 
     private void refreshAvailableCardsGrid(final Optional<CardType> type) {
-        List<CardIdentifier> available = type.isPresent()
+        final List<CardIdentifier> available = type.isPresent()
             ? deckController.getAvailableCardsByType(type.get())
             : deckController.getAvailableCards();
         cardsGridPanel.loadCards(
             available,
-            card -> setUpSelectableDetailPanel(card),
+            this::setUpSelectableDetailPanel,
             Set.copyOf(available)
         );
     }
@@ -206,17 +220,11 @@ public final class DeckView extends AbstractScene implements DeckViewInterface {
         select.setFont(getResponsiveFont(Font.BOLD, SELECT_BTN_FONT_SIZE));
         select.addActionListener(e -> {
             deckController.addCard(card);
-            deckRowManager.loadDeckIcons();
+            deckRowManager.loadDeckIcons(this.deckRowPanel, this.deckController);
             refreshAvailableCardsGrid(currentFilter);
         });
 
         detailPanel.showCardWithButton(card, detailWidth, select);
-    }
-
-
-    private void setComponentsOpacity(final JButton backButton) {
-        makeComponentsTransparent(this);
-        backButton.setOpaque(true);
     }
 
     private static Font getResponsiveFont(final int style, final int size) {

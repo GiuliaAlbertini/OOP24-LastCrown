@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Optional;
 import java.util.Set;
 
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
@@ -71,29 +72,32 @@ public final class MatchPanel extends JPanel {
             @Override
             public void mouseClicked(final MouseEvent e) {
                 final Point pointInPosZone = SwingUtilities.convertPoint(overLayPanel, e.getPoint(), posZone);
-                final CardIdentifier cardId = cardZone.getLastClicked();
-                if (cardId == null) {
+                final Optional<CardIdentifier> cardId = cardZone.getLastClicked();
+                if (cardId.isEmpty()) {
                     return;
                 }
-                switch (cardId.type()) {
+                switch (cardId.get().type()) {
                     case CardType.MELEE -> {
                         if (posZone.isValidClick(CardType.MELEE, pointInPosZone)) {
                             final int x = deckZoneWidth + posZoneWidth * 3 / 4;
-                            cardZone.playCard();
-                            gameContr.notifyClicked(x, e.getY());
+                            if (cardZone.playCard()) {
+                               gameContr.notifyClicked(x, e.getY()); 
+                            }
                         }
                     }
                     case CardType.RANGED -> {
                         if (posZone.isValidClick(CardType.RANGED, pointInPosZone)) {
                             final int x = deckZoneWidth + posZoneWidth * 1 / 4;
-                            cardZone.playCard();
-                            gameContr.notifyClicked(x, e.getY());
+                            if (cardZone.playCard()) {
+                                gameContr.notifyClicked(x, e.getY());
+                            }
                         }
                     }
                     case CardType.SPELL -> {
                         if (e.getX() > posZoneWidth + wallZoneWidth && e.getY() < panelsHeight) {
-                            cardZone.playCard();
-                            gameContr.notifyClicked(e.getX() + deckZoneWidth, e.getY());
+                            if (cardZone.playCard()) {
+                                gameContr.notifyClicked(e.getX() + deckZoneWidth, e.getY());
+                            }
                         }
                     }
                     default -> { }
@@ -125,9 +129,9 @@ public final class MatchPanel extends JPanel {
         this.panelsHeight = this.frameHeight - this.utilityZoneHeight;
         this.setOpaque(false);
         this.posZone = new PositioningZone(this.posZoneWidth, panelsHeight);
-        this.cardZone = new DeckZone(gameContr, posZone, deckZoneWidth, panelsHeight, energyBarWidth, deck);
+        this.cardZone = new DeckZoneImpl(gameContr, posZone, deckZoneWidth, panelsHeight, energyBarWidth, deck);
         cardZone.setBounds(0, 0, this.deckZoneWidth, panelsHeight);
-        this.add(cardZone);
+        this.add((DeckZoneImpl) cardZone);
 
         posZone.setBounds(deckZoneWidth, 0, this.posZoneWidth, panelsHeight);
         this.add(posZone);
@@ -168,6 +172,14 @@ public final class MatchPanel extends JPanel {
     }
 
     /**
+     * Notifies the MatchView about the bossfight.
+     * @param start True if it started, False if it ended
+     */
+    public void notifyBossFight(final boolean start) {
+        this.cardZone.handleButtonsEnabling(start);
+    }
+
+    /**
      * @return the trupszone limit of the x coordinate
      */
     public int getTrupsZoneLimit() {
@@ -187,8 +199,9 @@ public final class MatchPanel extends JPanel {
     public Point getWallCoordinates() {
         return new Point(this.deckZoneWidth + this.posZoneWidth, 0);
     }
+
     /**
-     * Notify the cardzone about the new deck
+     * Notify the cardzone about the new deck.
      * @param newDeck the new deck to use
      */
     public void updateInGameDeck(final Set<CardIdentifier> newDeck) {

@@ -26,7 +26,7 @@ import it.unibo.oop.lastcrown.model.user.impl.CompleteCollectionImpl;
  * Implementation of a {@link CollectionController}.
  */
 public class CollectionControllerImpl implements CollectionController {
-    private static final String FILE_NAME = "enemies";
+    private static final String ENEMIES = "enemies";
     private static final String ENEMIES_PATH = getPath();
 
     private static final Set<CardIdentifier> INITIAL_SET = new HashSet<>();
@@ -41,7 +41,7 @@ public class CollectionControllerImpl implements CollectionController {
     public CollectionControllerImpl() {
         final ReadOnlyFileHandler<List<List<Enemy>>> enemyReader =
             new ReadOnlyFileHandlerImpl<>(new EnemiesParser(), ENEMIES_PATH);
-        this.enemies = enemyReader.readFromFile(FILE_NAME).get();
+        this.enemies = enemyReader.readFromFile(ENEMIES).get();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class CollectionControllerImpl implements CollectionController {
 
     @Override
     public final List<CardIdentifier> getCollectionByType(final CardType type) {
-        return getCompleteCollection().getCompleteCollectionAsSet().stream()
+        return getCompleteCollection().getCompleteCollectionAsList().stream()
             .filter(card -> card.type().equals(type))
             .collect(Collectors.toList());
     }
@@ -85,15 +85,9 @@ public class CollectionControllerImpl implements CollectionController {
     }
 
     private static String getPath() {
-        final var resource = CompleteCollectionImpl.class
-            .getClassLoader()
-            .getResource(FILE_NAME);
-
-        if (resource == null) {
-            throw new IllegalStateException("Resource path '"+ FILE_NAME + "' not found.");
-        }
-
-        return new File(resource.getPath()).getAbsolutePath();
+        return "src"
+            + File.separator + "main"
+            + File.separator + "resources"
+            + File.separator + "entities";
     }
 }
-

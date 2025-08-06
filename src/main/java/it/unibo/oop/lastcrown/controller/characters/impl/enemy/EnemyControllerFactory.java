@@ -1,6 +1,5 @@
 package it.unibo.oop.lastcrown.controller.characters.impl.enemy;
 
-import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 
@@ -15,8 +14,7 @@ public final class EnemyControllerFactory {
      * @param enemy the enemy linked to this controller
      * @return a new enemy Controller
      */
-    public static EnemyController createEnemyController(final CharacterDeathObserver deathObs,
-    final int contrId, final Enemy enemy) {
-        return new EnemyControllerImpl(deathObs, contrId, enemy);
+    public static EnemyController createEnemyController(final int contrId, final Enemy enemy) {
+        return new EnemyControllerImpl(contrId, enemy);
     }
 }

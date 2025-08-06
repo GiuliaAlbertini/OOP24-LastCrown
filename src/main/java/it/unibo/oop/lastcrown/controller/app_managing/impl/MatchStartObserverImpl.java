@@ -7,6 +7,7 @@ import it.unibo.oop.lastcrown.controller.collision.impl.MatchControllerimpl;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.map.MatchView;
+import it.unibo.oop.lastcrown.view.menu.api.MainView;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 
 
@@ -23,30 +24,42 @@ public class MatchStartObserverImpl implements MatchStartObserver {
     }
 
     @Override
-    public void onMatchStart(final int width, final int height, final CardIdentifier id, final CollectionController collectionController) {
+    public void onMatchStart(final int width, final int height, final CardIdentifier id,
+                            final CollectionController collectionController, final MainView mainView, final int enemyList) {
         // Step 1: Istanzia il MatchController la PRIMA VOLTA o resettalo se esiste già
-        if (this.matchController == null) {
-            this.matchController = new MatchControllerimpl(this.mainController, width, height, id, collectionController);
-        }
+        this.matchController = new MatchControllerimpl(this.mainController, width, height, id, collectionController, mainView, enemyList);
 
         // Step 2: Avvia il Gameloop (solo se non è già attivo)
         if (this.gameLoopThread == null || !this.gameLoopThread.isAlive()) {
             this.gameLoopThread = new Gameloop(this.mainController);
             this.gameLoopThread.start();
-            System.out.println("Game Loop avviato da MatchStartObserver!");
         }
     }
 
     @Override
-    public void onMatchEnd() {
+    public void stopMatchLoop() {
         // Step 1: Ferma il Gameloop
         if (this.gameLoopThread != null && this.gameLoopThread.isAlive()) {
             this.gameLoopThread.interrupt();
             this.gameLoopThread = null;
             System.out.println("Game Loop fermato da MatchStartObserver!");
         }
-
     }
+
+    public void resumeMatchLoop() {
+        if (this.matchController == null) {
+            throw new IllegalStateException("MatchController non inizializzato.");
+        }
+
+        if (this.gameLoopThread == null || !this.gameLoopThread.isAlive()) {
+            this.gameLoopThread = new Gameloop(this.mainController);
+            this.gameLoopThread.start();
+            System.out.println("Game Loop riavviato (resumeMatchLoop)!");
+        } else {
+            System.out.println("Game Loop già attivo.");
+        }
+    }
+
 
 
     public MatchController getMatchControllerReference() {

@@ -62,7 +62,7 @@ public class EnemiesParser implements Parser<List<List<Enemy>>> {
         final int health = parseIntField(it.next(), "health", line);
         final double speed = parseDoubleField(it.next(), "speed", line);
 
-        final CardType type = rank == MAX_RANK
+        final CardType type = rank == MIN_RANK
             ? CardType.BOSS
             : CardType.ENEMY;
         final Enemy enemy = EnemyFactory.createEnemy(name, rank, type, attack, health, speed);

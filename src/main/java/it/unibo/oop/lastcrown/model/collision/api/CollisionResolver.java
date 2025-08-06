@@ -58,6 +58,22 @@ public interface CollisionResolver extends CollisionObserver {
     int getOpponentBossPartner(int id);
 
     /**
+     * Checks if a character is currently engaged with a wall obstacle.
+     *
+     * @param id the unique identifier of the character
+     * @return true if the character is engaged with a wall, false otherwise
+     */
+    boolean hasOpponentWallPartner(int id);
+
+    /**
+     * Retrieves the ID of the wall entity engaged with the given character.
+     *
+     * @param id the unique identifier of the character
+     * @return the ID of the wall partner, or -1 if none is found
+     */
+    int getOpponentWallPartner(int id);
+
+    /**
      * Retrieves a list of all character IDs (typically players) currently involved in a boss fight.
      *
      * @return A list of unique character IDs participating in the boss fight.
@@ -105,4 +121,10 @@ public interface CollisionResolver extends CollisionObserver {
      * This is typically called when a boss is defeated or the boss fight concludes.
      */
     void clearAllBossFightPairs();
+/**
+     * Retrieves a list of all character IDs currently engaged with wall entities.
+     *
+     * @return A list of unique character IDs involved in wall collisions or interactions.
+     */
+    List<Integer> getAllCharacterIdsInWallFight();
 }

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -28,7 +29,7 @@ public final class CardPanel extends JPanel {
     private static final int LABEL_FONT_SIZE = 26;
     private static final int BASE_SCREEN_WIDTH = 1920;
     private static final String FONT_NAME = "SansSerif";
-    private static final int SCREEN_WIDTH = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
+    private static final int SCREEN_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
 
     private final Border defaultBorder = BorderFactory.createCompoundBorder(
         BorderFactory.createLineBorder(new Color(130, 100, 180), 2, true),
@@ -44,7 +45,8 @@ public final class CardPanel extends JPanel {
         final CompleteCollection cc = new CompleteCollectionImpl();
         final String titleText = switch (card.type()) {
             case HERO -> cc.getHero(card).map(Hero::getName).orElse(card.number() + " (Hero)");
-            case MELEE, RANGED -> cc.getPlayableCharacter(card).map(PlayableCharacter::getName).orElse(card.number() + " (Character)");
+            case MELEE, RANGED -> cc.getPlayableCharacter(card)
+                                    .map(PlayableCharacter::getName).orElse(card.number() + " (Character)");
             case SPELL -> cc.getSpell(card).map(Spell::getName).orElse(card.number() + " (Spell)");
             default -> card.number() + " (Unknown)";
         };

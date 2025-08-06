@@ -4,6 +4,7 @@ import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.view.map.MatchView;
+import it.unibo.oop.lastcrown.view.menu.api.MainView;
 
 /**
  * Interface for observing and managing match lifecycle events within the game.
@@ -18,13 +19,14 @@ public interface MatchStartObserver {
      * Called when the game match is about to start.
      * Responsible for initializing the MatchController and starting the game loop.
      */
-    void onMatchStart(int width, int height, CardIdentifier id, CollectionController collectionController);
+    void onMatchStart(int width, int height, CardIdentifier id,
+                      CollectionController collectionController, MainView mainView, int enemyList);
 
     /**
      * Called when the game match is about to end.
      * Handles stopping the game loop and cleaning up the match state.
      */
-    void onMatchEnd();
+    void stopMatchLoop();
 
     /**
      * Returns the reference to the current MatchController instance,
@@ -36,4 +38,6 @@ public interface MatchStartObserver {
     MatchController getMatchControllerReference();
 
     void getMatchView(final MatchView matchView);
+
+    void resumeMatchLoop();
 }

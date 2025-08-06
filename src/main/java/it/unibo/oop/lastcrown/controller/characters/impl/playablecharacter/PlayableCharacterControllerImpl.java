@@ -1,6 +1,5 @@
 package it.unibo.oop.lastcrown.controller.characters.impl.playablecharacter;
 
-import it.unibo.oop.lastcrown.controller.characters.api.CharacterDeathObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.impl.GenericCharacterControllerImpl;
 import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
@@ -16,14 +15,11 @@ public class PlayableCharacterControllerImpl extends GenericCharacterControllerI
     private final int actionRange;
 
     /**
-     * @param deathObs the character death observer that communicates with the main controller
-     * the death of this linked playable character
      * @param id the numerical id of this controller
      * @param playableChar the playable character linked to this controller
      */
-    public PlayableCharacterControllerImpl(final CharacterDeathObserver deathObs, 
-      final int id, final PlayableCharacter playableChar) {
-        super(deathObs, id, playableChar, playableChar.getType());
+    public PlayableCharacterControllerImpl(final int id, final PlayableCharacter playableChar) {
+        super(id, playableChar, playableChar.getType());
         this.charName = playableChar.getName();
         this.playableCharType = playableChar.getType().get();
         this.actionRange = playableChar.getActionRange();

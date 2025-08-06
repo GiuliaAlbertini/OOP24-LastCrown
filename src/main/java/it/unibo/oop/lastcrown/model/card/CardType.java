@@ -33,13 +33,18 @@ public enum CardType {
     /**
      * The greatest foe, if it dies the match is won.
      */
-    BOSS("boss"), 
+    BOSS("boss"),
 
     /**
      * the spell that the player can cast during the match in order
      * to help their characters.
      */
-    SPELL("spell");
+    SPELL("spell"),
+
+    /**
+     * the Wall that defends the Hero and the ranged trups.
+     */
+    WALL("wall");
 
     private final String value;
 

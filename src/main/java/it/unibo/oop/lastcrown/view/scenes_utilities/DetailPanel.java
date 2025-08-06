@@ -16,8 +16,11 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 public class DetailPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Creates a new detail panel.
+     */
     public DetailPanel() {
-        super(new BorderLayout());
+        this.setLayout(new BorderLayout());
         setOpaque(false);
     }
 
@@ -43,6 +46,12 @@ public class DetailPanel extends JPanel {
         repaint();
     }
 
+    /**
+     * Shoe the given card with a button to select it.
+     * @param card the card to show
+     * @param side the dimension of the card
+     * @param button the button to add
+     */
     public void showCardWithButton(final CardIdentifier card, final int side, final JButton button) {
         removeAll();
         final var big = CardPanel.create(card);

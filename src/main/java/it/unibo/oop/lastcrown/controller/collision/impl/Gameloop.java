@@ -1,6 +1,5 @@
 package it.unibo.oop.lastcrown.controller.collision.impl;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 
@@ -10,7 +9,7 @@ import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
  * Responsible for continuously updating the game logic while the game is running.
  */
 public final class Gameloop extends Thread {
-    private static final Logger LOGGER = Logger.getLogger(Gameloop.class.getName());
+    //private static final Logger LOGGER = Logger.getLogger(Gameloop.class.getName());
     private static final long PERIOD = 64;
     private final MainController controller;
     private boolean running;
@@ -34,7 +33,7 @@ public final class Gameloop extends Thread {
         this.running = true;
         long lastTime = System.currentTimeMillis();
         while (this.running) {
-            System.out.println("sono partito");
+            //System.out.println("sono partito");
             final long current = System.currentTimeMillis();
             this.controller.getMatchController().update((int) (current - lastTime));
             waitForNextFrame(current);
@@ -54,7 +53,7 @@ public final class Gameloop extends Thread {
                 sleep(PERIOD - dt);
             } catch (final InterruptedException ex) {
                  Thread.currentThread().interrupt();
-                 LOGGER.log(Level.WARNING, "Thread interrotto durante l'attesa", ex);
+                 //LOGGER.log(Level.WARNING, "Thread interrotto durante l'attesa", ex);
             }
         }
     }

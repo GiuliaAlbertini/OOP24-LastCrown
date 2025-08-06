@@ -2,7 +2,6 @@ package it.unibo.oop.lastcrown.controller.menu.impl;
 
 import java.util.Set;
 
-import it.unibo.oop.lastcrown.controller.GameControllerExample;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MatchStartObserver;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
@@ -56,6 +55,14 @@ public class SceneManagerImpl implements SceneManager {
 
     @Override
     public final void switchScene(final SceneName caller, final SceneName destination) {
+        switch (destination) {
+            case SHOP       -> this.mainView.onShop(caller);
+            case MATCH      -> this.mainView.onMatch(caller);
+            case MENU       -> this.mainView.onMenu(caller);
+            case COLLECTION -> this.mainView.onCollection(caller);
+            case DECK       -> this.mainView.onDeck(caller);
+            default         -> { }
+        }
         this.mainView.changePanel(caller, destination);
     }
 
