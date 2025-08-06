@@ -6,13 +6,14 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -95,7 +96,7 @@ public final class CardSelectionView extends JFrame {
     private JPanel initHeader(final CardType type, final int currentCoins) {
         final JPanel header = new JPanel(new BorderLayout());
         header.setBackground(HEADER_BG);
-        final JLabel title = new JLabel(type.name().toUpperCase() + "'s shop", SwingConstants.CENTER);
+        final JLabel title = new JLabel(type.name().toUpperCase(Locale.ROOT) + "'s shop", SwingConstants.CENTER);
         title.setFont(TITLE_FONT);
         title.setForeground(Color.YELLOW);
         header.add(title, BorderLayout.CENTER);
@@ -107,28 +108,24 @@ public final class CardSelectionView extends JFrame {
     }
 
     private JPanel createCardWithButton(final CardIdentifier card) {
-        final JPanel container = new JPanel(new BorderLayout());
-        container.setOpaque(true);
-        container.setBackground(Color.ORANGE);
-        container.add(CardPanel.create(card), BorderLayout.CENTER);
-
-        final JButton selectButton = new JButton("SELECT");
-        selectButton.addActionListener(e -> {
-            this.selectedCard = card;
-            final int result = JOptionPane.showConfirmDialog(
-                    this,
-                    "You want to buy this card?",
-                    "Purchase confirmation",
-                    JOptionPane.YES_NO_OPTION
-            );
-            if (result == JOptionPane.YES_OPTION) {
-                this.dispose();
-                this.obs.notifyEndInteraction(Optional.of(this.selectedCard), this.id);
+        final JPanel panel = CardPanel.create(card);
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(final MouseEvent e) {
+                selectedCard = card;
+                final int result = JOptionPane.showConfirmDialog(
+                        panel,
+                        "You want to buy this card?",
+                        "Purchase confirmation",
+                        JOptionPane.YES_NO_OPTION
+                );
+                if (result == JOptionPane.YES_OPTION) {
+                    dispose();
+                    obs.notifyEndInteraction(Optional.of(selectedCard), id);
+                }
             }
         });
-        container.add(selectButton, BorderLayout.SOUTH);
-        selectButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3)); 
-        return container;
+        return panel;
     }
 
     /**
@@ -142,7 +139,7 @@ public final class CardSelectionView extends JFrame {
 
     private static Font getResponsiveFont(final int style, final int size) {
         final int screenW = Toolkit.getDefaultToolkit().getScreenSize().width;
-        final double scale = (double) screenW / 1920.0;
+        final double scale = screenW / 1920.0;
         return new Font("SansSerif", style, (int) (size * scale));
     }
 }
