@@ -102,7 +102,7 @@ public final class IdleHandler implements StateHandler {
 
         scanner.scanForTarget(player)
                 .ifPresent(matchController::notifyCollisionObservers);
-        if (matchController.isPlayerEngaged(player.getId().number())) {
+        if (matchController.isEntityEngaged(player.getId().number())) {
             queue.enqueue(eventFactory.createEvent(CharacterState.FOLLOWING));
             return CharacterState.FOLLOWING;
         } else if (resolver.hasOpponentBossPartner(player.getId().number())) {
@@ -127,20 +127,20 @@ public final class IdleHandler implements StateHandler {
             queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
             return CharacterState.DEAD;
         } else {
-                final boolean collision = resolver.wasEnemyCollided(enemy.getId().number());
-                if (collision || resolver.hasOpponentBossPartner(enemy.getId().number())
-                        || resolver.hasOpponentWallPartner(enemy.getId().number())) {
+            final boolean collision = resolver.wasEnemyCollided(enemy.getId().number());
+            if (collision || resolver.hasOpponentBossPartner(enemy.getId().number())
+                    || resolver.hasOpponentWallPartner(enemy.getId().number())) {
+                queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+                return CharacterState.STOPPED;
+                // sono ingaggiatio ma il mio personaggio è al di là del muro
+            } else if (matchController.isEntityEngaged(enemy.getId().number())) {
+                int idPlayer = matchController.getEngagedCounterpart(enemy.getId().number());
+                GenericCharacterController player = matchController.getCharacterControllerById(idPlayer).get();
+                if (isAtTroopZoneLimit(player)) {
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
-                    // sono ingaggiatio ma il mio personaggio è al di là del muro
-                } else if (matchController.isEnemyEngaged(enemy.getId().number())) {
-                    int idPlayer = matchController.getEngagedCounterpart(enemy.getId().number());
-                    GenericCharacterController player = matchController.getCharacterControllerById(idPlayer).get();
-                    if (isAtTroopZoneLimit(player)) {
-                        queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-                        return CharacterState.STOPPED;
-                    }
                 }
+            }
 
         }
         queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
@@ -157,5 +157,4 @@ public final class IdleHandler implements StateHandler {
         }
         return false;
     }
-
 }

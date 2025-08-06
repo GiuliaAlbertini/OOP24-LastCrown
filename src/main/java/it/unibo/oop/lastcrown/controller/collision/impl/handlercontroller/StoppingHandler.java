@@ -130,7 +130,7 @@ public final class StoppingHandler implements StateHandler {
             return CharacterState.STOPPED;
         }
 
-        final boolean isEngaged = match.isPlayerEngaged(charId) || match.isEnemyEngaged(charId);
+        final boolean isEngaged = match.isEntityEngaged(charId);
         final boolean isBossFight = resolver.hasOpponentBossPartner(charId);
         final boolean isEngagedWithDead = match.isEngagedWithDead(charId) || match.isBossFightPartnerDead(charId);
         final boolean isWallFight = resolver.hasOpponentWallPartner(charId);
@@ -214,8 +214,7 @@ public final class StoppingHandler implements StateHandler {
         character.setNextAnimation(Keyword.STOP);
         character.showNextFrame();
 
-        if (match.hasEntityTypeInMap(CardType.BOSS) && !match.hasEntityTypeInMap(CardType.MELEE)) {
-            // Boss in campo, nessun altro player: prova lo scanner
+        if (match.hasEntityTypeInMap(CardType.BOSS)) {
             scanner.scanForTarget(character)
                     .ifPresent(match::notifyCollisionObservers);
 
@@ -242,7 +241,7 @@ public final class StoppingHandler implements StateHandler {
         if (isEngagedWithDead) {
             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
             return CharacterState.STOPPED;
-        } else if (match.isPlayerEngaged(player.getId().number())) {
+        } else if (match.isEntityEngaged(player.getId().number())) {
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
             return CharacterState.COMBAT;
         } else if (resolver.hasOpponentBossPartner(player.getId().number())) {

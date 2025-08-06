@@ -5,7 +5,6 @@ import java.util.Map;
 
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.collision.api.TargetingSystem;
-import it.unibo.oop.lastcrown.controller.collision.impl.EnemyRadiusScanner;
 import it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller.CombatHandler;
 import it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller.DeadHandler;
 import it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller.FollowingHandler;

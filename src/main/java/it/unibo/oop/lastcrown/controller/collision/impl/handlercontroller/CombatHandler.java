@@ -7,8 +7,7 @@ import java.util.Optional;
 import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
-import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
-import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
+
 import it.unibo.oop.lastcrown.controller.characters.api.Wall;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
@@ -46,16 +45,17 @@ public final class CombatHandler implements StateHandler {
             return CharacterState.DEAD;
         }
 
-        if (character.getId().type() == CardType.RANGED && match.retreat()){
+        if (character.getId().type() == CardType.RANGED && match.retreat()) {
             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
             return CharacterState.STOPPED;
         }
 
+        final CardType characterType = character.getId().type();
 
-        final boolean isPlayer = character instanceof PlayableCharacterController;
-        final boolean isHero = character instanceof HeroController;
-        if (isPlayer || isHero) {
-            if (match.isPlayerEngaged(character.getId().number())) { // nemico
+        // Determina l'avversario in base al tipo di personaggio
+        if (characterType == CardType.HERO || characterType == CardType.MELEE || characterType == CardType.RANGED) {
+            // Logica per personaggi controllati dal giocatore
+            if (match.isEntityEngaged(character.getId().number())) { // nemico
                 opponentId = match.getEngagedCounterpart(character.getId().number());
             } else if (resolver.hasOpponentBossPartner(character.getId().number())) { // boss
                 opponentId = resolver.getOpponentBossPartner(character.getId().number());
@@ -63,14 +63,14 @@ public final class CombatHandler implements StateHandler {
                 opponentId = resolver.getOpponentRangedPartner(character.getId().number());
             }
         } else {
-            if (match.isEnemyEngaged(character.getId().number())) {
+            // Logica per nemici (ENEMY, BOSS)
+            if (match.isEntityEngaged(character.getId().number())) {
                 opponentId = match.getEngagedCounterpart(character.getId().number());
             } else if (resolver.hasOpponentWallPartner(character.getId().number())) {
                 opponentId = resolver.getOpponentWallPartner(character.getId().number());
             } else {
                 opponentId = resolver.getOpponentBossPartner(character.getId().number());
             }
-
         }
 
         Optional<CharacterHitObserver> opponentOpt;
@@ -90,7 +90,9 @@ public final class CombatHandler implements StateHandler {
         }
 
         final CharacterHitObserver opponent = opponentOpt.get();
-        if (isPlayer|| isHero) {
+
+        // Gestione combattimento in base al tipo di personaggio
+        if (characterType == CardType.HERO || characterType == CardType.MELEE || characterType == CardType.RANGED) {
             // === COMBATTIMENTO GIOCATORE ===
             if (opponent.isDead()) {
                 queue.clear();
@@ -104,7 +106,6 @@ public final class CombatHandler implements StateHandler {
 
         } else {
             // === COMBATTIMENTO NEMICO ===
-
             if (opponent.isDead()) {
                 queue.clear();
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
@@ -132,14 +133,13 @@ public final class CombatHandler implements StateHandler {
 
         character.setNextAnimation(Keyword.ATTACK);
         character.showNextFrame();
-
     }
 
-    private void combatWall(Wall wall,  CharacterHitObserver enemy){
-        if (wall.getCurrentHealth() <= 0){
+    private void combatWall(Wall wall, CharacterHitObserver enemy) {
+        if (wall.getCurrentHealth() <= 0) {
             match.setAllFSMsToState(CharacterState.STOPPED);
             match.halveHeroMaxHealth();
-        }else{
+        } else {
             List<Integer> enemies = resolver.getAllCharacterIdsInWallFight();
             wall.addOpponents(getCharactersFromIds(enemies));
             wall.doAttack();
@@ -154,5 +154,4 @@ public final class CombatHandler implements StateHandler {
         }
         return characters;
     }
-
 }
