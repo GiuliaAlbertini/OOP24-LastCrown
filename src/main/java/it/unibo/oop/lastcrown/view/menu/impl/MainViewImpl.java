@@ -177,6 +177,7 @@ public class MainViewImpl extends JFrame implements MainView {
     @Override
     public final void onMenu(final SceneName caller) {
         this.enemyList = 3;
+        this.victory = false;
         if (SceneName.SHOP.equals(caller) || SceneName.MATCH.equals(caller)) {
             closeAllFramesExceptOne();
             this.shopView.notifyHidden();
