@@ -62,7 +62,6 @@ public class EntityStateManagerImpl implements EntityStateManager {
 
     @Override
     public void updateAll(final int deltaTime) {
-
         for (final CharacterFSM fsm : new ArrayList<>(playerFSMs.values())) {
             fsm.update(deltaTime);
         }
@@ -70,7 +69,6 @@ public class EntityStateManagerImpl implements EntityStateManager {
 
     @Override
     public boolean hasEntityWithType(final CardType type) {
-
         for (final GenericCharacterController controller : charactersController.values()) {
             if (controller.getId().type() == type) {
                 return true;
@@ -135,5 +133,4 @@ public class EntityStateManagerImpl implements EntityStateManager {
     public Map<GenericCharacterController, HitboxController> getHitboxControllersMap() {
         return this.hitboxControllers;
 	}
-
 }
