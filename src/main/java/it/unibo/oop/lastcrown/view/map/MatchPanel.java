@@ -94,10 +94,8 @@ public final class MatchPanel extends JPanel {
                         }
                     }
                     case CardType.SPELL -> {
-                        if (e.getX() > posZoneWidth + wallZoneWidth && e.getY() < panelsHeight) {
-                            if (cardZone.playCard()) {
-                                gameContr.notifyClicked(e.getX() + deckZoneWidth, e.getY());
-                            }
+                        if (e.getX() > posZoneWidth + wallZoneWidth && e.getY() < panelsHeight && cardZone.playCard()) {
+                            gameContr.notifyClicked(e.getX() + deckZoneWidth, e.getY());
                         }
                     }
                     default -> { }
@@ -206,5 +204,14 @@ public final class MatchPanel extends JPanel {
      */
     public void updateInGameDeck(final Set<CardIdentifier> newDeck) {
         this.cardZone.updateInGameDeck(newDeck);
+    }
+
+    /**
+     * Notify the pause state.
+     * 
+     * @param pause {@code true} if pause started and {@code false} otherwise
+     */
+    public void notifyPause(final boolean pause) {
+        this.cardZone.setTimerStopping(pause);
     }
 }

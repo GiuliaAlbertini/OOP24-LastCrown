@@ -80,7 +80,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     }
 
     @Override
-    public synchronized HitboxController addGenericGraphics(final int id, final JComponent component, final int x, final int y, String typefolder, String name) {
+    public synchronized HitboxController addGenericGraphics(final int id, final JComponent component, final int x, final int y, final String typefolder, final String name) {
         this.newComponents.put(id, component);
         final Dimension size = component.getPreferredSize();
         component.setBounds(x - size.width / 2, y - size.height / 2, size.width, size.height);
@@ -113,7 +113,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     }
 
     @Override
-    public synchronized HitboxController addHeroGraphics(final int id, final JComponent heroGraphics, String typefolder, String name) {
+    public synchronized HitboxController addHeroGraphics(final int id, final JComponent heroGraphics, final String typefolder, final String name) {
         final int cardZoneWidth = (int) (this.getPreferredSize().width * DimensionResolver.DECKZONE.width());
         final int posZoneWidth = (int) (this.getPreferredSize().width * DimensionResolver.POSITIONINGZONE.width());
         final int panelsHeight = this.getPreferredSize().height - (int) (this.getPreferredSize().height * DimensionResolver.UTILITYZONE.height());
@@ -136,7 +136,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
 
      @Override
-    public synchronized HitboxController addEnemyGraphics(final int id, final JComponent enemyGraphics, final int x, final int y, String typefolder, String name) {
+    public synchronized HitboxController addEnemyGraphics(final int id, final JComponent enemyGraphics, final int x, final int y, final String typefolder, final String name) {
         this.newComponents.put(id, enemyGraphics);
         final Dimension size = enemyGraphics.getPreferredSize();
         enemyGraphics.setBounds(x, y, size.width, size.height);
@@ -153,7 +153,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         return hitboxcontroller;
     }
 
-    public void addWallPanel(HitboxController hitboxController){
+    public void addWallPanel(final HitboxController hitboxController){
         this.mainPanel.add(hitboxController.getHitboxPanel());
         this.mainPanel.setComponentZOrder(hitboxController.getHitboxPanel(), 1);
         this.mainPanel.repaint();
@@ -169,7 +169,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
             final HitboxController hitboxcontroller = matchController.getCharacterHitboxById(id).get();
             this.mainPanel.remove(hitboxcontroller.getHitboxPanel());
 
-            var radiusPanel = hitboxcontroller.getRadiusPanel();
+            final var radiusPanel = hitboxcontroller.getRadiusPanel();
             if (radiusPanel != null) {
                 this.mainPanel.remove(hitboxcontroller.getRadiusPanel());
             }
@@ -225,5 +225,10 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     @Override
     public void updateInGameDeck(final Set<CardIdentifier> newDeck) {
         this.mainPanel.updateInGameDeck(newDeck);
+    }
+
+    @Override
+    public void notifyPause(final boolean pause) {
+        this.mainPanel.notifyPause(pause);
     }
 }
