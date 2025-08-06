@@ -82,7 +82,7 @@ public final class ShopViewImpl extends JPanel implements ShopView, ContainerObs
 
     private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        this.userColl = this.userCollDefensiveCopy; // oppure una lista predefinita
+        this.userColl = this.userCollDefensiveCopy;
     }
 
     private void addTraderPanel(final JComponent component, final int x, final int y) {
