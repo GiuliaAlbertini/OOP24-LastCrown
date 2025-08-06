@@ -4,13 +4,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
@@ -19,7 +16,6 @@ import it.unibo.oop.lastcrown.audio.SoundEffect;
 import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
-import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
@@ -27,6 +23,7 @@ import it.unibo.oop.lastcrown.controller.characters.api.Wall;
 import it.unibo.oop.lastcrown.controller.characters.impl.hero.HeroControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.playablecharacter.PlCharControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.wall.WallFactory;
+import it.unibo.oop.lastcrown.controller.collision.api.EngagementManager;
 import it.unibo.oop.lastcrown.controller.collision.api.EntityStateManager;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
@@ -70,8 +67,7 @@ public final class MatchControllerimpl implements MatchController {
 
     final List<Pair<String, PlayableCharacterController>> CardList = new ArrayList<>();
     final List<Pair<CardIdentifier, SpellGUI>> spellList = new ArrayList<>();
-    private final Set<EnemyEngagement> engagedEnemies = ConcurrentHashMap.newKeySet();
-    private final Map<Integer, Object> enemyLocks = new HashMap<>();
+
     private final CollisionManager collisionManager = new CollisionManagerImpl();
     private final CollisionResolver collisionResolver;
     private int nextId;
@@ -107,6 +103,7 @@ public final class MatchControllerimpl implements MatchController {
 
     private final TargetingSystem radiusScanner;
     private EnemySpawnerImpl enemySpawner;
+    private final EngagementManager engagementManager;
 
     public MatchControllerimpl(final MainController mainController,
             final int frameWidth,
@@ -141,6 +138,8 @@ public final class MatchControllerimpl implements MatchController {
         this.coinsWriter.setText(this.coins + "coins");
         this.collisionResolver = new CollisionResolverImpl(this);
         this.collisionManager.addObserver(collisionResolver);
+        this.engagementManager = new EngagementManagerImpl(this);
+
         this.entityStateManager = new EntityStateManagerImpl();
         this.radiusScanner = new TargetingSystemImpl(this.entityStateManager.getHitboxControllersMap(), this,
                 collisionResolver);
@@ -160,19 +159,6 @@ public final class MatchControllerimpl implements MatchController {
         createWallHitbox(matchView);
     }
 
-    public void printEngagedEnemies() {
-        if (engagedEnemies.isEmpty()) {
-            System.out.println("Nessun nemico ingaggiato.");
-            return;
-        }
-
-        System.out.println("Nemici ingaggiati:");
-        for (EnemyEngagement engagement : engagedEnemies) {
-            System.out.printf("- Nemico ID: %d, Giocatore ID: %d%n",
-                    engagement.enemyId(), engagement.playerId());
-        }
-    }
-
     private void createWallHitbox(final MatchView matchView) {
         final Point2D pos = new Point2DImpl(matchView.getWallCoordinates().getX(),
                 matchView.getWallCoordinates().getY());
@@ -185,10 +171,6 @@ public final class MatchControllerimpl implements MatchController {
 
     public Wall getWall() {
         return this.wall;
-    }
-
-    public HitboxController getWallHitboxController() {
-        return this.wallHitboxController;
     }
 
     @Override
@@ -245,11 +227,6 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     @Override
-    public CollisionResolver getCollisionResolver() {
-        return this.collisionResolver;
-    }
-
-    @Override
     public Optional<HitboxController> getCharacterHitboxById(final int id) {
         return this.entityStateManager.getCharacterHitboxById(id);
     }
@@ -267,68 +244,14 @@ public final class MatchControllerimpl implements MatchController {
         return this.nextId;
     }
 
-    // ========================================================
-    /**
-     * Aggiorna lo stato di un nemico e pulisce le mappe se necessario.
-     *
-     * @param enemyId  ID del nemico
-     * @param playerId ID del giocatore (null se rilascio)
-     * @return true se lo stato è cambiato
-     */
-    private boolean updateEnemyState(int enemyId, Integer playerId, boolean engage) {
-        final Object lock = enemyLocks.computeIfAbsent(enemyId, k -> new Object());
-        synchronized (lock) {
-            if (engage) {
-                for (EnemyEngagement e : engagedEnemies) {
-                    if (e.enemyId() == enemyId) {
-                        return false;
-                    }
-                }
-                engagedEnemies.add(new EnemyEngagement(enemyId, playerId));
-                setEnemyInCombat(enemyId, true);
-                return true;
-
-            } else {
-                EnemyEngagement toRemove = null;
-                for (EnemyEngagement e : engagedEnemies) {
-                    if (e.enemyId() == enemyId && e.playerId() == playerId) {
-                        toRemove = e;
-                        break;
-                    }
-                }
-
-                if (toRemove != null) {
-                    engagedEnemies.remove(toRemove);
-                    setEnemyInCombat(enemyId, false);
-                    enemyLocks.remove(enemyId);
-                    return true;
-                }
-                return false;
-            }
-        }
-    }
-
-    public boolean isPlayerEngaged(final int playerId) {
-        for (EnemyEngagement engagement : engagedEnemies) {
-            if (engagement.playerId() == playerId) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isEnemyEngaged(final int enemyId) {
-        for (EnemyEngagement engagement : engagedEnemies) {
-            if (engagement.enemyId() == enemyId) {
-                return true;
-            }
-        }
-        return false;
+    @Override
+    public boolean isEntityEngaged(final int entityId) {
+        return this.engagementManager.isEntityEngaged(entityId);
     }
 
     @Override
     public boolean engageEnemy(int enemyId, int playerId) {
-        return updateEnemyState(enemyId, playerId, true);
+        return this.engagementManager.engageEnemy(enemyId, playerId);
     }
 
     @Override
@@ -346,69 +269,21 @@ public final class MatchControllerimpl implements MatchController {
      * @return true se è stato trovato e rimosso un engagement.
      */
 
+    @Override
     public boolean releaseEngagementFor(final int characterId) {
-        EnemyEngagement toRemove = null;
-        synchronized (engagedEnemies) {
-            for (EnemyEngagement e : engagedEnemies) {
-                if (e.enemyId() == characterId || e.playerId() == characterId) {
-                    toRemove = e;
-                    break;
-                }
-            }
-            if (toRemove != null) {
-                engagedEnemies.remove(toRemove);
-                setEnemyInCombat(toRemove.enemyId(), false);
-                enemyLocks.remove(toRemove.enemyId());
-                return true;
-            }
+        return this.engagementManager.releaseEngagementFor(characterId);
 
-        }
-        return false;
     }
 
-    private void setEnemyInCombat(int enemyId, boolean inCombat) {
-        getCharacterControllerById(enemyId).ifPresent(enemy -> {
-            if (enemy instanceof EnemyController) {
-                Object lock = enemyLocks.computeIfAbsent(enemyId, k -> new Object());
-                synchronized (lock) {
-                    ((EnemyController) enemy).setInCombat(inCombat);
-                }
-            }
-        });
-    }
-
+    @Override
     public Set<EnemyEngagement> getEngagedEnemies() {
-        return Collections.unmodifiableSet(engagedEnemies);
+        return this.engagementManager.getEngagedEnemies();
     }
 
+    @Override
     public boolean isEngagedWithDead(final int characterId) {
-        if (isPlayerEngaged(characterId)) {
-            int enemy = getEngagedCounterpart(characterId);
-            if (enemy != -1) {
-                Optional<GenericCharacterController> enemycontroller = getCharacterControllerById(enemy);
-                if (enemycontroller.isPresent()) {
-                    if (enemycontroller.get().isDead()) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            return false;
-        } else {
-            if (isEnemyEngaged(characterId)) {
-                int character = getEngagedCounterpart(characterId);
-                if (character != -1) {
-                    Optional<GenericCharacterController> charactercontroller = getCharacterControllerById(character);
-                    if (charactercontroller.isPresent()) {
-                        if (charactercontroller.get().isDead()) {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            }
-            return false;
-        }
+        return this.engagementManager.isEngagedWithDead(characterId);
+
     }
 
     /**
@@ -418,17 +293,13 @@ public final class MatchControllerimpl implements MatchController {
      * @param characterId l'ID del player o nemico
      * @return l'ID del personaggio ingaggiato, oppure -1 se non trovato
      */
+    @Override
     public int getEngagedCounterpart(final int characterId) {
-        for (EnemyEngagement engagement : engagedEnemies) {
-            if (engagement.playerId() == characterId) {
-                return engagement.enemyId();
-            } else if (engagement.enemyId() == characterId) {
-                return engagement.playerId();
-            }
-        }
-        return -1;
+        return this.engagementManager.getEngagedCounterpart(characterId);
+
     }
 
+    @Override
     public boolean isBossFightPartnerDead(final int id) {
         if (collisionResolver.hasOpponentBossPartner(id)) {
             final int partnerId = collisionResolver.getOpponentBossPartner(id);
@@ -440,6 +311,7 @@ public final class MatchControllerimpl implements MatchController {
         return false;
     }
 
+    @Override
     public boolean isRangedFightPartnerDead(final int id) {
         if (collisionResolver.hasOpponentRangedPartner(id)) {
             final int partnerId = collisionResolver.getOpponentRangedPartner(id);
@@ -649,8 +521,11 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     public void matchResult() {
+
         if (!this.alreadyDone) {
+
             if (!hasEntityTypeInMap(CardType.HERO)) {
+
                 this.alreadyDone = true;
                 mainView.updateAccount(this.coins, false);
                 AudioEngine.playEffect(SoundEffect.LOSE);
@@ -717,7 +592,6 @@ public final class MatchControllerimpl implements MatchController {
     public void handleBossMusic() {
         if (!alreadyDone) {
             AudioEngine.playSoundTrack(SoundTrack.BOSSFIGHT);
-            //this.alreadyDone = true;
         }
     }
 }

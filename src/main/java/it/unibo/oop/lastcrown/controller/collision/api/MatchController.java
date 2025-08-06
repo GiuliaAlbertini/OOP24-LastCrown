@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.controller.collision.api;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -12,7 +13,6 @@ import it.unibo.oop.lastcrown.controller.collision.impl.EnemyEngagement;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
-import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.view.map.MatchView;
@@ -53,13 +53,6 @@ public interface MatchController {
     void updateCharacterPosition(GenericCharacterController controller, int dx, int dy);
 
     /**
-     * Returns the collision resolver used in the match.
-     *
-     * @return the CollisionResolver instance
-     */
-    CollisionResolver getCollisionResolver();
-
-    /**
      * Notifies all registered collision observers about a collision event.
      *
      * @param event the collision event to broadcast
@@ -92,10 +85,6 @@ public interface MatchController {
     void removeCharacterCompletelyById(int characterId);
 
     boolean engageEnemy(int enemyId, int playerId);
-
-    boolean isPlayerEngaged(final int playerId);
-
-    boolean isEnemyEngaged(final int enemyId);
 
     boolean releaseEngagementFor(final int characterId);
 
@@ -130,19 +119,15 @@ public interface MatchController {
 
     Wall getWall();
 
-    HitboxController getWallHitboxController();
-
     void setAllFSMsToState(final CharacterState newState);
 
     boolean isEnemyBeyondFrame(final int enemyId);
 
     void getRandomBossFromFirstList();;
 
-    void printEngagedEnemies();
-
     void setRadiusPlayerInMap();
 
-    public void matchResult();
+    void matchResult();
 
     void rewardCoinsForRound(boolean bossFight);
 
@@ -164,6 +149,8 @@ public interface MatchController {
 
     void handleBossMusic();
 
+    boolean isEntityEngaged(int entityId);
 
+    //List<GenericCharacterController> getCharactersByType(CardType cardType);
 
 }
