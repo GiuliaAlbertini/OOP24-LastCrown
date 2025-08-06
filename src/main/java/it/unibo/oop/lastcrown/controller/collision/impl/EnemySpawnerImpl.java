@@ -12,13 +12,11 @@ import it.unibo.oop.lastcrown.controller.characters.impl.enemy.EnemyControllerFa
 import it.unibo.oop.lastcrown.controller.collision.api.EnemySpawner;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
-import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 
 public final class EnemySpawnerImpl implements EnemySpawner {
 
-    // I campi che abbiamo spostato
     private int spawnTimer = 0;
     private static final int SPAWN_INTERVAL = 5000;
     private final int roundIndex;
@@ -26,20 +24,19 @@ public final class EnemySpawnerImpl implements EnemySpawner {
     private final List<Integer> usedPositions = new ArrayList<>();
     private boolean roundSpawnComplete = false;
 
-    // Le dipendenze di cui lo Spawner ha bisogno
     private final MatchController matchController;
-    private final CollectionController collectionController;
+    private final List<List<Enemy>> enemyList;
     private final int frameWidth;
     private final int frameHeight;
 
     public EnemySpawnerImpl(
             final MatchController matchController,
-            final CollectionController collectionController,
+            final List<List<Enemy>> enemyList,
             final int frameWidth,
             final int frameHeight,
             final int initialRoundIndex) {
+        this.enemyList = enemyList;
         this.matchController = matchController;
-        this.collectionController = collectionController;
         this.frameWidth = frameWidth;
         this.frameHeight = frameHeight;
         this.roundIndex = initialRoundIndex;
@@ -48,7 +45,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
     @Override
     public void update(final int deltaTime) {
         spawnTimer += deltaTime;
-        final List<List<Enemy>> allEnemies = collectionController.getEnemies();
+        final List<List<Enemy>> allEnemies = enemyList;
         if (roundIndex < allEnemies.size()) {
             final List<Enemy> currentRound = allEnemies.get(roundIndex);
 
@@ -86,7 +83,8 @@ public final class EnemySpawnerImpl implements EnemySpawner {
                 typeFolder, name);
 
         matchController.addCharacter(enemyController.getId().number(), enemyController, hitboxController);
-        ((JTextArea) matchController.getEventWriter()).setText("Nemico " + name + " è apparso!");
+        matchController.updateEventText("Nemico" + name + "è apparso");
+
     }
 
     private int generateRandomY(List<Integer> usedPositions, int frameHeight) {
@@ -110,7 +108,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
 
     @Override
     public void spawnBoss() {
-        final List<List<Enemy>> allEnemies = collectionController.getEnemies();
+        final List<List<Enemy>> allEnemies = enemyList;
         final List<Enemy> bossList = allEnemies.get(0);
         final Random random = new Random();
         final Enemy boss = bossList.get(random.nextInt(bossList.size()));
@@ -123,7 +121,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
                 (int) (frameHeight * DimensionResolver.BOSS.height()));
 
         final int spawnX = frameWidth;
-        final int spawnY = 50;
+        final int spawnY = frameHeight / 9;
         final String typeFolder = bossController.getId().type().name();
         final String name = boss.getName();
 
@@ -134,9 +132,10 @@ public final class EnemySpawnerImpl implements EnemySpawner {
                 typeFolder, name);
 
         matchController.addCharacter(bossController.getId().number(), bossController, hitboxController);
-        //matchController.setBossActive();
-        ((JTextArea) matchController.getEventWriter()).setText("Inizio BossFight!");
+        matchController.setBossActive();
+        matchController.updateEventText("Inizio BossFight");
         matchController.getMatchView().notifyBossFight(true);
+
         matchController.handleBossMusic();
     }
 
@@ -148,6 +147,6 @@ public final class EnemySpawnerImpl implements EnemySpawner {
     @Override
     public int getRoundIndex() {
         return this.roundIndex;
-	}
+    }
 
 }

@@ -9,7 +9,6 @@ import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 public final class EnemyControllerFactory {
     private EnemyControllerFactory() { }
     /**
-     * @param deathObs the character death observer of this controller
      * @param contrId the numerical id of this controller
      * @param enemy the enemy linked to this controller
      * @return a new enemy Controller

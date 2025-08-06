@@ -13,11 +13,26 @@ import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.model.card.CardType;
 
-public class EntityStateManagerImpl implements EntityStateManager {
+/**
+ * Implementation of EntityStateManager.
+ * Manages the state and lifecycle of all character entities within the match,
+ * including their FSMs (Finite State Machines), controllers, and hitboxes.
+ *
+ * Provides utility methods for adding, updating, querying, and removing characters,
+ * as well as bulk operations such as setting all FSMs to a specific state or
+ * adjusting hitbox radii based on character type.
+ */
+public final class EntityStateManagerImpl implements EntityStateManager {
     private final Map<Integer, CharacterFSM> playerFSMs;
     private final Map<Integer, GenericCharacterController> charactersController;
     private final Map<GenericCharacterController, HitboxController> hitboxControllers;
 
+     /**
+     * Constructs a new EntityStateManagerImpl.
+     *
+     * Initializes the internal data structures used to track character controllers,
+     * their associated hitboxes, and the FSMs that manage their behavior.
+     */
     public EntityStateManagerImpl() {
         this.playerFSMs = new HashMap<>();
         this.charactersController = new HashMap<>();

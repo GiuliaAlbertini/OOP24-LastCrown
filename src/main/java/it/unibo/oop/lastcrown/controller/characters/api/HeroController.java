@@ -8,5 +8,5 @@ public interface HeroController extends GenericCharacterController {
     /**
      * @return the maximum health value of the hero
      */
-    public int getMaximumHealthValue();
+    int getMaximumHealthValue();
 }

@@ -41,11 +41,11 @@ public final class RadiusImpl implements Radius {
         return result;
     }
 
-    // trova il nemico più vicino rivedi--
+
     @Override
     public Optional<Hitbox> getClosestEnemyInRadius(final List<Hitbox> enemies) {
         Hitbox closest = null;
-        double minDistance = Double.MAX_VALUE; // valore arbitrario
+        double minDistance = Double.MAX_VALUE;
         for (final Hitbox h : enemies) {
             final double distance = h.getCenter().getDistance(origin.getCenter());
             if (distance <= radius && distance < minDistance && isInRightSemicircle(h.getCenter())) {
@@ -82,10 +82,14 @@ public final class RadiusImpl implements Radius {
 
     private boolean isInRightSemicircle(final Point2D target) {
         final Point2D originCenter = origin.getCenter();
-        // Controlla se il punto è nella metà destra del cerchio
         return target.x() >= originCenter.x();
     }
 
+    /**
+     * Sets the radius value used by this object.
+     *
+     * @param radius the new radius to assign
+     */
     public void setRadius(final double radius) {
         this.radius = radius;
     }

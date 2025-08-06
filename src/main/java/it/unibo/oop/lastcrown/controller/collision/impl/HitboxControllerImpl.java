@@ -27,12 +27,14 @@ public final class HitboxControllerImpl implements HitboxController {
      * @param hitbox the model representing the hitbox geometry and position
      * @param panel the visual panel displaying the hitbox
      * @param bounds the bounds calculator for positioning based on the mask
+     * @param radius of the hitbox
      */
-    public HitboxControllerImpl(final Hitbox hitbox, final HitboxPanel panel, final Optional <HitboxMaskBounds> bounds, final Optional<Radius> radius) {
+    public HitboxControllerImpl(final Hitbox hitbox, final HitboxPanel panel,
+                                final Optional<HitboxMaskBounds> bounds, final Optional<Radius> radius) {
         this.hitbox = hitbox;
         this.view = panel;
         this.bounds = bounds;
-        this.radius= Optional.ofNullable(radius).orElse(Optional.empty());
+        this.radius = Optional.ofNullable(radius).orElse(Optional.empty());
     }
 
     @Override

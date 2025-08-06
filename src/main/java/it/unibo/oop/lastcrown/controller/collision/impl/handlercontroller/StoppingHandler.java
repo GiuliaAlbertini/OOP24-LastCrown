@@ -6,7 +6,7 @@ import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterControll
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
-import it.unibo.oop.lastcrown.controller.collision.api.TargetingSystem;
+import it.unibo.oop.lastcrown.controller.collision.api.EntityTargetingSystem;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.EventFactory;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.EventQueue;
@@ -24,7 +24,7 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
 public final class StoppingHandler implements StateHandler {
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;
-    private final TargetingSystem scanner;
+    private final EntityTargetingSystem scanner;
     private final MatchController match;
     private boolean wait;
     private static final int ENEMY_SPEED = 2;
@@ -38,7 +38,7 @@ public final class StoppingHandler implements StateHandler {
      * @param scanner         the enemy radius scanner for detecting targets
      */
     public StoppingHandler(final EventFactory eventFactory, final MatchController matchController,
-            final CollisionResolver resolver, final TargetingSystem scanner) {
+            final CollisionResolver resolver, final EntityTargetingSystem scanner) {
         this.eventFactory = eventFactory;
         this.match = matchController;
         this.resolver = resolver;

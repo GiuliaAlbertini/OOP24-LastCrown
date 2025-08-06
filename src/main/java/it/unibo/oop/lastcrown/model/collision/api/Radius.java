@@ -47,5 +47,10 @@ public interface Radius {
      */
     double getRadius();
 
-    void setRadius(final double radius);
+    /**
+     * Sets the size of the radius.
+     *
+     * @param radius the new radius to set
+     */
+    void setRadius(double radius);
 }

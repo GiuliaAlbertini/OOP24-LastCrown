@@ -17,6 +17,7 @@ public final class WallFactory {
      * @param id the id of the new Wall
      * @param healthWidth the width of the health bar
      * @param healthHeight the height of the health bar
+     * @param hitbox the hitbox of the wall
      * @return a new Wall
      */
     public static Wall createWall(final int attack, final int health, final int id,

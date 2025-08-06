@@ -44,7 +44,7 @@ public final class WallImpl implements Wall {
         this.currentHealth = health;
         this.attack = attack;
         this.id = new CardIdentifier(id, CardType.WALL);
-        this.hitbox= Optional.ofNullable(hitbox).orElse(Optional.empty());
+        this.hitbox = Optional.ofNullable(hitbox).orElse(Optional.empty());
     }
 
     @Override
@@ -82,7 +82,7 @@ public final class WallImpl implements Wall {
     }
 
     @Override
-    public void changeAttackValue(int attack) {
+    public void changeAttackValue(final int attack) {
         this.attack = attack;
     }
 
@@ -92,7 +92,7 @@ public final class WallImpl implements Wall {
     }
 
     @Override
-    public void changeMaximumHealth(int health) {
+    public void changeMaximumHealth(final int health) {
         this.maximumHealth = health;
     }
 

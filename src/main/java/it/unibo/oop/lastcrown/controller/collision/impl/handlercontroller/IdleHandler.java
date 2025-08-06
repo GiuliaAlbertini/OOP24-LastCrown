@@ -6,7 +6,7 @@ import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterControll
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
-import it.unibo.oop.lastcrown.controller.collision.api.TargetingSystem;
+import it.unibo.oop.lastcrown.controller.collision.api.EntityTargetingSystem;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.EventFactory;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.EventQueue;
@@ -25,7 +25,7 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
  */
 public final class IdleHandler implements StateHandler {
     private final MatchController matchController;
-    private final TargetingSystem scanner;
+    private final EntityTargetingSystem scanner;
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;
     private static final int PLAYER_SPEED = 2;
@@ -43,7 +43,7 @@ public final class IdleHandler implements StateHandler {
      *                        interactions
      */
     public IdleHandler(final MatchController matchController,
-            final TargetingSystem scanner,
+            final EntityTargetingSystem scanner,
             final EventFactory eventFactory,
             final CollisionResolver resolver) {
         this.matchController = matchController;

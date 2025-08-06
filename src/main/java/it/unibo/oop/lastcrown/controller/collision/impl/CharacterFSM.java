@@ -2,7 +2,7 @@ package it.unibo.oop.lastcrown.controller.collision.impl;
 
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
-import it.unibo.oop.lastcrown.controller.collision.api.TargetingSystem;
+import it.unibo.oop.lastcrown.controller.collision.api.EntityTargetingSystem;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.EventFactory;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.EventQueue;
@@ -27,7 +27,7 @@ public final class CharacterFSM {
      * @param resolver the collision resolver for character movement and interaction
      */
     public CharacterFSM(final GenericCharacterController character, final MatchController matchController,
-            final TargetingSystem scanner, final CollisionResolver resolver) {
+            final EntityTargetingSystem scanner, final CollisionResolver resolver) {
         this.character = character;
         this.currentState = CharacterState.IDLE;
         this.eventQueue = new EventQueue();

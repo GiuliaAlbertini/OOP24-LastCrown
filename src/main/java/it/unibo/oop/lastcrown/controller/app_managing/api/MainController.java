@@ -60,5 +60,10 @@ public interface MainController {
      */
     AccountController getAccountController();
 
+    /**
+     * Returns the observer notified at the start of a match.
+     *
+     * @return the MatchStartObserver for match start events
+     */
     MatchStartObserver getMatchStartObserver();
 }

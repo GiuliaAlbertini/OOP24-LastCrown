@@ -66,12 +66,10 @@ public final class HitboxImpl implements Hitbox {
 
     @Override
     public boolean checkCollision(final Hitbox other) {
-        //final double threshold = 10.0; // margine extra per rendere più morbido il contatto
-
-        final double ax1 = this.getPosition().x() /*- threshold*/;
-        final double ay1 = this.getPosition().y() /*- threshold*/;
-        final double ax2 = ax1 + this.width + 2 /* * threshold*/;
-        final double ay2 = ay1 + this.height + 2 /* * /*threshold*/;
+        final double ax1 = this.getPosition().x();
+        final double ay1 = this.getPosition().y();
+        final double ax2 = ax1 + this.width + 2;
+        final double ay2 = ay1 + this.height + 2;
 
         final double bx1 = other.getPosition().x();
         final double by1 = other.getPosition().y();
@@ -80,26 +78,4 @@ public final class HitboxImpl implements Hitbox {
 
         return !(ax2 < bx1 || bx2 < ax1 || ay2 < by1 || by2 < ay1);
     }
-
 }
-
-/*
- * @Override
- * //implementazione Axis-Aligned Bounding Box
- * public boolean checkCollision(final Hitbox other) {
- * final double ax1 = this.getPosition().x();
- * final double ay1 = this.getPosition().y();
- * final double ax2 = ax1 + this.width;
- * final double ay2 = ay1 + this.height;
- *
- * final double bx1 = other.getPosition().x();
- * final double by1 = other.getPosition().y();
- * final double bx2 = bx1 + other.getWidth();
- * final double by2 = by1 + other.getHeight();
- *
- * //se tutte le condizioni di non sovrapposizioni sono vere allora non c'è
- * collisione
- * return !(ax2 < bx1 || bx2 < ax1 || ay2 < by1 || by2 < ay1);
- * }
- *
- */

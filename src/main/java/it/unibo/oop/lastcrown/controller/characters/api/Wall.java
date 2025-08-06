@@ -20,7 +20,7 @@ public interface Wall extends CharacterHitObserver {
     int getAttack();
 
     /**
-     * Sets the new value of the attack
+     * Sets the new value of the attack.
      * @param attack the new attack value
      */
     void changeAttackValue(int attack);
@@ -31,7 +31,7 @@ public interface Wall extends CharacterHitObserver {
     int getCurrentHealth();
 
     /**
-     * Sets the new value of the maximum health
+     * Sets the new value of the maximum health.
      * @param health the new maximum health
      */
     void changeMaximumHealth(int health);
@@ -48,7 +48,7 @@ public interface Wall extends CharacterHitObserver {
      *
      * @param hitbox the Hitbox to associate with this entity; must not be null
      */
-    void setHitbox(final Hitbox hitbox);
+    void setHitbox(Hitbox hitbox);
 
     /**
      * @return the CardIdentifier liked to this wall.
