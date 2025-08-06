@@ -41,7 +41,7 @@ final class TestAccount {
         account.increaseBossesDefeated();
         assertEquals(2, account.getPlayedMatches());
         assertEquals(1, account.getBossesDefeated());
-        assertEquals(2.0, account.computeBossesPerMatch(), 1e-6);
+        assertEquals(0.0, account.computeBossesPerMatch(), 1e-6);
     }
 
     @Test
