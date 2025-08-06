@@ -151,6 +151,8 @@ public interface MatchController {
 
     boolean isEntityEngaged(int entityId);
 
+    List<GenericCharacterController> getCharactersByType(CardType cardType);
+
     //List<GenericCharacterController> getCharactersByType(CardType cardType);
 
 }

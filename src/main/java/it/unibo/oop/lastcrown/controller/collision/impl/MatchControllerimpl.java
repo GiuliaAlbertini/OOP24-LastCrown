@@ -27,6 +27,7 @@ import it.unibo.oop.lastcrown.controller.collision.api.EngagementManager;
 import it.unibo.oop.lastcrown.controller.collision.api.EntityStateManager;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
+import it.unibo.oop.lastcrown.controller.collision.api.SpellManager;
 import it.unibo.oop.lastcrown.controller.collision.api.TargetingSystem;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.controller.user.api.CollectionController;
@@ -46,8 +47,7 @@ import it.unibo.oop.lastcrown.model.collision.impl.HitboxImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.Pair;
 import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.RadiusImpl;
-import it.unibo.oop.lastcrown.model.spell.api.Spell;
-import it.unibo.oop.lastcrown.model.spell.api.SpellEffect;
+
 import it.unibo.oop.lastcrown.model.user.api.CompleteCollection;
 import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
@@ -60,13 +60,11 @@ import it.unibo.oop.lastcrown.view.collision.impl.RadiusPanelImpl;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 import it.unibo.oop.lastcrown.view.map.MatchView;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
-import it.unibo.oop.lastcrown.view.spell.api.SpellGUI;
-import it.unibo.oop.lastcrown.view.spell.impl.SpellGUIImpl;
 
 public final class MatchControllerimpl implements MatchController {
 
     final List<Pair<String, PlayableCharacterController>> CardList = new ArrayList<>();
-    final List<Pair<CardIdentifier, SpellGUI>> spellList = new ArrayList<>();
+    // final List<Pair<CardIdentifier, SpellGUI>> spellList = new ArrayList<>();
 
     private final CollisionManager collisionManager = new CollisionManagerImpl();
     private final CollisionResolver collisionResolver;
@@ -91,10 +89,8 @@ public final class MatchControllerimpl implements MatchController {
     private static final int UPGRADE_RADIUS_RANGED = 800;
     private final MainController mainController;
     private boolean bossActive;
-    private boolean spellScanner;
     private MainView mainView;
-    private int spell_x;
-    private int spell_y;
+
     private HitboxController wallHitboxController = null;
 
     private boolean alreadyDone;
@@ -104,6 +100,7 @@ public final class MatchControllerimpl implements MatchController {
     private final TargetingSystem radiusScanner;
     private EnemySpawnerImpl enemySpawner;
     private final EngagementManager engagementManager;
+    private final SpellManager spellManager;
 
     public MatchControllerimpl(final MainController mainController,
             final int frameWidth,
@@ -143,7 +140,9 @@ public final class MatchControllerimpl implements MatchController {
         this.entityStateManager = new EntityStateManagerImpl();
         this.radiusScanner = new TargetingSystemImpl(this.entityStateManager.getHitboxControllersMap(), this,
                 collisionResolver);
-        this.enemySpawner = new EnemySpawnerImpl(this, collectionController, frameWidth, frameHeight, enemyList);
+        this.enemySpawner = new EnemySpawnerImpl(this, collectionController, this.frameWidth, this.frameHeight,
+                enemyList);
+        this.spellManager = new SpellManagerImpl(this, this.collection, this.frameWidth);
 
     }
 
@@ -210,7 +209,7 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public void update(final int deltaTime) {
-        checkAndAnimateLastSpell(spellList);
+        this.spellManager.update(deltaTime);
 
         this.enemySpawner.update(deltaTime);
 
@@ -349,9 +348,7 @@ public final class MatchControllerimpl implements MatchController {
             addCharacter(selected.get2().getId().number(), playerController, hitboxController);
             this.eventWriter.setText(name + " schierato in campo!");
         } else {
-            spell_x = x;
-            spell_y = y;
-            spellScanner = true;
+            this.spellManager.castSpell(x, y);
         }
     }
 
@@ -364,75 +361,7 @@ public final class MatchControllerimpl implements MatchController {
             CardList.add(new Pair<String, PlayableCharacterController>(player.getName(), playerController));
         } else if (id.type() == CardType.SPELL) {
             CardList.clear();
-            spellScanner = false;
-            final Spell spell = this.collection.getSpell(id).get();
-            SpellGUI spellGUI = new SpellGUIImpl(spell.getName(),
-                    ((int) (frameWidth * DimensionResolver.SPELL.width())));
-            spellList.add(new Pair<CardIdentifier, SpellGUI>(id, spellGUI));
-        }
-    }
-
-    public void checkAndAnimateLastSpell(List<Pair<CardIdentifier, SpellGUI>> spellList) {
-        if (spellList != null && !spellList.isEmpty() && spellScanner) {
-            Pair<CardIdentifier, SpellGUI> spellSelected = spellList.get(spellList.size() - 1);
-
-            if (spellSelected != null && spellSelected.get1() != null && spellSelected.get2() != null) {
-                final CardIdentifier id = spellSelected.get1();
-                final JComponent spellComponent = spellSelected.get2().getGraphicalComponent();
-                spellAnimation(spellSelected.get2(), id, spellComponent, spell_x, spell_y);
-            }
-        }
-    }
-
-    public void spellAnimation(SpellGUI spellGUI, CardIdentifier id, JComponent spellComponent, int x, int y) {
-        matchView.addSpellGraphics(id.number(), spellComponent, x, y);
-        spellGUI.startAnimation();
-        spellScanner = false;
-        spellList.clear();
-
-        final SpellEffect spellEffect = collection.getSpell(id).get().getSpellEffect();
-        switch (spellEffect.target()) {
-            case FRIENDLY:
-                handleSpellFriendly(spellEffect);
-                break;
-            case ENEMY:
-                handleSpellEnemy(spellEffect);
-                break;
-            default:
-                break;
-        }
-    }
-
-    public void handleSpellFriendly(SpellEffect spellEffect) {
-        // Ottieni tutti i personaggi friendly (HERO, MELEE, RANGED)
-        List<GenericCharacterController> friendlyCharacters = getCharactersByType(CardType.MELEE);
-
-        if ("health".equals(spellEffect.category())) {
-            for (var character : friendlyCharacters) {
-                character.heal(spellEffect.amount());
-            }
-        } else if ("attack".equals(spellEffect.category())) {
-            for (var character : friendlyCharacters) {
-                character.setAttackValue(spellEffect.amount());
-            }
-        }
-    }
-
-    public void handleSpellEnemy(SpellEffect spellEffect) {
-        List<GenericCharacterController> enemyCharacters = getCharactersByType(CardType.ENEMY);
-
-        if ("health".equals(spellEffect.category())) {
-            for (var character : enemyCharacters) {
-                character.takeHit(spellEffect.amount());
-            }
-        } else if ("attack".equals(spellEffect.category())) {
-            for (var character : enemyCharacters) {
-                character.setAttackValue((-1) * spellEffect.amount());
-            }
-        } else if ("speedMultiplier".equals(spellEffect.category())) {
-            for (var character : enemyCharacters) {
-                character.setSpeedMultiplierValue((-1) * spellEffect.amount());
-            }
+            this.spellManager.handleSpellSelection(id);
         }
     }
 
@@ -543,7 +472,8 @@ public final class MatchControllerimpl implements MatchController {
         }
     }
 
-    private List<GenericCharacterController> getCharactersByType(final CardType cardType) {
+    @Override
+    public List<GenericCharacterController> getCharactersByType(final CardType cardType) {
         return this.entityStateManager.getCharactersByType(cardType);
     }
 
