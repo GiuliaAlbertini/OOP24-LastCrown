@@ -49,4 +49,10 @@ public interface DeckZone {
      * @param height the new height of this component
      */
     void setBounds(int x, int y, int width, int height);
+
+    /**
+     * Set the timer state.
+     * @param stop {@code true} if the timer has to stop, {@code false} otherwise
+     */
+    void setTimerStopping(boolean stop);
 }
