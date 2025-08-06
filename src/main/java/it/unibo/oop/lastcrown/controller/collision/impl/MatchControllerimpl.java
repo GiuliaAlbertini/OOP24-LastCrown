@@ -68,13 +68,13 @@ public final class MatchControllerimpl implements MatchController {
     private final CollisionResolver collisionResolver;
     private int nextId;
     private MatchView matchView;
-    private final Hero hero;
+    private Hero hero;
     private Wall wall;
     private int coins;
     private int frameWidth;
     private int frameHeight;
-    private final CompleteCollection collection;
-    private final HeroController heroController;
+    private CompleteCollection collection;
+    private HeroController heroController;
     private final MainController mainController;
     private boolean bossActive;
     private MainView mainView;
@@ -87,41 +87,73 @@ public final class MatchControllerimpl implements MatchController {
     private final SpellManager spellManager;
 
     public MatchControllerimpl(final MainController mainController, final int frameWidth, final int frameHeight,
-            CardIdentifier heroId, CollectionController collectionController, MainView mainView,
+            CardIdentifier heroId, final CollectionController collectionController, MainView mainView,
             final int enemyList) {
         this.nextId = 1;
         this.frameHeight = frameHeight;
         this.frameWidth = frameWidth;
         this.mainController = mainController;
         this.mainView = mainView;
-        this.collection = collectionController.getCompleteCollection();
-        this.hero = this.collection.getHero(heroId).get();
-        this.heroController = HeroControllerFactory.createHeroController(generateUniqueCharacterId(), hero);
-        heroController.attachCharacterAnimationPanel((int) (frameWidth * DimensionResolver.HERO.width()),
-                (int) (frameHeight * DimensionResolver.HERO.height()));
-        this.wall = WallFactory.createWall(hero.getWallAttack(), hero.getWallHealth(), 10000, frameWidth / 2,
-                (int) (frameHeight * DimensionResolver.UTILITYZONE.height()), Optional.empty());
+
+        initializeHero(heroId, collectionController);
+        initializeWall();
+
         this.collisionResolver = new CollisionResolverImpl(this);
         this.collisionManager.addObserver(collisionResolver);
         this.engagementManager = new EntityEngagementManagerImpl(this);
         this.entityStateManager = new EntityStateManagerImpl();
         this.radiusScanner = new EntityTargetingSystemImpl(this.entityStateManager.getHitboxControllersMap(), this,
-                collisionResolver);
+                                                           collisionResolver);
         this.enemySpawner = new EnemySpawnerImpl(this, collectionController.getEnemies(), this.frameWidth,
-                this.frameHeight, enemyList);
+                                                 this.frameHeight, enemyList);
         this.spellManager = new SpellManagerImpl(this, this.collection, this.frameWidth);
     }
+
+    private void initializeHero(CardIdentifier heroId, CollectionController collectionController){
+        this.collection = collectionController.getCompleteCollection();
+        this.hero = this.collection.getHero(heroId).get();
+        this.heroController = HeroControllerFactory.createHeroController(
+                            generateUniqueCharacterId(),hero);
+
+        int heroWidth = (int) (frameWidth * DimensionResolver.HERO.width());
+        int heroHeight = (int) (frameHeight * DimensionResolver.HERO.height());
+        heroController.attachCharacterAnimationPanel(heroWidth, heroHeight);
+    }
+
+    private void initializeWall() {
+        int wallX = frameWidth / 2;
+        int wallY = (int) (frameHeight * DimensionResolver.UTILITYZONE.height());
+        this.wall = WallFactory.createWall(hero.getWallAttack(), hero.getWallHealth(),
+                                        10000, wallX, wallY, Optional.empty());
+    }
+
 
     public void newMatchView(final MatchView matchView) {
         this.matchView = matchView;
         updateCoinsDisplay();
-        HitboxController heroHitbox = this.matchView.addHeroGraphics(this.heroController.getId().number(),
-                this.heroController.getGraphicalComponent(), this.heroController.getId().type().get(),
+        setupHeroInView();
+        createWallHitbox(matchView);
+    }
+
+    private void setupHeroInView() {
+        HitboxController heroHitbox = this.matchView.addHeroGraphics(
+                this.heroController.getId().number(),
+                this.heroController.getGraphicalComponent(),
+                this.heroController.getId().type().get(),
                 this.hero.getName());
         this.heroController.setNextAnimation(Keyword.STOP);
         this.heroController.showNextFrame();
         addCharacter(this.heroController.getId().number(), heroController, heroHitbox);
-        createWallHitbox(matchView);
+    }
+
+    private void createWallHitbox(final MatchView matchView) {
+        final Point2D pos = new Point2DImpl(matchView.getWallCoordinates().getX(),
+                                            matchView.getWallCoordinates().getY());
+        final Hitbox wallHitbox = new HitboxImpl(matchView.getWallSize().width, matchView.getWallSize().height, pos);
+        final HitboxPanel wallHitboxPanel = new HitboxPanelImpl(wallHitbox);
+        this.wallHitboxController = new HitboxControllerImpl(wallHitbox, wallHitboxPanel, null, null);
+        this.wall.setHitbox(wallHitbox);
+        this.matchView.addWallPanel(wallHitboxController);
     }
 
     private void updateCoinsDisplay() {
@@ -138,15 +170,6 @@ public final class MatchControllerimpl implements MatchController {
         return this.coins;
     }
 
-    private void createWallHitbox(final MatchView matchView) {
-        final Point2D pos = new Point2DImpl(matchView.getWallCoordinates().getX(),
-                matchView.getWallCoordinates().getY());
-        final Hitbox wallHitbox = new HitboxImpl(matchView.getWallSize().width, matchView.getWallSize().height, pos);
-        final HitboxPanel wallHitboxPanel = new HitboxPanelImpl(wallHitbox);
-        this.wallHitboxController = new HitboxControllerImpl(wallHitbox, wallHitboxPanel, null, null);
-        this.wall.setHitbox(wallHitbox);
-        this.matchView.addWallPanel(wallHitboxController);
-    }
 
     public Wall getWall() {
         return this.wall;
@@ -168,7 +191,6 @@ public final class MatchControllerimpl implements MatchController {
         if (component == null) {
             return;
         }
-
         final int newX = component.getX() + dx;
         final int newY = component.getY() + dy;
         component.setLocation(newX, newY);
@@ -258,13 +280,6 @@ public final class MatchControllerimpl implements MatchController {
 
     }
 
-    /**
-     * Restituisce l'ID del personaggio con cui è ingaggiato quello dato.
-     * Se non è ingaggiato con nessuno, restituisce -1.
-     *
-     * @param characterId l'ID del player o nemico
-     * @return l'ID del personaggio ingaggiato, oppure -1 se non trovato
-     */
     @Override
     public int getEngagedCounterpart(final int characterId) {
         return this.engagementManager.getEngagedCounterpart(characterId);
@@ -342,9 +357,7 @@ public final class MatchControllerimpl implements MatchController {
     public void addCharacter(final int n, final GenericCharacterController controller,
             final HitboxController hitboxController) {
         final int id = controller.getId().number();
-
         final CharacterFSM fsm = new CharacterFSM(controller, this, radiusScanner, this.collisionResolver);
-
         this.entityStateManager.addCharacter(id, controller, hitboxController, fsm);
     }
 
@@ -413,11 +426,8 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     public void matchResult() {
-
         if (!this.alreadyDone) {
-
             if (!hasEntityTypeInMap(CardType.HERO)) {
-
                 this.alreadyDone = true;
                 mainView.updateAccount(this.coins, false);
                 AudioEngine.playEffect(SoundEffect.LOSE);
@@ -444,12 +454,6 @@ public final class MatchControllerimpl implements MatchController {
         return this.enemySpawner.isRoundSpawnComplete();
     }
 
-    /**
-     * Aggiunge coins in base al round corrente.
-     * Se è un boss, applica un bonus al reward.
-     *
-     * @param boss true se il nemico sconfitto è un boss
-     */
     public void rewardCoinsForRound(boolean bossFight) {
         final int baseReward = 50;
         int reward = baseReward - this.enemySpawner.getRoundIndex() * 10;
