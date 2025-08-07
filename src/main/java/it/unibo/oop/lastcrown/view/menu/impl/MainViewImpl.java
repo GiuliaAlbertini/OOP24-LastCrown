@@ -39,7 +39,7 @@ import it.unibo.oop.lastcrown.view.shop.ShopViewImpl;
 /**
  * View that uses a {@link CardLayout} to handle the different scenes.
  */
-public class MainViewImpl extends JFrame implements MainView {
+public final class MainViewImpl extends JFrame implements MainView {
     private static final long serialVersionUID = 1L;
     private static final double RESIZE_FACTOR = 1.0;
     private static final Dimension SCREENSIZE = Toolkit.getDefaultToolkit().getScreenSize();
@@ -78,7 +78,7 @@ public class MainViewImpl extends JFrame implements MainView {
      * @param deckContr the {@link DeckController} to use
      * @param gameContr the {@link GameControllerExample} to use
      */
-    public MainViewImpl(final SceneManager sceneManager,
+    private MainViewImpl(final SceneManager sceneManager,
             final MainController mainController,
             final AccountController accountController,
             final CollectionController collectionController,
@@ -133,12 +133,12 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     @Override
-    public final void changePanel(final SceneName sceneCaller, final SceneName sceneDestination) {
+    public void changePanel(final SceneName sceneCaller, final SceneName sceneDestination) {
         this.layout.show(this.mainPanel, sceneDestination.get());
     }
 
     @Override
-    public final void onShop(final SceneName caller) {
+    public void onShop(final SceneName caller) {
         this.shopView.notifyVisible();
         if (!AudioEngine.getActualSoundTrack().equals(SoundTrack.SHOP)) {
             AudioEngine.playSoundTrack(SoundTrack.SHOP);
@@ -146,7 +146,7 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     @Override
-    public final void onMatch(final SceneName caller) {
+    public void onMatch(final SceneName caller) {
         if (this.deckController.getDeck().isEmpty()) {
             final String title = "WAIT!!!";
             final String message = "You didn't create a deck yet!";
@@ -181,7 +181,7 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     @Override
-    public final void onMenu(final SceneName caller) {
+    public void onMenu(final SceneName caller) {
         this.enemyList = 3;
         this.victory = false;
         if (SceneName.SHOP.equals(caller) || SceneName.MATCH.equals(caller)) {
@@ -195,7 +195,7 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     @Override
-    public final void onCollection(final SceneName caller) {
+    public void onCollection(final SceneName caller) {
         if (SceneName.SHOP.equals(caller)) {
             this.collectionView.setBackDestination(SceneName.SHOP);
         } else {
@@ -204,7 +204,7 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     @Override
-    public final void onDeck(final SceneName caller) {
+    public void onDeck(final SceneName caller) {
         if (SceneName.SHOP.equals(caller)) {
             this.deckView.setBackDestination(SceneName.SHOP);
         } else {
@@ -213,13 +213,13 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     @Override
-    public final void updateAccount(final int amount, final boolean bossDefeated) {
+    public void updateAccount(final int amount, final boolean bossDefeated) {
         this.victory = bossDefeated;
         this.shopView.notifyUpdateAccount(amount, bossDefeated);
     }
 
     @Override
-    public final void updateUserCollectionUsers(final Set<CardIdentifier> newSet) {
+    public void updateUserCollectionUsers(final Set<CardIdentifier> newSet) {
         updateDeckController(newSet);
         this.mainPanel.remove(this.deckView.getPanel());
         this.deckView = DeckView.create(this.sceneManager, this.deckController);
@@ -230,7 +230,7 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     @Override
-    public final void updateAccountUsers(final Account account) {
+    public void updateAccountUsers(final Account account) {
         this.accountController.setAccount(account);
         this.mainPanel.remove(this.statsView.getPanel());
         this.statsView = StatsView.create(this.sceneManager, this.accountController);
@@ -239,12 +239,12 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     @Override
-    public final MainView getFrame() {
+    public MainView getFrame() {
         return this;
     }
 
     @Override
-    public final void close() {
+    public void close() {
         this.dispose();
         AudioEngine.stopTrack();
     }
