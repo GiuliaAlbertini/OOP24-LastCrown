@@ -63,7 +63,7 @@ public class MainViewImpl extends JFrame implements MainView {
     private final ShopView shopView;
     private MatchView matchView;
     private boolean matchExist;
-    private int enemyList = 1;
+    private int enemyList = 3;
 
     private boolean victory;
 
