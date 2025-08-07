@@ -33,7 +33,7 @@ public class MainControllerImpl implements MainController {
     private static final double TO_MINUTES_FACTOR = 60_000.0;
     private static final String SEP = File.separator;
     private static final String ACCOUNT_PATH = getAccountPath();
-    
+
     private Optional<SceneManager> sceneManager;
     private Optional<AccountController> accountController = Optional.empty();
     private final LoginView loginView;
