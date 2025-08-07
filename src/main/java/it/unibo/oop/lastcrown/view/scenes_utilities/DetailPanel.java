@@ -13,15 +13,21 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 /**
  * A panel for showing detailed views of cards.
  */
-public class DetailPanel extends JPanel {
+public final class DetailPanel extends JPanel {
     private static final long serialVersionUID = 1L;
+
+    private DetailPanel() {
+    }
 
     /**
      * Creates a new detail panel.
+     * @return the new panel
      */
-    public DetailPanel() {
-        this.setLayout(new BorderLayout());
-        setOpaque(false);
+    public static DetailPanel create() {
+        final var newDetPanel = new DetailPanel();
+        newDetPanel.setLayout(new BorderLayout());
+        newDetPanel.setOpaque(false);
+        return newDetPanel;
     }
 
     /**
