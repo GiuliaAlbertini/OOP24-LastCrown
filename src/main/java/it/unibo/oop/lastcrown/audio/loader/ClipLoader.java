@@ -14,6 +14,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  * Utility class that loads and closes the audio clips of the soundtracks and sound effects.
  */
 public final class ClipLoader {
+    private static final float VOLUME = 0.3f;
     private ClipLoader() { }
 
     /**
@@ -30,7 +31,7 @@ public final class ClipLoader {
             final AudioInputStream stream = AudioSystem.getAudioInputStream(file);
             final Clip clip = AudioSystem.getClip();
             clip.open(stream);
-            setVolume(clip, 0.3f);
+            setVolume(clip, VOLUME);
             return clip;
         }
         return null;
@@ -50,17 +51,16 @@ public final class ClipLoader {
         }
     }
 
-     private static void setVolume(Clip clip, float volume) {
+     private static void setVolume(final Clip clip, final float volume) {
         if (volume < 0f || volume > 1f) {
             throw new IllegalArgumentException("Volume must be beetween 0.0 and 1.0");
         }
 
         if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            float dB = 20f * (float) Math.log10(volume);
+            final float volumeSetter = 20f;
+            final FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            final float dB = volumeSetter * (float) Math.log10(volume);
             gainControl.setValue(dB);
-        } else {
-            System.out.println("Controllo volume non supportato");
         }
     }
 }

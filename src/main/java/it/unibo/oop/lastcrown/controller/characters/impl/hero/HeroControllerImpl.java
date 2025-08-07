@@ -32,7 +32,7 @@ public class HeroControllerImpl extends GenericCharacterControllerImpl implement
     }
 
     @Override
-    public int getMaximumHealthValue() {
+    public final int getMaximumHealthValue() {
         return this.maximumHealth;
     }
 }
