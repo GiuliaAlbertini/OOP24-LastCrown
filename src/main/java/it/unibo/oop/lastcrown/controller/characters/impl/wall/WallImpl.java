@@ -35,6 +35,7 @@ public final class WallImpl implements Wall {
      * @param id the id of the new Wall
      * @param healthWidth the width of the health bar
      * @param healthHeight the height of the health bar
+     * @param hitbox the hitbox of the Wall
      */
     public WallImpl(final int attack, final int health, final int id,
      final int healthWidth, final int healthHeight, final Optional<Hitbox> hitbox) {
@@ -67,6 +68,7 @@ public final class WallImpl implements Wall {
         return this.hitbox;
     }
 
+    @Override
     public void setHitbox(final Hitbox hitbox) {
         this.hitbox = Optional.ofNullable(hitbox);
     }

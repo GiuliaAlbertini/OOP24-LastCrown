@@ -24,12 +24,15 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
  * or to STOPPED if a collision is detected (for enemies).
  */
 public final class IdleHandler implements StateHandler {
+
+    private static final int PLAYER_SPEED = 2;
+    private static final int ENEMY_SPEED = -2;
+    private static final int ROUNDING_AMOUNT = 5;
+
     private final MatchController matchController;
     private final EntityTargetingSystem scanner;
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;
-    private static final int PLAYER_SPEED = 2;
-    private static final int ENEMY_SPEED = -2;
 
     /**
      * Constructs an IdleHandler with the required dependencies.
@@ -132,10 +135,11 @@ public final class IdleHandler implements StateHandler {
                     || resolver.hasOpponentWallPartner(enemy.getId().number())) {
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                 return CharacterState.STOPPED;
-                // sono ingaggiatio ma il mio personaggio è al di là del muro
             } else if (matchController.isEntityEngaged(enemy.getId().number())) {
-                int idPlayer = matchController.getEngagedCounterpart(enemy.getId().number());
-                GenericCharacterController player = matchController.getCharacterControllerById(idPlayer).get();
+                final int idPlayer = matchController.getEngagedCounterpart(enemy.getId().number());
+                final GenericCharacterController player = matchController
+                    .getCharacterControllerById(idPlayer)
+                    .get();
                 if (isAtTroopZoneLimit(player)) {
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
@@ -148,11 +152,13 @@ public final class IdleHandler implements StateHandler {
     }
 
     private boolean isAtTroopZoneLimit(final GenericCharacterController player) {
-        Optional<HitboxController> hitboxController = matchController.getCharacterHitboxById(player.getId().number());
+        final Optional<HitboxController> hitboxController = matchController.getCharacterHitboxById(
+            player.getId().number()
+        );
         if (hitboxController.isPresent()) {
-            int limit = matchController.getMatchView().getTrupsZoneLimit()
+            final int limit = matchController.getMatchView().getTrupsZoneLimit()
                     - hitboxController.get().getHitbox().getWidth();
-            int roundedLimit = limit + (5 - (limit % 5)) % 5;
+            final int roundedLimit = limit + (ROUNDING_AMOUNT - (limit % ROUNDING_AMOUNT)) % ROUNDING_AMOUNT;
             return hitboxController.get().getHitbox().getPosition().x() >= roundedLimit;
         }
         return false;

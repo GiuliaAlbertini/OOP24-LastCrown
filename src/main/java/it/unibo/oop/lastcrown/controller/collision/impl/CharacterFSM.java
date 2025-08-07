@@ -55,11 +55,13 @@ public final class CharacterFSM {
         return this.currentState;
     }
 
-
-    public CharacterState  setState(final CharacterState newState) {
+    /**
+     * Setter for the character's state.
+     * @param newState the new state to be assigned to the character.
+     */
+    public void setState(final CharacterState newState) {
         this.currentState = newState;
-        this.eventQueue.clear(); // eventualmente svuota la coda di eventi
+        this.eventQueue.clear();
         this.eventQueue.enqueue(this.eventFactory.createEvent(this.currentState));
-        return this.currentState;
     }
 }

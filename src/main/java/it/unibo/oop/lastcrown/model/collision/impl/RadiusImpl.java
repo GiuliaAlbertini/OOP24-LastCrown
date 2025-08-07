@@ -85,11 +85,7 @@ public final class RadiusImpl implements Radius {
         return target.x() >= originCenter.x();
     }
 
-    /**
-     * Sets the radius value used by this object.
-     *
-     * @param radius the new radius to assign
-     */
+    @Override
     public void setRadius(final double radius) {
         this.radius = radius;
     }

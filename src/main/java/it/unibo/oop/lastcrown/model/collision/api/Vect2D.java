@@ -57,9 +57,7 @@ public interface Vect2D {
      */
     double y();
 
-    /**
-     * @return a string representation of the vector
-     */
+    @Override
     String toString();
 }
 

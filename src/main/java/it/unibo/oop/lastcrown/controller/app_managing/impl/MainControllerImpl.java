@@ -142,10 +142,12 @@ public class MainControllerImpl implements MainController {
         return accountController.get().getAccount().getUserCollection().getCollection();
     }
 
+    @Override
     public MatchController getMatchController() {
         return this.gameController.getMatchControllerReference();
     }
 
+    @Override
     public MatchStartObserver getMatchStartObserver() {
         return this.gameController;
     }

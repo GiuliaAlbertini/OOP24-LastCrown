@@ -163,12 +163,19 @@ public class MainViewImpl extends JFrame implements MainView {
             }
             this.mainPanel.remove(this.matchView.getPanel());
         }
-        this.gameController.onMatchStart(WIDTH, HEIGHT, this.deckController.getHero(), this.collectionController, this, enemyList);
+        this.gameController.onMatchStart(
+            WIDTH,
+            HEIGHT,
+            this.deckController.getHero(),
+            this.collectionController,
+            this,
+            enemyList
+        );
         this.matchView = new MatchViewImpl(this.sceneManager, this.gameController.getMatchControllerReference(),
                     WIDTH, HEIGHT, this.deckController.getDeck());
         this.mainPanel.add(this.matchView.getPanel(), this.matchView.getSceneName().get());
         this.matchExist = true;
-        this.gameController.getMatchView(matchView);
+        this.gameController.setMatchView(matchView);
         this.matchView.updateInGameDeck(this.deckController.getDeck());
         AudioEngine.playSoundTrack(SoundTrack.BATTLE);
     }
@@ -290,9 +297,9 @@ public class MainViewImpl extends JFrame implements MainView {
     }
 
     private void closeAllFramesExceptOne() {
-        final Frame[] frames = Frame.getFrames();
+        final Frame[] frames = getFrames();
         for (final Frame f : frames) {
-            if (f != this) {
+            if (!f.equals(this)) {
                 f.dispose();
             }
         }

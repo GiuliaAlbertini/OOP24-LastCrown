@@ -86,30 +86,22 @@ public final class EntityEngagementManagerImpl implements EntityEngagementManage
     @Override
     public boolean isEngagedWithDead(final int characterId) {
         if (isPlayerEngaged(characterId)) {
-            int enemy = getEngagedCounterpart(characterId);
+            final int enemy = getEngagedCounterpart(characterId);
             if (enemy != -1) {
                 final Optional<GenericCharacterController> enemycontroller = matchController
                         .getCharacterControllerById(enemy);
-                if (enemycontroller.isPresent()) {
-                    if (enemycontroller.get().isDead()) {
-                        return true;
-                    }
-                }
-                return false;
+                return enemycontroller.isPresent()
+                    && enemycontroller.get().isDead();
             }
             return false;
         } else {
             if (isEnemyEngaged(characterId)) {
-                int character = getEngagedCounterpart(characterId);
+                final int character = getEngagedCounterpart(characterId);
                 if (character != -1) {
                     final Optional<GenericCharacterController> charactercontroller = matchController
                             .getCharacterControllerById(character);
-                    if (charactercontroller.isPresent()) {
-                        if (charactercontroller.get().isDead()) {
-                            return true;
-                        }
-                    }
-                    return false;
+                    return charactercontroller.isPresent()
+                        && charactercontroller.get().isDead();
                 }
             }
             return false;

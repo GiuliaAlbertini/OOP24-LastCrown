@@ -23,6 +23,12 @@ public final class DeadHandler implements StateHandler {
     private final CollisionResolver resolver;
     private int currentFrameIndex;
 
+    /**
+     * Instantiates a dead state handler.
+     * @param matchController the match controller.
+     * @param eventFactory a factory of game events.
+     * @param resolver a collision resolver.
+     */
     public DeadHandler(final MatchController matchController, final EventFactory eventFactory,
             final CollisionResolver resolver) {
         this.match = matchController;
@@ -38,7 +44,6 @@ public final class DeadHandler implements StateHandler {
             return CharacterState.DEAD;
         }
 
-
         final int totalFrames = character.getDeathAnimationSize();
         character.setNextAnimation(Keyword.DEATH);
 
@@ -53,7 +58,7 @@ public final class DeadHandler implements StateHandler {
                 match.setBossActive();
             }
 
-            boolean isBoss = character.getId().type() == CardType.BOSS;
+            final boolean isBoss = character.getId().type() == CardType.BOSS;
             if (character.getId().type() == CardType.ENEMY || isBoss) {
                 match.rewardCoinsForRound(isBoss);
             }
@@ -65,12 +70,12 @@ public final class DeadHandler implements StateHandler {
             resolver.clearBossFightPairById(character.getId().number());
             this.currentFrameIndex = 0;
 
-            if (match.getWall().getCurrentHealth() <=0 && !match.hasEntityTypeInMap(CardType.BOSS)) {
-                if (!match.hasEntityTypeInMap(CardType.ENEMY)) {
-                    match.getRandomBossFromFirstList();
+            if (match.getWall().getCurrentHealth() <= 0
+                && !match.hasEntityTypeInMap(CardType.BOSS)
+                && !match.hasEntityTypeInMap(CardType.ENEMY)) {
+                    match.spawnRandomBossFromFirstList();
                     match.setRadiusPlayerInMap();
                 }
-            }
             return CharacterState.DEAD;
         }
         queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));

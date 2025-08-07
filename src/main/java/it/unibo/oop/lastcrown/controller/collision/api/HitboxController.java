@@ -81,5 +81,10 @@ public interface HitboxController {
      * Removes the hitbox and associated graphical elements from the UI.
      */
     void removeFromPanel();
-     Optional<HitboxMaskBounds> getBounds();
+
+    /**
+     * Getter for the hitbox's bounds.
+     * @return a {@link HitboxMaskBounds} representing the current hitbox's bounds.
+     */
+    Optional<HitboxMaskBounds> getBounds();
 }

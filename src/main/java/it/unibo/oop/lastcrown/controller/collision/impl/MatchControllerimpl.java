@@ -59,11 +59,9 @@ import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 import it.unibo.oop.lastcrown.view.map.MatchView;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
 
+/** Implementation for the {@link MatchController}. */
 public final class MatchControllerimpl implements MatchController {
-
-    final List<Pair<String, PlayableCharacterController>> CardList = new ArrayList<>();
-    // final List<Pair<CardIdentifier, SpellGUI>> spellList = new ArrayList<>();
-
+    private final List<Pair<String, PlayableCharacterController>> cardList = new ArrayList<>();
     private final CollisionManager collisionManager = new CollisionManagerImpl();
     private final CollisionResolver collisionResolver;
     private int nextId;
@@ -71,23 +69,32 @@ public final class MatchControllerimpl implements MatchController {
     private Hero hero;
     private Wall wall;
     private int coins;
-    private int frameWidth;
-    private int frameHeight;
+    private final int frameWidth;
+    private final int frameHeight;
     private CompleteCollection collection;
     private HeroController heroController;
     private final MainController mainController;
     private boolean bossActive;
-    private MainView mainView;
-    private HitboxController wallHitboxController = null;
+    private final MainView mainView;
     private boolean alreadyDone;
     private final EntityStateManager entityStateManager;
     private final EntityTargetingSystem radiusScanner;
-    private EnemySpawnerImpl enemySpawner;
+    private final EnemySpawnerImpl enemySpawner;
     private final EntityEngagementManager engagementManager;
     private final SpellManager spellManager;
 
+    /**
+     * Instantiates the match controller. TODO - complete param tags.
+     * @param mainController
+     * @param frameWidth
+     * @param frameHeight
+     * @param heroId
+     * @param collectionController
+     * @param mainView
+     * @param enemyList
+     */
     public MatchControllerimpl(final MainController mainController, final int frameWidth, final int frameHeight,
-            CardIdentifier heroId, final CollectionController collectionController, MainView mainView,
+            final CardIdentifier heroId, final CollectionController collectionController, final MainView mainView,
             final int enemyList) {
         this.nextId = 1;
         this.frameHeight = frameHeight;
@@ -98,7 +105,7 @@ public final class MatchControllerimpl implements MatchController {
         initializeHero(heroId, collectionController);
         initializeWall();
 
-        this.collisionResolver = new CollisionResolverImpl(this);
+        this.collisionResolver = new CollisionResolverImpl();
         this.collisionManager.addObserver(collisionResolver);
         this.engagementManager = new EntityEngagementManagerImpl(this);
         this.entityStateManager = new EntityStateManagerImpl();
@@ -109,25 +116,27 @@ public final class MatchControllerimpl implements MatchController {
         this.spellManager = new SpellManagerImpl(this, this.collection, this.frameWidth);
     }
 
-    private void initializeHero(CardIdentifier heroId, CollectionController collectionController){
+    private void initializeHero(final CardIdentifier heroId, final CollectionController collectionController) {
         this.collection = collectionController.getCompleteCollection();
         this.hero = this.collection.getHero(heroId).get();
         this.heroController = HeroControllerFactory.createHeroController(
-                            generateUniqueCharacterId(),hero);
+            generateUniqueCharacterId(),
+            hero
+        );
 
-        int heroWidth = (int) (frameWidth * DimensionResolver.HERO.width());
-        int heroHeight = (int) (frameHeight * DimensionResolver.HERO.height());
+        final int heroWidth = (int) (frameWidth * DimensionResolver.HERO.width());
+        final int heroHeight = (int) (frameHeight * DimensionResolver.HERO.height());
         heroController.attachCharacterAnimationPanel(heroWidth, heroHeight);
     }
 
     private void initializeWall() {
-        int wallX = frameWidth / 2;
-        int wallY = (int) (frameHeight * DimensionResolver.UTILITYZONE.height());
+        final int wallX = frameWidth / 2;
+        final int wallY = (int) (frameHeight * DimensionResolver.UTILITYZONE.height());
         this.wall = WallFactory.createWall(hero.getWallAttack(), hero.getWallHealth(),
-                                        10000, wallX, wallY, Optional.empty());
+                                        Constant.WALL_ID, wallX, wallY, Optional.empty());
     }
 
-
+    @Override
     public void newMatchView(final MatchView matchView) {
         this.matchView = matchView;
         updateCoinsDisplay();
@@ -136,7 +145,7 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     private void setupHeroInView() {
-        HitboxController heroHitbox = this.matchView.addHeroGraphics(
+        final HitboxController heroHitbox = this.matchView.addHeroGraphics(
                 this.heroController.getId().number(),
                 this.heroController.getGraphicalComponent(),
                 this.heroController.getId().type().get(),
@@ -151,7 +160,7 @@ public final class MatchControllerimpl implements MatchController {
                                             matchView.getWallCoordinates().getY());
         final Hitbox wallHitbox = new HitboxImpl(matchView.getWallSize().width, matchView.getWallSize().height, pos);
         final HitboxPanel wallHitboxPanel = new HitboxPanelImpl(wallHitbox);
-        this.wallHitboxController = new HitboxControllerImpl(wallHitbox, wallHitboxPanel, null, null);
+        final var wallHitboxController = new HitboxControllerImpl(wallHitbox, wallHitboxPanel, null, null);
         this.wall.setHitbox(wallHitbox);
         this.matchView.addWallPanel(wallHitboxController);
     }
@@ -161,7 +170,7 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     @Override
-    public void updateEventText(String text) {
+    public void updateEventText(final String text) {
         matchView.setEventText(text);
     }
 
@@ -170,7 +179,7 @@ public final class MatchControllerimpl implements MatchController {
         return this.coins;
     }
 
-
+    @Override
     public Wall getWall() {
         return this.wall;
     }
@@ -212,9 +221,7 @@ public final class MatchControllerimpl implements MatchController {
     @Override
     public void update(final int deltaTime) {
         this.spellManager.update(deltaTime);
-
         this.enemySpawner.update(deltaTime);
-
         entityStateManager.updateAll(deltaTime);
 
         if (this.matchView != null) {
@@ -251,16 +258,13 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     @Override
-    public boolean engageEnemy(int enemyId, int playerId) {
+    public boolean engageEnemy(final int enemyId, final int playerId) {
         return this.engagementManager.engageEnemy(enemyId, playerId);
     }
 
     @Override
     public boolean retreat() {
-        if (!hasEntityTypeInMap(CardType.BOSS) && getWall().getCurrentHealth() <= 0) {
-            return true;
-        }
-        return false;
+        return !hasEntityTypeInMap(CardType.BOSS) && getWall().getCurrentHealth() <= 0;
     }
 
     @Override
@@ -311,17 +315,16 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     @Override
-    public boolean isEnemyDead(int enemyId) {
+    public boolean isEnemyDead(final int enemyId) {
         return this.entityStateManager.getCharacterControllerById(enemyId)
-
                 .map(controller -> controller.getId().type() != CardType.BOSS && controller.isDead())
                 .orElse(false);
     }
 
     @Override
-    public void notifyClicked(int x, int y) {
-        if (!CardList.isEmpty() && !hasEntityTypeInMap(CardType.BOSS)) {
-            final Pair<String, PlayableCharacterController> selected = CardList.get(CardList.size() - 1);
+    public void notifyClicked(final int x, final int y) {
+        if (!cardList.isEmpty() && !hasEntityTypeInMap(CardType.BOSS)) {
+            final Pair<String, PlayableCharacterController> selected = cardList.get(cardList.size() - 1);
             final int id = selected.get2().getId().number();
             final PlayableCharacterController playerController = selected.get2();
             final String typeFolder = playerController.getId().type().name();
@@ -341,14 +344,14 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     @Override
-    public void notifyButtonPressed(CardIdentifier id) {
+    public void notifyButtonPressed(final CardIdentifier id) {
         if (id.type() == CardType.MELEE || id.type() == CardType.RANGED) {
             final PlayableCharacter player = this.collection.getPlayableCharacter(id).get();
             final PlayableCharacterController playerController = PlCharControllerFactory.createPlCharController(
                     generateUniqueCharacterId(), player);
-            CardList.add(new Pair<String, PlayableCharacterController>(player.getName(), playerController));
+            cardList.add(new Pair<>(player.getName(), playerController));
         } else if (id.type() == CardType.SPELL) {
-            CardList.clear();
+            cardList.clear();
             this.spellManager.handleSpellSelection(id);
         }
     }
@@ -361,8 +364,9 @@ public final class MatchControllerimpl implements MatchController {
         this.entityStateManager.addCharacter(id, controller, hitboxController, fsm);
     }
 
+    @Override
     public HitboxController setupCharacter(final JComponent charComp, final String typeFolder, final String name,
-            final boolean isPlayable, int x, int y) {
+        final boolean isPlayable, final int x, final int y) {
         final Dimension size = charComp.getPreferredSize();
         final Hitbox hitbox = new HitboxImpl(Constant.HITBOX_WIDTH, Constant.HITBOX_HEIGHT, new Point2DImpl(x, y));
         final HitboxPanel hitboxPanel = new HitboxPanelImpl(hitbox);
@@ -407,7 +411,7 @@ public final class MatchControllerimpl implements MatchController {
     }
 
     @Override
-    public void getRandomBossFromFirstList() {
+    public void spawnRandomBossFromFirstList() {
         this.enemySpawner.spawnBoss();
     }
 
@@ -416,15 +420,17 @@ public final class MatchControllerimpl implements MatchController {
         this.entityStateManager.setAllFSMsToState(newState);
     }
 
+    @Override
     public MatchView getMatchView() {
         return this.matchView;
     }
 
-    // Setter per marcare la sconfitta del boss
+    @Override
     public void setBossActive() {
         this.bossActive = true;
     }
 
+    @Override
     public void matchResult() {
         if (!this.alreadyDone) {
             if (!hasEntityTypeInMap(CardType.HERO)) {
@@ -450,22 +456,25 @@ public final class MatchControllerimpl implements MatchController {
         return this.entityStateManager.getCharactersByType(cardType);
     }
 
+    @Override
     public boolean isRoundSpawnComplete() {
         return this.enemySpawner.isRoundSpawnComplete();
     }
 
-    public void rewardCoinsForRound(boolean bossFight) {
+    @Override
+    public void rewardCoinsForRound(final boolean bossFight) {
         final int baseReward = 50;
-        int reward = baseReward - this.enemySpawner.getRoundIndex() * 10;
+        final int reward = baseReward - this.enemySpawner.getRoundIndex() * 10;
         this.coins += reward;
         updateCoinsDisplay();
         updateEventText((bossFight ? "Boss sconfitto! " : "") + "Hai guadagnato " + reward + "!");
     }
 
+    @Override
     public void halveHeroMaxHealth() {
         final int currentHealth = this.heroController.getMaximumHealthValue();
         final int reductionRate = 80;
-        final int newHealth = currentHealth - (int) (currentHealth * reductionRate / 100);
+        final int newHealth = currentHealth - (currentHealth * reductionRate / 100);
         if (currentHealth > newHealth) {
             this.heroController.takeHit(newHealth);
         }
@@ -479,10 +488,7 @@ public final class MatchControllerimpl implements MatchController {
     @Override
     public boolean isPlayerInState(final PlayableCharacterController player, final CharacterState stateToCompare) {
         final CharacterFSM fsm = this.entityStateManager.getFSM(player.getId().number());
-        if (fsm != null) {
-            return fsm.getCurrentState() == stateToCompare;
-        }
-        return false;
+        return fsm != null && fsm.getCurrentState() == stateToCompare;
     }
 
     @Override

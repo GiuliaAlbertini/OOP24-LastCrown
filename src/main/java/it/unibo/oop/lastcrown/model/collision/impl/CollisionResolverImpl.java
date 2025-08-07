@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap; // Importa per thread-safety se necessario
+import java.util.concurrent.ConcurrentHashMap;
 
-import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.model.collision.api.Point2D;
@@ -24,19 +23,10 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
 public final class CollisionResolverImpl implements CollisionResolver {
     private final Map<Integer, HandleFollowEnemy> activeFollowMovements = new HashMap<>();
     private final Map<Integer, Integer> completedMeleeEngagements = new HashMap<>();
-    private final MatchController matchController;
 
     private final Set<Pair<Integer, Integer>> wallFightPairs = ConcurrentHashMap.newKeySet();
     private final Set<Pair<Integer, Integer>> bossFightPairs = ConcurrentHashMap.newKeySet();
     private final Set<Pair<Integer, Integer>> rangedEngagements = ConcurrentHashMap.newKeySet();
-
-    /**
-     * Constructs a CollisionResolverImpl with the necessary controller.
-     * @param controller The MatchController for interactions.
-     */
-    public CollisionResolverImpl(final MatchController controller) {
-        this.matchController = controller;
-    }
 
     @Override
     public void notify(final CollisionEvent event) {
@@ -45,7 +35,6 @@ public final class CollisionResolverImpl implements CollisionResolver {
             case BOSS -> handleBossEngagement(event);
             case RANGED -> handleRangedEngagement(event);
             case WALL -> handleWallEngagement(event);
-            // default -> logger.warn("Evento collisione non gestito: {}", event.getType());
         }
     }
 
@@ -55,7 +44,6 @@ public final class CollisionResolverImpl implements CollisionResolver {
      */
     private void handleMeleeEngagement(final CollisionEvent event) {
         final int characterId = event.getCollidable1().getCardidentifier().number();
-        final int enemyId = event.getCollidable2().getCardidentifier().number();
 
         final HandleFollowEnemy movement = new HandleFollowEnemy(event);
         movement.startFollowing();
@@ -191,6 +179,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
         rangedEngagements.clear();
     }
 
+    @Override
     public void clearAllBossFightPairs() {
         bossFightPairs.clear();
     }

@@ -56,5 +56,5 @@ public interface MatchStartObserver {
      *
      * @param matchView the view to be used for the ongoing match
      */
-    void getMatchView(MatchView matchView);
+    void setMatchView(MatchView matchView);
 }

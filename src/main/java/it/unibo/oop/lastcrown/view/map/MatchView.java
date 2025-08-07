@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.util.Set;
 
 import javax.swing.JComponent;
-import javax.swing.JTextArea;
 
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;

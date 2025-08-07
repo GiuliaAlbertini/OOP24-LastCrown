@@ -9,10 +9,9 @@ import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
  * Responsible for continuously updating the game logic while the game is running.
  */
 public final class Gameloop extends Thread {
-    //private static final Logger LOGGER = Logger.getLogger(Gameloop.class.getName());
     private static final long PERIOD = 64;
     private final MainController controller;
-    private boolean running;
+    private boolean running; //NOPMD suppressed false positive due to multithreading.
 
     /**
      * Constructs a new game loop instance with the specified main controller.
@@ -33,7 +32,6 @@ public final class Gameloop extends Thread {
         this.running = true;
         long lastTime = System.currentTimeMillis();
         while (this.running) {
-            //System.out.println("sono partito");
             final long current = System.currentTimeMillis();
             this.controller.getMatchController().update((int) (current - lastTime));
             waitForNextFrame(current);
@@ -52,8 +50,7 @@ public final class Gameloop extends Thread {
             try {
                 sleep(PERIOD - dt);
             } catch (final InterruptedException ex) {
-                 Thread.currentThread().interrupt();
-                 //LOGGER.log(Level.WARNING, "Thread interrotto durante l'attesa", ex);
+                currentThread().interrupt();
             }
         }
     }

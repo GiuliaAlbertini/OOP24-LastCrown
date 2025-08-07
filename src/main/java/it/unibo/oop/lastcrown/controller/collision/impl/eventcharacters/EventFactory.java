@@ -44,7 +44,7 @@ public final class EventFactory {
                                          final CollisionResolver resolver) {
         registerHandler(CharacterState.IDLE, new IdleHandler(matchController, scanner, this, resolver));
         registerHandler(CharacterState.FOLLOWING, new FollowingHandler(matchController, resolver, this));
-        registerHandler(CharacterState.STOPPED, new StoppingHandler(this, matchController,resolver, scanner));
+        registerHandler(CharacterState.STOPPED, new StoppingHandler(this, matchController, resolver, scanner));
         registerHandler(CharacterState.COMBAT, new CombatHandler(this, resolver, matchController));
         registerHandler(CharacterState.DEAD, new DeadHandler(matchController, this, resolver));
     }
@@ -65,6 +65,6 @@ public final class EventFactory {
      */
     public Event createEvent(final CharacterState state) {
         final StateHandler handler = eventHandlers.get(state);
-        return handler != null ? new EventImpl(state, handler) : null;
+        return handler != null ? new EventImpl(handler) : null;
     }
 }

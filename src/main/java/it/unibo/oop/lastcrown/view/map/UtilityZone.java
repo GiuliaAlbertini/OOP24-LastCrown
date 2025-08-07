@@ -57,7 +57,7 @@ public final class UtilityZone extends JPanel {
         this.components.addLast(wallHealthBar);
 
         coinsWriter.setPreferredSize(new Dimension(width / WIDTH_DIVISOR, height));
-        coinsWriter.setMaximumSize(coinsWriter.getPreferredSize());;
+        coinsWriter.setMaximumSize(coinsWriter.getPreferredSize());
         coinsWriter.setBackground(Color.ORANGE);
         this.components.addLast(coinsWriter);
 
@@ -68,7 +68,7 @@ public final class UtilityZone extends JPanel {
         + "INSTRUCTIONS: check the instructions";
         this.pauseDialog = new Dialog(title, message, false);
         this.pauseDialog.setLocationRelativeTo(this);
-        this.pauseDialog.addWindowListener(DialogCloseHandler.createCloseListener(pauseDialog, () -> gameContr.notifyPauseEnd()));
+        this.pauseDialog.addWindowListener(DialogCloseHandler.createCloseListener(pauseDialog, gameContr::notifyPauseEnd));
         final String insTitle = "Instructions";
         final String insMessage = "Select a card from your deck to the left\n"
         + "And play it in the highlighted zone\n"

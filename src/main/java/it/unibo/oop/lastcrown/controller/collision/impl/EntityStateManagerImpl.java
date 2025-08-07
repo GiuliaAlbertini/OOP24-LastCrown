@@ -147,5 +147,5 @@ public final class EntityStateManagerImpl implements EntityStateManager {
     @Override
     public Map<GenericCharacterController, HitboxController> getHitboxControllersMap() {
         return this.hitboxControllers;
-	}
+    }
 }

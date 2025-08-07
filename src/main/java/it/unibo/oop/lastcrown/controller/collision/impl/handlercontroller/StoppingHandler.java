@@ -22,12 +22,15 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
  * or IDLE based on engagement and combat status.
  */
 public final class StoppingHandler implements StateHandler {
+
+    private static final int ENEMY_SPEED = 2;
+    private static final int ROUNDING_AMOUNT = 5;
+
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;
     private final EntityTargetingSystem scanner;
     private final MatchController match;
     private boolean wait;
-    private static final int ENEMY_SPEED = 2;
     private boolean retreat;
 
     /**
@@ -65,16 +68,14 @@ public final class StoppingHandler implements StateHandler {
         if (characterType == CardType.HERO && !match.hasEntityTypeInMap(CardType.BOSS) && match.isRoundSpawnComplete()
                 && !match.hasEntityTypeInMap(CardType.MELEE) && !match.hasEntityTypeInMap(CardType.ENEMY)) {
             match.setRadiusPlayerInMap();
-            match.getRandomBossFromFirstList();
+            match.spawnRandomBossFromFirstList();
         }
 
-        // == caso heroe ==
         if (characterType == CardType.HERO) {
             handleHeroCharacter(character, queue, charId);
             return CharacterState.STOPPED;
         }
 
-        // == caso Ranged ==
         if (characterType == CardType.RANGED) {
             if (!retreat) {
                 return handleRangedCharacter(character, queue, charId);
@@ -83,8 +84,7 @@ public final class StoppingHandler implements StateHandler {
             }
         }
 
-        // SE NON SEI HERO, inizio ritirata
-        if (!match.hasEntityTypeInMap(CardType.BOSS)) { // se il boss non è nella mappa allora
+        if (!match.hasEntityTypeInMap(CardType.BOSS)) {
             if (match.getWall().getCurrentHealth() <= 0) {
                 if (character.getId().type() == CardType.ENEMY) {
                     final Movement movementCharacter = new Movement(ENEMY_SPEED, 0);
@@ -92,7 +92,6 @@ public final class StoppingHandler implements StateHandler {
                     character.showNextFrameAndMove(movementCharacter);
                     match.updateCharacterPosition(character, movementCharacter.x(), movementCharacter.y());
                     retreat = true;
-                    // aspetta che tutti i nemici siano andati via dalla mappa
                     if (match.isEnemyBeyondFrame(character.getId().number())) {
                         queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
                         return CharacterState.DEAD;
@@ -105,17 +104,15 @@ public final class StoppingHandler implements StateHandler {
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
                 }
-                // se sono spawnati tutti i nemici e non ci sono più nemici nella mappa
             } else if (match.isRoundSpawnComplete() && !match.hasEntityTypeInMap(CardType.ENEMY)) {
-                match.getRandomBossFromFirstList();
+                match.spawnRandomBossFromFirstList();
                 match.setRadiusPlayerInMap();
                 character.setNextAnimation(Keyword.STOP);
                 character.showNextFrame();
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                 return CharacterState.STOPPED;
             }
-        } else if (!isBosshandle) { // se il boss compare andate tutti in idle
-            // match.setAllFSMsToState(CharacterState.IDLE);
+        } else if (!isBosshandle) {
             retreat = false;
             queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
             return CharacterState.IDLE;
@@ -124,7 +121,6 @@ public final class StoppingHandler implements StateHandler {
         character.setNextAnimation(Keyword.STOP);
         character.showNextFrame();
 
-        // == caso TrupZone ==
         if (isPlayer && isAtTroopZoneLimit(character) && !match.hasEntityTypeInMap(CardType.BOSS)) {
             handleCharacterTrupzone((PlayableCharacterController) character, queue, charId);
             return CharacterState.STOPPED;
@@ -134,7 +130,7 @@ public final class StoppingHandler implements StateHandler {
         final boolean isBossFight = resolver.hasOpponentBossPartner(charId);
         final boolean isEngagedWithDead = match.isEngagedWithDead(charId) || match.isBossFightPartnerDead(charId);
         final boolean isWallFight = resolver.hasOpponentWallPartner(charId);
-        // == caso enemy ==
+
         if (!isEngaged && wait && !isBossFight && !isWallFight) {
             this.wait = false;
             queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
@@ -156,6 +152,8 @@ public final class StoppingHandler implements StateHandler {
      * @param character The character controller.
      * @param queue     The event queue.
      * @param charId    The ID of the character.
+     *
+     * @return TODO - complete return tag.
      */
     private CharacterState handleRangedCharacter(final GenericCharacterController character, final EventQueue queue,
             final int charId) {
@@ -172,11 +170,9 @@ public final class StoppingHandler implements StateHandler {
                     match.notifyCollisionObservers(event);
                 });
 
-        // se la ritirata è falsa
         if (match.isRangedFightPartnerDead(charId)) {
             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-            // se la ritirata è falsa
-        } else if ((resolver.hasOpponentRangedPartner(charId)) || isBossFight) {
+        } else if (resolver.hasOpponentRangedPartner(charId) || isBossFight) {
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
             return CharacterState.COMBAT;
         }
@@ -253,10 +249,10 @@ public final class StoppingHandler implements StateHandler {
     }
 
     private boolean isAtTroopZoneLimit(final GenericCharacterController player) {
-        Optional<HitboxController> hitboxController = match.getCharacterHitboxById(player.getId().number());
+        final Optional<HitboxController> hitboxController = match.getCharacterHitboxById(player.getId().number());
         if (hitboxController.isPresent()) {
-            int limit = match.getMatchView().getTrupsZoneLimit() - hitboxController.get().getHitbox().getWidth();
-            int roundedLimit = limit + (5 - (limit % 5)) % 5;
+            final int limit = match.getMatchView().getTrupsZoneLimit() - hitboxController.get().getHitbox().getWidth();
+            final int roundedLimit = limit + (ROUNDING_AMOUNT - (limit % ROUNDING_AMOUNT)) % ROUNDING_AMOUNT;
             return hitboxController.get().getHitbox().getPosition().x() >= roundedLimit;
         }
         return false;

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import javax.swing.JTextArea;
-
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.impl.boss.BossControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.enemy.EnemyControllerFactory;
@@ -15,20 +13,30 @@ import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 
+/** Implementation for the {@link EnemySpawner}. */
 public final class EnemySpawnerImpl implements EnemySpawner {
 
-    private int spawnTimer = 0;
     private static final int SPAWN_INTERVAL = 5000;
+
+    private int spawnTimer;
     private final int roundIndex;
-    private int enemyIndexInRound = 0;
+    private int enemyIndexInRound;
     private final List<Integer> usedPositions = new ArrayList<>();
-    private boolean roundSpawnComplete = false;
+    private boolean roundSpawnComplete;
 
     private final MatchController matchController;
     private final List<List<Enemy>> enemyList;
     private final int frameWidth;
     private final int frameHeight;
 
+    /**
+     * Instantiates an enemy spawner.
+     * @param matchController the current match controller.
+     * @param enemyList the current enemy list.
+     * @param frameWidth the current frame width.
+     * @param frameHeight the current frame height.
+     * @param initialRoundIndex the index of the current round.
+     */
     public EnemySpawnerImpl(
             final MatchController matchController,
             final List<List<Enemy>> enemyList,
@@ -50,8 +58,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
             final List<Enemy> currentRound = allEnemies.get(roundIndex);
 
             if (spawnTimer >= SPAWN_INTERVAL && enemyIndexInRound < currentRound.size()) {
-                // Ora chiama il suo stesso metodo privato
-                this.spawnRandomEnemy(currentRound.get(enemyIndexInRound), enemyIndexInRound, currentRound.size());
+                this.spawnRandomEnemy(currentRound.get(enemyIndexInRound));
                 enemyIndexInRound++;
                 spawnTimer = 0;
             }
@@ -61,7 +68,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
         }
     }
 
-    private void spawnRandomEnemy(final Enemy enemy, int enemyIndex, int totalEnemies) {
+    private void spawnRandomEnemy(final Enemy enemy) {
         final EnemyController enemyController = EnemyControllerFactory.createEnemyController(
                 matchController.generateUniqueCharacterId(), enemy);
 
@@ -87,7 +94,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
 
     }
 
-    private int generateRandomY(List<Integer> usedPositions, int frameHeight) {
+    private int generateRandomY(final List<Integer> usedPositions, final int frameHeight) {
         final int marginBottom = 300;
         final int availableHeight = frameHeight - marginBottom;
         final int minDistance = 40;
@@ -96,13 +103,15 @@ public final class EnemySpawnerImpl implements EnemySpawner {
         int attempts = 0;
         do {
             spawnY = rand.nextInt(availableHeight + 1);
-            if (++attempts > 10)
+            attempts++;
+            if (attempts > 10) {
                 break;
+            }
         } while (isTooClose(spawnY, usedPositions, minDistance));
         return spawnY;
     }
 
-    private boolean isTooClose(int candidate, List<Integer> positions, int minDistance) {
+    private boolean isTooClose(final int candidate, final List<Integer> positions, final int minDistance) {
         return positions.stream().anyMatch(pos -> Math.abs(candidate - pos) < minDistance);
     }
 

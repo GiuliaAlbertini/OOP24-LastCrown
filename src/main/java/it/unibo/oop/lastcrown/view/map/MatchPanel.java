@@ -81,7 +81,7 @@ public final class MatchPanel extends JPanel {
                         if (posZone.isValidClick(CardType.MELEE, pointInPosZone)) {
                             final int x = deckZoneWidth + posZoneWidth * 3 / 4;
                             if (cardZone.playCard()) {
-                               gameContr.notifyClicked(x, e.getY()); 
+                               gameContr.notifyClicked(x, e.getY());
                             }
                         }
                     }
@@ -94,10 +94,9 @@ public final class MatchPanel extends JPanel {
                         }
                     }
                     case CardType.SPELL -> {
-                        if (e.getX() > posZoneWidth + wallZoneWidth && e.getY() < panelsHeight) {
-                            if (cardZone.playCard()) {
-                                gameContr.notifyClicked(e.getX() + deckZoneWidth, e.getY());
-                            }
+                        if (e.getX() > posZoneWidth + wallZoneWidth && e.getY() < panelsHeight
+                                && cardZone.playCard()) {
+                            gameContr.notifyClicked(e.getX() + deckZoneWidth, e.getY());
                         }
                     }
                     default -> { }

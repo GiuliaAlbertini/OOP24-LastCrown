@@ -32,13 +32,12 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     private final MatchController matchController;
     private final Map<Integer, JComponent> newComponents;
     private final transient SceneManager sceneManager;
-        // Componenti UI creati qui
     private final JTextArea eventWriter;
     private final JTextArea coinsWriter;
 
     /**
      * @param sceneManager the SceneManager of the application
-     * @param gameContr the main controller linked to the map
+     * @param matchContr the match controller linked to the map
      * @param width the width of the map
      * @param height the height of the map
      * @param deck the set to use as a deck
@@ -46,7 +45,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     public MatchViewImpl(final SceneManager sceneManager, final MatchController matchContr,
      final int width, final int height, final Set<CardIdentifier> deck) {
         this.sceneManager = sceneManager;
-        this.matchController=matchContr;
+        this.matchController = matchContr;
         this.newComponents = new ConcurrentHashMap<>();
         this.eventWriter = createEventWriter();
         this.coinsWriter = createCoinsWriter();
@@ -60,22 +59,25 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
 
     private JTextArea createEventWriter() {
-        JTextArea writer = new JTextArea();
+        final JTextArea writer = new JTextArea();
         writer.setEditable(false);
         writer.setFocusable(false);
         writer.setFont(UI_FONT);
         return writer;
     }
-      /**
-     * Crea il componente per la visualizzazione delle monete
+
+    /**
+     * Creates the money visualizer component.
+     *
+     * @return a {@link JTextArea} in which the current amount of money is displayed.
      */
     private JTextArea createCoinsWriter() {
-        JTextArea writer = new JTextArea();
+        final JTextArea writer = new JTextArea();
         writer.setEditable(false);
         writer.setFocusable(false);
         writer.setFont(UI_FONT);
 
-        int currentCoins = matchController.getCurrentCoins();
+        final int currentCoins = matchController.getCurrentCoins();
         writer.setText(currentCoins + " coins");
         return writer;
     }
@@ -112,7 +114,9 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     }
 
     @Override
-    public synchronized HitboxController addGenericGraphics(final int id, final JComponent component, final int x, final int y, String typefolder, String name) {
+    public synchronized HitboxController addGenericGraphics(final int id, final JComponent component,
+            final int x, final int y, final String typefolder, final String name
+    ) {
         this.newComponents.put(id, component);
         final Dimension size = component.getPreferredSize();
         component.setBounds(x - size.width / 2, y - size.height / 2, size.width, size.height);
@@ -120,7 +124,14 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         this.mainPanel.add(component);
         this.mainPanel.setComponentZOrder(component, 0);
 
-        final HitboxController hitboxcontroller= matchController.setupCharacter(component, typefolder, name, true, component.getX(), component.getY());
+        final HitboxController hitboxcontroller = matchController.setupCharacter(
+            component,
+            typefolder,
+            name,
+            true,
+            component.getX(),
+            component.getY()
+        );
         this.newComponents.put(id + 1, hitboxcontroller.getHitboxPanel());
         this.newComponents.put(id + 2, hitboxcontroller.getRadiusPanel());
 
@@ -133,7 +144,6 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         return hitboxcontroller;
     }
 
-
     @Override
     public synchronized void addSpellGraphics(final int id, final JComponent component, final int x, final int y) {
         this.newComponents.put(id, component);
@@ -145,19 +155,33 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     }
 
     @Override
-    public synchronized HitboxController addHeroGraphics(final int id, final JComponent heroGraphics, String typefolder, String name) {
+    public synchronized HitboxController addHeroGraphics(final int id, final JComponent heroGraphics,
+            final String typefolder, final String name
+    ) {
         final int cardZoneWidth = (int) (this.getPreferredSize().width * DimensionResolver.DECKZONE.width());
         final int posZoneWidth = (int) (this.getPreferredSize().width * DimensionResolver.POSITIONINGZONE.width());
-        final int panelsHeight = this.getPreferredSize().height - (int) (this.getPreferredSize().height * DimensionResolver.UTILITYZONE.height());
+        final int panelsHeight = this.getPreferredSize().height
+            - (int) (this.getPreferredSize().height * DimensionResolver.UTILITYZONE.height());
         final int cornerWidth = cardZoneWidth + posZoneWidth / 2;
         final int cornerHeight = panelsHeight / 4;
-        heroGraphics.setBounds(cornerWidth, cornerHeight, heroGraphics.getPreferredSize().width,
-                heroGraphics.getPreferredSize().height);
+        heroGraphics.setBounds(
+            cornerWidth,
+            cornerHeight,
+            heroGraphics.getPreferredSize().width,
+            heroGraphics.getPreferredSize().height
+        );
         this.mainPanel.add(heroGraphics);
         this.newComponents.put(id, heroGraphics);
-        this.mainPanel.setComponentZOrder(heroGraphics,1);
+        this.mainPanel.setComponentZOrder(heroGraphics, 1);
 
-        final HitboxController hitboxcontroller= matchController.setupCharacter(heroGraphics, typefolder, name, true, heroGraphics.getX(), heroGraphics.getY());
+        final HitboxController hitboxcontroller = matchController.setupCharacter(
+            heroGraphics,
+            typefolder,
+            name,
+            true,
+            heroGraphics.getX(),
+            heroGraphics.getY()
+        );
         this.mainPanel.add(hitboxcontroller.getHitboxPanel());
         this.mainPanel.add(hitboxcontroller.getRadiusPanel());
         this.mainPanel.setComponentZOrder(hitboxcontroller.getHitboxPanel(), 1);
@@ -168,7 +192,9 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
 
      @Override
-    public synchronized HitboxController addEnemyGraphics(final int id, final JComponent enemyGraphics, final int x, final int y, String typefolder, String name) {
+    public synchronized HitboxController addEnemyGraphics(final int id, final JComponent enemyGraphics,
+            final int x, final int y, final String typefolder, final String name
+    ) {
         this.newComponents.put(id, enemyGraphics);
         final Dimension size = enemyGraphics.getPreferredSize();
         enemyGraphics.setBounds(x, y, size.width, size.height);
@@ -176,7 +202,14 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         this.mainPanel.add(enemyGraphics);
         this.mainPanel.setComponentZOrder(enemyGraphics, 1);
 
-        final HitboxController hitboxcontroller= matchController.setupCharacter(enemyGraphics, typefolder, name, false, enemyGraphics.getX(), enemyGraphics.getY());
+        final HitboxController hitboxcontroller = matchController.setupCharacter(
+            enemyGraphics,
+            typefolder,
+            name,
+            false,
+            enemyGraphics.getX(),
+            enemyGraphics.getY()
+        );
 
         this.mainPanel.add(hitboxcontroller.getHitboxPanel());
         this.mainPanel.setComponentZOrder(hitboxcontroller.getHitboxPanel(), 1);
@@ -185,7 +218,8 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         return hitboxcontroller;
     }
 
-    public void addWallPanel(HitboxController hitboxController){
+    @Override
+    public void addWallPanel(final HitboxController hitboxController) {
         this.mainPanel.add(hitboxController.getHitboxPanel());
         this.mainPanel.setComponentZOrder(hitboxController.getHitboxPanel(), 1);
         this.mainPanel.repaint();
@@ -201,7 +235,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
             final HitboxController hitboxcontroller = matchController.getCharacterHitboxById(id).get();
             this.mainPanel.remove(hitboxcontroller.getHitboxPanel());
 
-            var radiusPanel = hitboxcontroller.getRadiusPanel();
+            final var radiusPanel = hitboxcontroller.getRadiusPanel();
             if (radiusPanel != null) {
                 this.mainPanel.remove(hitboxcontroller.getRadiusPanel());
             }
@@ -238,7 +272,6 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         this.sceneManager.switchScene(SceneName.MATCH, SceneName.MENU);
     }
 
-    // zona truppe (confine)
     @Override
     public int getTrupsZoneLimit() {
         return this.mainPanel.getTrupsZoneLimit();
@@ -246,12 +279,12 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
     @Override
     public Dimension getWallSize() {
-        return this.mainPanel.getWallSize(); // dimension
+        return this.mainPanel.getWallSize();
     }
 
     @Override
     public Point getWallCoordinates() {
-        return this.mainPanel.getWallCoordinates(); // Point2D
+        return this.mainPanel.getWallCoordinates();
     }
 
     @Override
