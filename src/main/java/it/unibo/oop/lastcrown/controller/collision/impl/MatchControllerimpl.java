@@ -327,7 +327,7 @@ public final class MatchControllerimpl implements MatchController {
             final Pair<String, PlayableCharacterController> selected = cardList.get(cardList.size() - 1);
             final int id = selected.get2().getId().number();
             final PlayableCharacterController playerController = selected.get2();
-            final String typeFolder = playerController.getId().type().name();
+            final String typeFolder = playerController.getId().type().get();
             final String name = selected.get1();
 
             playerController.attachCharacterAnimationPanel(
@@ -381,8 +381,8 @@ public final class MatchControllerimpl implements MatchController {
 
         if (isPlayable) {
             final double radiusValue = switch (typeFolder) {
-                case "MELEE" -> Constant.DEFAULT_MELEE_RADIUS;
-                case "RANGED" -> Constant.DEFAULT_RANGED_RADIUS;
+                case "melee" -> Constant.DEFAULT_MELEE_RADIUS;
+                case "ranged" -> Constant.DEFAULT_RANGED_RADIUS;
                 default -> Constant.DEFAULT_BOSS_RADIUS;
             };
 

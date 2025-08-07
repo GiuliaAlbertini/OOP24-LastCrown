@@ -301,4 +301,9 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     public void setCoins(final int coins) {
         this.coinsWriter.setText(coins + " coins");
     }
+
+    @Override
+    public void notifyPause(final boolean pause) {
+        this.mainPanel.notifyPause(pause);
+    }
 }

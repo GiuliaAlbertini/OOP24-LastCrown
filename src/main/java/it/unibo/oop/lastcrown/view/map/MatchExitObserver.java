@@ -10,4 +10,11 @@ public interface MatchExitObserver {
      * to return to the main menu.
      */
     void notifyExitToMenu();
+
+    /**
+     * Notify the pause state.
+     * 
+     * @param pause {@code true} if pause started and {@code false} otherwise
+     */
+    void notifyPause(boolean pause);
 }

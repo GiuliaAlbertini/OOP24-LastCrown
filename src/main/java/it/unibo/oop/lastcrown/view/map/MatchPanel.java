@@ -206,4 +206,13 @@ public final class MatchPanel extends JPanel {
     public void updateInGameDeck(final Set<CardIdentifier> newDeck) {
         this.cardZone.updateInGameDeck(newDeck);
     }
+
+    /**
+     * Notify the pause state.
+     *
+     * @param pause {@code true} if pause started and {@code false} otherwise
+     */
+    public void notifyPause(final boolean pause) {
+        this.cardZone.setTimerStopping(pause);
+    }
 }

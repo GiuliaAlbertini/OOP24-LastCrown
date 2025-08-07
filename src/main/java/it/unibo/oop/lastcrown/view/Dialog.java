@@ -14,9 +14,10 @@ import javax.swing.JTextArea;
  * and the possibility to add more custom option with specific effects.
  */
 public final class Dialog extends JDialog {
+    private static final int FONT_SIZE = 24;
     private static final long serialVersionUID = 1L;
     private static final int WIDTH = 500;
-    private static final int HEIGHT = 200;
+    private static final int HEIGHT = 250;
     private final JPanel jbPanel;
 
     /**
@@ -29,11 +30,12 @@ public final class Dialog extends JDialog {
         this.setSize(WIDTH, HEIGHT);
         this.setFocusableWindowState(false);
         this.setResizable(false);
+        this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setModalityType(JDialog.ModalityType.APPLICATION_MODAL);
         final JPanel content = new JPanel(new BorderLayout());
 
         final JTextArea area = new JTextArea(message);
-        area.setFont(new Font("Arial", Font.BOLD, 24));
+        area.setFont(new Font("Arial", Font.BOLD, FONT_SIZE));
         area.setWrapStyleWord(true);
         area.setLineWrap(true);
         area.setEditable(false);

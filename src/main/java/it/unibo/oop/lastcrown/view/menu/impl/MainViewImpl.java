@@ -71,12 +71,12 @@ public class MainViewImpl extends JFrame implements MainView {
      * Constructs the main application window, initializes each scene,
      * and defaults to the menu scene.
      *
-     * @param sceneManager         the {@link SceneManager} to use
-     * @param mainController       the {@link MainController} to use
-     * @param accountController    the {@link AccountController} to use
+     * @param sceneManager the {@link SceneManager} to use
+     * @param mainController the {@link MainController} to use
+     * @param accountController the {@link AccountController} to use
      * @param collectionController the {@link CollectionController} to use
-     * @param deckContr            the {@link DeckController} to use
-     * @param gameContr            the {@link GameControllerExample} to use
+     * @param deckContr the {@link DeckController} to use
+     * @param gameContr the {@link GameControllerExample} to use
      */
     public MainViewImpl(final SceneManager sceneManager,
             final MainController mainController,
@@ -107,12 +107,12 @@ public class MainViewImpl extends JFrame implements MainView {
     /**
      * Factory method to create an istance of {@link MainView}.
      *
-     * @param sceneManager         the {@link SceneManager} to use
-     * @param mainController       the {@link MainController} to use
-     * @param accountController    the {@link AccountController} to use
+     * @param sceneManager the {@link SceneManager} to use
+     * @param mainController the {@link MainController} to use
+     * @param accountController the {@link AccountController} to use
      * @param collectionController the {@link CollectionController} to use
-     * @param deckController       the {@link DeckController} to use
-     * @param gameController       the {@link GameControllerExample} to use
+     * @param deckController the {@link DeckController} to use
+     * @param gameController the {@link GameControllerExample} to use
      * @return an initialized istance of {@link MainViewImpl}
      */
     public static MainView create(final SceneManager sceneManager,
@@ -183,6 +183,7 @@ public class MainViewImpl extends JFrame implements MainView {
     @Override
     public final void onMenu(final SceneName caller) {
         this.enemyList = 3;
+        this.victory = false;
         if (SceneName.SHOP.equals(caller) || SceneName.MATCH.equals(caller)) {
             closeAllFramesExceptOne();
             this.shopView.notifyHidden();
@@ -200,7 +201,6 @@ public class MainViewImpl extends JFrame implements MainView {
         } else {
             this.collectionView.setBackDestination(SceneName.MENU);
         }
-        AudioEngine.playSoundTrack(SoundTrack.COLLECTION);
     }
 
     @Override

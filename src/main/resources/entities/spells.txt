@@ -1,8 +1,8 @@
 1,IceWind,150,4,4,speedMultiplier,1,enemies
-2,NatureCure,150,2,6,health,40,friendly
-3,Explosion,175,5,5,health,40,enemies
-4,SnowFlake,170,2,6,attack,3,friendly
-5,HolyCure,200,4,7,health,80,friendly
-6,SuperNova,200,5,8,health,80,friendly
-7,SandTornado,220,3,6,attack,4,enemies
-8,FireRing,250,5,8,attack,10,enemies
+2,NatureCure,240,2,6,health,40,friendly
+3,Explosion,300,5,5,health,40,enemies
+4,SnowFlake,300,2,6,attack,3,friendly
+5,HolyCure,400,4,7,health,80,friendly
+6,SuperNova,500,5,8,health,100,friendly
+7,SandTornado,500,3,6,attack,4,enemies
+8,FireRing,600,5,8,attack,10,enemies

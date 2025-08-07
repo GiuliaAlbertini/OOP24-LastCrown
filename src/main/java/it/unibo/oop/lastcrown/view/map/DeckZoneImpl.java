@@ -113,11 +113,9 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
             }
             @Override
             public void mouseExited(final MouseEvent e) {
-                if (!bossFight) {
-                    final var jb = (JButton) e.getSource();
-                    final CardIdentifier id = (CardIdentifier) jb.getClientProperty(KEY_PROPERTY);
-                    pos.stopHighLight(id.type());
-                }
+                final var jb = (JButton) e.getSource();
+                final CardIdentifier id = (CardIdentifier) jb.getClientProperty(KEY_PROPERTY);
+                pos.stopHighLight(id.type());
             }
         };
         this.mouseListenerDefensiveCopy = mouseListener;
@@ -163,6 +161,15 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
     public void handleButtonsEnabling(final boolean start) {
         this.bossFight = start;
         enablePanelAndChildren(btnsPanel, !start);
+    }
+
+    @Override
+    public void setTimerStopping(final boolean stop) {
+        if (stop && this.rechargeTimer.isRunning()) {
+            this.rechargeTimer.stop();
+        } else if (!stop && !this.rechargeTimer.isRunning()) {
+            this.rechargeTimer.start();
+        }
     }
 
     private void updateCardButtons(final ActionListener act, final MouseListener ml) {
