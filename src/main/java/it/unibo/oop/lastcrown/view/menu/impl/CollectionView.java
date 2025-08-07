@@ -52,7 +52,7 @@ public final class CollectionView extends AbstractScene implements ModifiableBac
                            final Set<CardIdentifier> cardsOwned) {
         this.sceneManager = sceneManager;
         this.collectionController = collectionController;
-        detailPanel = new DetailPanel();
+        detailPanel = DetailPanel.create();
 
         filterPanel = new FilterPanel(typeOpt -> loadCards(typeOpt, cardsOwned));
 
