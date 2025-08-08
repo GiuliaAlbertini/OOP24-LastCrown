@@ -91,7 +91,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
         final int spawnY = generateRandomY(usedPositions, frameHeight);
         usedPositions.add(spawnY);
 
-        final String typeFolder = enemyController.getId().type().name();
+        final String typeFolder = enemyController.getId().type().get();
         final String name = enemy.getName();
 
         final HitboxController hitboxController = this.matchController.getMatchView().addEnemyGraphics(
@@ -140,7 +140,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
 
         final int spawnX = frameWidth;
         final int spawnY = frameHeight / 9;
-        final String typeFolder = bossController.getId().type().name();
+        final String typeFolder = bossController.getId().type().get();
         final String name = boss.getName();
 
         final HitboxController hitboxController = matchController.getMatchView().addEnemyGraphics(
