@@ -54,7 +54,7 @@ public final class StatsView extends AbstractScene {
         statsPanel.add(createStatPanel("Games Played", String.valueOf(accountController.getAccount().getPlayedMatches())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         statsPanel.add(createStatPanel("Total Playtime (in minutes)", 
-            String.format("%.2f", accountController.getAccount().getPlaytime())));
+            formatPlaytime(accountController.getAccount().getPlaytime())));
         statsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         statsPanel.add(createStatPanel("Bosses/Match Ratio", 
             String.format("%.2f", accountController.getAccount().computeBossesPerMatch())));
@@ -112,6 +112,13 @@ public final class StatsView extends AbstractScene {
         panel.add(nameLabel);
         panel.add(valueLabel);
         return panel;
+    }
+
+    private static String formatPlaytime(final double minutesDouble) {
+        final long totalMinutes = Math.round(minutesDouble);
+        final long hours = totalMinutes / 60;
+        final long minutes = totalMinutes % 60;
+        return String.format("%dh %02dm", hours, minutes);
     }
 
     @Override
