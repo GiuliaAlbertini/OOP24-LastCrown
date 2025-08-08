@@ -95,11 +95,6 @@ public interface MatchView extends Scene {
     void removeGraphicComponent(int id);
 
     /**
-     * Clears all dynamically added graphical components from the view.
-     */
-    void clearNewGraphicsComponent();
-
-    /**
      * Returns the vertical limit of the troop deployment zone.
      *
      * @return the vertical boundary coordinate for the troop deployment zone

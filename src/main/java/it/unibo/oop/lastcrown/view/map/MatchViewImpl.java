@@ -117,7 +117,6 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         ok.addActionListener(act -> {
             victory.dispose();
             this.sceneManager.switchScene(SceneName.MATCH, SceneName.SHOP);
-            // gameContr.notifyMatchToShop(false);
         });
         victory.addButton(ok);
         victory.setLocationRelativeTo(this);
@@ -132,7 +131,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         component.setBounds(x - size.width / 2, y - size.height / 2, size.width, size.height);
 
         this.mainPanel.add(component);
-        this.mainPanel.setComponentZOrder(component, 0);
+        this.mainPanel.setComponentZOrder(component, 1);
 
         final HitboxController hitboxcontroller = matchController.setupCharacter(
                 component,
@@ -159,7 +158,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         final Dimension size = component.getPreferredSize();
         component.setBounds(x - size.width / 2, y - size.height / 2, size.width, size.height);
         this.mainPanel.add(component);
-        this.mainPanel.setComponentZOrder(component, 0);
+        this.mainPanel.setComponentZOrder(component, 1);
         this.mainPanel.repaint();
     }
 
@@ -249,15 +248,6 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
             this.newComponents.remove(id);
         }
         this.mainPanel.repaint();
-    }
-
-    @Override
-    public synchronized void clearNewGraphicsComponent() {
-        final var entrySet = this.newComponents.entrySet();
-        for (final var entry : entrySet) {
-            this.mainPanel.remove(entry.getValue());
-        }
-        this.newComponents.clear();
     }
 
     @Override
