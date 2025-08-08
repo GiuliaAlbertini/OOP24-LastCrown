@@ -30,7 +30,7 @@ final class TestPlayableCharacterController {
     private final PlayableCharacter character = PlayableCharacterFactory.createPlayableCharacter(NAME,
      TYPE, COST, ATTACK, HEALTH, COPIES, ENERGY, SPEED_MUL, ACTION_RANGE);
     private final PlayableCharacterController contr = PlCharControllerFactory.createPlCharController(
-        null, CONTR_ID, character);
+        CONTR_ID, character);
 
     /**
      * Tests the getters of Playable Character model.
