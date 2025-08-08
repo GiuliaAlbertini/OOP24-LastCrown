@@ -31,8 +31,7 @@ public final class TracksPathLoader {
     }
 
     private static String loadGenericPath(final SoundTrack soundTrack, final String type) {
-        final String path = SEP + "tracks" + SEP + soundTrack.get() + SEP + type + FORMAT;
-        return path;
+        return SEP + "tracks" + SEP + soundTrack.get() + SEP + type + FORMAT;
     }
 
     /**

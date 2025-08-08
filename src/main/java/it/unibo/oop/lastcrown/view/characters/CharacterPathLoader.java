@@ -1,7 +1,7 @@
 package it.unibo.oop.lastcrown.view.characters;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,12 +40,13 @@ public final class CharacterPathLoader {
         int cont = 1;
         final List<String> paths = new ArrayList<>();
         String relativePath = getGenericCharacterPath(charType, charName, keyWord + cont);
-        boolean exists = Files.exists(Paths.get(relativePath));
-        while (exists) {
+        relativePath = relativePath.replace(File.separator, "/");
+        URL resource = CharacterPathLoader.class.getResource(relativePath);
+        while (resource != null) {
             paths.addLast(relativePath);
             cont++;
             relativePath = getGenericCharacterPath(charType, charName, keyWord + cont);
-            exists = Files.exists(Paths.get(relativePath));
+            resource = CharacterPathLoader.class.getResource(relativePath);
         }
         return paths;
     }

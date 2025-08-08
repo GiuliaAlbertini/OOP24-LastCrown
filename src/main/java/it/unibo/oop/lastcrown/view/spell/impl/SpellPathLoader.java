@@ -1,9 +1,11 @@
 package it.unibo.oop.lastcrown.view.spell.impl;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
 
 /**
  * Provides the frames paths of the spells animations.
@@ -24,12 +26,13 @@ public final class SpellPathLoader {
         final List<String> spellPaths = new ArrayList<>();
         int cont = 1; 
         String relativePath = getGenericSpellPath(spellName, Integer.toString(cont));
-        boolean exists = Files.exists(Paths.get(relativePath));
-        while (exists) {
+        relativePath = relativePath.replace(File.separator, "/");
+        URL resource = CharacterPathLoader.class.getResource(relativePath);
+        while (resource != null) {
             spellPaths.addLast(relativePath);
             cont++;
             relativePath = getGenericSpellPath(spellName, Integer.toString(cont));
-            exists = Files.exists(Paths.get(relativePath));
+            resource = CharacterPathLoader.class.getResource(relativePath);
         }
         return spellPaths;
     }
