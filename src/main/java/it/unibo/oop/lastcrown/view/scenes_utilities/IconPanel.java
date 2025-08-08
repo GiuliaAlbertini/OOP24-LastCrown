@@ -6,13 +6,10 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
@@ -31,7 +28,7 @@ public final class IconPanel extends JPanel {
     private static final Color BG_COLOR = new Color(40, 40, 40);
     private static final long serialVersionUID = 1L;
     private static final int WIDTH_FALLBACK = 200;
-    private static final int HEIGHT_FALLBACK = 300;
+    private static final int HEIGHT_FALLBACK = 200;
 
     private final transient BufferedImage originalIcon;
     private final Border defaultBorder = BorderFactory.createCompoundBorder(
