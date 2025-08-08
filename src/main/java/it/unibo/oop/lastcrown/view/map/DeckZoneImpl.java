@@ -83,7 +83,8 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
         this.setupEnergyBar(this, energyBarWidth);
         this.setBackground(BG);
         this.setPreferredSize(new Dimension(this.deckZoneWidth, deckZoneHeight));
-        this.currentEnergy = MAX_ENERGY;
+        this.currentEnergy = MAX_ENERGY - 1;
+        updateEnergyBar(this.currentEnergy);
 
         this.rechargeTimer = new Timer(TIME_RECHARGE_SINGLE_ENERGY, e -> {
             if (currentEnergy < MAX_ENERGY) {
