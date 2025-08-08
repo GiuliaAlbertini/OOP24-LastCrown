@@ -2,6 +2,7 @@ package it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller;
 
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
@@ -21,6 +22,15 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
  * Sets the STOP animation frame and schedules a transition to the COMBAT state
  * or IDLE based on engagement and combat status.
  */
+@SuppressFBWarnings(
+    value = "EI_EXPOSE_REP2",
+    justification = """
+            The stopping state handler keeps reference to the match controller and collision resolver
+            to access live info about the characters' position and collisions.
+            This mainly because the same data is not made accessible in the characters' model classes,
+            requiring some more controller coupling.
+            """
+)
 public final class StoppingHandler implements StateHandler {
 
     private static final int ENEMY_SPEED = 2;

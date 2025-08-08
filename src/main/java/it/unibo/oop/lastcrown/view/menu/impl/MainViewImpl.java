@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
@@ -39,6 +40,12 @@ import it.unibo.oop.lastcrown.view.shop.ShopViewImpl;
 /**
  * View that uses a {@link CardLayout} to handle the different scenes.
  */
+@SuppressFBWarnings(
+    value = "EI_EXPOSE_REP2",
+    justification = """
+            An istance of the main controller is kept to properly update account info during the game.
+            """
+)
 public class MainViewImpl extends JFrame implements MainView {
     private static final long serialVersionUID = 1L;
     private static final double RESIZE_FACTOR = 1.0;

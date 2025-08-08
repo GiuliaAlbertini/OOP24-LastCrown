@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.impl.boss.BossControllerFactory;
 import it.unibo.oop.lastcrown.controller.characters.impl.enemy.EnemyControllerFactory;
@@ -14,6 +15,13 @@ import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 
 /** Implementation for the {@link EnemySpawner}. */
+@SuppressFBWarnings(
+    value = "EI_EXPOSE_REP2",
+    justification = """
+            The enemy spawner keeps a reference to the match controller in order to actuate on the
+            game's model and view the enemy spawning process.
+            """
+)
 public final class EnemySpawnerImpl implements EnemySpawner {
 
     private static final int SPAWN_INTERVAL = 5000;
@@ -91,7 +99,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
                 typeFolder, name);
 
         matchController.addCharacter(enemyController.getId().number(), enemyController, hitboxController);
-        matchController.updateEventText("Nemico" + name + "è apparso");
+        matchController.updateEventText("Nemico " + name + " è apparso");
 
     }
 

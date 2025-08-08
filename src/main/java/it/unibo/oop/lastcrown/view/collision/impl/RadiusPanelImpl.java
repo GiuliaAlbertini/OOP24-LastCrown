@@ -17,9 +17,14 @@ import it.unibo.oop.lastcrown.view.collision.api.RadiusPanel;
  * visualization.
  */
 
-@SuppressFBWarnings(value = {"EI_EXPOSE_REP2", "EI_EXPOSE_REP"}, justification = """
+@SuppressFBWarnings(
+    value = {"EI_EXPOSE_REP2", "EI_EXPOSE_REP"},
+    justification = """
         This class is a View component designed to visually represent a 'live' Radius model.
-                It requires a direct reference to the original Radius to stay synchronized. A defensive copy would break this fundamental link.""")
+        It requires a direct reference to the original Radius to stay synchronized.
+        A defensive copy would break this fundamental link.
+        """
+)
 public final class RadiusPanelImpl implements RadiusPanel {
 
     private static final int ARC_START_ANGLE = -90;

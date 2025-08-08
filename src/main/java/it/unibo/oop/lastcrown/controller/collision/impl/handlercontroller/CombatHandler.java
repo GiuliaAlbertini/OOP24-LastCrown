@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
@@ -23,6 +24,15 @@ import it.unibo.oop.lastcrown.view.characters.Keyword;
  * This handler manages attack logic, checks for opponent death,
  * resolves collisions, and transitions the character to the appropriate state.
  */
+@SuppressFBWarnings(
+    value = "EI_EXPOSE_REP2",
+    justification = """
+            The combat state handler must keep reference to the match controller and the collision
+            resolver to access live data concerning the characters' position and collisions.
+            This is partly because not all info can be retrieved directly from the character's object,
+            requiring further coupling at the controller level.
+            """
+)
 public final class CombatHandler implements StateHandler {
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;

@@ -26,12 +26,15 @@ import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
  * the JFrame that contains the match map. Provides methods to add further
  * components to the map.
  */
-@SuppressFBWarnings(value = {
-        "EI_EXPOSE_REP2" }, justification = """
-                This class is a core View component.
-                It must hold a direct reference to the 'live' MatchController to delegate user actions and manage child components.
-                A defensive copy of a controller is not applicable in this context.
-                """)
+@SuppressFBWarnings(
+    value = "EI_EXPOSE_REP2",
+    justification = """
+        This class is a core View component.
+        It must hold a direct reference to the 'live' MatchController to delegate
+        user actions and manage child components.
+        A defensive copy of a controller cannot be done in this context.
+        """
+)
 public final class MatchViewImpl extends JPanel implements MatchView, MatchExitObserver {
     private static final long serialVersionUID = 1L;
     private static final Font UI_FONT = new Font("Calibri", Font.CENTER_BASELINE, 20);

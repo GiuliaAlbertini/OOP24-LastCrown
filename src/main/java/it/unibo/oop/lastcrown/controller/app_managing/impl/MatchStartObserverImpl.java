@@ -13,12 +13,17 @@ import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 
 /** Implementation for the {@link MatchStartObserver}. */
 @SuppressFBWarnings(
-    value = "UwF",
+    value = {
+        "UwF",
+        "EI_EXPOSE_REP"
+    },
     justification = """
             Null initialization of match controller is not explicitly handled, but
             it is documented in JavaDoc comments and method usage explainations.
             In standard game execution, match controller is always assigned before
             dereferentiation.
+            Also, the exact match controller instance must be kept accessible for the
+            game to run properly.
             """
 )
 public final class MatchStartObserverImpl implements MatchStartObserver {

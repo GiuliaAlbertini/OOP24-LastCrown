@@ -16,6 +16,8 @@ import it.unibo.oop.lastcrown.view.spell.api.SpellGUI;
 import it.unibo.oop.lastcrown.view.spell.impl.SpellGUIImpl;
 import javax.swing.JComponent;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Implementation of the SpellManager interface.
  *
@@ -23,6 +25,13 @@ import javax.swing.JComponent;
  * and applying the corresponding SpellEffect to the correct targets
  * (friendly or enemy characters) in the game.
  */
+@SuppressFBWarnings(
+    value = "EI_EXPOSE_REP2",
+    justification = """
+            The spell manager keeps reference to the match controller to access live data on the
+            characters' positions, in order to apply the spell's effect.
+            """
+)
 public final class SpellManagerImpl implements SpellManager {
 
     private final List<Pair<CardIdentifier, SpellGUI>> spellList = new ArrayList<>();

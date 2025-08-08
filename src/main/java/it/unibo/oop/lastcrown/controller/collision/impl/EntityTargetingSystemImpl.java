@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
@@ -11,6 +13,7 @@ import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
+import it.unibo.oop.lastcrown.controller.collision.api.EntityStateManager;
 import it.unibo.oop.lastcrown.controller.collision.api.EntityTargetingSystem;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
 import it.unibo.oop.lastcrown.model.card.CardType;
@@ -33,8 +36,17 @@ import it.unibo.oop.lastcrown.model.collision.impl.CollisionEventImpl;
  * engaging
  * enemies, bosses, and interacting with the environment.
  */
+@SuppressFBWarnings(
+    value = "EI_EXPOSE_REP2",
+    justification = """
+            Instances of the entity targeting system, match controller and collision resolver
+            must be kept in order to access live info about the characters' state and position.
+            This is partly because of the fact that characters' info is not completely accessible from the
+            character class itself, requiring some deeper coupling in the controller layer.
+            """
+)
 public final class EntityTargetingSystemImpl implements EntityTargetingSystem {
-    private final Map<GenericCharacterController, HitboxController> entityStateManager;
+    private final EntityStateManager entityStateManager;
     private final MatchController matchController;
     private final CollisionResolver resolver;
 
@@ -42,14 +54,13 @@ public final class EntityTargetingSystemImpl implements EntityTargetingSystem {
      * Constructs a TargetingSystemImpl with access to current entities,
      * match state, and collision resolver.
      *
-     * @param entityStateManager a map associating each character controller with
-     *                           its hitbox
+     * @param entityStateManager the game entities' state manager.
      * @param matchController    the match controller to retrieve game view and wall
      *                           state
      * @param resolver           the collision resolver for checking character
      *                           interactions
      */
-    public EntityTargetingSystemImpl(final Map<GenericCharacterController, HitboxController> entityStateManager,
+    public EntityTargetingSystemImpl(final EntityStateManager entityStateManager,
             final MatchController matchController,
             final CollisionResolver resolver) {
         this.entityStateManager = entityStateManager;
@@ -59,11 +70,10 @@ public final class EntityTargetingSystemImpl implements EntityTargetingSystem {
 
     @Override
     public Optional<CollisionEvent> scanForTarget(final GenericCharacterController scanner) {
-        final Map<GenericCharacterController, HitboxController> allEntities = entityStateManager;
-
-        return getCharacterRadius(scanner, allEntities)
-                .flatMap(radius -> findClosestEnemy(radius, allEntities))
-                .flatMap(enemy -> createInteractionEvent(scanner, enemy, allEntities));
+        final var entities = this.entityStateManager.getHitboxControllersMap();
+        return getCharacterRadius(scanner, entities)
+                .flatMap(radius -> findClosestEnemy(radius, entities))
+                .flatMap(enemy -> createInteractionEvent(scanner, enemy, entities));
     }
 
     @Override

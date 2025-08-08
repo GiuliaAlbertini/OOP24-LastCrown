@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Optional;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
@@ -29,6 +30,13 @@ import it.unibo.oop.lastcrown.controller.app_managing.api.MatchStartObserver;
 /**
  * Implementation of {@link MainController}.
  */
+@SuppressFBWarnings(
+    value = "EI_EXPOSE_REP",
+    justification = """
+            An instance of the match start observer must be kept in order to allow the game start
+            to be executed properly.
+            """
+)
 public class MainControllerImpl implements MainController {
     private static final double TO_MINUTES_FACTOR = 60_000.0;
     private static final String SEP = File.separator;

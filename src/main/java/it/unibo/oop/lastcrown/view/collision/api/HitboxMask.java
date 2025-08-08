@@ -6,6 +6,7 @@ import javax.swing.JComponent;
 
 import it.unibo.oop.lastcrown.model.collision.api.Point2D;
 
+/** Interface for the characters' hitbox mask. */
 public interface HitboxMask {
 
     /**

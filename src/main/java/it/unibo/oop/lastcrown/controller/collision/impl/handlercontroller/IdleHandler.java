@@ -2,6 +2,7 @@ package it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller;
 
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
@@ -23,6 +24,14 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
  * players),
  * or to STOPPED if a collision is detected (for enemies).
  */
+@SuppressFBWarnings(
+    value = "EI_EXPOSE_REP2",
+    justification = """
+            The idle state handler keeps reference to the match controller and collision resolver to access
+            all live info about a character's position and collisions.
+            This is mainly because the same info wouldn't be otherwise accessible from the character's class.
+            """
+)
 public final class IdleHandler implements StateHandler {
 
     private static final int PLAYER_SPEED = 2;

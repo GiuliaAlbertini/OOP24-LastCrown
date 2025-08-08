@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
@@ -17,6 +18,15 @@ import it.unibo.oop.lastcrown.view.characters.Keyword;
  * one animation frame per call, performing cleanup when the animation
  * completes.
  */
+@SuppressFBWarnings(
+    value = "EI_EXPOSE_REP2",
+    justification = """
+            The dead state handler must store reference to the match controller and collision resolver
+            to access live information about the characters' position and collisions.
+            This is partly because not all info can be directly accessed by the character's class, and a
+            further coupling is required at the controller level.
+            """
+)
 public final class DeadHandler implements StateHandler {
     private final MatchController match;
     private final EventFactory eventFactory;

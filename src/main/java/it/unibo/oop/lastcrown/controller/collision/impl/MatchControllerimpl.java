@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.audio.SoundEffect;
 import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
@@ -62,6 +63,19 @@ import it.unibo.oop.lastcrown.view.map.MatchView;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
 
 /** Implementation for the {@link MatchController}. */
+@SuppressFBWarnings(
+    value = {
+        "EI_EXPOSE_REP",
+        "EI_EXPOSE_REP2"
+    },
+    justification = """
+            A reference to the match view has to be kept, and the desired match view can be linked
+            at any time via a specific method, decoupling the controller and view initialization
+            processes.
+            The wall can also be accessed, and for it to be relevant it's required that the actual wall
+            object is returned.
+            """
+)
 public final class MatchControllerimpl implements MatchController {
     private final List<Pair<String, PlayableCharacterController>> cardList = new ArrayList<>();
     private final CollisionManager collisionManager = new CollisionManagerImpl();
@@ -112,8 +126,11 @@ public final class MatchControllerimpl implements MatchController {
         this.collisionManager.addObserver(collisionResolver);
         this.engagementManager = new EntityEngagementManagerImpl();
         this.entityStateManager = new EntityStateManagerImpl();
-        this.radiusScanner = new EntityTargetingSystemImpl(this.entityStateManager.getHitboxControllersMap(), this,
-                collisionResolver);
+        this.radiusScanner = new EntityTargetingSystemImpl(
+            this.entityStateManager,
+            this,
+            collisionResolver
+        );
         this.enemySpawner = new EnemySpawnerImpl(this, collectionController.getEnemies(), this.frameWidth,
                 this.frameHeight, enemyList);
         this.spellManager = new SpellManagerImpl(this, this.collection, this.frameWidth);
@@ -259,8 +276,6 @@ public final class MatchControllerimpl implements MatchController {
         return this.engagementManager.isEntityEngaged(entityId);
     }
 
-    // Sostituisci il vecchio metodo engageEnemy con questo
-
     @Override
     public boolean engageEnemy(final int enemyId, final int playerId) {
         final boolean success = this.engagementManager.engageEnemy(enemyId, playerId);
@@ -299,10 +314,8 @@ public final class MatchControllerimpl implements MatchController {
     @Override
     public boolean isEngagedWithDead(final int characterId) {
         final int counterpartId = this.engagementManager.getEngagedCounterpart(characterId);
-        if (counterpartId == -1) {
-            return false;
-        }
-        return getCharacterControllerById(counterpartId)
+        return counterpartId != -1
+            && getCharacterControllerById(counterpartId)
                 .map(GenericCharacterController::isDead)
                 .orElse(false);
     }

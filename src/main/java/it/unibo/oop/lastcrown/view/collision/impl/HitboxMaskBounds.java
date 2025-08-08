@@ -13,12 +13,17 @@ import it.unibo.oop.lastcrown.view.collision.api.HitboxPanel;
  * Utility class responsible for calculating and updating the position and size of a hitbox
  * based on a character's graphical component and its mask image.
  */
-@SuppressFBWarnings(value = {"EI"}, justification = """
-        This class acts as a mediator, directly manipulating the state of external 'live' objects (Hitbox, JComponent, HitboxPanel).
-        Defensive copies cant br uses because we need to act on the original object.
-        The exposure of these mutable references is a consequence to extract the hitbox from the image.""")
-
-public final class HitboxMaskBounds implements HitboxMask{
+@SuppressFBWarnings(
+    value = "EI",
+    justification = """
+        This class acts as a mediator, directly manipulating the state of external 'live' objects 
+        (Hitbox, JComponent, HitboxPanel). Defensive copies can't be used because we need to act on the
+        original objects.
+        The exposure of these mutable references is a consequence of having to manually
+        extract the hitbox from the image, rather than having a getter method in the model classes.
+        """
+)
+public final class HitboxMaskBounds implements HitboxMask {
     private int offsetX;
     private int offsetY;
     private int hitboxHeight;
@@ -81,9 +86,8 @@ public final class HitboxMaskBounds implements HitboxMask{
         this.offsetX = minX;
         this.offsetY = minY;
 
-        // Aggiorna la posizione iniziale
         updateHitboxPosition(charComponent.getX(), charComponent.getY());
-        //dimensioni hitbox
+
         hitbox.setWidth(hitboxWidth);
         hitbox.setHeight(hitboxHeight);
         hitboxPanel.updatePanel();
@@ -107,7 +111,7 @@ public final class HitboxMaskBounds implements HitboxMask{
     /**
      * Returns the center point of the hitbox relative to the character component.
      *
-     * @return the center of the hitbox as a Point2D object
+     * @return the center of the hitbox as a {@link Point2D} object
      */
     @Override
     public Point2D getCenter() {
@@ -120,11 +124,10 @@ public final class HitboxMaskBounds implements HitboxMask{
     /**
      * Returns the character's graphical component.
      *
-     * @return the Swing component representing the character
+     * @return the {@link JComponent} representing the character
      */
     @Override
     public JComponent getCharComponent() {
-        JComponent copy = this.charComponent;
-        return copy;
+        return this.charComponent;
     }
 }

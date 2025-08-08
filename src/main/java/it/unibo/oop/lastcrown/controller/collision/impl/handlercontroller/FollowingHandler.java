@@ -2,6 +2,7 @@ package it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller;
 
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
@@ -17,6 +18,14 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
  * StateHandler implementation that manages the FOLLOWING state,
  * where a character follows a target by updating its position and animation.
  */
+@SuppressFBWarnings(
+    value = "EI_EXPOSE_REP2",
+    justification = """
+            The following state handler keeps reference to the match controller and collision resolver
+            to access live data about the characters' position and collisions.
+            This is mainly because the same info is not made accessible in the characters' model classes.
+            """
+)
 public final class FollowingHandler implements StateHandler {
     private final MatchController matchController;
     private final EventFactory eventFactory;

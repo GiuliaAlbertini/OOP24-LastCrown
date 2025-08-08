@@ -1,5 +1,4 @@
 package it.unibo.oop.lastcrown.controller.collision.impl;
-//import java.util.logging.Logger;
 
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 
@@ -11,7 +10,7 @@ import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 public final class Gameloop extends Thread {
     private static final long PERIOD = 64;
     private final MainController controller;
-    private boolean running; //NOPMD suppressed false positive due to multithreading.
+    private volatile boolean running; //NOPMD suppressed false positive due to multithreading.
 
     /**
      * Constructs a new game loop instance with the specified main controller.

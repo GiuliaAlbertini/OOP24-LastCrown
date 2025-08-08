@@ -12,10 +12,14 @@ import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
  * meaning any entity that can participate in collision detection.
  * Each Collidable is identified by a CardIdentifier.
  */
-@SuppressFBWarnings(value = {"EI"}, justification = """
-        Event handlers in this project require a direct reference to the original, modifiable Hitbox instance to track real-time state changes.
-        This is because characters don't have a direct reference to their hitbox.""")
-
+@SuppressFBWarnings(
+    value = "EI",
+    justification = """
+        Event handlers in this project require a direct reference to the original,
+        modifiable Hitbox instance to track real-time state changes.
+        This is because characters don't have a direct reference to their hitbox.
+        """
+)
 public final class CollidableImpl implements Collidable {
     private final Hitbox hitbox;
     private final CardIdentifier cardIdentifier;

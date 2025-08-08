@@ -15,11 +15,14 @@ import it.unibo.oop.lastcrown.model.collision.api.Radius;
  * and perform spatial calculations relative to a semicircle in front of the
  * origin.
  */
-@SuppressFBWarnings(value = { "EI_EXPOSE_REP2" }, justification = """
-                The Radius's position is defined by its origin Hitbox.
-            It must hold a live reference to the original object to move with it.
-            A defensive copy would break this essential composition.
-        """)
+@SuppressFBWarnings(
+    value = "EI_EXPOSE_REP2",
+    justification = """
+        The Radius's position is defined by its origin Hitbox.
+        It must hold a live reference to the original object to move with it.
+        A defensive copy would break this essential composition.
+    """
+)
 public final class RadiusImpl implements Radius {
     private final Hitbox origin;
     private double radius;
@@ -91,11 +94,7 @@ public final class RadiusImpl implements Radius {
         return target.x() >= originCenter.x();
     }
 
-    /**
-     * Sets the radius value used by this object.
-     *
-     * @param radius the new radius to assign
-     */
+    @Override
     public void setRadius(final double radius) {
         this.radius = radius;
     }

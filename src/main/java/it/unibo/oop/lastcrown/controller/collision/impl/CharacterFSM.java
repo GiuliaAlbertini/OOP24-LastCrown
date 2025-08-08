@@ -14,13 +14,13 @@ import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
  * by processing queued events and transitioning between character states.
  */
 @SuppressFBWarnings(
-        value = {"EI2"},
+        value = "EI2",
         justification = """
             This class is a Finite State Machine (FSM) that must control the original 'live' character controller.
             A defensive copy would be a different entity, making it impossible for the FSM to perform its function.
             This tight coupling is an intentional and fundamental part of the FSM design pattern.
             """
-    )
+)
 public final class CharacterFSM {
     private final GenericCharacterController character;
     private final EventQueue eventQueue;

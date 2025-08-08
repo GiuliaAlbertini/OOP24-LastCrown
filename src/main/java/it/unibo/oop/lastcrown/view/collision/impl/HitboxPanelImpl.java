@@ -16,10 +16,14 @@ import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
  * purposes.
  */
 
-@SuppressFBWarnings(value = {"EI_EXPOSE_REP2", "EI_EXPOSE_REP"}, justification = """
-                This class is a View component designed to visually represent a 'live' Hitbox model.
-                It requires a direct reference to the original Hitbox to stay synchronized. A defensive copy would break this fundamental link.
-        """)
+@SuppressFBWarnings(
+    value = { "EI_EXPOSE_REP2", "EI_EXPOSE_REP" },
+    justification = """
+        This class is a View component designed to visually represent a 'live' Hitbox model.
+        It requires a direct reference to the original Hitbox to stay synchronized.
+        A defensive copy would break this fundamental link.
+    """
+)
 public final class HitboxPanelImpl implements HitboxPanel {
     private static final int RED = 255;
     private static final int GREEN = 0;
