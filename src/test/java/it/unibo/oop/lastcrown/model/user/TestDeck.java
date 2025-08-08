@@ -1,7 +1,10 @@
 package it.unibo.oop.lastcrown.model.user;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Random;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,14 +16,19 @@ import it.unibo.oop.lastcrown.model.user.api.Deck;
 import it.unibo.oop.lastcrown.model.user.impl.StandardDeckFactory;
 
 final class DeckTest { 
+    private static final int FIRST_MELEE_BOUND = 5;
+    private static final int FIRST_HERO_BOUND = 3;
     private Deck deck; 
     private CardIdentifier hero; 
     private CardIdentifier meleeCard;
+    private final Random rand = new Random();
 
     @BeforeEach
     void setUp() {
-        hero = new CardIdentifier(1, CardType.HERO);
-        meleeCard = new CardIdentifier(2, CardType.MELEE);
+        final int num1 = rand.nextInt(FIRST_HERO_BOUND) + 1;
+        hero = new CardIdentifier(num1, CardType.HERO);
+        final int num2 = rand.nextInt(FIRST_MELEE_BOUND) + 1;
+        meleeCard = new CardIdentifier(num2, CardType.MELEE);
         final Set<CardIdentifier> collection = Set.of(hero, meleeCard);
         deck = StandardDeckFactory.createDeck(collection);
     }
