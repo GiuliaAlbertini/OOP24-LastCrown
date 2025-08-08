@@ -62,12 +62,7 @@ public final class IconPanel extends JPanel {
             ? CharacterPathLoader.loadGreyIconPath(card.type().get(), name)
             : CharacterPathLoader.loadIconPath(card.type().get(), name);
 
-        BufferedImage img;
-        try {
-            img = ImageIO.read(new File(iconPath));
-        } catch (final IOException e) {
-            img = new BufferedImage(WIDTH_FALLBACK, HEIGHT_FALLBACK, BufferedImage.TYPE_INT_ARGB);
-        }
+        final BufferedImage img = ImageLoader.getImage(iconPath, WIDTH_FALLBACK, HEIGHT_FALLBACK);
         this.originalIcon = img;
 
         if (hoverEffect) {
