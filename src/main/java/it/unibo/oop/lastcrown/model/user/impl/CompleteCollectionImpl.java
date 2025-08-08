@@ -169,7 +169,7 @@ public class CompleteCollectionImpl implements CompleteCollection {
                     .getResource(SEP + "entities")
                     .toURI()
             ).toString();
-        } catch (URISyntaxException | NullPointerException e) {
+        } catch (final URISyntaxException e) {
             throw new IllegalStateException("Entities resource not found", e);
         }
     }

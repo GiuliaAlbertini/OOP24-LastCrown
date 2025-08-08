@@ -42,7 +42,7 @@ public class CreditsControllerImpl implements CreditsController {
                     .getResource(SEP + "credits")
                     .toURI()
             ).toString();
-        } catch (URISyntaxException | NullPointerException e) {
+        } catch (final URISyntaxException e) {
             throw new IllegalStateException("Credits resource not found", e);
         }
     }
