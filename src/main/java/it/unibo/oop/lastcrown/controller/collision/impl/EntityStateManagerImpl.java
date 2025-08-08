@@ -23,11 +23,12 @@ import it.unibo.oop.lastcrown.model.card.CardType;
  * adjusting hitbox radii based on character type.
  */
 public final class EntityStateManagerImpl implements EntityStateManager {
+
     private final Map<Integer, CharacterFSM> playerFSMs;
     private final Map<Integer, GenericCharacterController> charactersController;
     private final Map<GenericCharacterController, HitboxController> hitboxControllers;
 
-     /**
+    /**
      * Constructs a new EntityStateManagerImpl.
      *
      * Initializes the internal data structures used to track character controllers,
@@ -49,103 +50,115 @@ public final class EntityStateManagerImpl implements EntityStateManager {
 
     @Override
     public Optional<GenericCharacterController> getCharacterControllerById(final int id) {
-        return Optional.ofNullable(this.charactersController.get(id));
+        return Optional.ofNullable(charactersController.get(id));
     }
 
     @Override
     public Optional<HitboxController> getCharacterHitboxById(final int id) {
-        final Optional<GenericCharacterController> charaControllerOpt = this.getCharacterControllerById(id);
-
-        if (charaControllerOpt.isPresent()) {
-            return Optional.ofNullable(this.hitboxControllers.get(charaControllerOpt.get()));
-        }
-
-        return Optional.empty();
+        return getCharacterControllerById(id)
+                .map(hitboxControllers::get);
     }
 
     @Override
     public void removeCharacterById(final int characterId) {
-        final Optional<GenericCharacterController> controllerOpt = this.getCharacterControllerById(characterId);
-
-        if (controllerOpt.isPresent()) {
-            final GenericCharacterController controller = controllerOpt.get();
-            this.hitboxControllers.remove(controller);
-            this.playerFSMs.remove(characterId);
-            this.charactersController.remove(characterId);
-        }
+        getCharacterControllerById(characterId).ifPresent(controller -> {
+            hitboxControllers.remove(controller);
+            playerFSMs.remove(characterId);
+            charactersController.remove(characterId);
+        });
     }
 
     @Override
     public void updateAll(final int deltaTime) {
-        for (final CharacterFSM fsm : new ArrayList<>(playerFSMs.values())) {
-            fsm.update(deltaTime);
-        }
+        new ArrayList<>(playerFSMs.values()).forEach(fsm -> fsm.update(deltaTime));
     }
 
     @Override
     public boolean hasEntityWithType(final CardType type) {
-        for (final GenericCharacterController controller : charactersController.values()) {
-            if (controller.getId().type() == type) {
-                return true;
-            }
-        }
-        return false;
+        return charactersController.values().stream()
+                .anyMatch(controller -> controller.getId().type() == type);
     }
 
     @Override
     public void setRadiusForAllPlayers(final int meleeRadius, final int rangedRadius) {
-        for (final Map.Entry<GenericCharacterController, HitboxController> entry : hitboxControllers.entrySet()) {
+        hitboxControllers.entrySet().forEach(entry -> {
             final GenericCharacterController character = entry.getKey();
             final HitboxController hitboxController = entry.getValue();
+            final CardType cardType = character.getId().type();
 
-            if (character.getId().type() == CardType.MELEE) {
-                hitboxController.getRadius().ifPresent(radius -> radius.setRadius(meleeRadius));
+            if (cardType == CardType.MELEE) {
+                setRadiusForController(hitboxController, meleeRadius);
+            } else if (cardType == CardType.RANGED) {
+                setRadiusForController(hitboxController, rangedRadius);
             }
-            if (character.getId().type() == CardType.RANGED) {
-                hitboxController.getRadius().ifPresent(radius -> radius.setRadius(rangedRadius));
-            }
-        }
+        });
     }
 
     @Override
     public CharacterFSM getFSM(final int characterId) {
-        return this.playerFSMs.get(characterId);
+        return playerFSMs.get(characterId);
     }
 
     @Override
     public List<GenericCharacterController> getCharactersByType(final CardType cardType) {
-        return this.charactersController.values().stream()
+        return charactersController.values().stream()
                 .filter(controller -> controller.getId().type() == cardType)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Optional<HitboxController> getHitboxForController(final GenericCharacterController controller) {
-        return Optional.ofNullable(this.hitboxControllers.get(controller));
+        return Optional.ofNullable(hitboxControllers.get(controller));
     }
 
     @Override
     public void setAllFSMsToState(final CharacterState newState) {
-        for (final CharacterFSM fsm : playerFSMs.values()) {
-            fsm.setState(newState);
-        }
+        playerFSMs.values().forEach(fsm -> fsm.setState(newState));
     }
 
     @Override
     public boolean isEnemyBeyondFrame(final int enemyId, final int frameWidth) {
-        for (final var entry : this.hitboxControllers.entrySet()) {
-            final GenericCharacterController character = entry.getKey();
-            final HitboxController hitbox = entry.getValue();
-
-            if (character.getId().type() == CardType.ENEMY && character.getId().number() == enemyId) {
-                return hitbox.getHitbox().getPosition().x() > frameWidth;
-            }
-        }
-        return false;
+        return hitboxControllers.entrySet().stream()
+                .filter(entry -> isTargetEnemy(entry.getKey(), enemyId))
+                .map(Map.Entry::getValue)
+                .anyMatch(hitbox -> isHitboxBeyondFrame(hitbox, frameWidth));
     }
 
     @Override
     public Map<GenericCharacterController, HitboxController> getHitboxControllersMap() {
-        return Map.copyOf(this.hitboxControllers);
+        return Map.copyOf(hitboxControllers);
+    }
+
+    /**
+     * Helper method to set radius for a given hitbox controller.
+     *
+     * @param hitboxController the controller to modify
+     * @param radius the new radius value
+     */
+    private void setRadiusForController(final HitboxController hitboxController, final int radius) {
+        hitboxController.getRadius().ifPresent(radiusObj -> radiusObj.setRadius(radius));
+    }
+
+    /**
+     * Helper method to check if a character is the target enemy.
+     *
+     * @param character the character to check
+     * @param enemyId the target enemy ID
+     * @return true if the character is the target enemy
+     */
+    private boolean isTargetEnemy(final GenericCharacterController character, final int enemyId) {
+        return character.getId().type() == CardType.ENEMY
+                && character.getId().number() == enemyId;
+    }
+
+    /**
+     * Helper method to check if a hitbox is beyond the frame width.
+     *
+     * @param hitbox the hitbox to check
+     * @param frameWidth the frame width limit
+     * @return true if the hitbox position exceeds the frame width
+     */
+    private boolean isHitboxBeyondFrame(final HitboxController hitbox, final int frameWidth) {
+        return hitbox.getHitbox().getPosition().x() > frameWidth;
     }
 }
