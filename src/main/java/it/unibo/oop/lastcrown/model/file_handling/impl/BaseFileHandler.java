@@ -46,16 +46,13 @@ public class BaseFileHandler<T> {
      */
     protected Optional<T> read(final String name) {
         final File file = new File(baseDirectory, name + ".txt");
-        System.out.println(file.getAbsolutePath());
         if (file.exists()) {
-            System.out.println("Il file " + file.getAbsolutePath() + " esiste");
             final List<String> lines = new ArrayList<>();
             try (var reader = new BufferedReader(
                     new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
                 String line = reader.readLine();
                 while (line != null) {
                     lines.add(line);
-                    System.out.println("Aggiungo linea leggendo il file " + file.getAbsolutePath());
                     line = reader.readLine();
                 }
             } catch (final IOException e) {
@@ -71,13 +68,11 @@ public class BaseFileHandler<T> {
                         "Error parsing file: " + file.getAbsolutePath(),
                         e);
                 return Optional.empty();
-            }            
-        } else {        
+            }
+        } else {
             final String resourcePath = baseDirectory.replace(SEP, "/") + "/" + name + ".txt";
-            try (InputStream is = getClass()
-                .getResourceAsStream(resourcePath)) {
+            try (InputStream is = BaseFileHandler.class.getResourceAsStream(resourcePath)) {
                 if (is == null) {
-                    System.out.println("Non ho trovato il file " + resourcePath);
                     return Optional.empty();
                 }
                 try (var reader = new BufferedReader(
