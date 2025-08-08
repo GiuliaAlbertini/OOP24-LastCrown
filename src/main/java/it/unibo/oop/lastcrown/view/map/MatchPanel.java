@@ -4,6 +4,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -20,6 +22,13 @@ import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 /**
  * A JPanel that represent the main content of the Map.
  */
+ @SuppressFBWarnings(
+        value = {"EI_EXPOSE_REP2"},
+        justification = """
+            It must hold a direct reference to the 'live' MatchController to delegate user actions and events.
+            A defensive copy of a controller is not applicable in this context.
+            """
+    )
 public final class MatchPanel extends JPanel {
     private static final long serialVersionUID = 1L;
     private static final int TRUPS_RED = 235;

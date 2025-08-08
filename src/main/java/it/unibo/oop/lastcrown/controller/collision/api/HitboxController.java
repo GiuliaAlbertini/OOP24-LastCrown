@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
 import it.unibo.oop.lastcrown.model.collision.api.Radius;
+import it.unibo.oop.lastcrown.view.collision.api.HitboxMask;
 import it.unibo.oop.lastcrown.view.collision.api.RadiusPanel;
 import it.unibo.oop.lastcrown.view.collision.impl.HitboxMaskBounds;
 
@@ -86,5 +87,5 @@ public interface HitboxController {
      * Getter for the hitbox's bounds.
      * @return a {@link HitboxMaskBounds} representing the current hitbox's bounds.
      */
-    Optional<HitboxMaskBounds> getBounds();
+    Optional<HitboxMask> getBounds();
 }

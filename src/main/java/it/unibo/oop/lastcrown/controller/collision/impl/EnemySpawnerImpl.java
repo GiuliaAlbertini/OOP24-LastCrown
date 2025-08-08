@@ -1,8 +1,8 @@
 package it.unibo.oop.lastcrown.controller.collision.impl;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.impl.boss.BossControllerFactory;
@@ -17,6 +17,7 @@ import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 public final class EnemySpawnerImpl implements EnemySpawner {
 
     private static final int SPAWN_INTERVAL = 5000;
+    private static final SecureRandom GENERATOR = new SecureRandom();
 
     private int spawnTimer;
     private final int roundIndex;
@@ -98,11 +99,10 @@ public final class EnemySpawnerImpl implements EnemySpawner {
         final int marginBottom = 300;
         final int availableHeight = frameHeight - marginBottom;
         final int minDistance = 40;
-        final Random rand = new Random();
         int spawnY;
         int attempts = 0;
         do {
-            spawnY = rand.nextInt(availableHeight + 1);
+            spawnY = GENERATOR.nextInt(availableHeight + 1);
             attempts++;
             if (attempts > 10) {
                 break;
@@ -119,8 +119,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
     public void spawnBoss() {
         final List<List<Enemy>> allEnemies = enemyList;
         final List<Enemy> bossList = allEnemies.get(0);
-        final Random random = new Random();
-        final Enemy boss = bossList.get(random.nextInt(bossList.size()));
+        final Enemy boss = bossList.get(GENERATOR.nextInt(bossList.size()));
 
         final var bossController = BossControllerFactory.createBossController(
                 matchController.generateUniqueCharacterId(), boss);

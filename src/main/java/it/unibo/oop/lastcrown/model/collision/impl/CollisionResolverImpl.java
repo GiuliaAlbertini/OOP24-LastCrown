@@ -43,7 +43,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
      * @param event The collision event.
      */
     private void handleMeleeEngagement(final CollisionEvent event) {
-        final int characterId = event.getCollidable1().getCardidentifier().number();
+        final int characterId = event.getCollidable1().getCardIdentifier().number();
 
         final HandleFollowEnemy movement = new HandleFollowEnemy(event);
         movement.startFollowing();
@@ -55,15 +55,15 @@ public final class CollisionResolverImpl implements CollisionResolver {
      * @param event The collision event.
      */
     private void handleBossEngagement(final CollisionEvent event) {
-        final int characterId = event.getCollidable1().getCardidentifier().number();
-        final int bossId = event.getCollidable2().getCardidentifier().number();
+        final int characterId = event.getCollidable1().getCardIdentifier().number();
+        final int bossId = event.getCollidable2().getCardIdentifier().number();
         bossFightPairs.add(new Pair<>(characterId, bossId));
     }
 
 
     private void handleWallEngagement(final CollisionEvent event) {
-        final int wallId = event.getCollidable1().getCardidentifier().number();
-        final int bossId = event.getCollidable2().getCardidentifier().number();
+        final int wallId = event.getCollidable1().getCardIdentifier().number();
+        final int bossId = event.getCollidable2().getCardIdentifier().number();
         wallFightPairs.add(new Pair<>(wallId, bossId));
     }
 
@@ -72,8 +72,8 @@ public final class CollisionResolverImpl implements CollisionResolver {
      * @param event The collision event.
      */
     public void handleRangedEngagement(final CollisionEvent event) {
-        final int characterId = event.getCollidable1().getCardidentifier().number();
-        final int enemyId = event.getCollidable2().getCardidentifier().number();
+        final int characterId = event.getCollidable1().getCardIdentifier().number();
+        final int enemyId = event.getCollidable2().getCardIdentifier().number();
         rangedEngagements.add(new Pair<>(characterId, enemyId));
     }
 
@@ -195,7 +195,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
 
             if (!stillMoving) {
                 activeFollowMovements.remove(characterId);
-                completedMeleeEngagements.put(movement.getEnemy().getCardidentifier().number(), characterId);
+                completedMeleeEngagements.put(movement.getEnemy().getCardIdentifier().number(), characterId);
             }
             return Optional.of(new MovementResult(
                 movement.getCharacter(),

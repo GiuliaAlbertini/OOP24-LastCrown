@@ -21,5 +21,5 @@ public interface Collidable {
      *
      * @return the card identifier
      */
-    CardIdentifier getCardidentifier();
+    CardIdentifier getCardIdentifier();
 }

@@ -1,4 +1,5 @@
 package it.unibo.oop.lastcrown.view.map;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -12,6 +13,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.menu.api.SceneManager;
@@ -24,12 +26,18 @@ import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
  * the JFrame that contains the match map. Provides methods to add further
  * components to the map.
  */
+@SuppressFBWarnings(value = {
+        "EI_EXPOSE_REP2" }, justification = """
+                This class is a core View component.
+                It must hold a direct reference to the 'live' MatchController to delegate user actions and manage child components.
+                A defensive copy of a controller is not applicable in this context.
+                """)
 public final class MatchViewImpl extends JPanel implements MatchView, MatchExitObserver {
     private static final long serialVersionUID = 1L;
     private static final Font UI_FONT = new Font("Calibri", Font.CENTER_BASELINE, 20);
 
     private final MatchPanel mainPanel;
-    private final MatchController matchController;
+    private final transient MatchController matchController;
     private final Map<Integer, JComponent> newComponents;
     private final transient SceneManager sceneManager;
     private final JTextArea eventWriter;
@@ -37,13 +45,13 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
     /**
      * @param sceneManager the SceneManager of the application
-     * @param matchContr the match controller linked to the map
-     * @param width the width of the map
-     * @param height the height of the map
-     * @param deck the set to use as a deck
+     * @param matchContr   the match controller linked to the map
+     * @param width        the width of the map
+     * @param height       the height of the map
+     * @param deck         the set to use as a deck
      */
     public MatchViewImpl(final SceneManager sceneManager, final MatchController matchContr,
-     final int width, final int height, final Set<CardIdentifier> deck) {
+            final int width, final int height, final Set<CardIdentifier> deck) {
         this.sceneManager = sceneManager;
         this.matchController = matchContr;
         this.newComponents = new ConcurrentHashMap<>();
@@ -57,7 +65,6 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         mainPanel.setBounds(0, 0, width, height);
     }
 
-
     private JTextArea createEventWriter() {
         final JTextArea writer = new JTextArea();
         writer.setEditable(false);
@@ -69,7 +76,8 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
     /**
      * Creates the money visualizer component.
      *
-     * @return a {@link JTextArea} in which the current amount of money is displayed.
+     * @return a {@link JTextArea} in which the current amount of money is
+     *         displayed.
      */
     private JTextArea createCoinsWriter() {
         final JTextArea writer = new JTextArea();
@@ -89,8 +97,8 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         final Dialog defeat = new Dialog(title, message, false);
         final JButton ok = new JButton("OK");
         ok.addActionListener(act -> {
-           defeat.dispose();
-           this.sceneManager.switchScene(SceneName.MATCH, SceneName.MENU);
+            defeat.dispose();
+            this.sceneManager.switchScene(SceneName.MATCH, SceneName.MENU);
         });
         defeat.addButton(ok);
         defeat.setLocationRelativeTo(this);
@@ -106,7 +114,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         ok.addActionListener(act -> {
             victory.dispose();
             this.sceneManager.switchScene(SceneName.MATCH, SceneName.SHOP);
-            //gameContr.notifyMatchToShop(false);
+            // gameContr.notifyMatchToShop(false);
         });
         victory.addButton(ok);
         victory.setLocationRelativeTo(this);
@@ -115,8 +123,7 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
     @Override
     public synchronized HitboxController addGenericGraphics(final int id, final JComponent component,
-            final int x, final int y, final String typefolder, final String name
-    ) {
+            final int x, final int y, final String typefolder, final String name) {
         this.newComponents.put(id, component);
         final Dimension size = component.getPreferredSize();
         component.setBounds(x - size.width / 2, y - size.height / 2, size.width, size.height);
@@ -125,13 +132,12 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         this.mainPanel.setComponentZOrder(component, 0);
 
         final HitboxController hitboxcontroller = matchController.setupCharacter(
-            component,
-            typefolder,
-            name,
-            true,
-            component.getX(),
-            component.getY()
-        );
+                component,
+                typefolder,
+                name,
+                true,
+                component.getX(),
+                component.getY());
         this.newComponents.put(id + 1, hitboxcontroller.getHitboxPanel());
         this.newComponents.put(id + 2, hitboxcontroller.getRadiusPanel());
 
@@ -156,32 +162,29 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
     @Override
     public synchronized HitboxController addHeroGraphics(final int id, final JComponent heroGraphics,
-            final String typefolder, final String name
-    ) {
+            final String typefolder, final String name) {
         final int cardZoneWidth = (int) (this.getPreferredSize().width * DimensionResolver.DECKZONE.width());
         final int posZoneWidth = (int) (this.getPreferredSize().width * DimensionResolver.POSITIONINGZONE.width());
         final int panelsHeight = this.getPreferredSize().height
-            - (int) (this.getPreferredSize().height * DimensionResolver.UTILITYZONE.height());
+                - (int) (this.getPreferredSize().height * DimensionResolver.UTILITYZONE.height());
         final int cornerWidth = cardZoneWidth + posZoneWidth / 2;
         final int cornerHeight = panelsHeight / 4;
         heroGraphics.setBounds(
-            cornerWidth,
-            cornerHeight,
-            heroGraphics.getPreferredSize().width,
-            heroGraphics.getPreferredSize().height
-        );
+                cornerWidth,
+                cornerHeight,
+                heroGraphics.getPreferredSize().width,
+                heroGraphics.getPreferredSize().height);
         this.mainPanel.add(heroGraphics);
         this.newComponents.put(id, heroGraphics);
         this.mainPanel.setComponentZOrder(heroGraphics, 1);
 
         final HitboxController hitboxcontroller = matchController.setupCharacter(
-            heroGraphics,
-            typefolder,
-            name,
-            true,
-            heroGraphics.getX(),
-            heroGraphics.getY()
-        );
+                heroGraphics,
+                typefolder,
+                name,
+                true,
+                heroGraphics.getX(),
+                heroGraphics.getY());
         this.mainPanel.add(hitboxcontroller.getHitboxPanel());
         this.mainPanel.add(hitboxcontroller.getRadiusPanel());
         this.mainPanel.setComponentZOrder(hitboxcontroller.getHitboxPanel(), 1);
@@ -190,11 +193,9 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         return hitboxcontroller;
     }
 
-
-     @Override
+    @Override
     public synchronized HitboxController addEnemyGraphics(final int id, final JComponent enemyGraphics,
-            final int x, final int y, final String typefolder, final String name
-    ) {
+            final int x, final int y, final String typefolder, final String name) {
         this.newComponents.put(id, enemyGraphics);
         final Dimension size = enemyGraphics.getPreferredSize();
         enemyGraphics.setBounds(x, y, size.width, size.height);
@@ -203,13 +204,12 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
         this.mainPanel.setComponentZOrder(enemyGraphics, 1);
 
         final HitboxController hitboxcontroller = matchController.setupCharacter(
-            enemyGraphics,
-            typefolder,
-            name,
-            false,
-            enemyGraphics.getX(),
-            enemyGraphics.getY()
-        );
+                enemyGraphics,
+                typefolder,
+                name,
+                false,
+                enemyGraphics.getX(),
+                enemyGraphics.getY());
 
         this.mainPanel.add(hitboxcontroller.getHitboxPanel());
         this.mainPanel.setComponentZOrder(hitboxcontroller.getHitboxPanel(), 1);
@@ -232,20 +232,20 @@ public final class MatchViewImpl extends JPanel implements MatchView, MatchExitO
 
     @Override
     public synchronized void removeGraphicComponent(final int id) {
-            final HitboxController hitboxcontroller = matchController.getCharacterHitboxById(id).get();
-            this.mainPanel.remove(hitboxcontroller.getHitboxPanel());
+        final HitboxController hitboxcontroller = matchController.getCharacterHitboxById(id).get();
+        this.mainPanel.remove(hitboxcontroller.getHitboxPanel());
 
-            final var radiusPanel = hitboxcontroller.getRadiusPanel();
-            if (radiusPanel != null) {
-                this.mainPanel.remove(hitboxcontroller.getRadiusPanel());
-            }
+        final var radiusPanel = hitboxcontroller.getRadiusPanel();
+        if (radiusPanel != null) {
+            this.mainPanel.remove(hitboxcontroller.getRadiusPanel());
+        }
 
-            final var component = this.newComponents.get(id);
-            if (component != null) {
-                this.mainPanel.remove(this.newComponents.get(id));
-                this.newComponents.remove(id);
-            }
-            this.mainPanel.repaint();
+        final var component = this.newComponents.get(id);
+        if (component != null) {
+            this.mainPanel.remove(this.newComponents.get(id));
+            this.newComponents.remove(id);
+        }
+        this.mainPanel.repaint();
     }
 
     @Override

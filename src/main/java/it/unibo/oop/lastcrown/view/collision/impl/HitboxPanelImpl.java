@@ -3,15 +3,23 @@ package it.unibo.oop.lastcrown.view.collision.impl;
 import java.awt.Color;
 import javax.swing.JPanel;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
 import it.unibo.oop.lastcrown.model.collision.api.Point2D;
 import it.unibo.oop.lastcrown.view.collision.api.HitboxPanel;
 import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
 
 /**
- * Implementation of HitboxPanel that visually represents a hitbox using a JPanel
- * The panel is shown as a semi-transparent red rectangle, useful for debugging purposes.
+ * Implementation of HitboxPanel that visually represents a hitbox using a
+ * JPanel
+ * The panel is shown as a semi-transparent red rectangle, useful for debugging
+ * purposes.
  */
+
+@SuppressFBWarnings(value = {"EI_EXPOSE_REP2", "EI_EXPOSE_REP"}, justification = """
+                This class is a View component designed to visually represent a 'live' Hitbox model.
+                It requires a direct reference to the original Hitbox to stay synchronized. A defensive copy would break this fundamental link.
+        """)
 public final class HitboxPanelImpl implements HitboxPanel {
     private static final int RED = 255;
     private static final int GREEN = 0;
@@ -53,13 +61,13 @@ public final class HitboxPanelImpl implements HitboxPanel {
         updatePanel();
     }
 
-/**
- * Returns the center point of the hitbox.
- *
- * @return the (x, y) center of the hitbox as Point2DImpl
- */
-public Point2D getCenter() {
-    return this.hitbox.getCenter();
-}
+    /**
+     * Returns the center point of the hitbox.
+     *
+     * @return the (x, y) center of the hitbox as Point2DImpl
+     */
+    public Point2D getCenter() {
+        return this.hitbox.getCenter();
+    }
 
 }

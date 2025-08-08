@@ -14,6 +14,7 @@ import it.unibo.oop.lastcrown.audio.SoundEffect;
 import it.unibo.oop.lastcrown.audio.SoundTrack;
 import it.unibo.oop.lastcrown.audio.engine.AudioEngine;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
+import it.unibo.oop.lastcrown.controller.characters.api.EnemyController;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.characters.api.HeroController;
 import it.unibo.oop.lastcrown.controller.characters.api.PlayableCharacterController;
@@ -53,6 +54,7 @@ import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.collision.api.HitboxPanel;
 import it.unibo.oop.lastcrown.view.collision.api.RadiusPanel;
 import it.unibo.oop.lastcrown.view.collision.impl.HitboxMaskBounds;
+import it.unibo.oop.lastcrown.view.collision.api.HitboxMask;
 import it.unibo.oop.lastcrown.view.collision.impl.HitboxPanelImpl;
 import it.unibo.oop.lastcrown.view.collision.impl.RadiusPanelImpl;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
@@ -85,6 +87,7 @@ public final class MatchControllerimpl implements MatchController {
 
     /**
      * Instantiates the match controller. TODO - complete param tags.
+     *
      * @param mainController
      * @param frameWidth
      * @param frameHeight
@@ -107,12 +110,12 @@ public final class MatchControllerimpl implements MatchController {
 
         this.collisionResolver = new CollisionResolverImpl();
         this.collisionManager.addObserver(collisionResolver);
-        this.engagementManager = new EntityEngagementManagerImpl(this);
+        this.engagementManager = new EntityEngagementManagerImpl();
         this.entityStateManager = new EntityStateManagerImpl();
         this.radiusScanner = new EntityTargetingSystemImpl(this.entityStateManager.getHitboxControllersMap(), this,
-                                                           collisionResolver);
+                collisionResolver);
         this.enemySpawner = new EnemySpawnerImpl(this, collectionController.getEnemies(), this.frameWidth,
-                                                 this.frameHeight, enemyList);
+                this.frameHeight, enemyList);
         this.spellManager = new SpellManagerImpl(this, this.collection, this.frameWidth);
     }
 
@@ -120,9 +123,8 @@ public final class MatchControllerimpl implements MatchController {
         this.collection = collectionController.getCompleteCollection();
         this.hero = this.collection.getHero(heroId).get();
         this.heroController = HeroControllerFactory.createHeroController(
-            generateUniqueCharacterId(),
-            hero
-        );
+                generateUniqueCharacterId(),
+                hero);
 
         final int heroWidth = (int) (frameWidth * DimensionResolver.HERO.width());
         final int heroHeight = (int) (frameHeight * DimensionResolver.HERO.height());
@@ -133,7 +135,7 @@ public final class MatchControllerimpl implements MatchController {
         final int wallX = frameWidth / 2;
         final int wallY = (int) (frameHeight * DimensionResolver.UTILITYZONE.height());
         this.wall = WallFactory.createWall(hero.getWallAttack(), hero.getWallHealth(),
-                                        Constant.WALL_ID, wallX, wallY, Optional.empty());
+                Constant.WALL_ID, wallX, wallY, Optional.empty());
     }
 
     @Override
@@ -157,7 +159,7 @@ public final class MatchControllerimpl implements MatchController {
 
     private void createWallHitbox(final MatchView matchView) {
         final Point2D pos = new Point2DImpl(matchView.getWallCoordinates().getX(),
-                                            matchView.getWallCoordinates().getY());
+                matchView.getWallCoordinates().getY());
         final Hitbox wallHitbox = new HitboxImpl(matchView.getWallSize().width, matchView.getWallSize().height, pos);
         final HitboxPanel wallHitboxPanel = new HitboxPanelImpl(wallHitbox);
         final var wallHitboxController = new HitboxControllerImpl(wallHitbox, wallHitboxPanel, null, null);
@@ -257,9 +259,18 @@ public final class MatchControllerimpl implements MatchController {
         return this.engagementManager.isEntityEngaged(entityId);
     }
 
+    // Sostituisci il vecchio metodo engageEnemy con questo
+
     @Override
     public boolean engageEnemy(final int enemyId, final int playerId) {
-        return this.engagementManager.engageEnemy(enemyId, playerId);
+        final boolean success = this.engagementManager.engageEnemy(enemyId, playerId);
+        if (success) {
+            getCharacterControllerById(enemyId)
+                    .filter(c -> c instanceof EnemyController)
+                    .map(c -> (EnemyController) c)
+                    .ifPresent(enemy -> enemy.setInCombat(true));
+        }
+        return success;
     }
 
     @Override
@@ -269,8 +280,15 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public boolean releaseEngagementFor(final int characterId) {
-        return this.engagementManager.releaseEngagementFor(characterId);
-
+        final int counterpartId = this.engagementManager.getEngagedCounterpart(characterId);
+        final boolean success = this.engagementManager.releaseEngagementFor(characterId);
+        if (success && counterpartId != -1) {
+            getCharacterControllerById(counterpartId)
+                    .filter(c -> c instanceof EnemyController)
+                    .map(c -> (EnemyController) c)
+                    .ifPresent(enemy -> enemy.setInCombat(false));
+        }
+        return success;
     }
 
     @Override
@@ -280,8 +298,13 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public boolean isEngagedWithDead(final int characterId) {
-        return this.engagementManager.isEngagedWithDead(characterId);
-
+        final int counterpartId = this.engagementManager.getEngagedCounterpart(characterId);
+        if (counterpartId == -1) {
+            return false;
+        }
+        return getCharacterControllerById(counterpartId)
+                .map(GenericCharacterController::isDead)
+                .orElse(false);
     }
 
     @Override
@@ -366,7 +389,7 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public HitboxController setupCharacter(final JComponent charComp, final String typeFolder, final String name,
-        final boolean isPlayable, final int x, final int y) {
+            final boolean isPlayable, final int x, final int y) {
         final Dimension size = charComp.getPreferredSize();
         final Hitbox hitbox = new HitboxImpl(Constant.HITBOX_WIDTH, Constant.HITBOX_HEIGHT, new Point2DImpl(x, y));
         final HitboxPanel hitboxPanel = new HitboxPanelImpl(hitbox);
@@ -374,7 +397,7 @@ public final class MatchControllerimpl implements MatchController {
         final String path = CharacterPathLoader.loadHitboxPath(typeFolder, name);
 
         final BufferedImage image = ImageLoader.getImage(path, (int) size.getWidth(), (int) size.getHeight());
-        final HitboxMaskBounds bounds = new HitboxMaskBounds(hitbox, charComp, hitboxPanel);
+        final HitboxMask bounds = new HitboxMaskBounds(hitbox, charComp, hitboxPanel);
         bounds.calculateHitboxCenter(image);
         final HitboxController hitboxController = new HitboxControllerImpl(hitbox, hitboxPanel, Optional.of(bounds),
                 null);

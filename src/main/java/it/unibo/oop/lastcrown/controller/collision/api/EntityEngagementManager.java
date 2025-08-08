@@ -46,13 +46,6 @@ public interface EntityEngagementManager {
      */
     int getEngagedCounterpart(int characterId);
 
-    /**
-     * Checks whether the character is engaged with a counterpart that is dead.
-     *
-     * @param characterId the ID of the player or enemy
-     * @return true if the engaged counterpart is dead, false otherwise
-     */
-    boolean isEngagedWithDead(int characterId);
 
     /**
      * Returns an unmodifiable set of all current engagements between players and enemies.
@@ -61,19 +54,4 @@ public interface EntityEngagementManager {
      */
     Set<EnemyEngagement> getEngagedEnemies();
 
-    /**
-     * Checks whether a player is currently engaged in combat.
-     *
-     * @param playerId the ID of the player to check
-     * @return true if the player is engaged, false otherwise
-     */
-    boolean isPlayerEngaged(int playerId);
-
-    /**
-     * Checks whether an enemy is currently engaged in combat.
-     *
-     * @param enemyId the ID of the enemy to check
-     * @return true if the enemy is engaged, false otherwise
-     */
-    boolean isEnemyEngaged(int enemyId);
 }

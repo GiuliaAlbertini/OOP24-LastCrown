@@ -1,25 +1,33 @@
 package it.unibo.oop.lastcrown.controller.collision.impl;
+
 import java.util.Optional;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
 import it.unibo.oop.lastcrown.model.collision.api.Radius;
 import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
+import it.unibo.oop.lastcrown.view.collision.api.HitboxMask;
 import it.unibo.oop.lastcrown.view.collision.api.HitboxPanel;
 import it.unibo.oop.lastcrown.view.collision.api.RadiusPanel;
-import it.unibo.oop.lastcrown.view.collision.impl.HitboxMaskBounds;
 
 /**
  * Implementation of HitboxController responsible for managing the logic
  * and view updates of a character's hitbox and optional radius indicator.
  */
+@SuppressFBWarnings(
+    value = {"EI_EXPOSE_REP2", "EI_EXPOSE_REP"},
+    justification = """
+        The HitboxController must manage the state of the original live Hitbox and HitboxPanel objects.
+        It takes ownership of these components by design."""
+)
 public final class HitboxControllerImpl implements HitboxController {
     private final Hitbox hitbox;
     private final HitboxPanel view;
-    private final Optional<HitboxMaskBounds> bounds;
+    private final Optional<HitboxMask> bounds;
     private Optional<Radius> radius;
     private RadiusPanel radiusPanel;
 
@@ -30,7 +38,7 @@ public final class HitboxControllerImpl implements HitboxController {
      * @param radius of the hitbox
      */
     public HitboxControllerImpl(final Hitbox hitbox, final HitboxPanel panel,
-                                final Optional<HitboxMaskBounds> bounds, final Optional<Radius> radius) {
+                                final Optional<HitboxMask> bounds, final Optional<Radius> radius) {
         this.hitbox = hitbox;
         this.view = panel;
         this.bounds = bounds;
@@ -50,7 +58,7 @@ public final class HitboxControllerImpl implements HitboxController {
     }
 
     @Override
-    public Optional<HitboxMaskBounds> getBounds() {
+    public Optional<HitboxMask> getBounds() {
         return this.bounds;
     }
 

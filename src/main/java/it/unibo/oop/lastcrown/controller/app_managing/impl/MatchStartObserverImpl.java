@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.controller.app_managing.impl;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MainController;
 import it.unibo.oop.lastcrown.controller.app_managing.api.MatchStartObserver;
 import it.unibo.oop.lastcrown.controller.collision.impl.Gameloop;
@@ -11,6 +12,15 @@ import it.unibo.oop.lastcrown.view.menu.api.MainView;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 
 /** Implementation for the {@link MatchStartObserver}. */
+@SuppressFBWarnings(
+    value = "UwF",
+    justification = """
+            Null initialization of match controller is not explicitly handled, but
+            it is documented in JavaDoc comments and method usage explainations.
+            In standard game execution, match controller is always assigned before
+            dereferentiation.
+            """
+)
 public final class MatchStartObserverImpl implements MatchStartObserver {
 
     private final MainController mainController;
@@ -27,7 +37,8 @@ public final class MatchStartObserverImpl implements MatchStartObserver {
 
     @Override
     public void onMatchStart(final int width, final int height, final CardIdentifier id,
-                            final CollectionController collectionController, final MainView mainView, final int enemyList) {
+                            final CollectionController collectionController, final MainView mainView,
+                            final int enemyList) {
         this.matchController = new MatchControllerimpl(
             this.mainController,
             width,

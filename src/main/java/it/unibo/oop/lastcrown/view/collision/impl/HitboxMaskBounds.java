@@ -2,16 +2,23 @@ package it.unibo.oop.lastcrown.view.collision.impl;
 import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
 import it.unibo.oop.lastcrown.model.collision.api.Point2D;
 import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
+import it.unibo.oop.lastcrown.view.collision.api.HitboxMask;
 import it.unibo.oop.lastcrown.view.collision.api.HitboxPanel;
 
 /**
  * Utility class responsible for calculating and updating the position and size of a hitbox
  * based on a character's graphical component and its mask image.
  */
-public final class HitboxMaskBounds {
+@SuppressFBWarnings(value = {"EI"}, justification = """
+        This class acts as a mediator, directly manipulating the state of external 'live' objects (Hitbox, JComponent, HitboxPanel).
+        Defensive copies cant br uses because we need to act on the original object.
+        The exposure of these mutable references is a consequence to extract the hitbox from the image.""")
+
+public final class HitboxMaskBounds implements HitboxMask{
     private int offsetX;
     private int offsetY;
     private int hitboxHeight;
@@ -43,6 +50,7 @@ public final class HitboxMaskBounds {
      *
      * @param image the image used to determine the opaque area of the hitbox
      */
+    @Override
     public void calculateHitboxCenter(final BufferedImage image) {
         int minX = image.getWidth();
         int minY = image.getHeight();
@@ -87,6 +95,7 @@ public final class HitboxMaskBounds {
      * @param componentX the X coordinate of the character's component
      * @param componentY the Y coordinate of the character's component
      */
+    @Override
     public void updateHitboxPosition(final int componentX, final int componentY) {
         final int globalX = componentX + offsetX;
         final int globalY = componentY + offsetY;
@@ -100,6 +109,7 @@ public final class HitboxMaskBounds {
      *
      * @return the center of the hitbox as a Point2D object
      */
+    @Override
     public Point2D getCenter() {
         // centro relativo alla hitbox (offset + metà dimensioni)
         final double centerX = offsetX + (hitboxWidth / 2.0);
@@ -112,7 +122,9 @@ public final class HitboxMaskBounds {
      *
      * @return the Swing component representing the character
      */
+    @Override
     public JComponent getCharComponent() {
-        return this.charComponent;
+        JComponent copy = this.charComponent;
+        return copy;
     }
 }

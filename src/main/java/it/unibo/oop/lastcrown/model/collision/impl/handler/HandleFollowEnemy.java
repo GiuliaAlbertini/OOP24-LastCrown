@@ -9,9 +9,11 @@ public final class HandleFollowEnemy {
 
     private static final double SPEED = 20.0;
     private static final double TIME_DIVIDER = 1000.0;
-    private static final double STEP_LIMIT = 1.0;
-    private static final double STEP_START = 0.1;
-    private static final double STEP_SIZE = 0.1;
+    private static final double BEZIER_DIVIDER = 10.0;
+    private static final double BEZIER_LIMIT = 1.0;
+    private static final int STEP_LIMIT = 10;
+    private static final int STEP_START = 1;
+    private static final int STEP_SIZE = 1;
 
     private final Collidable character;
     private final Collidable enemy;
@@ -36,7 +38,7 @@ public final class HandleFollowEnemy {
     public void startFollowing() {
         if (!active && !stopped) {
             this.active = true;
-            this.t = 0.0;
+            this.t = 0;
         }
     }
 
@@ -53,7 +55,7 @@ public final class HandleFollowEnemy {
 
             final double totalDistance = estimateBezierLength(p0, p1, p2);
             final double distanceToTravel = deltaMs / TIME_DIVIDER * SPEED;
-            t = Math.min(STEP_LIMIT, t + (distanceToTravel / totalDistance));
+            t = Math.min(BEZIER_LIMIT, t + (distanceToTravel / totalDistance));
 
             final Point2D newPos = quadraticBezier(p0, p1, p2, t);
             final double dx = newPos.x() - p0.x();
@@ -62,14 +64,14 @@ public final class HandleFollowEnemy {
             lastDelta = new Point2DImpl(dx, dy);
 
             character.getHitbox().setPosition(newPos);
-            return !(t >= STEP_LIMIT || character.getHitbox().checkCollision(enemy.getHitbox()));
+            return !(t >= BEZIER_LIMIT || character.getHitbox().checkCollision(enemy.getHitbox()));
         } else {
             return false;
         }
     }
 
     private Point2D quadraticBezier(final Point2D p0, final Point2D p1, final Point2D p2, final double t) {
-        final double oneMinusT = 1 - t;
+        final double oneMinusT = BEZIER_LIMIT - t;
         final double x = oneMinusT * oneMinusT * p0.x()
                 + 2 * oneMinusT * t * p1.x()
                 + t * t * p2.x();
@@ -96,8 +98,8 @@ public final class HandleFollowEnemy {
     private double estimateBezierLength(final Point2D p0, final Point2D p1, final Point2D p2) {
         double length = 0.0;
         Point2D prev = p0;
-        for (double t = STEP_START; t <= STEP_LIMIT; t += STEP_SIZE) {
-            final Point2D current = quadraticBezier(p0, p1, p2, t);
+        for (int t = STEP_START; t <= STEP_LIMIT; t += STEP_SIZE) {
+            final Point2D current = quadraticBezier(p0, p1, p2, t / BEZIER_DIVIDER);
             length += distance(prev, current);
             prev = current;
         }

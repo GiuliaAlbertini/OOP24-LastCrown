@@ -1,5 +1,6 @@
 package it.unibo.oop.lastcrown.controller.collision.impl;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.collision.api.EntityTargetingSystem;
@@ -12,6 +13,14 @@ import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
  * CharacterFSM (Finite State Machine) manages the behavior of a character
  * by processing queued events and transitioning between character states.
  */
+@SuppressFBWarnings(
+        value = {"EI2"},
+        justification = """
+            This class is a Finite State Machine (FSM) that must control the original 'live' character controller.
+            A defensive copy would be a different entity, making it impossible for the FSM to perform its function.
+            This tight coupling is an intentional and fundamental part of the FSM design pattern.
+            """
+    )
 public final class CharacterFSM {
     private final GenericCharacterController character;
     private final EventQueue eventQueue;

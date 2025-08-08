@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
 import it.unibo.oop.lastcrown.model.collision.api.Point2D;
 import it.unibo.oop.lastcrown.model.collision.api.Radius;
@@ -11,8 +12,14 @@ import it.unibo.oop.lastcrown.model.collision.api.Radius;
 /**
  * Implementation of the Radius interface.
  * Represents a detection radius around a hitbox, used to find nearby enemies
- * and perform spatial calculations relative to a semicircle in front of the origin.
+ * and perform spatial calculations relative to a semicircle in front of the
+ * origin.
  */
+@SuppressFBWarnings(value = { "EI_EXPOSE_REP2" }, justification = """
+                The Radius's position is defined by its origin Hitbox.
+            It must hold a live reference to the original object to move with it.
+            A defensive copy would break this essential composition.
+        """)
 public final class RadiusImpl implements Radius {
     private final Hitbox origin;
     private double radius;
@@ -40,7 +47,6 @@ public final class RadiusImpl implements Radius {
         }
         return result;
     }
-
 
     @Override
     public Optional<Hitbox> getClosestEnemyInRadius(final List<Hitbox> enemies) {
@@ -85,7 +91,11 @@ public final class RadiusImpl implements Radius {
         return target.x() >= originCenter.x();
     }
 
-    @Override
+    /**
+     * Sets the radius value used by this object.
+     *
+     * @param radius the new radius to assign
+     */
     public void setRadius(final double radius) {
         this.radius = radius;
     }
