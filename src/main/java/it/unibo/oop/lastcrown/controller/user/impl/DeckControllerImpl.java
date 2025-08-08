@@ -77,4 +77,17 @@ public class DeckControllerImpl implements DeckController {
     public final CardIdentifier getHero() {
         return this.deck.getHero();
     }
+
+    @Override
+    public final List<CardIdentifier> getOrderedDeck() {
+        final List<CardIdentifier> ordered = new ArrayList<>();
+        for (final CardType type : TYPES) {
+            final List<CardIdentifier> block = this.deck.getDeck().stream()
+                .filter(card -> card.type().equals(type))
+                .sorted(Comparator.comparingInt(CardIdentifier::number))
+                .toList();
+            ordered.addAll(block);
+        }
+        return Collections.unmodifiableList(ordered);
+    }
 }

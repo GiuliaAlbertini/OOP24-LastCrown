@@ -5,6 +5,7 @@ import java.util.Set;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
+import it.unibo.oop.lastcrown.model.user.api.Deck;
 
 /**
  * Controller for a {@link Deck}.
@@ -17,6 +18,13 @@ public interface DeckController {
      * @return the {@link Set} of {@link CardIdentifier} containing the cards in the deck
      */
     Set<CardIdentifier> getDeck();
+
+    /**
+     * Getter for the deck ordered by type.
+     * The order is: HERO->MELEE->Ranged->SPELL
+     * @return the ordered deck as a list
+     */
+    List<CardIdentifier> getOrderedDeck();
 
     /**
      * Getter for the cards in the user's collection.
