@@ -1,8 +1,6 @@
 package it.unibo.oop.lastcrown.controller.file_handling.impl;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,14 +34,6 @@ public class CreditsControllerImpl implements CreditsController {
     }
 
     private static String getPath() {
-         try {
-            return Path.of(
-                CreditsControllerImpl.class
-                    .getResource(SEP + "credits")
-                    .toURI()
-            ).toString();
-        } catch (final URISyntaxException e) {
-            throw new IllegalStateException("Credits resource not found", e);
-        }
+        return SEP + CREDITS;
     }
 }

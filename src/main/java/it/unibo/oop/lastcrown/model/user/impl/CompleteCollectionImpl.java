@@ -1,8 +1,6 @@
 package it.unibo.oop.lastcrown.model.user.impl;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -163,14 +161,6 @@ public class CompleteCollectionImpl implements CompleteCollection {
     }
 
     private static String getPath() {
-        try {
-            return Path.of(
-                CompleteCollectionImpl.class
-                    .getResource(SEP + "entities")
-                    .toURI()
-            ).toString();
-        } catch (final URISyntaxException e) {
-            throw new IllegalStateException("Entities resource not found", e);
-        }
+        return SEP + "entities";
     }
 }

@@ -1,8 +1,6 @@
 package it.unibo.oop.lastcrown.controller.user.impl;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -87,14 +85,6 @@ public class CollectionControllerImpl implements CollectionController {
     }
 
     private static String getPath() {
-        try {
-            return Path.of(
-                CollectionControllerImpl.class
-                    .getResource(SEP + "entities")
-                    .toURI()
-            ).toString();
-        } catch (final URISyntaxException e) {
-            throw new IllegalStateException("Entities resource not found", e);
-        }
+        return SEP + "entities";
     }
 }
