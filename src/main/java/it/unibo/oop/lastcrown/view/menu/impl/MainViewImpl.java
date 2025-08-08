@@ -46,7 +46,7 @@ import it.unibo.oop.lastcrown.view.shop.ShopViewImpl;
             An istance of the main controller is kept to properly update account info during the game.
             """
 )
-public class MainViewImpl extends JFrame implements MainView {
+public final class MainViewImpl extends JFrame implements MainView {
     private static final long serialVersionUID = 1L;
     private static final double RESIZE_FACTOR = 1.0;
     private static final Dimension SCREENSIZE = Toolkit.getDefaultToolkit().getScreenSize();
