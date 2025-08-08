@@ -32,6 +32,7 @@ public final class SpellPathLoader {
             spellPaths.addLast(relativePath);
             cont++;
             relativePath = getGenericSpellPath(spellName, Integer.toString(cont));
+            relativePath = relativePath.replace(File.separator, "/");
             resource = CharacterPathLoader.class.getResource(relativePath);
         }
         return spellPaths;

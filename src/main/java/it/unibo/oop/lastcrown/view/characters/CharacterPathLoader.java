@@ -46,6 +46,7 @@ public final class CharacterPathLoader {
             paths.addLast(relativePath);
             cont++;
             relativePath = getGenericCharacterPath(charType, charName, keyWord + cont);
+            relativePath = relativePath.replace(File.separator, "/");
             resource = CharacterPathLoader.class.getResource(relativePath);
         }
         return paths;
