@@ -17,13 +17,6 @@ public final class EntityEngagementManagerImpl implements EntityEngagementManage
     private final Set<EnemyEngagement> engagedEnemies = new HashSet<>();
     private final Map<Integer, Object> enemyLocks = new HashMap<>();
 
-    /**
-     * Constructs a new EngagementManagerImpl.
-     */
-    public EntityEngagementManagerImpl() {
-
-    }
-
     @Override
     public boolean isEntityEngaged(final int entityId) {
         synchronized (engagedEnemies) {
