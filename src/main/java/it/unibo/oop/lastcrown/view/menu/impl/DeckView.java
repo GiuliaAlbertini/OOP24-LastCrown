@@ -74,7 +74,7 @@ public final class DeckView extends AbstractScene implements DeckViewInterface {
         final int initWidth = this.getWidth() > 0 ? this.getWidth() : SCREEN_WIDTH;
         final int initHeight = this.getHeight() > 0 ? this.getHeight() : SCREEN_HEIGHT;
 
-        detailPanel = new DetailPanel();
+        detailPanel = DetailPanel.create();
         this.detailWidth = (int) Math.round(initWidth * DETAIL_RATIO);
         this.detailPanel.setPreferredSize(new Dimension(this.detailWidth, initHeight));
         final int rightWidth = initWidth - this.detailWidth;

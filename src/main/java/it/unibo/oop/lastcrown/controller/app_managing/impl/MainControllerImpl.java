@@ -41,10 +41,12 @@ public class MainControllerImpl implements MainController {
     private static final double TO_MINUTES_FACTOR = 60_000.0;
     private static final String SEP = File.separator;
     private static final String ACCOUNT_PATH = getAccountPath();
+
     private Optional<SceneManager> sceneManager;
     private Optional<AccountController> accountController = Optional.empty();
     private final LoginView loginView;
     private final MatchStartObserver gameController;
+
     private long sessionTimer;
 
     /**
@@ -117,6 +119,22 @@ public class MainControllerImpl implements MainController {
         this.sceneManager.get().updateAccountUsers(account);
     }
 
+    @Override
+    public final MatchController getMatchController() {
+        return this.gameController.getMatchControllerReference();
+    }
+
+    @Override
+    public final MatchStartObserver getMatchStartObserver() {
+        return this.gameController;
+    }
+
+    private static String getAccountPath() {
+        return System.getProperty("user.home")
+            + SEP + ".lastcrown"
+            + SEP + "accounts";
+    }
+
     private void checkDirExistence() {
         final File dir = new File(ACCOUNT_PATH);
         if (!dir.exists() && !dir.mkdirs()) {
@@ -124,12 +142,6 @@ public class MainControllerImpl implements MainController {
                 "Impossible to create the folder for the accounts: " + dir.getAbsolutePath()
             );
         }
-    }
-
-    private static String getAccountPath() {
-        return System.getProperty("user.home")
-            + SEP + ".lastcrown"
-            + SEP + "accounts";
     }
 
     private double computeMinutesPassed() {
@@ -148,15 +160,5 @@ public class MainControllerImpl implements MainController {
 
     private Set<CardIdentifier> getUserCollection(final Optional<AccountController> accountController) {
         return accountController.get().getAccount().getUserCollection().getCollection();
-    }
-
-    @Override
-    public MatchController getMatchController() {
-        return this.gameController.getMatchControllerReference();
-    }
-
-    @Override
-    public MatchStartObserver getMatchStartObserver() {
-        return this.gameController;
     }
 }

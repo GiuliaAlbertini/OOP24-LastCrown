@@ -20,6 +20,7 @@ import it.unibo.oop.lastcrown.view.characters.CharacterHealthBar;
  * A standard implementation of Wall interface.
  */
 public final class WallImpl implements Wall {
+    private static final int THICKNESS = 5;
     private final Map<Integer, CharacterHitObserver> opponents = new ConcurrentHashMap<>();
     private final CharacterHealthBar healthBar;
     private int maximumHealth;
@@ -40,7 +41,7 @@ public final class WallImpl implements Wall {
     public WallImpl(final int attack, final int health, final int id,
      final int healthWidth, final int healthHeight, final Optional<Hitbox> hitbox) {
         this.healthBar = CharacterHealthBar.create(healthWidth, healthHeight, Color.GREEN);
-        this.healthBar.setBorder(BorderFactory.createLineBorder(Color.BLUE, 5));
+        this.healthBar.setBorder(BorderFactory.createLineBorder(Color.BLUE, THICKNESS));
         this.maximumHealth = health;
         this.currentHealth = health;
         this.attack = attack;

@@ -255,7 +255,7 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
         final Color full = new Color(255, 105, 180);
         final Color empty = Color.WHITE;
         final Color separator = Color.DARK_GRAY;
-        for (int i = 0; i < SECTIONS; i++) {
+        for (int i = SECTIONS - 1; i >= 0; i--) {
             final JPanel section = new JPanel(new BorderLayout());
             section.setBackground(i < energyLevel ? full : empty);
             section.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, separator));
