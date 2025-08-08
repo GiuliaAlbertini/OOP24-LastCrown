@@ -1,6 +1,8 @@
 package it.unibo.oop.lastcrown.controller.file_handling.impl;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +17,7 @@ import it.unibo.oop.lastcrown.model.file_handling.impl.ReadOnlyFileHandlerImpl;
 public class CreditsControllerImpl implements CreditsController {
 
     private static final String CREDITS = "credits";
-
+    private static final String SEP = File.separator;
     private static final String PATH = getPath();
 
     private final ReadOnlyFileHandler<List<String>> creditsFileHandler;
@@ -34,12 +36,14 @@ public class CreditsControllerImpl implements CreditsController {
     }
 
     private static String getPath() {
-        return "src"
-        + File.separator
-        + "main"
-        + File.separator
-        + "resources"
-        + File.separator
-        + CREDITS;
+         try {
+            return Path.of(
+                CreditsControllerImpl.class
+                    .getResource(SEP + "credits")
+                    .toURI()
+            ).toString();
+        } catch (URISyntaxException | NullPointerException e) {
+            throw new IllegalStateException("Credits resource not found", e);
+        }
     }
 }

@@ -1,6 +1,8 @@
 package it.unibo.oop.lastcrown.model.user.impl;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -31,6 +33,7 @@ public class CompleteCollectionImpl implements CompleteCollection {
     private static final String HEROES = "heroes";
     private static final String PLAYABLE_CHARACTER = "playableCharacters";
     private static final String SPELLS = "spells";
+    private static final String SEP = File.separator;
     private static final String PATH = getPath();
 
     private final Optional<Map<CardIdentifier, Hero>> heroes;
@@ -160,13 +163,14 @@ public class CompleteCollectionImpl implements CompleteCollection {
     }
 
     private static String getPath() {
-        return "src"
-        + File.separator
-        + "main"
-        + File.separator
-        + "resources"
-        + File.separator
-        + "entities";
+        try {
+            return Path.of(
+                CompleteCollectionImpl.class
+                    .getResource(SEP + "entities")
+                    .toURI()
+            ).toString();
+        } catch (URISyntaxException | NullPointerException e) {
+            throw new IllegalStateException("Entities resource not found", e);
+        }
     }
-
 }
