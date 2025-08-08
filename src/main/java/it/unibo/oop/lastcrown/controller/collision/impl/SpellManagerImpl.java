@@ -2,20 +2,22 @@ package it.unibo.oop.lastcrown.controller.collision.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import it.unibo.oop.lastcrown.controller.collision.api.SpellManager;
+import java.util.Optional;
+import java.util.function.Function;
+
+import javax.swing.JComponent;
+
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
+import it.unibo.oop.lastcrown.controller.collision.api.SpellManager;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
-import it.unibo.oop.lastcrown.model.collision.impl.Pair;
 import it.unibo.oop.lastcrown.model.spell.api.Spell;
 import it.unibo.oop.lastcrown.model.spell.api.SpellEffect;
-import it.unibo.oop.lastcrown.model.user.api.CompleteCollection;
+import it.unibo.oop.lastcrown.utility.Pair;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 import it.unibo.oop.lastcrown.view.spell.api.SpellGUI;
 import it.unibo.oop.lastcrown.view.spell.impl.SpellGUIImpl;
-import javax.swing.JComponent;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -34,102 +36,166 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 )
 public final class SpellManagerImpl implements SpellManager {
 
+    private static final String HEALTH_CATEGORY = "health";
+    private static final String ATTACK_CATEGORY = "attack";
+    private static final String SPEED_CATEGORY = "speedMultiplier";
+    private static final int ENEMY_EFFECT_MULTIPLIER = -1;
+
     private final List<Pair<CardIdentifier, SpellGUI>> spellList = new ArrayList<>();
     private final MatchController matchController;
-    private final CompleteCollection collection;
-    private boolean spellScanner;
-    private int spellX;
-    private int spellY;
+    private final Function<CardIdentifier, Optional<Spell>> spellProvider;
     private final int frameWidth;
 
+    private boolean shouldCastSpell;
+    private int castX;
+    private int castY;
+
     /**
-     * Constructs a new SpellManagerImpl with the provided match controller,
-     * spell collection, and frame width for graphical scaling.
+     * Creates a new instance of SpellManagerImpl.
      *
-     * @param matchController the controller managing the current match state
-     * @param collection      the complete spell collection owned by the player
-     * @param frameWidth      the width of the game frame, used to scale spell graphics
+     * @param matchController the controller managing the current match, used to
+     *                        access character data and game state
+     * @param spellProvider   a function that, given a CardIdentifier, provides an
+     *                        Optional containing the corresponding Spell if
+     *                        available
+     * @param frameWidth      the width of the game frame, used for sizing spell
+     *                        graphical components
      */
-    public SpellManagerImpl(final MatchController matchController, final CompleteCollection collection,
+    public SpellManagerImpl(final MatchController matchController,
+            final Function<CardIdentifier, Optional<Spell>> spellProvider,
             final int frameWidth) {
         this.matchController = matchController;
-        this.collection = collection;
+        this.spellProvider = spellProvider;
         this.frameWidth = frameWidth;
+        this.shouldCastSpell = false;
     }
 
     @Override
     public void handleSpellSelection(final CardIdentifier id) {
-        if (id.type() == CardType.SPELL) {
-            spellList.clear();
-            spellScanner = false;
-            final Spell spell = this.collection.getSpell(id).get();
+        if (id.type() != CardType.SPELL) {
+            return;
+        }
+
+        resetSpellState();
+        this.spellProvider.apply(id).ifPresent(spell -> {
             final SpellGUI spellGUI = new SpellGUIImpl(spell.getName(),
                     (int) (frameWidth * DimensionResolver.SPELL.width()));
             spellList.add(new Pair<>(id, spellGUI));
-        }
+        });
     }
 
     @Override
     public void castSpell(final int x, final int y) {
-        spellX = x;
-        spellY = y;
-        spellScanner = true;
+        this.castX = x;
+        this.castY = y;
+        this.shouldCastSpell = true;
     }
 
     @Override
     public void update(final int deltaTime) {
-        if (!spellList.isEmpty() && spellScanner) {
-            final Pair<CardIdentifier, SpellGUI> spellSelected = spellList.get(spellList.size() - 1);
-            if (spellSelected != null && spellSelected.get1() != null && spellSelected.get2() != null) {
-                final CardIdentifier id = spellSelected.get1();
-                final JComponent spellComponent = spellSelected.get2().getGraphicalComponent();
-                matchController.getMatchView().addSpellGraphics(id.number(), spellComponent, spellX, spellY);
-                spellSelected.get2().startAnimation();
-                spellScanner = false;
-                spellList.clear();
+        if (spellList.isEmpty() || !shouldCastSpell) {
+            return;
+        }
 
-                final SpellEffect spellEffect = collection.getSpell(id).get().getSpellEffect();
-                switch (spellEffect.target()) {
-                    case FRIENDLY:
-                        handleSpellFriendly(spellEffect);
-                        break;
-                    case ENEMY:
-                        handleSpellEnemy(spellEffect);
-                        break;
-                    default:
-                        break;
-                }
-            }
+        final Pair<CardIdentifier, SpellGUI> spellSelected = spellList.get(spellList.size() - 1);
+        castSelectedSpell(spellSelected);
+    }
+
+    private void resetSpellState() {
+        spellList.clear();
+        shouldCastSpell = false;
+    }
+
+    private void castSelectedSpell(final Pair<CardIdentifier, SpellGUI> spellSelected) {
+        final CardIdentifier id = spellSelected.get1();
+        final JComponent spellComponent = spellSelected.get2().getGraphicalComponent();
+
+        matchController.getMatchView().addSpellGraphics(id.number(), spellComponent, castX, castY);
+        spellSelected.get2().startAnimation();
+
+        resetSpellState();
+
+        this.spellProvider.apply(id).ifPresent(spell -> {
+            final SpellEffect spellEffect = spell.getSpellEffect();
+            applySpellEffect(spellEffect);
+        });
+    }
+
+    private void applySpellEffect(final SpellEffect spellEffect) {
+        switch (spellEffect.target()) {
+            case FRIENDLY:
+                handleSpellFriendly(spellEffect);
+                break;
+            case ENEMY:
+                handleSpellEnemy(spellEffect);
+                break;
+            default:
+                break;
         }
     }
 
     private void handleSpellFriendly(final SpellEffect spellEffect) {
-        final List<GenericCharacterController> friendlyCharacters = matchController.getCharactersByType(CardType.MELEE);
-        if ("health".equals(spellEffect.category())) {
-            for (final var character : friendlyCharacters) {
-                character.heal(spellEffect.amount());
-            }
-        } else if ("attack".equals(spellEffect.category())) {
-            for (final var character : friendlyCharacters) {
-                character.setAttackValue(spellEffect.amount());
+        final List<GenericCharacterController> friendlyCharacters = getFriendlyCharacters();
+        applyEffectToCharacters(friendlyCharacters, spellEffect, false);
+    }
+
+    private void handleSpellEnemy(final SpellEffect spellEffect) {
+        final List<GenericCharacterController> enemyCharacters = getEnemyCharacters();
+        applyEffectToCharacters(enemyCharacters, spellEffect, true);
+    }
+
+    private List<GenericCharacterController> getFriendlyCharacters() {
+        final List<GenericCharacterController> characters = new ArrayList<>();
+        characters.addAll(matchController.getCharactersByType(CardType.MELEE));
+        characters.addAll(matchController.getCharactersByType(CardType.RANGED));
+        characters.addAll(matchController.getCharactersByType(CardType.HERO));
+        return characters;
+    }
+
+    private List<GenericCharacterController> getEnemyCharacters() {
+        final List<GenericCharacterController> characters = new ArrayList<>();
+        characters.addAll(matchController.getCharactersByType(CardType.ENEMY));
+        characters.addAll(matchController.getCharactersByType(CardType.BOSS));
+        return characters;
+    }
+
+    private void applyEffectToCharacters(final List<GenericCharacterController> characters,
+            final SpellEffect spellEffect, final boolean isTargetingEnemy) {
+
+        final String category = spellEffect.category();
+        final int amount = spellEffect.amount();
+
+        if (HEALTH_CATEGORY.equals(category)) {
+            applyHealthEffect(characters, amount, isTargetingEnemy);
+        } else if (ATTACK_CATEGORY.equals(category)) {
+            applyAttackEffect(characters, amount, isTargetingEnemy);
+        } else if (SPEED_CATEGORY.equals(category) && isTargetingEnemy) {
+            applySpeedEffect(characters, amount);
+        }
+    }
+
+    private void applyHealthEffect(final List<GenericCharacterController> characters,
+            final int amount, final boolean isTargetingEnemy) {
+        for (final var character : characters) {
+            if (isTargetingEnemy) {
+                character.takeHit(amount);
+            } else {
+                character.heal(amount);
             }
         }
     }
 
-    private void handleSpellEnemy(final SpellEffect spellEffect) {
-        final List<GenericCharacterController> enemyCharacters = matchController.getCharactersByType(CardType.ENEMY);
-        if ("health".equals(spellEffect.category())) {
-            for (final var character : enemyCharacters) {
-                character.takeHit(spellEffect.amount());
-            }
-        } else if ("attack".equals(spellEffect.category())) {
-            for (final var character : enemyCharacters) {
-                character.setAttackValue((-1) * spellEffect.amount());
-            }
-        } else if ("speedMultiplier".equals(spellEffect.category())) {
-            for (final var character : enemyCharacters) {
-                character.setSpeedMultiplierValue((-1) * spellEffect.amount());
-            }
+    private void applyAttackEffect(final List<GenericCharacterController> characters,
+            final int amount, final boolean isTargetingEnemy) {
+        final int effectiveAmount = isTargetingEnemy ? ENEMY_EFFECT_MULTIPLIER * amount : amount;
+        for (final var character : characters) {
+            character.setAttackValue(effectiveAmount);
+        }
+    }
+
+    private void applySpeedEffect(final List<GenericCharacterController> characters, final int amount) {
+        for (final var character : characters) {
+            character.setSpeedMultiplierValue(ENEMY_EFFECT_MULTIPLIER * amount);
         }
     }
 }
