@@ -3,10 +3,13 @@ package it.unibo.oop.lastcrown.view.menu.impl;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import it.unibo.oop.lastcrown.controller.user.api.DeckController;
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
+import it.unibo.oop.lastcrown.view.menu.api.DeckUpdateListener;
 import it.unibo.oop.lastcrown.view.scenes_utilities.CardsGridPanel;
 import it.unibo.oop.lastcrown.view.scenes_utilities.IconPanel;
 
@@ -17,13 +20,13 @@ public final class DeckRowPanelManager {
 
     private static final int CARD_CELL_SIZE = CardsGridPanel.getFixedCellSize();
 
-    private final Runnable onDeckUpdated;
+    private final DeckUpdateListener onDeckUpdated;
 
     /**
      * Construct a new DeckRowPanelManager.
      * @param onDeckUpdated the action to perform on the deck update
      */
-    public DeckRowPanelManager(final Runnable onDeckUpdated) {
+    public DeckRowPanelManager(final DeckUpdateListener onDeckUpdated) {
         this.onDeckUpdated = onDeckUpdated;
     }
 
@@ -34,13 +37,13 @@ public final class DeckRowPanelManager {
      */
     public void loadDeckIcons(final JPanel deckPanel, final DeckController deckController) {
         deckPanel.removeAll();
-        for (final CardIdentifier card : deckController.getDeck()) {
+        for (final CardIdentifier card : deckController.getOrderedDeck()) {
             final IconPanel iconPanel = new IconPanel(card, false, false);
             iconPanel.setPreferredSize(new Dimension(CARD_CELL_SIZE, CARD_CELL_SIZE));
             iconPanel.addMouseListener(new MouseAdapter() {
                 @Override public void mouseClicked(final MouseEvent e) {
                     deckController.removeCard(card);
-                    onDeckUpdated.run();
+                    SwingUtilities.invokeLater(onDeckUpdated::onDeckUpdated);
                 }
             });
             deckPanel.add(iconPanel);
