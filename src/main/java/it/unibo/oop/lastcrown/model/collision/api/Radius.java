@@ -3,6 +3,8 @@ package it.unibo.oop.lastcrown.model.collision.api;
 import java.util.List;
 import java.util.Optional;
 
+import it.unibo.oop.lastcrown.utility.api.Point2D;
+
 /**
  * Represents a circular area defined by a center point and a radius.
  * Provides methods to query enemies within this radius, such as retrieving

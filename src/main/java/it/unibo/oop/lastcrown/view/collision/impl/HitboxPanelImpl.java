@@ -5,9 +5,9 @@ import javax.swing.JPanel;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
-import it.unibo.oop.lastcrown.model.collision.api.Point2D;
+import it.unibo.oop.lastcrown.utility.api.Point2D;
+import it.unibo.oop.lastcrown.utility.impl.Point2DImpl;
 import it.unibo.oop.lastcrown.view.collision.api.HitboxPanel;
-import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
 
 /**
  * Implementation of HitboxPanel that visually represents a hitbox using a

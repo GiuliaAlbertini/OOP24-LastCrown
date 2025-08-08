@@ -1,5 +1,7 @@
 package it.unibo.oop.lastcrown.model.collision.api;
 
+import it.unibo.oop.lastcrown.utility.api.Point2D;
+
 /**
  * Represents the hitbox of a game object, used for collision detection.
  */

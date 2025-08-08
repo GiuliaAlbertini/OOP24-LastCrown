@@ -1,8 +1,8 @@
 package it.unibo.oop.lastcrown.model.collision.impl.handler;
 import it.unibo.oop.lastcrown.model.collision.api.Collidable;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
-import it.unibo.oop.lastcrown.model.collision.api.Point2D;
-import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
+import it.unibo.oop.lastcrown.utility.api.Point2D;
+import it.unibo.oop.lastcrown.utility.impl.Point2DImpl;
 
 /** Implementation for the enemy following movement handler. */
 public final class HandleFollowEnemy {

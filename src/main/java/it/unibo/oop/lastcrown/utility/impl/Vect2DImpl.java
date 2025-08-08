@@ -1,6 +1,6 @@
-package it.unibo.oop.lastcrown.model.collision.impl;
+package it.unibo.oop.lastcrown.utility.impl;
 
-import it.unibo.oop.lastcrown.model.collision.api.Vect2D;
+import it.unibo.oop.lastcrown.utility.api.Vect2D;
 
 /**
  * Implementation of the Vect2D interface.
@@ -56,10 +56,5 @@ public final class Vect2DImpl implements Vect2D {
     @Override
     public double y() {
         return y;
-    }
-
-    @Override
-    public String toString() {
-        return "Vect2d(" + x + ", " + y + ")";
     }
 }

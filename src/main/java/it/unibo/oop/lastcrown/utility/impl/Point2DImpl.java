@@ -1,7 +1,7 @@
-package it.unibo.oop.lastcrown.model.collision.impl;
+package it.unibo.oop.lastcrown.utility.impl;
 
-import it.unibo.oop.lastcrown.model.collision.api.Point2D;
-import it.unibo.oop.lastcrown.model.collision.api.Vect2D;
+import it.unibo.oop.lastcrown.utility.api.Point2D;
+import it.unibo.oop.lastcrown.utility.api.Vect2D;
 
 /**
  * Implementation of the Point2D interface representing a point in 2D space.

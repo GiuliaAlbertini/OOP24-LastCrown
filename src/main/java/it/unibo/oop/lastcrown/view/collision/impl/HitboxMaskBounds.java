@@ -4,8 +4,8 @@ import javax.swing.JComponent;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
-import it.unibo.oop.lastcrown.model.collision.api.Point2D;
-import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
+import it.unibo.oop.lastcrown.utility.api.Point2D;
+import it.unibo.oop.lastcrown.utility.impl.Point2DImpl;
 import it.unibo.oop.lastcrown.view.collision.api.HitboxMask;
 import it.unibo.oop.lastcrown.view.collision.api.HitboxPanel;
 
@@ -16,7 +16,7 @@ import it.unibo.oop.lastcrown.view.collision.api.HitboxPanel;
 @SuppressFBWarnings(
     value = "EI",
     justification = """
-        This class acts as a mediator, directly manipulating the state of external 'live' objects 
+        This class acts as a mediator, directly manipulating the state of external 'live' objects
         (Hitbox, JComponent, HitboxPanel). Defensive copies can't be used because we need to act on the
         original objects.
         The exposure of these mutable references is a consequence of having to manually

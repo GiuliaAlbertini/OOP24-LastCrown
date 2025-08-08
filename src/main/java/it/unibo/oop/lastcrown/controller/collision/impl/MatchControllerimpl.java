@@ -39,16 +39,16 @@ import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionManager;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
-import it.unibo.oop.lastcrown.model.collision.api.Point2D;
 import it.unibo.oop.lastcrown.model.collision.api.Radius;
 import it.unibo.oop.lastcrown.model.collision.impl.CollisionManagerImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.CollisionResolverImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.HitboxImpl;
-import it.unibo.oop.lastcrown.model.collision.impl.Pair;
-import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.RadiusImpl;
 import it.unibo.oop.lastcrown.model.user.api.CompleteCollection;
 import it.unibo.oop.lastcrown.utility.Constant;
+import it.unibo.oop.lastcrown.utility.Pair;
+import it.unibo.oop.lastcrown.utility.api.Point2D;
+import it.unibo.oop.lastcrown.utility.impl.Point2DImpl;
 import it.unibo.oop.lastcrown.view.ImageLoader;
 import it.unibo.oop.lastcrown.view.characters.CharacterPathLoader;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
@@ -62,20 +62,24 @@ import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 import it.unibo.oop.lastcrown.view.map.MatchView;
 import it.unibo.oop.lastcrown.view.menu.api.MainView;
 
-/** Implementation for the {@link MatchController}. */
-@SuppressFBWarnings(
-    value = {
+/**
+ * Core class of the match system.
+ * Manages characters, combat, collisions, and view updates,
+ * keeping the game flow alive and responsive.
+ */
+
+@SuppressFBWarnings(value = {
         "EI_EXPOSE_REP",
         "EI_EXPOSE_REP2"
-    },
-    justification = """
-            A reference to the match view has to be kept, and the desired match view can be linked
-            at any time via a specific method, decoupling the controller and view initialization
-            processes.
-            The wall can also be accessed, and for it to be relevant it's required that the actual wall
-            object is returned.
-            """
-)
+}, justification = """
+        A reference to the match view has to be kept, and the desired match view can be linked
+        at any time via a specific method, decoupling the controller and view initialization
+        processes.
+        The wall can also be accessed, and for it to be relevant it's required that the actual wall
+        object is returned.
+        """)
+
+
 public final class MatchControllerimpl implements MatchController {
     private final List<Pair<String, PlayableCharacterController>> cardList = new ArrayList<>();
     private final CollisionManager collisionManager = new CollisionManagerImpl();
@@ -100,15 +104,16 @@ public final class MatchControllerimpl implements MatchController {
     private final SpellManager spellManager;
 
     /**
-     * Instantiates the match controller. TODO - complete param tags.
+     * Creates a new match controller, initializing hero, enemies, wall,
+     * and all game mechanics needed to run a match.
      *
-     * @param mainController
-     * @param frameWidth
-     * @param frameHeight
-     * @param heroId
-     * @param collectionController
-     * @param mainView
-     * @param enemyList
+     * @param mainController       the main application controller
+     * @param frameWidth           the width of the game frame
+     * @param frameHeight          the height of the game frame
+     * @param heroId               the identifier of the hero character
+     * @param collectionController controller for the player’s collection
+     * @param mainView             the main user interface view
+     * @param enemyList            the number of enemies to spawn in the match
      */
     public MatchControllerimpl(final MainController mainController, final int frameWidth, final int frameHeight,
             final CardIdentifier heroId, final CollectionController collectionController, final MainView mainView,
@@ -127,13 +132,12 @@ public final class MatchControllerimpl implements MatchController {
         this.engagementManager = new EntityEngagementManagerImpl();
         this.entityStateManager = new EntityStateManagerImpl();
         this.radiusScanner = new EntityTargetingSystemImpl(
-            this.entityStateManager,
-            this,
-            collisionResolver
-        );
+                this.entityStateManager,
+                this,
+                collisionResolver);
         this.enemySpawner = new EnemySpawnerImpl(this, collectionController.getEnemies(), this.frameWidth,
                 this.frameHeight, enemyList);
-        this.spellManager = new SpellManagerImpl(this, this.collection, this.frameWidth);
+        this.spellManager = new SpellManagerImpl(this, this.collection::getSpell, this.frameWidth);
     }
 
     private void initializeHero(final CardIdentifier heroId, final CollectionController collectionController) {
@@ -315,9 +319,9 @@ public final class MatchControllerimpl implements MatchController {
     public boolean isEngagedWithDead(final int characterId) {
         final int counterpartId = this.engagementManager.getEngagedCounterpart(characterId);
         return counterpartId != -1
-            && getCharacterControllerById(counterpartId)
-                .map(GenericCharacterController::isDead)
-                .orElse(false);
+                && getCharacterControllerById(counterpartId)
+                        .map(GenericCharacterController::isDead)
+                        .orElse(false);
     }
 
     @Override

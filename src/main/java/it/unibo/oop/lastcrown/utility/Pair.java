@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.model.collision.impl;
+package it.unibo.oop.lastcrown.utility;
 
 import java.util.Objects;
 

@@ -5,8 +5,8 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import it.unibo.oop.lastcrown.model.collision.api.Point2D;
 import it.unibo.oop.lastcrown.model.collision.api.Radius;
+import it.unibo.oop.lastcrown.utility.api.Point2D;
 import it.unibo.oop.lastcrown.view.collision.api.HitboxMask;
 import it.unibo.oop.lastcrown.view.collision.api.RadiusPanel;
 

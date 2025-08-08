@@ -1,7 +1,8 @@
 package it.unibo.oop.lastcrown.model.collision.impl;
 
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
-import it.unibo.oop.lastcrown.model.collision.api.Point2D;
+import it.unibo.oop.lastcrown.utility.api.Point2D;
+import it.unibo.oop.lastcrown.utility.impl.Point2DImpl;
 
 /**
  * Implementation of the Hitbox interface.

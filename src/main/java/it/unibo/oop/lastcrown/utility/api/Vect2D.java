@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.model.collision.api;
+package it.unibo.oop.lastcrown.utility.api;
 
 /**
  * This interface represents a 2D vector, providing basic operations such as
@@ -56,9 +56,6 @@ public interface Vect2D {
      * @return the y component of the vector
      */
     double y();
-
-    @Override
-    String toString();
 }
 
 

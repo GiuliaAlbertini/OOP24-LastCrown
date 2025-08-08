@@ -11,8 +11,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
-import it.unibo.oop.lastcrown.model.collision.api.Point2D;
 import it.unibo.oop.lastcrown.model.collision.impl.handler.HandleFollowEnemy;
+import it.unibo.oop.lastcrown.utility.Pair;
+import it.unibo.oop.lastcrown.utility.api.Point2D;
 import it.unibo.oop.lastcrown.view.characters.api.Movement;
 
 /**

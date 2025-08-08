@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.model.collision.api;
+package it.unibo.oop.lastcrown.utility.api;
 
 /**
  * Represents a point in a 2D Cartesian coordinate system.

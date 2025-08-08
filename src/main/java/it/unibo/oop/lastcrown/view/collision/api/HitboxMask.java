@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 
-import it.unibo.oop.lastcrown.model.collision.api.Point2D;
+import it.unibo.oop.lastcrown.utility.api.Point2D;
 
 /** Interface for the characters' hitbox mask. */
 public interface HitboxMask {

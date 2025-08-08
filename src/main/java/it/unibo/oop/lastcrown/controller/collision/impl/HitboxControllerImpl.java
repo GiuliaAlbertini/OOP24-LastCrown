@@ -9,7 +9,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
 import it.unibo.oop.lastcrown.model.collision.api.Radius;
-import it.unibo.oop.lastcrown.model.collision.impl.Point2DImpl;
+import it.unibo.oop.lastcrown.utility.impl.Point2DImpl;
 import it.unibo.oop.lastcrown.view.collision.api.HitboxMask;
 import it.unibo.oop.lastcrown.view.collision.api.HitboxPanel;
 import it.unibo.oop.lastcrown.view.collision.api.RadiusPanel;
@@ -54,7 +54,6 @@ public final class HitboxControllerImpl implements HitboxController {
         if (radiusPanel != null) {
             radiusPanel.updatePosition();
         }
-        //view.updatePanel();
     }
 
     @Override

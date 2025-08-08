@@ -14,7 +14,9 @@ import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 
-/** Implementation for the {@link EnemySpawner}. */
+/**
+ * Implementation for the EnemySpawner.
+ */
 @SuppressFBWarnings(
     value = "EI_EXPOSE_REP2",
     justification = """

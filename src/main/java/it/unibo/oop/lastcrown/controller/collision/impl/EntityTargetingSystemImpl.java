@@ -117,7 +117,7 @@ public final class EntityTargetingSystemImpl implements EntityTargetingSystem {
             if (player.getId().type() == CardType.RANGED) {
                 return createEventIfAllowed(!resolver.hasOpponentRangedPartner(player.getId().number()),
                         player, enemy, EventType.RANGED, allEntities);
-            } else { // MELEE
+            } else {
                 if (canMeleePlayerEngage(player, (EnemyController) enemy)) {
                     synchronized (enemy) {
                         return createEventIfAllowed(

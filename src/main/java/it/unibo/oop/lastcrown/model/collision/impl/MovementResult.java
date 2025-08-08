@@ -1,7 +1,7 @@
 package it.unibo.oop.lastcrown.model.collision.impl;
 
 import it.unibo.oop.lastcrown.model.collision.api.Collidable;
-import it.unibo.oop.lastcrown.model.collision.api.Point2D;
+import it.unibo.oop.lastcrown.utility.api.Point2D;
 import it.unibo.oop.lastcrown.view.characters.api.Movement;
 
 

@@ -156,15 +156,6 @@ public final class StoppingHandler implements StateHandler {
 
     }
 
-    /**
-     * Handles the specific logic for RANGED characters in the STOPPED state.
-     *
-     * @param character The character controller.
-     * @param queue     The event queue.
-     * @param charId    The ID of the character.
-     *
-     * @return TODO - complete return tag.
-     */
     private CharacterState handleRangedCharacter(final GenericCharacterController character, final EventQueue queue,
             final int charId) {
 

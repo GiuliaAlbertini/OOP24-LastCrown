@@ -6,8 +6,8 @@ import java.util.Optional;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
-import it.unibo.oop.lastcrown.model.collision.api.Point2D;
 import it.unibo.oop.lastcrown.model.collision.api.Radius;
+import it.unibo.oop.lastcrown.utility.api.Point2D;
 
 /**
  * Implementation of the Radius interface.
@@ -39,7 +39,6 @@ public final class RadiusImpl implements Radius {
         this.radius = radius;
     }
 
-    // lista di nemici nel raggio
     @Override
     public List<Hitbox> getEnemiesInRadius(final List<Hitbox> enemies) {
         final List<Hitbox> result = new ArrayList<>();

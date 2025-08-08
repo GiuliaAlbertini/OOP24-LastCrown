@@ -21,7 +21,7 @@ public final class EntityEngagementManagerImpl implements EntityEngagementManage
      * Constructs a new EngagementManagerImpl.
      */
     public EntityEngagementManagerImpl() {
-        // Il costruttore è vuoto, nessuna dipendenza esterna.
+
     }
 
     @Override
@@ -63,7 +63,7 @@ public final class EntityEngagementManagerImpl implements EntityEngagementManage
                 final EnemyEngagement engagement = engagementOpt.get();
                 return engagement.playerId() == characterId ? engagement.enemyId() : engagement.playerId();
             }
-            return -1; // -1 indica che non è stato trovato nessun avversario
+            return -1;
         }
     }
 
