@@ -1,6 +1,7 @@
 package it.unibo.oop.lastcrown.model.user;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,8 +18,8 @@ final class TestUsernameValidator {
 
     @Test
     void testValidNames() {
-        assertTrue(validator.isNameValid("Alice123"));
-        assertTrue(validator.isNameValid("bob_smith"));
+        assertTrue(validator.isNameValid("pippo"));
+        assertTrue(validator.isNameValid("paperino"));
     }
 
     @Test

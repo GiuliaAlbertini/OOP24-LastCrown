@@ -1,6 +1,10 @@
 package it.unibo.oop.lastcrown.model.user;
 
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 
@@ -32,9 +36,7 @@ final class TestUserCollection {
     void testAddCardToCollection() {
         final CardIdentifier newCard = new CardIdentifier(99, CardType.SPELL);
         assertFalse(userCollection.getCollection().contains(newCard), "La carta non dovrebbe essere già presente");
-        
         userCollection.addCard(newCard);
-        
         assertTrue(userCollection.getCollection().contains(newCard), "La carta dovrebbe essere stata aggiunta");
     }
 
@@ -42,6 +44,6 @@ final class TestUserCollection {
     void testCollectionIsUnmodifiable() {
         assertThrows(UnsupportedOperationException.class, () -> {
             userCollection.getCollection().add(new CardIdentifier(100, CardType.HERO));
-        }, "La collezione restituita dovrebbe essere immutabile");
+        }, "The collection given should be immutable");
     }
 }
