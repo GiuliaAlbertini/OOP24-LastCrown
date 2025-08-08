@@ -2,8 +2,8 @@ package it.unibo.oop.lastcrown.view;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -45,7 +45,8 @@ public final class ImageLoader {
     private static BufferedImage getSingleFrame(final String path, final int width, final int height) {
         BufferedImage image = null;
         try {
-            final BufferedImage originalImage = ImageIO.read(new File(path));
+            final InputStream inputStream = ImageLoader.class.getResourceAsStream(path);
+            final BufferedImage originalImage = ImageIO.read(inputStream);
             image = new BufferedImage(width, height, originalImage.getType());
             final Graphics2D g2d = image.createGraphics();
             g2d.drawImage(originalImage, 0, 0, width, height, null);

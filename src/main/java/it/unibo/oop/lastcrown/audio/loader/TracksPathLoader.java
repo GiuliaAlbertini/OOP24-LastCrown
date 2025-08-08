@@ -1,8 +1,5 @@
 package it.unibo.oop.lastcrown.audio.loader;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import it.unibo.oop.lastcrown.audio.SoundEffect;
 import it.unibo.oop.lastcrown.audio.SoundTrack;
 
@@ -34,12 +31,8 @@ public final class TracksPathLoader {
     }
 
     private static String loadGenericPath(final SoundTrack soundTrack, final String type) {
-        final String path = "src" + SEP + "main" + SEP + "resources" + SEP + "tracks"
-         + SEP + soundTrack.get() + SEP + type + FORMAT;
-        if (Files.exists(Paths.get(path))) {
-            return path;
-        }
-        return null;
+        final String path = SEP + "tracks" + SEP + soundTrack.get() + SEP + type + FORMAT;
+        return path;
     }
 
     /**
@@ -47,11 +40,6 @@ public final class TracksPathLoader {
      * @return the path of the given sound effect or null if the path doesn't exist
      */
     public static String loadSoundEffectPath(final SoundEffect soundEffect) {
-        final String path = "src" + SEP + "main" + SEP + "resources" + SEP + "tracks"
-         + SEP + EFFECT + SEP + soundEffect.get() + FORMAT;
-        if (Files.exists(Paths.get(path))) {
-            return path;
-        }
-        return null;
+         return SEP + "tracks" + SEP + EFFECT + SEP + soundEffect.get() + FORMAT;
     }
 }

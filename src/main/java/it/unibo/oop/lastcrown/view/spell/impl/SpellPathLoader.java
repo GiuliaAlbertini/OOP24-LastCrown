@@ -51,8 +51,7 @@ public final class SpellPathLoader {
     }
 
     private static String getGenericSpellPath(final String spellName, final String keyWord) {
-        return "src" + SEP + "main" + SEP + "resources" + SEP + "pngs"
-        + SEP + "spell" + SEP + spellName + SEP + keyWord + ".png";
+        return SEP + "pngs" + SEP + "spell" + SEP + spellName + SEP + keyWord + ".png";
     }
 
 }
