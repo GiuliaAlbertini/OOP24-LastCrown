@@ -127,9 +127,7 @@ public final class DeckView extends AbstractScene implements DeckViewInterface {
         deckRowPanel.revalidate();
         deckRowPanel.repaint();
 
-        deckRowManager = new DeckRowPanelManager(
-            this::onDeckUpdated
-        );
+        deckRowManager = new DeckRowPanelManager(this::onDeckUpdated);
         this.deckRowManager.loadDeckIcons(this.deckRowPanel, this.deckController);
         refreshAvailableCardsGrid(Optional.empty());
     }
