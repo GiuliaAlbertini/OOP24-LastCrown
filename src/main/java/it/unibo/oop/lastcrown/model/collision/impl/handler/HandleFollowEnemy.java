@@ -1,20 +1,13 @@
 package it.unibo.oop.lastcrown.model.collision.impl.handler;
 import it.unibo.oop.lastcrown.model.collision.api.Collidable;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
+import it.unibo.oop.lastcrown.model.collision.api.FollowEnemy;
+import it.unibo.oop.lastcrown.utility.Constant;
 import it.unibo.oop.lastcrown.utility.api.Point2D;
 import it.unibo.oop.lastcrown.utility.impl.Point2DImpl;
 
 /** Implementation for the enemy following movement handler. */
-public final class HandleFollowEnemy {
-
-    private static final double SPEED = 20.0;
-    private static final double TIME_DIVIDER = 1000.0;
-    private static final double BEZIER_DIVIDER = 10.0;
-    private static final double BEZIER_LIMIT = 1.0;
-    private static final int STEP_LIMIT = 10;
-    private static final int STEP_START = 1;
-    private static final int STEP_SIZE = 1;
-
+public final class HandleFollowEnemy implements FollowEnemy {
     private final Collidable character;
     private final Collidable enemy;
     private double t;
@@ -35,6 +28,7 @@ public final class HandleFollowEnemy {
     /**
      * Starts the following motion.
      */
+    @Override
     public void startFollowing() {
         if (!active && !stopped) {
             this.active = true;
@@ -47,6 +41,7 @@ public final class HandleFollowEnemy {
      * @param deltaMs the amount of time since last step.
      * @return false if the following movement is complete, true otherwise.
      */
+    @Override
     public boolean update(final long deltaMs) {
         if (active && !stopped) {
             final Point2D p0 = character.getHitbox().getPosition();
@@ -54,8 +49,8 @@ public final class HandleFollowEnemy {
             final Point2D p1 = computeControlPoint(p0, p2);
 
             final double totalDistance = estimateBezierLength(p0, p1, p2);
-            final double distanceToTravel = deltaMs / TIME_DIVIDER * SPEED;
-            t = Math.min(BEZIER_LIMIT, t + (distanceToTravel / totalDistance));
+            final double distanceToTravel = deltaMs / Constant.TIME_DIVIDER * Constant.SPEED;
+            t = Math.min(Constant.BEZIER_LIMIT, t + (distanceToTravel / totalDistance));
 
             final Point2D newPos = quadraticBezier(p0, p1, p2, t);
             final double dx = newPos.x() - p0.x();
@@ -64,14 +59,14 @@ public final class HandleFollowEnemy {
             lastDelta = new Point2DImpl(dx, dy);
 
             character.getHitbox().setPosition(newPos);
-            return !(t >= BEZIER_LIMIT || character.getHitbox().checkCollision(enemy.getHitbox()));
+            return !(t >= Constant.BEZIER_LIMIT || character.getHitbox().checkCollision(enemy.getHitbox()));
         } else {
             return false;
         }
     }
 
     private Point2D quadraticBezier(final Point2D p0, final Point2D p1, final Point2D p2, final double t) {
-        final double oneMinusT = BEZIER_LIMIT - t;
+        final double oneMinusT = Constant.BEZIER_LIMIT - t;
         final double x = oneMinusT * oneMinusT * p0.x()
                 + 2 * oneMinusT * t * p1.x()
                 + t * t * p2.x();
@@ -98,8 +93,8 @@ public final class HandleFollowEnemy {
     private double estimateBezierLength(final Point2D p0, final Point2D p1, final Point2D p2) {
         double length = 0.0;
         Point2D prev = p0;
-        for (int t = STEP_START; t <= STEP_LIMIT; t += STEP_SIZE) {
-            final Point2D current = quadraticBezier(p0, p1, p2, t / BEZIER_DIVIDER);
+        for (int t = Constant.STEP_START; t <= Constant.STEP_LIMIT; t += Constant.STEP_SIZE) {
+            final Point2D current = quadraticBezier(p0, p1, p2, t / Constant.BEZIER_DIVIDER);
             length += distance(prev, current);
             prev = current;
         }
@@ -112,40 +107,36 @@ public final class HandleFollowEnemy {
 
     /**
      * Getter for the player's current position.
-     * @return a {@link Point2D} representing the current player's position.
+     * @return a Point2D representing the current player's position.
      */
+    @Override
     public Point2D getCurrentPosition() {
         return character.getHitbox().getPosition();
     }
 
     /**
      * Getter for the character.
-     * @return the {@link Collidable} representing the character.
+     * @return the Collidable representing the character.
      */
+    @Override
     public Collidable getCharacter() {
         return character;
     }
 
     /**
      * Getter for the enemy.
-     * @return the {@link Collidable} representing the currently followed enemy.
+     * @return the Collidable representing the currently followed enemy.
      */
+    @Override
     public Collidable getEnemy() {
         return enemy;
     }
 
     /**
-     * Checks if the player is stopped.
-     * @return true if the player is stopped, false otherwise.
-     */
-    public boolean isStopped() {
-        return stopped;
-    }
-
-    /**
      * Getter for the last position variation.
-     * @return the {@link Point2D} representation of how much the player has moved since last step.
+     * @return the Point2D representation of how much the player has moved since last step.
      */
+    @Override
     public Point2D getDelta() {
         return lastDelta;
     }

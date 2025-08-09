@@ -3,6 +3,7 @@ package it.unibo.oop.lastcrown.model.collision.impl;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.model.collision.api.EventType;
+import it.unibo.oop.lastcrown.model.collision.api.FollowEnemy;
 import it.unibo.oop.lastcrown.model.collision.impl.handler.HandleFollowEnemy;
 import it.unibo.oop.lastcrown.utility.Pair;
 import it.unibo.oop.lastcrown.utility.api.Point2D;
@@ -25,8 +26,7 @@ import java.util.stream.Collectors;
  * to avoid code duplication for similar engagement logic.
  */
 public final class CollisionResolverImpl implements CollisionResolver {
-    // Manages active follow movements for melee engagements
-    private final Map<Integer, HandleFollowEnemy> activeFollowMovements = new HashMap<>();
+    private final Map<Integer, FollowEnemy> activeFollowMovements = new HashMap<>();
     private final Map<Integer, Integer> completedMeleeEngagements = new HashMap<>();
 
     /**
@@ -52,7 +52,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
      */
     private void handleMeleeEngagement(final CollisionEvent event) {
         final int characterId = event.getCollidable1().getCardIdentifier().number();
-        final HandleFollowEnemy movement = new HandleFollowEnemy(event);
+        final FollowEnemy movement = new HandleFollowEnemy(event);
         movement.startFollowing();
         activeFollowMovements.put(characterId, movement);
     }
@@ -68,7 +68,6 @@ public final class CollisionResolverImpl implements CollisionResolver {
     private void handlePairEngagement(final CollisionEvent event) {
         final int id1 = event.getCollidable1().getCardIdentifier().number();
         final int id2 = event.getCollidable2().getCardIdentifier().number();
-        // Gets the specific set for the event type and adds the new pair
         this.getEngagementSet(event.getType()).add(new Pair<>(id1, id2));
     }
 
@@ -174,7 +173,7 @@ public final class CollisionResolverImpl implements CollisionResolver {
      */
     @Override
     public Optional<MovementResult> updateMovementFor(final int characterId, final long deltaMs) {
-        final HandleFollowEnemy movement = activeFollowMovements.get(characterId);
+        final FollowEnemy movement = activeFollowMovements.get(characterId);
         if (movement != null) {
             final boolean stillMoving = movement.update(deltaMs);
             final Point2D delta = movement.getDelta();
