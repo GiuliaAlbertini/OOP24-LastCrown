@@ -22,7 +22,7 @@ public final class Constant {
     public static final int UPGRADE_RADIUS_MELEE = 400;
 
     /** The default upgraded ranged character radius. */
-    public static final int UPGRADE_RADIUS_RANGED = 800;
+    public static final int UPGRADE_RADIUS_RANGED = 900;
 
     /** The default wall in-game ID. */
     public static final int WALL_ID = 1000;

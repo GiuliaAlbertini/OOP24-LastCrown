@@ -1,14 +1,9 @@
 package it.unibo.oop.lastcrown.controller.collision.impl.handlercontroller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.oop.lastcrown.controller.characters.api.BossController;
 import it.unibo.oop.lastcrown.controller.characters.api.CharacterHitObserver;
 import it.unibo.oop.lastcrown.controller.characters.api.GenericCharacterController;
-
 import it.unibo.oop.lastcrown.controller.characters.api.Wall;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.CharacterState;
@@ -17,33 +12,30 @@ import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.EventQue
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.StateHandler;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
+import it.unibo.oop.lastcrown.model.collision.api.EventType;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 /**
- * Handles the COMBAT state for characters during gameplay.
- * This handler manages attack logic, checks for opponent death,
- * resolves collisions, and transitions the character to the appropriate state.
+ * Handles the COMBAT state for characters. This handler manages attack logic,
+ * checks for opponent death, resolves collisions, and transitions the
+ * character to the appropriate next state.
  */
-@SuppressFBWarnings(
-    value = "EI_EXPOSE_REP2",
-    justification = """
-            The combat state handler must keep reference to the match controller and the collision
-            resolver to access live data concerning the characters' position and collisions.
-            This is partly because not all info can be retrieved directly from the character's object,
-            requiring further coupling at the controller level.
-            """
-)
+@SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Handler needs live references to orchestrate game logic.")
 public final class CombatHandler implements StateHandler {
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;
     private final MatchController match;
-    private int opponentId;
 
     /**
-     * Instantiates a combat handler.
+     * Constructs a new CombatHandler.
+     *
      * @param eventFactory an event factory.
-     * @param resolver the desired {@link CollisionResolver}
-     * @param match the desired {@link MatchController}
+     * @param resolver     the collision resolver.
+     * @param match        the match controller.
      */
     public CombatHandler(final EventFactory eventFactory,
             final CollisionResolver resolver,
@@ -66,80 +58,79 @@ public final class CombatHandler implements StateHandler {
             return CharacterState.STOPPED;
         }
 
-        final CardType characterType = character.getId().type();
+        // La logica ora è una singola catena di operazioni con Optional
+        return findOpponentId(character)
+                .flatMap(this::getOpponentObserverById)
+                .map(opponent -> handleOpponentFound(character, opponent, queue))
+                .orElseGet(() -> handleNoOpponent(character));
+    }
 
-        if (characterType == CardType.HERO || characterType == CardType.MELEE || characterType == CardType.RANGED) {
-            if (match.isEntityEngaged(character.getId().number())) {
-                opponentId = match.getEngagedCounterpart(character.getId().number());
-            } else if (resolver.hasOpponentBossPartner(character.getId().number())) { // boss
-                opponentId = resolver.getOpponentBossPartner(character.getId().number());
-            } else if (resolver.hasOpponentRangedPartner(character.getId().number())) { // ranged
-                opponentId = resolver.getOpponentRangedPartner(character.getId().number());
-            }
-        } else {
-            if (match.isEntityEngaged(character.getId().number())) {
-                opponentId = match.getEngagedCounterpart(character.getId().number());
-            } else if (resolver.hasOpponentWallPartner(character.getId().number())) {
-                opponentId = resolver.getOpponentWallPartner(character.getId().number());
-            } else {
-                opponentId = resolver.getOpponentBossPartner(character.getId().number());
-            }
+    private CharacterState handleOpponentFound(final GenericCharacterController character,
+            final CharacterHitObserver opponent,
+            final EventQueue queue) {
+        if (opponent.isDead()) {
+            queue.clear();
+            queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+            return CharacterState.STOPPED;
         }
 
-        final Optional<CharacterHitObserver> opponentOpt;
-
-        if (match.getWall().getCardIdentifier().number() == opponentId) {
-            opponentOpt = Optional.of(match.getWall());
-        } else {
-            opponentOpt = match.getCharacterControllerById(opponentId).map(c -> c);
+        setupCombat(character, opponent);
+        if (opponent instanceof Wall wall) {
+            combatWall(wall);
         }
-
-        if (opponentOpt.isEmpty()) {
-            if (character.getId().type() != CardType.RANGED) {
-                return CharacterState.IDLE;
-            } else {
-                return CharacterState.STOPPED;
-            }
-        }
-
-        final CharacterHitObserver opponent = opponentOpt.get();
-
-        if (characterType == CardType.HERO || characterType == CardType.MELEE || characterType == CardType.RANGED) {
-            if (opponent.isDead()) {
-                queue.clear();
-                queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-                return CharacterState.STOPPED;
-            } else {
-                setupCombat(character, opponent);
-                queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
-                return CharacterState.COMBAT;
-            }
-
-        } else {
-            if (opponent.isDead()) {
-                queue.clear();
-                queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-            } else {
-                setupCombat(character, opponent);
-                if (opponent instanceof Wall wall) {
-                    combatWall(wall);
-                }
-                queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
-                return CharacterState.COMBAT;
-            }
-        }
-
+        queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
         return CharacterState.COMBAT;
+    }
+
+    private CharacterState handleNoOpponent(final GenericCharacterController character) {
+        if (character.getId().type() == CardType.RANGED) {
+            return CharacterState.STOPPED;
+        }
+        return CharacterState.IDLE;
+    }
+
+    /**
+     * Tries to find an opponent ID by chaining checks using Optional.or().
+     *
+     * @param character The character searching for an opponent.
+     * @return An Optional containing the opponent's ID if found.
+     */
+    private Optional<Integer> findOpponentId(final GenericCharacterController character) {
+        final int characterId = character.getId().number();
+
+        final Optional<Integer> mainEngagement = Optional.of(match.getEngagedCounterpart(characterId))
+                .filter(id -> id != -1);
+
+        if (isPlayerLike(character)) {
+            return mainEngagement
+                    .or(() -> resolver.getOpponentPartner(characterId, EventType.BOSS))
+                    .or(() -> resolver.getOpponentPartner(characterId, EventType.RANGED));
+        } else {
+            return mainEngagement
+                    .or(() -> resolver.getOpponentPartner(characterId, EventType.WALL))
+                    .or(() -> resolver.getOpponentPartner(characterId, EventType.BOSS));
+        }
+    }
+
+    private Optional<CharacterHitObserver> getOpponentObserverById(final int opponentId) {
+        if (match.getWall().getCardIdentifier().number() == opponentId) {
+            return Optional.of(match.getWall());
+        }
+        return match.getCharacterControllerById(opponentId).map(c -> c);
+    }
+
+    private boolean isPlayerLike(final GenericCharacterController character) {
+        final CardType type = character.getId().type();
+        return type == CardType.HERO || type == CardType.MELEE || type == CardType.RANGED;
     }
 
     private void setupCombat(final GenericCharacterController character, final CharacterHitObserver opponent) {
         if (character.getId().type() == CardType.BOSS && character instanceof BossController boss) {
-            final List<Integer> characters = resolver.getAllCharacterIdsInBossFight();
-            boss.setOpponents(getCharactersFromIds(characters));
+            final List<Integer> charactersInFight = resolver.getAllCharacterIdsInBossFight();
+            boss.setOpponents(getCharactersFromIds(charactersInFight));
         } else {
             character.setOpponent(opponent);
         }
-
         character.setNextAnimation(Keyword.ATTACK);
         character.showNextFrame();
     }
@@ -149,18 +140,16 @@ public final class CombatHandler implements StateHandler {
             match.setAllFSMsToState(CharacterState.STOPPED);
             match.halveHeroMaxHealth();
         } else {
-            final List<Integer> enemies = resolver.getAllCharacterIdsInWallFight();
-            wall.addOpponents(getCharactersFromIds(enemies));
+            final List<Integer> enemiesOnWall = resolver.getAllCharacterIdsInWallFight();
+            wall.addOpponents(getCharactersFromIds(enemiesOnWall));
             wall.doAttack();
         }
     }
 
     private List<CharacterHitObserver> getCharactersFromIds(final List<Integer> ids) {
-        final List<CharacterHitObserver> characters = new ArrayList<>();
-        for (final Integer id : ids) {
-            final Optional<GenericCharacterController> controllerOpt = match.getCharacterControllerById(id);
-            controllerOpt.ifPresent(characters::add);
-        }
-        return characters;
+        return ids.stream()
+                .map(match::getCharacterControllerById)
+                .flatMap(Optional::stream)
+                .collect(Collectors.toList());
     }
 }

@@ -14,6 +14,7 @@ import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.EventQue
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.StateHandler;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
+import it.unibo.oop.lastcrown.model.collision.api.EventType;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.Movement;
 
@@ -27,10 +28,10 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
 @SuppressFBWarnings(
     value = "EI_EXPOSE_REP2",
     justification = """
-            The idle state handler keeps reference to the match controller and collision resolver to access
-            all live info about a character's position and collisions.
-            This is mainly because the same info wouldn't be otherwise accessible from the character's class.
-            """
+              The idle state handler keeps reference to the match controller and collision resolver to access
+              all live info about a character's position and collisions.
+              This is mainly because the same info wouldn't be otherwise accessible from the character's class.
+              """
 )
 public final class IdleHandler implements StateHandler {
 
@@ -46,18 +47,15 @@ public final class IdleHandler implements StateHandler {
     /**
      * Constructs an IdleHandler with the required dependencies.
      *
-     * @param matchController the controller for match-level operations such as
-     *                        character updates
+     * @param matchController the controller for match-level operations such as character updates
      * @param scanner         the utility to detect nearby enemies within radius
-     * @param eventFactory    the factory used to generate character state
-     *                        transition events
-     * @param resolver        the collision resolver for managing combat
-     *                        interactions
+     * @param eventFactory    the factory used to generate character state transition events
+     * @param resolver        the collision resolver for managing combat interactions
      */
     public IdleHandler(final MatchController matchController,
-            final EntityTargetingSystem scanner,
-            final EventFactory eventFactory,
-            final CollisionResolver resolver) {
+                       final EntityTargetingSystem scanner,
+                       final EventFactory eventFactory,
+                       final CollisionResolver resolver) {
         this.matchController = matchController;
         this.scanner = scanner;
         this.eventFactory = eventFactory;
@@ -66,7 +64,7 @@ public final class IdleHandler implements StateHandler {
 
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
-            final int deltaTime) {
+                                 final int deltaTime) {
         if (character == null) {
             queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
             return CharacterState.DEAD;
@@ -113,11 +111,11 @@ public final class IdleHandler implements StateHandler {
         }
 
         scanner.scanForTarget(player)
-                .ifPresent(matchController::notifyCollisionObservers);
+               .ifPresent(matchController::notifyCollisionObservers);
         if (matchController.isEntityEngaged(player.getId().number())) {
             queue.enqueue(eventFactory.createEvent(CharacterState.FOLLOWING));
             return CharacterState.FOLLOWING;
-        } else if (resolver.hasOpponentBossPartner(player.getId().number())) {
+        } else if (resolver.hasOpponentPartner(player.getId().number(), EventType.BOSS)) {
             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
             return CharacterState.STOPPED;
         }
@@ -140,8 +138,8 @@ public final class IdleHandler implements StateHandler {
             return CharacterState.DEAD;
         } else {
             final boolean collision = resolver.wasEnemyCollided(enemy.getId().number());
-            if (collision || resolver.hasOpponentBossPartner(enemy.getId().number())
-                    || resolver.hasOpponentWallPartner(enemy.getId().number())) {
+            if (collision || resolver.hasOpponentPartner(enemy.getId().number(), EventType.BOSS)
+                    || resolver.hasOpponentPartner(enemy.getId().number(), EventType.WALL)) {
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                 return CharacterState.STOPPED;
             } else if (matchController.isEntityEngaged(enemy.getId().number())) {
@@ -154,7 +152,6 @@ public final class IdleHandler implements StateHandler {
                     return CharacterState.STOPPED;
                 }
             }
-
         }
         queue.enqueue(eventFactory.createEvent(CharacterState.IDLE));
         return CharacterState.IDLE;

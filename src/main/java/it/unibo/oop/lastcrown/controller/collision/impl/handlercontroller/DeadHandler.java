@@ -9,6 +9,7 @@ import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.EventQue
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.StateHandler;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
+import it.unibo.oop.lastcrown.model.collision.api.EventType;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 
 /**
@@ -21,11 +22,11 @@ import it.unibo.oop.lastcrown.view.characters.Keyword;
 @SuppressFBWarnings(
     value = "EI_EXPOSE_REP2",
     justification = """
-            The dead state handler must store reference to the match controller and collision resolver
-            to access live information about the characters' position and collisions.
-            This is partly because not all info can be directly accessed by the character's class, and a
-            further coupling is required at the controller level.
-            """
+              The dead state handler must store reference to the match controller and collision resolver
+              to access live information about the characters' position and collisions.
+              This is partly because not all info can be directly accessed by the character's class, and a
+              further coupling is required at the controller level.
+              """
 )
 public final class DeadHandler implements StateHandler {
     private final MatchController match;
@@ -40,7 +41,7 @@ public final class DeadHandler implements StateHandler {
      * @param resolver a collision resolver.
      */
     public DeadHandler(final MatchController matchController, final EventFactory eventFactory,
-            final CollisionResolver resolver) {
+                       final CollisionResolver resolver) {
         this.match = matchController;
         this.eventFactory = eventFactory;
         this.resolver = resolver;
@@ -49,7 +50,7 @@ public final class DeadHandler implements StateHandler {
 
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
-            final int deltaTime) {
+                                 final int deltaTime) {
         if (character == null) {
             return CharacterState.DEAD;
         }
@@ -64,7 +65,8 @@ public final class DeadHandler implements StateHandler {
 
         if (currentFrameIndex >= totalFrames) {
             if (character.getId().type() == CardType.BOSS) {
-                resolver.clearAllOpponentPairs();
+                resolver.clearEngagementsByType(EventType.BOSS);
+                resolver.clearEngagementsByType(EventType.RANGED);
                 match.setBossActive();
             }
 
@@ -76,8 +78,9 @@ public final class DeadHandler implements StateHandler {
             match.removeCharacterCompletelyById(character.getId().number());
             match.releaseEngagementFor(character.getId().number());
             resolver.clearEnemyCollision(character.getId().number());
-            resolver.clearAllOpponentRangedPairs();
-            resolver.clearBossFightPairById(character.getId().number());
+            resolver.clearEngagementsById(character.getId().number(), EventType.RANGED);
+            resolver.clearEngagementsById(character.getId().number(), EventType.BOSS);
+            resolver.clearEngagementsById(character.getId().number(), EventType.WALL);
             this.currentFrameIndex = 0;
 
             if (match.getWall().getCurrentHealth() <= 0

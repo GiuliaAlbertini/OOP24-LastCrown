@@ -14,6 +14,7 @@ import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.EventQue
 import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.StateHandler;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
+import it.unibo.oop.lastcrown.model.collision.api.EventType;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.Movement;
 
@@ -22,15 +23,12 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
  * Sets the STOP animation frame and schedules a transition to the COMBAT state
  * or IDLE based on engagement and combat status.
  */
-@SuppressFBWarnings(
-    value = "EI_EXPOSE_REP2",
-    justification = """
-            The stopping state handler keeps reference to the match controller and collision resolver
-            to access live info about the characters' position and collisions.
-            This mainly because the same data is not made accessible in the characters' model classes,
-            requiring some more controller coupling.
-            """
-)
+@SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = """
+        The stopping state handler keeps reference to the match controller and collision resolver
+        to access live info about the characters' position and collisions.
+        This mainly because the same data is not made accessible in the characters' model classes,
+        requiring some more controller coupling.
+        """)
 public final class StoppingHandler implements StateHandler {
 
     private static final int ENEMY_SPEED = 2;
@@ -69,7 +67,7 @@ public final class StoppingHandler implements StateHandler {
         }
 
         final boolean isPlayer = character instanceof PlayableCharacterController;
-        final boolean isBosshandle = resolver.hasOpponentBossPartner(character.getId().number());
+        final boolean isBosshandle = resolver.hasOpponentPartner(character.getId().number(), EventType.BOSS);
         final int charId = character.getId().number();
         final CardType characterType = character.getId().type();
 
@@ -137,9 +135,9 @@ public final class StoppingHandler implements StateHandler {
         }
 
         final boolean isEngaged = match.isEntityEngaged(charId);
-        final boolean isBossFight = resolver.hasOpponentBossPartner(charId);
+        final boolean isBossFight = resolver.hasOpponentPartner(charId, EventType.BOSS);
         final boolean isEngagedWithDead = match.isEngagedWithDead(charId) || match.isBossFightPartnerDead(charId);
-        final boolean isWallFight = resolver.hasOpponentWallPartner(charId);
+        final boolean isWallFight = resolver.hasOpponentPartner(charId, EventType.WALL);
 
         if (!isEngaged && wait && !isBossFight && !isWallFight) {
             this.wait = false;
@@ -162,7 +160,7 @@ public final class StoppingHandler implements StateHandler {
         character.setNextAnimation(Keyword.STOP);
         character.showNextFrame();
 
-        final boolean isBossFight = resolver.hasOpponentBossPartner(charId);
+        final boolean isBossFight = resolver.hasOpponentPartner(charId, EventType.BOSS);
         match.getCharacterControllerById(charId)
                 .filter(PlayableCharacterController.class::isInstance)
                 .map(PlayableCharacterController.class::cast)
@@ -173,7 +171,7 @@ public final class StoppingHandler implements StateHandler {
 
         if (match.isRangedFightPartnerDead(charId)) {
             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
-        } else if (resolver.hasOpponentRangedPartner(charId) || isBossFight) {
+        } else if (resolver.hasOpponentPartner(charId, EventType.RANGED) || isBossFight) {
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
             return CharacterState.COMBAT;
         }
@@ -187,7 +185,7 @@ public final class StoppingHandler implements StateHandler {
         character.setNextAnimation(Keyword.STOP);
         character.showNextFrame();
 
-        final boolean isBossFight = resolver.hasOpponentBossPartner(charId);
+        final boolean isBossFight = resolver.hasOpponentPartner(charId, EventType.BOSS);
         match.getCharacterControllerById(charId)
                 .filter(PlayableCharacterController.class::isInstance)
                 .map(PlayableCharacterController.class::cast)
@@ -218,7 +216,7 @@ public final class StoppingHandler implements StateHandler {
             if (isEngagedWithDead) {
                 queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                 return CharacterState.STOPPED;
-            } else if (resolver.hasOpponentBossPartner(character.getId().number())) {
+            } else if (resolver.hasOpponentPartner(character.getId().number(), EventType.BOSS)) {
                 queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
                 return CharacterState.COMBAT;
             }
@@ -241,7 +239,7 @@ public final class StoppingHandler implements StateHandler {
         } else if (match.isEntityEngaged(player.getId().number())) {
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
             return CharacterState.COMBAT;
-        } else if (resolver.hasOpponentBossPartner(player.getId().number())) {
+        } else if (resolver.hasOpponentPartner(player.getId().number(), EventType.BOSS)) {
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
             return CharacterState.COMBAT;
         }
