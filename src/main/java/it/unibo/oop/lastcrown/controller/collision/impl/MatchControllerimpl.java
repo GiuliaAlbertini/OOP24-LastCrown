@@ -38,6 +38,7 @@ import it.unibo.oop.lastcrown.model.characters.api.PlayableCharacter;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionEvent;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionManager;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
+import it.unibo.oop.lastcrown.model.collision.api.EventType;
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
 import it.unibo.oop.lastcrown.model.collision.api.Radius;
 import it.unibo.oop.lastcrown.model.collision.impl.CollisionManagerImpl;
@@ -332,26 +333,18 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public boolean isBossFightPartnerDead(final int id) {
-        if (collisionResolver.hasOpponentBossPartner(id)) {
-            final int partnerId = collisionResolver.getOpponentBossPartner(id);
-            final Optional<GenericCharacterController> controllerOpt = getCharacterControllerById(partnerId);
-            if (controllerOpt.isPresent()) {
-                return controllerOpt.get().isDead();
-            }
-        }
-        return false;
+        return collisionResolver.getOpponentPartner(id, EventType.BOSS)
+               .flatMap(this::getCharacterControllerById)
+               .map(GenericCharacterController::isDead)
+               .orElse(false);
     }
 
     @Override
     public boolean isRangedFightPartnerDead(final int id) {
-        if (collisionResolver.hasOpponentRangedPartner(id)) {
-            final int partnerId = collisionResolver.getOpponentRangedPartner(id);
-            final Optional<GenericCharacterController> controllerOpt = getCharacterControllerById(partnerId);
-            if (controllerOpt.isPresent()) {
-                return controllerOpt.get().isDead();
-            }
-        }
-        return false;
+        return collisionResolver.getOpponentPartner(id, EventType.RANGED)
+               .flatMap(this::getCharacterControllerById)
+               .map(GenericCharacterController::isDead)
+               .orElse(false);
     }
 
     @Override

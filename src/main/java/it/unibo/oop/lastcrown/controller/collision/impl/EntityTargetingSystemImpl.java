@@ -36,15 +36,12 @@ import it.unibo.oop.lastcrown.model.collision.impl.CollisionEventImpl;
  * engaging
  * enemies, bosses, and interacting with the environment.
  */
-@SuppressFBWarnings(
-    value = "EI_EXPOSE_REP2",
-    justification = """
-            Instances of the entity targeting system, match controller and collision resolver
-            must be kept in order to access live info about the characters' state and position.
-            This is partly because of the fact that characters' info is not completely accessible from the
-            character class itself, requiring some deeper coupling in the controller layer.
-            """
-)
+@SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = """
+        Instances of the entity targeting system, match controller and collision resolver
+        must be kept in order to access live info about the characters' state and position.
+        This is partly because of the fact that characters' info is not completely accessible from the
+        character class itself, requiring some deeper coupling in the controller layer.
+        """)
 public final class EntityTargetingSystemImpl implements EntityTargetingSystem {
     private final EntityStateManager entityStateManager;
     private final MatchController matchController;
@@ -111,11 +108,11 @@ public final class EntityTargetingSystemImpl implements EntityTargetingSystem {
             final GenericCharacterController enemy,
             final Map<GenericCharacterController, HitboxController> allEntities) {
         if (enemy instanceof BossController) {
-            return createEventIfAllowed(!resolver.hasOpponentBossPartner(player.getId().number()),
+            return createEventIfAllowed(!resolver.hasOpponentPartner(player.getId().number(), EventType.BOSS),
                     player, enemy, EventType.BOSS, allEntities);
         } else if (enemy instanceof EnemyController) {
             if (player.getId().type() == CardType.RANGED) {
-                return createEventIfAllowed(!resolver.hasOpponentRangedPartner(player.getId().number()),
+                return createEventIfAllowed(!resolver.hasOpponentPartner(player.getId().number(), EventType.RANGED),
                         player, enemy, EventType.RANGED, allEntities);
             } else {
                 if (canMeleePlayerEngage(player, (EnemyController) enemy)) {
@@ -134,7 +131,7 @@ public final class EntityTargetingSystemImpl implements EntityTargetingSystem {
             final GenericCharacterController enemy,
             final Map<GenericCharacterController, HitboxController> allEntities) {
         if (enemy instanceof BossController) {
-            return createEventIfAllowed(!resolver.hasOpponentBossPartner(hero.getId().number()),
+            return createEventIfAllowed(!resolver.hasOpponentPartner(hero.getId().number(), EventType.BOSS),
                     hero, enemy, EventType.BOSS, allEntities);
         }
         return Optional.empty();
