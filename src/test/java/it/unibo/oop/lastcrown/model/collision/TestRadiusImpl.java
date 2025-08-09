@@ -1,4 +1,5 @@
 package it.unibo.oop.lastcrown.model.collision;
+
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
 import it.unibo.oop.lastcrown.model.collision.impl.HitboxImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.RadiusImpl;
@@ -17,21 +18,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Unit tests for the {@link RadiusImpl} class.
  */
 final class TestRadiusImpl {
-
-    private Hitbox originHitbox;
-    private RadiusImpl radius;
     private static final double TEST_RADIUS = 50.0;
+    private static final int ORIGIN_X = 95;
+    private static final int ORIGIN_Y = 95;
+
+    private RadiusImpl radius;
 
     @BeforeEach
     void setUp() {
-        originHitbox = new HitboxImpl(10, 10, new Point2DImpl(95, 95)); // Centro a (100, 100)
+        final Hitbox originHitbox = new HitboxImpl(10, 10, new Point2DImpl(ORIGIN_X, ORIGIN_Y));
         radius = new RadiusImpl(originHitbox, TEST_RADIUS);
     }
 
     @Test
     void testNoEnemiesFoundWhenOutsideOrBehind() {
-        final Hitbox enemyFar = new HitboxImpl(10, 10, new Point2DImpl(200, 200)); // Lontano
-        final Hitbox enemyBehind = new HitboxImpl(10, 10, new Point2DImpl(80, 100)); // Dietro, anche se vicino
+        final Hitbox enemyFar = new HitboxImpl(10, 10, new Point2DImpl(200, 200));
+        final Hitbox enemyBehind = new HitboxImpl(10, 10, new Point2DImpl(80, 100));
 
         final List<Hitbox> enemies = List.of(enemyFar, enemyBehind);
 

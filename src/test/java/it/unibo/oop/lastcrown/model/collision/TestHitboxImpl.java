@@ -11,21 +11,21 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 final class TestHitboxImpl {
-
+    private static final int INITIAL_WIDTH = 100;
+    private static final int INITIAL_HEIGHT = 50;
     private HitboxImpl hitbox;
     private final Point2D initialPosition = new Point2DImpl(10, 20);
-    private final int initialWidth = 100;
-    private final int initialHeight = 50;
+
 
     @BeforeEach
     void setUp() {
-        hitbox = new HitboxImpl(initialWidth, initialHeight, initialPosition);
+        hitbox = new HitboxImpl(INITIAL_WIDTH, INITIAL_HEIGHT, initialPosition);
     }
 
     @Test
     void testConstructorAndGetters() {
-        assertEquals(initialWidth, hitbox.getWidth(), "Width should be correctly initialized.");
-        assertEquals(initialHeight, hitbox.getHeight(), "Height should be correctly initialized.");
+        assertEquals(INITIAL_WIDTH, hitbox.getWidth(), "Width should be correctly initialized.");
+        assertEquals(INITIAL_HEIGHT, hitbox.getHeight(), "Height should be correctly initialized.");
         assertEquals(initialPosition, hitbox.getPosition(), "Position should be correctly initialized.");
     }
 
@@ -46,8 +46,8 @@ final class TestHitboxImpl {
 
     @Test
     void testGetCenter() {
-        final double expectedCenterX = initialPosition.x() + initialWidth / 2.0; // 10 + 50 = 60
-        final double expectedCenterY = initialPosition.y() + initialHeight / 2.0; // 20 + 25 = 45
+        final double expectedCenterX = initialPosition.x() + INITIAL_WIDTH / 2.0;
+        final double expectedCenterY = initialPosition.y() + INITIAL_HEIGHT / 2.0;
         final Point2D expectedCenter = new Point2DImpl(expectedCenterX, expectedCenterY);
 
         final Point2D calculatedCenter = hitbox.getCenter();
@@ -58,8 +58,7 @@ final class TestHitboxImpl {
 
     @Test
     void testCheckCollisionWhenOverlapping() {
-        final HitboxImpl other = new HitboxImpl(50, 50, new Point2DImpl(50, 40)); // (50,40) si sovrappone a (10,20) con w=100,h=50
-
+        final HitboxImpl other = new HitboxImpl(50, 50, new Point2DImpl(50, 40));
         assertTrue(hitbox.checkCollision(other), "Hitboxes should be colliding.");
         assertTrue(other.checkCollision(hitbox), "Collision check should be symmetric.");
     }
