@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import it.unibo.oop.lastcrown.model.card.CardIdentifier;
@@ -17,8 +16,6 @@ import it.unibo.oop.lastcrown.model.user.api.Deck;
  * Implementation of a {@link Deck}.
  */
 public class DeckImpl implements Deck {
-    private static final Logger LOG = Logger.getLogger(DeckImpl.class.getName());
-
     private final Set<CardIdentifier> userCollection;
     private final CompleteCollectionImpl completeCollection = new CompleteCollectionImpl();
     private final Set<CardIdentifier> deck = new HashSet<>();
@@ -42,14 +39,12 @@ public class DeckImpl implements Deck {
     @Override
     public final void addCard(final CardIdentifier card) {
         if (!owns(card)) {
-            LOG.warning("Cannot add " + card + ": not in user collection");
             return;
         }
         final CardType type;
         try {
             type = card.type();
         } catch (final IllegalArgumentException e) {
-            LOG.warning("Unknown card type: " + card.type());
             return;
         }
         if (type == CardType.HERO) {
@@ -57,16 +52,13 @@ public class DeckImpl implements Deck {
             return;
         }
         if (heroId == null) {
-            LOG.warning("Cannot add non-hero " + card + " before selecting a hero");
             return;
         }
         final Hero hero = getHeroInstance();
         if (hero == null) {
-            LOG.warning("Hero details missing for " + heroId);
             return;
         }
         if (!withinLimit(type, hero)) {
-            LOG.warning("Cannot add " + type.get() + " " + card + ": limit is " + limitFor(type, hero));
             return;
         }
         this.deck.add(card);
@@ -75,12 +67,9 @@ public class DeckImpl implements Deck {
     @Override
     public final void removeCard(final CardIdentifier card) {
         if (card.equals(heroId)) {
-            LOG.warning("Cannot remove the selected hero directly, add another hero to switch");
             return;
         }
-        if (!this.deck.remove(card)) {
-            LOG.warning("Cannot remove " + card + ": not in deck");
-        }
+        this.deck.remove(card);
     }
 
     @Override
