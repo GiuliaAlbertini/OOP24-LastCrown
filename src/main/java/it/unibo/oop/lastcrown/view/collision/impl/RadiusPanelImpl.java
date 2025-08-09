@@ -30,7 +30,7 @@ public final class RadiusPanelImpl implements RadiusPanel {
     private static final int ARC_START_ANGLE = -90;
     private static final int ARC_ANGLE_EXTENT = 180;
     private static final int RADIUS_ALPHA = 80;
-    private static final Color RADIUS_COLOR = new Color(0, 0, 255, RADIUS_ALPHA); // Semi-transparent blue
+    private static final Color RADIUS_COLOR = new Color(0, 0, 255, RADIUS_ALPHA);
 
     private final Radius radius;
     private final JPanel radiusPanel;

@@ -11,7 +11,7 @@ import it.unibo.oop.lastcrown.utility.impl.Point2DImpl;
  * center point calculation, and dimension updates.
  */
 public final class HitboxImpl implements Hitbox {
-    private Point2D position; // coordinate x,y angolo in alto a sinistra
+    private Point2D position;
     private int width;
     private int height;
 

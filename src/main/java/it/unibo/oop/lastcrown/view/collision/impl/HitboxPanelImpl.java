@@ -41,7 +41,7 @@ public final class HitboxPanelImpl implements HitboxPanel {
     public HitboxPanelImpl(final Hitbox hitbox) {
         this.hitbox = hitbox;
         this.hitboxPanel = new JPanel();
-        this.hitboxPanel.setBackground(new Color(RED, GREEN, BLUE, ALPHA)); // Rosso semi-trasparente per debug
+        this.hitboxPanel.setBackground(new Color(RED, GREEN, BLUE, ALPHA));
         updatePanel();
     }
 
