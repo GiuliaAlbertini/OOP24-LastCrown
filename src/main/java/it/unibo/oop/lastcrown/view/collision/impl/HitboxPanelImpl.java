@@ -28,7 +28,7 @@ public final class HitboxPanelImpl implements HitboxPanel {
     private static final int RED = 255;
     private static final int GREEN = 0;
     private static final int BLUE = 0;
-    private static final int ALPHA = 100;
+    private static final int ALPHA = 0;
     private final Hitbox hitbox;
     private final JPanel hitboxPanel;
 
