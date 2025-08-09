@@ -101,7 +101,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
                 typeFolder, name);
 
         matchController.addCharacter(enemyController.getId().number(), enemyController, hitboxController);
-        matchController.updateEventText("Nemico " + name + " è apparso");
+        matchController.updateEventText("Enemy " + name + " spawned");
 
     }
 
@@ -151,7 +151,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
 
         matchController.addCharacter(bossController.getId().number(), bossController, hitboxController);
         matchController.setBossActive();
-        matchController.updateEventText("Inizio BossFight");
+        matchController.updateEventText("Start BossFight");
         matchController.getMatchView().notifyBossFight(true);
 
         matchController.handleBossMusic();

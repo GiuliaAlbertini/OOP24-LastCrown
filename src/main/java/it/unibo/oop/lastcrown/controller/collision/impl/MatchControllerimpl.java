@@ -370,7 +370,7 @@ public final class MatchControllerimpl implements MatchController {
             final HitboxController hitboxController = this.matchView.addGenericGraphics(id,
                     playerController.getGraphicalComponent(), x, y, typeFolder, name);
             addCharacter(selected.get2().getId().number(), playerController, hitboxController);
-            updateEventText(name + "schierato!");
+            updateEventText("deployed" + name);
         } else {
             this.spellManager.castSpell(x, y);
         }
@@ -500,7 +500,7 @@ public final class MatchControllerimpl implements MatchController {
         final int reward = baseReward - this.enemySpawner.getRoundIndex() * 10;
         this.coins += reward;
         updateCoinsDisplay();
-        updateEventText((bossFight ? "Boss sconfitto! " : "") + "Hai guadagnato " + reward + "!");
+        updateEventText((bossFight ? "Boss defeated! " : "") + "Gains " + reward + "!");
     }
 
     @Override
