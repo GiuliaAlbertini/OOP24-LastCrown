@@ -15,6 +15,7 @@ import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.StateHan
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.model.collision.api.EventType;
+import it.unibo.oop.lastcrown.utility.Constant;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.Movement;
 
@@ -30,9 +31,6 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
         requiring some more controller coupling.
         """)
 public final class StoppingHandler implements StateHandler {
-
-    private static final int ENEMY_SPEED = 2;
-    private static final int ROUNDING_AMOUNT = 5;
 
     private final EventFactory eventFactory;
     private final CollisionResolver resolver;
@@ -95,7 +93,7 @@ public final class StoppingHandler implements StateHandler {
         if (!match.hasEntityTypeInMap(CardType.BOSS)) {
             if (match.getWall().getCurrentHealth() <= 0) {
                 if (character.getId().type() == CardType.ENEMY) {
-                    final Movement movementCharacter = new Movement(ENEMY_SPEED, 0);
+                    final Movement movementCharacter = new Movement(Constant.ENEMY_SPEED, 0);
                     character.setNextAnimation(Keyword.RETREAT);
                     character.showNextFrameAndMove(movementCharacter);
                     match.updateCharacterPosition(character, movementCharacter.x(), movementCharacter.y());
@@ -251,7 +249,8 @@ public final class StoppingHandler implements StateHandler {
         final Optional<HitboxController> hitboxController = match.getCharacterHitboxById(player.getId().number());
         if (hitboxController.isPresent()) {
             final int limit = match.getMatchView().getTrupsZoneLimit() - hitboxController.get().getHitbox().getWidth();
-            final int roundedLimit = limit + (ROUNDING_AMOUNT - (limit % ROUNDING_AMOUNT)) % ROUNDING_AMOUNT;
+            final int roundedLimit = limit + (Constant.ROUNDING_AMOUNT
+                    - (limit % Constant.ROUNDING_AMOUNT)) % Constant.ROUNDING_AMOUNT;
             return hitboxController.get().getHitbox().getPosition().x() >= roundedLimit;
         }
         return false;

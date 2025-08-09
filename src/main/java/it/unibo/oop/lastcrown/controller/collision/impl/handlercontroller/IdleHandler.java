@@ -15,6 +15,7 @@ import it.unibo.oop.lastcrown.controller.collision.impl.eventcharacters.StateHan
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.collision.api.CollisionResolver;
 import it.unibo.oop.lastcrown.model.collision.api.EventType;
+import it.unibo.oop.lastcrown.utility.Constant;
 import it.unibo.oop.lastcrown.view.characters.Keyword;
 import it.unibo.oop.lastcrown.view.characters.api.Movement;
 
@@ -25,19 +26,12 @@ import it.unibo.oop.lastcrown.view.characters.api.Movement;
  * players),
  * or to STOPPED if a collision is detected (for enemies).
  */
-@SuppressFBWarnings(
-    value = "EI_EXPOSE_REP2",
-    justification = """
-              The idle state handler keeps reference to the match controller and collision resolver to access
-              all live info about a character's position and collisions.
-              This is mainly because the same info wouldn't be otherwise accessible from the character's class.
-              """
-)
+@SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = """
+        The idle state handler keeps reference to the match controller and collision resolver to access
+        all live info about a character's position and collisions.
+        This is mainly because the same info wouldn't be otherwise accessible from the character's class.
+        """)
 public final class IdleHandler implements StateHandler {
-
-    private static final int PLAYER_SPEED = 2;
-    private static final int ENEMY_SPEED = -2;
-    private static final int ROUNDING_AMOUNT = 5;
 
     private final MatchController matchController;
     private final EntityTargetingSystem scanner;
@@ -47,15 +41,18 @@ public final class IdleHandler implements StateHandler {
     /**
      * Constructs an IdleHandler with the required dependencies.
      *
-     * @param matchController the controller for match-level operations such as character updates
+     * @param matchController the controller for match-level operations such as
+     *                        character updates
      * @param scanner         the utility to detect nearby enemies within radius
-     * @param eventFactory    the factory used to generate character state transition events
-     * @param resolver        the collision resolver for managing combat interactions
+     * @param eventFactory    the factory used to generate character state
+     *                        transition events
+     * @param resolver        the collision resolver for managing combat
+     *                        interactions
      */
     public IdleHandler(final MatchController matchController,
-                       final EntityTargetingSystem scanner,
-                       final EventFactory eventFactory,
-                       final CollisionResolver resolver) {
+            final EntityTargetingSystem scanner,
+            final EventFactory eventFactory,
+            final CollisionResolver resolver) {
         this.matchController = matchController;
         this.scanner = scanner;
         this.eventFactory = eventFactory;
@@ -64,7 +61,7 @@ public final class IdleHandler implements StateHandler {
 
     @Override
     public CharacterState handle(final GenericCharacterController character, final EventQueue queue,
-                                 final int deltaTime) {
+            final int deltaTime) {
         if (character == null) {
             queue.enqueue(eventFactory.createEvent(CharacterState.DEAD));
             return CharacterState.DEAD;
@@ -84,7 +81,8 @@ public final class IdleHandler implements StateHandler {
 
         final boolean isPlayer = character instanceof PlayableCharacterController;
         final Keyword animationKeyword = isPlayer ? Keyword.RUN_RIGHT : Keyword.RUN_LEFT;
-        final Movement movementCharacter = new Movement(isPlayer ? PLAYER_SPEED : ENEMY_SPEED, 0);
+        final Movement movementCharacter = new Movement(
+                isPlayer ? Constant.PLAYER_SPEED : (Constant.ONENEG * Constant.ENEMY_SPEED), 0);
         character.setNextAnimation(animationKeyword);
         character.showNextFrameAndMove(movementCharacter);
         matchController.updateCharacterPosition(character, movementCharacter.x(), movementCharacter.y());
@@ -111,7 +109,7 @@ public final class IdleHandler implements StateHandler {
         }
 
         scanner.scanForTarget(player)
-               .ifPresent(matchController::notifyCollisionObservers);
+                .ifPresent(matchController::notifyCollisionObservers);
         if (matchController.isEntityEngaged(player.getId().number())) {
             queue.enqueue(eventFactory.createEvent(CharacterState.FOLLOWING));
             return CharacterState.FOLLOWING;
@@ -145,8 +143,8 @@ public final class IdleHandler implements StateHandler {
             } else if (matchController.isEntityEngaged(enemy.getId().number())) {
                 final int idPlayer = matchController.getEngagedCounterpart(enemy.getId().number());
                 final GenericCharacterController player = matchController
-                    .getCharacterControllerById(idPlayer)
-                    .get();
+                        .getCharacterControllerById(idPlayer)
+                        .get();
                 if (isAtTroopZoneLimit(player)) {
                     queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
                     return CharacterState.STOPPED;
@@ -159,12 +157,13 @@ public final class IdleHandler implements StateHandler {
 
     private boolean isAtTroopZoneLimit(final GenericCharacterController player) {
         final Optional<HitboxController> hitboxController = matchController.getCharacterHitboxById(
-            player.getId().number()
-        );
+                player.getId().number());
         if (hitboxController.isPresent()) {
             final int limit = matchController.getMatchView().getTrupsZoneLimit()
                     - hitboxController.get().getHitbox().getWidth();
-            final int roundedLimit = limit + (ROUNDING_AMOUNT - (limit % ROUNDING_AMOUNT)) % ROUNDING_AMOUNT;
+            final int roundedLimit = limit
+                    + (Constant.ROUNDING_AMOUNT - (limit % Constant.ROUNDING_AMOUNT))
+                            % (Constant.ONENEG * Constant.ROUNDING_AMOUNT);
             return hitboxController.get().getHitbox().getPosition().x() >= roundedLimit;
         }
         return false;

@@ -14,6 +14,7 @@ import it.unibo.oop.lastcrown.model.card.CardIdentifier;
 import it.unibo.oop.lastcrown.model.card.CardType;
 import it.unibo.oop.lastcrown.model.spell.api.Spell;
 import it.unibo.oop.lastcrown.model.spell.api.SpellEffect;
+import it.unibo.oop.lastcrown.utility.Constant;
 import it.unibo.oop.lastcrown.utility.Pair;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 import it.unibo.oop.lastcrown.view.spell.api.SpellGUI;
@@ -35,11 +36,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
             """
 )
 public final class SpellManagerImpl implements SpellManager {
-
-    private static final String HEALTH_CATEGORY = "health";
-    private static final String ATTACK_CATEGORY = "attack";
-    private static final String SPEED_CATEGORY = "speedMultiplier";
-    private static final int ENEMY_EFFECT_MULTIPLIER = -1;
 
     private final List<Pair<CardIdentifier, SpellGUI>> spellList = new ArrayList<>();
     private final MatchController matchController;
@@ -165,11 +161,11 @@ public final class SpellManagerImpl implements SpellManager {
         final String category = spellEffect.category();
         final int amount = spellEffect.amount();
 
-        if (HEALTH_CATEGORY.equals(category)) {
+        if (Constant.HEALTH_CATEGORY.equals(category)) {
             applyHealthEffect(characters, amount, isTargetingEnemy);
-        } else if (ATTACK_CATEGORY.equals(category)) {
+        } else if (Constant.ATTACK_CATEGORY.equals(category)) {
             applyAttackEffect(characters, amount, isTargetingEnemy);
-        } else if (SPEED_CATEGORY.equals(category) && isTargetingEnemy) {
+        } else if (Constant.SPEED_CATEGORY.equals(category) && isTargetingEnemy) {
             applySpeedEffect(characters, amount);
         }
     }
@@ -187,7 +183,7 @@ public final class SpellManagerImpl implements SpellManager {
 
     private void applyAttackEffect(final List<GenericCharacterController> characters,
             final int amount, final boolean isTargetingEnemy) {
-        final int effectiveAmount = isTargetingEnemy ? ENEMY_EFFECT_MULTIPLIER * amount : amount;
+        final int effectiveAmount = isTargetingEnemy ? Constant.ENEMY_EFFECT_MULTIPLIER * amount : amount;
         for (final var character : characters) {
             character.setAttackValue(effectiveAmount);
         }
@@ -195,7 +191,7 @@ public final class SpellManagerImpl implements SpellManager {
 
     private void applySpeedEffect(final List<GenericCharacterController> characters, final int amount) {
         for (final var character : characters) {
-            character.setSpeedMultiplierValue(ENEMY_EFFECT_MULTIPLIER * amount);
+            character.setSpeedMultiplierValue(Constant.ENEMY_EFFECT_MULTIPLIER * amount);
         }
     }
 }

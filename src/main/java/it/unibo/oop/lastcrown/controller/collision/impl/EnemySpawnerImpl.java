@@ -12,6 +12,7 @@ import it.unibo.oop.lastcrown.controller.collision.api.EnemySpawner;
 import it.unibo.oop.lastcrown.controller.collision.api.HitboxController;
 import it.unibo.oop.lastcrown.controller.collision.api.MatchController;
 import it.unibo.oop.lastcrown.model.characters.api.Enemy;
+import it.unibo.oop.lastcrown.utility.Constant;
 import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 
 /**
@@ -26,7 +27,6 @@ import it.unibo.oop.lastcrown.view.dimensioning.DimensionResolver;
 )
 public final class EnemySpawnerImpl implements EnemySpawner {
 
-    private static final int SPAWN_INTERVAL = 5000;
     private static final SecureRandom GENERATOR = new SecureRandom();
 
     private int spawnTimer;
@@ -68,7 +68,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
         if (roundIndex < allEnemies.size()) {
             final List<Enemy> currentRound = allEnemies.get(roundIndex);
 
-            if (spawnTimer >= SPAWN_INTERVAL && enemyIndexInRound < currentRound.size()) {
+            if (spawnTimer >= Constant.SPAWN_INTERVAL && enemyIndexInRound < currentRound.size()) {
                 this.spawnRandomEnemy(currentRound.get(enemyIndexInRound));
                 enemyIndexInRound++;
                 spawnTimer = 0;
