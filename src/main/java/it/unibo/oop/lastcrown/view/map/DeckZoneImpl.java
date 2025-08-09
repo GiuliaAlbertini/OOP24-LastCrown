@@ -48,7 +48,7 @@ public final class DeckZoneImpl extends JPanel implements DeckZone {
     private static final Font LABEL_FONT = new Font("Monospaced", Font.BOLD, 16);
 
     private static final int MAX_ENERGY = SECTIONS;
-    private static final int TIME_RECHARGE_SINGLE_ENERGY = 1000;
+    private static final int TIME_RECHARGE_SINGLE_ENERGY = 800;
     private int currentEnergy;
     private final Timer rechargeTimer;
     private transient InGameDeckController inGameDeckController;
