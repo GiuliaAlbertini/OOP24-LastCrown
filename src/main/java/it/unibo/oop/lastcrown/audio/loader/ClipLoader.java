@@ -1,6 +1,7 @@
 package it.unibo.oop.lastcrown.audio.loader;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -28,7 +29,7 @@ public final class ClipLoader {
      */
     public static Clip loadClip(final String path) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         if (path != null) {
-            final InputStream inputStream = ClipLoader.class.getResourceAsStream(path);
+            final InputStream inputStream = ClipLoader.class.getResourceAsStream(path.replace(File.separator, "/"));
             if (inputStream != null) {
                 final BufferedInputStream bufInputStream = new BufferedInputStream(inputStream);
                 final AudioInputStream stream = AudioSystem.getAudioInputStream(bufInputStream);
