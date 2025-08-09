@@ -1,4 +1,4 @@
-package it.unibo.oop.lastcrown.controller.collision;
+package it.unibo.oop.lastcrown.model.collision;
 import it.unibo.oop.lastcrown.model.collision.api.Hitbox;
 import it.unibo.oop.lastcrown.model.collision.impl.HitboxImpl;
 import it.unibo.oop.lastcrown.model.collision.impl.RadiusImpl;
