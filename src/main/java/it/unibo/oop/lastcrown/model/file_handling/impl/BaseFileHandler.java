@@ -47,48 +47,56 @@ public class BaseFileHandler<T> {
     protected Optional<T> read(final String name) {
         final File file = new File(baseDirectory, name + ".txt");
         if (file.exists()) {
-            final List<String> lines = new ArrayList<>();
-            try (var reader = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
-                String line = reader.readLine();
-                while (line != null) {
-                    lines.add(line);
-                    line = reader.readLine();
-                }
-            } catch (final IOException e) {
-                LOGGER.log(Level.SEVERE,
-                        "Error reading from file: " + file.getAbsolutePath(),
-                        e);
-                return Optional.empty();
-            }
-            try {
-                return Optional.of(parser.parse(lines));
-            } catch (final IllegalArgumentException e) {
-                LOGGER.log(Level.WARNING,
-                        "Error parsing file: " + file.getAbsolutePath(),
-                        e);
-                return Optional.empty();
-            }
+            return readFromFileSystem(file);
         } else {
-            final String resourcePath = baseDirectory.replace(SEP, "/") + "/" + name + ".txt";
-            try (InputStream is = BaseFileHandler.class.getResourceAsStream(resourcePath)) {
-                if (is == null) {
-                    return Optional.empty();
-                }
-                try (var reader = new BufferedReader(
-                        new InputStreamReader(is, StandardCharsets.UTF_8))) {
-                    final List<String> lines = reader.lines().toList();
-                    return Optional.of(parser.parse(lines));
-                }
-            } catch (final IOException e) {
-                LOGGER.log(Level.SEVERE,
-                        "Error reading resource: " + resourcePath, e);
-                return Optional.empty();
-            } catch (final IllegalArgumentException e) {
-                LOGGER.log(Level.WARNING,
-                        "Error parsing resource: " + resourcePath, e);
+            return readFromResource(name);
+        }
+    }
+
+    private Optional<T> readFromResource(final String name) {
+        final String resourcePath = baseDirectory.replace(SEP, "/") + "/" + name + ".txt";
+        try (InputStream is = BaseFileHandler.class.getResourceAsStream(resourcePath)) {
+            if (is == null) {
                 return Optional.empty();
             }
+            try (var reader = new BufferedReader(
+                    new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                final List<String> lines = reader.lines().toList();
+                return Optional.of(parser.parse(lines));
+            }
+        } catch (final IOException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Error reading resource: " + resourcePath, e);
+            return Optional.empty();
+        } catch (final IllegalArgumentException e) {
+            LOGGER.log(Level.WARNING,
+                    "Error parsing resource: " + resourcePath, e);
+            return Optional.empty();
+        }
+    }
+
+    private Optional<T> readFromFileSystem(final File file) {
+        final List<String> lines = new ArrayList<>();
+        try (var reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+            String line = reader.readLine();
+            while (line != null) {
+                lines.add(line);
+                line = reader.readLine();
+            }
+        } catch (final IOException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Error reading from file: " + file.getAbsolutePath(),
+                    e);
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(parser.parse(lines));
+        } catch (final IllegalArgumentException e) {
+            LOGGER.log(Level.WARNING,
+                    "Error parsing file: " + file.getAbsolutePath(),
+                    e);
+            return Optional.empty();
         }
     }
 
