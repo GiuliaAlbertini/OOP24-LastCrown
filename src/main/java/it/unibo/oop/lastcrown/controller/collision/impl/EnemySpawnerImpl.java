@@ -150,7 +150,7 @@ public final class EnemySpawnerImpl implements EnemySpawner {
                 typeFolder, name);
 
         matchController.addCharacter(bossController.getId().number(), bossController, hitboxController);
-        matchController.setBossActive();
+
         matchController.updateEventText("Start BossFight");
         matchController.getMatchView().notifyBossFight(true);
 

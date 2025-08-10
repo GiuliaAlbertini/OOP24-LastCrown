@@ -65,9 +65,9 @@ public final class DeadHandler implements StateHandler {
 
         if (currentFrameIndex >= totalFrames) {
             if (character.getId().type() == CardType.BOSS) {
+                match.setBossActive();
                 resolver.clearEngagementsByType(EventType.BOSS);
                 resolver.clearEngagementsByType(EventType.RANGED);
-                match.setBossActive();
             }
 
             final boolean isBoss = character.getId().type() == CardType.BOSS;

@@ -370,7 +370,7 @@ public final class MatchControllerimpl implements MatchController {
             final HitboxController hitboxController = this.matchView.addGenericGraphics(id,
                     playerController.getGraphicalComponent(), x, y, typeFolder, name);
             addCharacter(selected.get2().getId().number(), playerController, hitboxController);
-            updateEventText("deployed " + name);
+            updateEventText("Deployed " + name);
         } else {
             this.spellManager.castSpell(x, y);
         }
@@ -465,15 +465,19 @@ public final class MatchControllerimpl implements MatchController {
 
     @Override
     public void matchResult() {
+
         if (!this.alreadyDone) {
             if (!hasEntityTypeInMap(CardType.HERO)) {
+                updateEventText("Game over ");
+
                 this.alreadyDone = true;
                 mainView.updateAccount(this.coins, false);
                 AudioEngine.playEffect(SoundEffect.LOSE);
                 matchView.disposeDefeat();
                 this.matchView.notifyBossFight(false);
                 this.mainController.getMatchStartObserver().stopMatchLoop();
-            } else if (!hasEntityTypeInMap(CardType.BOSS) && bossActive) {
+            } else if (hasEntityTypeInMap(CardType.BOSS) && bossActive) {
+                updateEventText("You won! ");
                 this.alreadyDone = true;
                 mainView.updateAccount(this.coins, true);
                 AudioEngine.playEffect(SoundEffect.WIN);
