@@ -111,7 +111,7 @@ public final class HitboxMaskBounds implements HitboxMask {
     /**
      * Returns the center point of the hitbox relative to the character component.
      *
-     * @return the center of the hitbox as a {@link Point2D} object
+     * @return the center of the hitbox as a Point2D object
      */
     @Override
     public Point2D getCenter() {
@@ -124,7 +124,7 @@ public final class HitboxMaskBounds implements HitboxMask {
     /**
      * Returns the character's graphical component.
      *
-     * @return the {@link JComponent} representing the character
+     * @return the JComponent representing the character
      */
     @Override
     public JComponent getCharComponent() {

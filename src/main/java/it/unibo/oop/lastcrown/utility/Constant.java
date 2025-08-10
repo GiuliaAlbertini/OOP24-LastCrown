@@ -22,7 +22,7 @@ public final class Constant {
     public static final int DEFAULT_BOSS_RADIUS = 400;
 
     /** The default upgraded melee character radius. */
-    public static final int UPGRADE_RADIUS_MELEE = 400;
+    public static final int UPGRADE_RADIUS_MELEE = 430;
 
     /** The default upgraded ranged character radius. */
     public static final int UPGRADE_RADIUS_RANGED = 900;

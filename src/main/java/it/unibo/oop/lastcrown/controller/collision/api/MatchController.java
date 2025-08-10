@@ -19,15 +19,6 @@ import it.unibo.oop.lastcrown.view.map.MatchView;
 /**
  * Controls the main logic of a match, coordinating model, view, and character controllers,
  * handling collisions, engagements, events, and match progression.
- * <p>
- * This interface provides methods to:
- * <ul>
- *   <li>Add and remove characters from the battlefield</li>
- *   <li>Manage character positions and states</li>
- *   <li>Detect and broadcast collision events</li>
- *   <li>Control match phases such as spawning, combat, and end conditions</li>
- *   <li>Handle player interactions like clicks and button presses</li>
- * </ul>
  */
 public interface MatchController {
 
@@ -202,14 +193,14 @@ public interface MatchController {
     /**
      * Returns the current match view.
      *
-     * @return the {@link MatchView} instance
+     * @return the MatchView instance
      */
     MatchView getMatchView();
 
     /**
      * Returns the wall in the match.
      *
-     * @return the {@link Wall} instance
+     * @return the Wall instance
      */
     Wall getWall();
 

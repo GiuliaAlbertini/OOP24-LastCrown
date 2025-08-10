@@ -9,7 +9,7 @@ public interface SpellManager {
      * Handles the selection of a spell from the user interface.
      * This method prepares the system to cast the selected spell.
      *
-     * @param id The {@link CardIdentifier} of the selected spell.
+     * @param id The CardIdentifier of the selected spell.
      */
     void handleSpellSelection(CardIdentifier id);
 

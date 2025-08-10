@@ -40,7 +40,7 @@ public final class CharacterFSM {
         this.character = character;
         this.currentState = CharacterState.IDLE;
         this.eventQueue = new EventQueue();
-        this.eventFactory = new EventFactory(matchController, scanner, resolver); // passaggio controller alla factory
+        this.eventFactory = new EventFactory(matchController, scanner, resolver);
         this.eventQueue.enqueue(this.eventFactory.createEvent(this.currentState));
     }
 
@@ -51,7 +51,6 @@ public final class CharacterFSM {
      * @param deltaTime time elapsed since last update, used for timing calculations
      */
     public void update(final int deltaTime) {
-        // Processa il prossimo evento della coda, se non vuota
         this.currentState = eventQueue.processNext(character, deltaTime);
     }
 

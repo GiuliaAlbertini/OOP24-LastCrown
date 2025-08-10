@@ -29,12 +29,10 @@ import it.unibo.oop.lastcrown.model.collision.impl.CollisionEventImpl;
 /**
  * Implementation of TargetingSystem responsible for scanning characters'
  * surrounding area for targets, handling wall collisions, and creating
- * corresponding
- * CollisionEvent instances.
+ * corresponding CollisionEvent instances.
  *
  * It supports both player-controlled and AI characters, including logic for
- * engaging
- * enemies, bosses, and interacting with the environment.
+ * engaging enemies, bosses, and interacting with the environment.
  */
 @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = """
         Instances of the entity targeting system, match controller and collision resolver

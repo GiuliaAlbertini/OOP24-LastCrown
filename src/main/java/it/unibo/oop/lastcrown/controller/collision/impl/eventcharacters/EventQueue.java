@@ -39,10 +39,8 @@ public final class EventQueue {
     public CharacterState processNext(final GenericCharacterController character, final int deltaTime) {
         synchronized (events) {
             if (!events.isEmpty()) {
-                // Poll the event and execute it, then return the resulting state.
                 return events.poll().execute(character, this, deltaTime);
             } else {
-                // If no events are in the queue, the character remains in a default idle state.
                 return CharacterState.IDLE;
             }
         }
@@ -64,7 +62,7 @@ public final class EventQueue {
      * This operation is synchronized to ensure thread safety.
      */
     public void clear() {
-        synchronized (events) { // Added synchronization for clear()
+        synchronized (events) {
             events.clear();
         }
     }
@@ -75,7 +73,7 @@ public final class EventQueue {
      * @return true if the queue has one or more events, false otherwise.
      */
     public boolean hasPendingEvents() {
-        synchronized (events) { // Ensure this method is also thread-safe
+        synchronized (events) {
             return !events.isEmpty();
         }
     }
