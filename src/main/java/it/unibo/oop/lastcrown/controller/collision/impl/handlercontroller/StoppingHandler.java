@@ -93,6 +93,7 @@ public final class StoppingHandler implements StateHandler {
         if (!match.hasEntityTypeInMap(CardType.BOSS)) {
             if (match.getWall().getCurrentHealth() <= 0) {
                 if (character.getId().type() == CardType.ENEMY) {
+                    resolver.clearEngagementsByType(EventType.RANGED);
                     final Movement movementCharacter = new Movement(Constant.ENEMY_SPEED, 0);
                     character.setNextAnimation(Keyword.RETREAT);
                     character.showNextFrameAndMove(movementCharacter);
@@ -169,6 +170,7 @@ public final class StoppingHandler implements StateHandler {
 
         if (match.isRangedFightPartnerDead(charId)) {
             queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+            return CharacterState.STOPPED;
         } else if (resolver.hasOpponentPartner(charId, EventType.RANGED) || isBossFight) {
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
             return CharacterState.COMBAT;
@@ -192,6 +194,10 @@ public final class StoppingHandler implements StateHandler {
                     match.notifyCollisionObservers(event);
                 });
 
+        if (match.isRangedFightPartnerDead(charId)) {
+            queue.enqueue(eventFactory.createEvent(CharacterState.STOPPED));
+            return CharacterState.STOPPED;
+        }
         if (isBossFight) {
             queue.enqueue(eventFactory.createEvent(CharacterState.COMBAT));
             return CharacterState.COMBAT;
