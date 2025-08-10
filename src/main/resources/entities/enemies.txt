@@ -16,7 +16,7 @@
 2,EvilMage2,7,155,2.0
 2,EvilMage3,8,170,2.1
 2,Necromancer,8,190,2.2
-2,Nightborne,9,220,2.8
+2,NightBorne,9,220,2.8
 1,IceGolem,12,400,1.6
 1,FireDemon,14,420,1.8
 1,UndeadExecutioner,13,410,2.2
