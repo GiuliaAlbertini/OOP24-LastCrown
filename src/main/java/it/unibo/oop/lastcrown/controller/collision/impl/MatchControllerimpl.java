@@ -370,7 +370,7 @@ public final class MatchControllerimpl implements MatchController {
             final HitboxController hitboxController = this.matchView.addGenericGraphics(id,
                     playerController.getGraphicalComponent(), x, y, typeFolder, name);
             addCharacter(selected.get2().getId().number(), playerController, hitboxController);
-            updateEventText("deployed" + name);
+            updateEventText("deployed " + name);
         } else {
             this.spellManager.castSpell(x, y);
         }

@@ -58,7 +58,6 @@ public final class CombatHandler implements StateHandler {
             return CharacterState.STOPPED;
         }
 
-        // La logica ora è una singola catena di operazioni con Optional
         return findOpponentId(character)
                 .flatMap(this::getOpponentObserverById)
                 .map(opponent -> handleOpponentFound(character, opponent, queue))
